@@ -3,8 +3,8 @@ Copyright (c) 2023 María Inés de Frutos-Fernández. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: María Inés de Frutos-Fernández
 -/
-import Data.Real.Nnreal
-import RingTheory.Valuation.Basic
+import Mathlib.Data.Real.Nnreal
+import Mathlib.RingTheory.Valuation.Basic
 
 #align_import from_mathlib.rank_one_valuation
 
@@ -42,7 +42,7 @@ class IsRankOne (v : Valuation R Γ₀) where
   StrictMono : StrictMono hom
   Nontrivial : ∃ r : R, v r ≠ 0 ∧ v r ≠ 1
 
-/-- If `v` is a rank one valuation and `x : Γ₀` has image `0` under `is_rank_one.hom v`, then 
+/-- If `v` is a rank one valuation and `x : Γ₀` has image `0` under `is_rank_one.hom v`, then
   `x = 0`. -/
 theorem zero_of_isRankOne_hom_zero (v : Valuation R Γ₀) [IsRankOne v] {x : Γ₀}
     (hx : IsRankOne.hom v x = 0) : x = 0 :=
@@ -50,7 +50,7 @@ theorem zero_of_isRankOne_hom_zero (v : Valuation R Γ₀) [IsRankOne v] {x : Γ
   have hx0 : 0 ≤ x := zero_le'
   cases' le_iff_lt_or_eq.mp hx0 with h_lt h_eq
   · have hs := IsRankOne.strictMono h_lt
-    rw [map_zero, hx] at hs 
+    rw [map_zero, hx] at hs
     exact absurd hs not_lt_zero'
   · exact h_eq.symm
 
@@ -89,7 +89,7 @@ theorem some_spec {x : WithZero G} (hx : x ≠ 0) : ↑(some hx) = x :=
 theorem some_coe {g : G} : some (@coe_ne_zero G g) = g :=
   coe_inj.mp (Classical.choose_spec (ne_zero_iff_exists.mp (@coe_ne_zero G g)))
 
-/-- If `G` is a monoid and `x y : with_zero G` have a nonzero product, then 
+/-- If `G` is a monoid and `x y : with_zero G` have a nonzero product, then
   `some hxy = some (left_ne_zero_of_mul hxy) * some (right_ne_zero_of_mul hxy)`  -/
 theorem some_hMul [Monoid G] {x y : WithZero G} (hxy : x * y ≠ 0) :
     some hxy = some (left_ne_zero_of_mul hxy) * some (right_ne_zero_of_mul hxy) := by
@@ -119,4 +119,3 @@ def coeMonoidHom [Monoid G] [Monoid H] (f : G →* H) [DecidableEq (WithZero G)]
         coe_mul, coe_inj, ← f.map_mul, some_mul hxy]
 
 end WithZero
-

@@ -3,7 +3,7 @@ Copyright (c) 2023 Filippo A. E. Nuccio. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Filippo A. E. Nuccio
 -/
-import Analysis.SpecificLimits.Basic
+import Mathlib.Analysis.SpecificLimits.Basic
 
 #align_import from_mathlib.specific_limits
 
@@ -16,9 +16,9 @@ theorem NNReal.lt_one_of_tendsto_pow_0 (a : ℝ≥0) (h : Tendsto (fun n : ℕ =
   by_cases ha₀ : a = 0
   · rw [ha₀]; exact zero_lt_one
   · by_contra ha_le
-    rw [not_lt] at ha_le 
+    rw [not_lt] at ha_le
     by_cases ha : a = 1
-    · simp only [ha, one_pow] at h 
+    · simp only [ha, one_pow] at h
       exact zero_ne_one (tendsto_nhds_unique h tendsto_const_nhds)
     · replace h : tendsto (fun n : ℕ => (a : ENNReal) ^ n) at_top (𝓝 0)
       · rw [← ENNReal.coe_zero]
@@ -35,4 +35,3 @@ theorem NNReal.lt_one_of_tendsto_pow_0 (a : ℝ≥0) (h : Tendsto (fun n : ℕ =
         exact inv_lt_one (lt_of_le_of_ne ha_le (Ne.symm ha))
       exact
         ENNReal.zero_ne_top (tendsto_nhds_unique (ENNReal.tendsto_pow_atTop_nhds_0_of_lt_1 hb₁) h)
-

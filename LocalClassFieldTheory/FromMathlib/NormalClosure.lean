@@ -3,8 +3,8 @@ Copyright (c) 2023 María Inés de Frutos-Fernández. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: María Inés de Frutos-Fernández
 -/
-import FieldTheory.Normal
-import FieldTheory.IsAlgClosed.AlgebraicClosure
+import Mathlib.FieldTheory.Normal
+import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
 
 #align_import from_mathlib.normal_closure
 
@@ -34,4 +34,3 @@ theorem isAlgebraic (h : Algebra.IsAlgebraic K L) :
     IntermediateField.isAlgebraic_iff.mpr (AlgebraicClosure.isAlgebraic _ _)
 
 end normalClosure
-

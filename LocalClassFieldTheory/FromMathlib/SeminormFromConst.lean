@@ -3,8 +3,8 @@ Copyright (c) 2023 María Inés de Frutos-Fernández. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: María Inés de Frutos-Fernández
 -/
-import FromMathlib.Filter
-import FromMathlib.RingSeminorm
+import LocalClassFieldTheory.FromMathlib.Filter
+import LocalClassFieldTheory.FromMathlib.RingSeminorm
 
 #align_import from_mathlib.seminorm_from_const
 
@@ -17,7 +17,7 @@ which `c` is multiplicative.
 
 ## Main Definitions
 
-* `seminorm_from_const'` : the real-valued function sending `x ∈ R` to the limit of 
+* `seminorm_from_const'` : the real-valued function sending `x ∈ R` to the limit of
   `(f (x * c^n))/((f c)^n)`.
 * `seminorm_from_const` : the function `seminorm_from_const'` is a `ring_seminorm` on `R`.
 
@@ -112,7 +112,7 @@ def seminormFromConst' (x : R) : ℝ :=
     (Real.tendsto_of_is_bounded_antitone (seminorm_from_const_is_bounded c f x)
       (seminormFromConstSeq_antitone hf1 hc hpm x))
 
-/-- We prove that `seminorm_from_const' hf1 hc hpm x` is the limit of the sequence 
+/-- We prove that `seminorm_from_const' hf1 hc hpm x` is the limit of the sequence
   `seminorm_from_const_seq c f x` as `n` tends to infinity. -/
 theorem seminorm_from_const_is_limit (x : R) :
     Filter.Tendsto (seminormFromConstSeq c f x) Filter.atTop
@@ -272,7 +272,7 @@ theorem seminorm_from_const_apply_of_is_hMul {x : R} (hx : ∀ y : R, f (x * y) 
     exact tendsto_const_nhds
   tendsto_nhds_unique (seminorm_from_const_is_limit hf1 hc hpm x) hlim
 
-/-- If `x : R` is multiplicative for `f`, then it is multiplicative for 
+/-- If `x : R` is multiplicative for `f`, then it is multiplicative for
   `seminorm_from_const' hf1 hc hpm`. -/
 theorem seminorm_from_const_is_hMul_of_is_hMul {x : R} (hx : ∀ y : R, f (x * y) = f x * f y)
     (y : R) :
@@ -351,4 +351,3 @@ theorem seminormFromConstRingNormOfField_def {k : K} {g : RingSeminorm K} (hg1 :
   rfl
 
 end Field
-

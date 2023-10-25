@@ -1,5 +1,5 @@
-import DiscreteValuationRing.TrivialExtension
-import EqCharacteristic.Basic
+import LocalClassFieldTheory.DiscreteValuationRing.TrivialExtension
+import LocalClassFieldTheory.EqCharacteristic.Basic
 
 #align_import eq_characteristic.valuation
 
@@ -14,13 +14,13 @@ In this file we define the canonical valuation on an equal characteristic local 
   field, induced by the extension of the `X`-adic valuation.
 
 ##  Main Theorems
-* `eq_char_local_field.complete_space` : an equal characteristic local field is a complete space. 
+* `eq_char_local_field.complete_space` : an equal characteristic local field is a complete space.
 
-* `eq_char_local_field.valuation.is_discrete` : the canonical valuation in an equal characteristic 
+* `eq_char_local_field.valuation.is_discrete` : the canonical valuation in an equal characteristic
   local field is discrete.
 
-* `eq_char_local_field.ring_of_integers.discrete_valuation_ring` : the ring of integers of an 
-  equal characteristic local field is a discrete valuation ring. 
+* `eq_char_local_field.ring_of_integers.discrete_valuation_ring` : the ring of integers of an
+  equal characteristic local field is a discrete valuation ring.
 
 ## Implementation details
 Note that when `K = FpX_completion`, there are two valued instances on it : the one coming from the
@@ -47,7 +47,7 @@ variable (p : outParam ℕ) [hp : Fact p.Prime]
 
 variable (K : Type _) [Field K] [EqCharLocalField p K]
 
-/-- The valued instance in an equal characteristic local field, induced by the extension of the 
+/-- The valued instance in an equal characteristic local field, induced by the extension of the
   `X`-adic valuation.-/
 instance (priority := 100) : Valued K ℤₘ₀ :=
   Extension.valued (FpXCompletion p) K
@@ -69,7 +69,7 @@ variable {p}
 theorem valuation_x_ne_zero : Valued.v (algebraMap (RatFunc 𝔽_[p]) K X) ≠ (0 : ℤₘ₀) := by
   simp only [Ne.def, _root_.map_eq_zero, RatFunc.X_ne_zero, not_false_iff]
 
-/-- The ramification index of an equal characteristic local field `K` is given by the 
+/-- The ramification index of an equal characteristic local field `K` is given by the
   additive valuation of the element `(X : K)`. -/
 def ramificationIndex (K : Type _) [Field K] [EqCharLocalField p K] : ℤ :=
   -(WithZero.unzero (valuation_x_ne_zero K)).toAdd
@@ -131,4 +131,3 @@ theorem FpXIntCompletion.equivValuationSubring_comm :
   rfl
 
 end EqCharLocalField
-

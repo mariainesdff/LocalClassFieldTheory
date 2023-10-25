@@ -3,19 +3,19 @@ Copyright (c) 2023 María Inés de Frutos-Fernández. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: María Inés de Frutos-Fernández
 -/
-import NumberTheory.Padics.PadicNumbers
-import RingTheory.Valuation.Integers
-import Topology.MetricSpace.CauSeqFilter
-import Topology.Algebra.ValuedField
-import FromMathlib.SpectralNormUnique
-import FromMathlib.NormedValued
+import Mathlib.NumberTheory.Padics.PadicNumbers
+import Mathlib.RingTheory.Valuation.Integers
+import Mathlib.Topology.MetricSpace.CauSeqFilter
+import Mathlib.Topology.Algebra.ValuedField
+import LocalClassFieldTheory.FromMathlib.SpectralNormUnique
+import LocalClassFieldTheory.FromMathlib.NormedValued
 
 #align_import from_mathlib.Cp_def
 
 /-!
 # The `p`-adic complex numbers.
 
-In this file we define the field `ℂ_[p]` of `p`-adic complex numbers and we give it both a normed 
+In this file we define the field `ℂ_[p]` of `p`-adic complex numbers and we give it both a normed
 field and a valued field structure, induced by the unique extension of the `p`-adic norm to `ℂ_[p]`.
 
 ## Main Definitions
@@ -165,7 +165,7 @@ instance : IsRankOne (PadicComplex.valuedField p).V
       Nat.cast_eq_one]
     exact ⟨hp.ne_zero, hp.ne_one⟩
 
-/-- `ℂ_[p]` is a normed field, where the norm corresponds to the extension of the `p`-adic 
+/-- `ℂ_[p]` is a normed field, where the norm corresponds to the extension of the `p`-adic
   valuation.-/
 instance : NormedField ℂ_[p] :=
   ValuedField.toNormedField _ _
@@ -210,4 +210,3 @@ notation "𝓞_ℂ_[" p "]" => padicComplexIntegers p
 /-- `𝓞_ℂ_[p]` is the ring of integers of `ℂ_[p]`. -/
 theorem PadicComplex.integers : Valuation.Integers (PadicComplex.valuedField p).V 𝓞_ℂ_[p] :=
   Valuation.integer.integers _
-

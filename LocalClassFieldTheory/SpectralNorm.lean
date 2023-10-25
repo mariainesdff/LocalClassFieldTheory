@@ -1,24 +1,24 @@
-import FromMathlib.SpectralNormUnique
-import FieldTheory.SplittingField.Construction
+import LocalClassFieldTheory.FromMathlib.SpectralNormUnique
+import Mathlib.FieldTheory.SplittingField.Construction
 
 #align_import spectral_norm
 
 /-!
 # A formula for the spectral norm
 
-Let `K` be a field complete with respect to the topology induced by a nontrivial nonarchimedean 
+Let `K` be a field complete with respect to the topology induced by a nontrivial nonarchimedean
 norm, and let `L` be an algebraic field extension of `K`. We prove an explicit formula for the
 spectral norm of an element `x : L`.
 
 ##  Main Theorems
 * `spectral_value_le_one_iff` : the spectral value of a monic polynomial `P` is `≤ 1` if and only
   if all of its coefficients have norm `≤ 1`.
-* `spectral_norm_pow_degree_eq_prof_roots` : given an algebraic tower of fields `E/L/K` and an 
-  element `x : L` whose minimal polynomial `f` over `K` splits into linear factors over `E`, the 
-  `degree(f)`th power of the spectral norm of `x` is equal to the product of the `E`-valued roots 
-  of `f`. 
-* `spectral_norm_eq_root_zero_coeff` : given `x : L` with minimal polynomial 
-  `f(X) := X^n + a_{n-1}X^{n-1} + ... + a_0` over `K`, the spectral norm of `x` is equal to 
+* `spectral_norm_pow_degree_eq_prof_roots` : given an algebraic tower of fields `E/L/K` and an
+  element `x : L` whose minimal polynomial `f` over `K` splits into linear factors over `E`, the
+  `degree(f)`th power of the spectral norm of `x` is equal to the product of the `E`-valued roots
+  of `f`.
+* `spectral_norm_eq_root_zero_coeff` : given `x : L` with minimal polynomial
+  `f(X) := X^n + a_{n-1}X^{n-1} + ... + a_0` over `K`, the spectral norm of `x` is equal to
   `‖ a_0 ‖^(1/(degree(f(X))))`.
 -/
 
@@ -40,7 +40,7 @@ theorem spectralValue_le_one_iff {P : S[X]} (hP : Monic P) :
   constructor <;> intro h
   · intro n
     by_contra hn
-    rw [not_le] at hn 
+    rw [not_le] at hn
     have hsupr : 1 < iSup (spectralValueTerms P) :=
       haveI hn' : 1 < spectralValueTerms P n :=
         by
@@ -49,12 +49,12 @@ theorem spectralValue_le_one_iff {P : S[X]} (hP : Monic P) :
         · apply Real.one_lt_rpow hn
           simp only [one_div, inv_pos, sub_pos, Nat.cast_lt]
           exact hPn
-        · rw [not_lt, le_iff_lt_or_eq] at hPn 
+        · rw [not_lt, le_iff_lt_or_eq] at hPn
           cases' hPn with hlt heq
-          · rw [coeff_eq_zero_of_nat_degree_lt hlt, norm_zero] at hn 
+          · rw [coeff_eq_zero_of_nat_degree_lt hlt, norm_zero] at hn
             exfalso; linarith
-          · rw [monic, leading_coeff, HEq] at hP 
-            rw [hP, norm_one] at hn 
+          · rw [monic, leading_coeff, HEq] at hP
+            rw [hP, norm_one] at hn
             linarith
       lt_csupr_of_lt (spectralValueTerms_bddAbove P) n hn'
     linarith
@@ -136,7 +136,7 @@ theorem spectral_norm_pow_degree_eq_prof_roots (h_alg : Algebra.IsAlgebraic K L)
           r = s :=
       by
       intro s hs
-      simp only [Multiset.mem_map, mem_roots', Ne.def, is_root.def] at hs 
+      simp only [Multiset.mem_map, mem_roots', Ne.def, is_root.def] at hs
       obtain ⟨a, ha_root, has⟩ := hs
       rw [hr, ← has]
       change spectralNorm K E (algebraMap L E x) = spectralNorm K E a
@@ -150,7 +150,7 @@ theorem spectral_norm_pow_degree_eq_prof_roots (h_alg : Algebra.IsAlgebraic K L)
     exact h_deg
   · rw [Multiset.count_eq_zero_of_not_mem]
     intro hr_mem
-    simp only [Multiset.mem_map, mem_roots', Ne.def, is_root.def] at hr_mem 
+    simp only [Multiset.mem_map, mem_roots', Ne.def, is_root.def] at hr_mem
     obtain ⟨e, he_root, her⟩ := hr_mem
     have heq :
       (spectralMulAlgNorm h_alg_E hna) e = (spectralMulAlgNorm h_alg_E hna) ((algebraMap L E) x) :=
@@ -162,7 +162,7 @@ theorem spectral_norm_pow_degree_eq_prof_roots (h_alg : Algebra.IsAlgebraic K L)
         minpoly.eq_of_algebraMap_eq (algebraMap L E).Injective
           (is_algebraic_iff_is_integral.mp (h_alg x)) (Eq.refl (algebraMap L E x)),
         aeval_def, eval_map]
-    rw [HEq] at her 
+    rw [HEq] at her
     exact hr her.symm
 
 /-- For `x : L` with minimal polynomial `f(X) := X^n + a_{n-1}X^{n-1} + ... + a_0` over `K`,
@@ -208,4 +208,3 @@ theorem spectral_value_term_le (h_alg : Algebra.IsAlgebraic K L)
   simp only [spectralNorm, spectralValue, spectralValueTerms]
   apply le_ciSup_of_le (spectralValueTerms_bddAbove (minpoly K x)) n
   simp only [spectralValueTerms, if_pos hn]
-

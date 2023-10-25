@@ -3,20 +3,20 @@ Copyright (c) 2023 María Inés de Frutos-Fernández. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: María Inés de Frutos-Fernández
 -/
-import FromMathlib.PowMultFaithful
-import FromMathlib.SeminormFromConst
-import FromMathlib.SpectralNorm
-import Analysis.NormedSpace.FiniteDimension
-import Topology.Algebra.Module.FiniteDimension
+import LocalClassFieldTheory.FromMathlib.PowMultFaithful
+import LocalClassFieldTheory.FromMathlib.SeminormFromConst
+import LocalClassFieldTheory.FromMathlib.SpectralNorm
+import Mathlib.Analysis.NormedSpace.FiniteDimension
+import Mathlib.Topology.Algebra.Module.FiniteDimension
 
 #align_import from_mathlib.spectral_norm_unique
 
 /-!
 # Unique norm extension theorem
 
-Let `K` be a field complete with respect to a nontrivial nonarchimedean multiplicative norm and 
-`L/K` be an algebraic extension. We show that the spectral norm on `L` is a nonarchimedean 
-multiplicative norm, and any power-multiplicative `K`-algebra norm on `L` coincides with the 
+Let `K` be a field complete with respect to a nontrivial nonarchimedean multiplicative norm and
+`L/K` be an algebraic extension. We show that the spectral norm on `L` is a nonarchimedean
+multiplicative norm, and any power-multiplicative `K`-algebra norm on `L` coincides with the
 spectral norm. More over, if `L/K` is finite, then `L` is a complete space.
 This result is [BGR, Theorem 3.2.4/2].
 
@@ -25,10 +25,10 @@ This result is [BGR, Theorem 3.2.4/2].
 * `spectral_mul_alg_norm` : the spectral norm is a multiplicative `K`-algebra norm on `L`.
 
 ## Main Results
-* `spectral_norm_unique'` : any power-multiplicative `K`-algebra norm on `L` coincides with the 
-  spectral norm. 
+* `spectral_norm_unique'` : any power-multiplicative `K`-algebra norm on `L` coincides with the
+  spectral norm.
 * `spectral_norm_is_mul` : the spectral norm on `L` is multiplicative.
-* `spectral_norm_complete_space` : if `L/K` is finite dimensional, then `L` is a complete space 
+* `spectral_norm_complete_space` : if `L/K` is finite dimensional, then `L` is a complete space
   with respect to topology induced by the spectral norm.
 
 ## References
@@ -67,7 +67,7 @@ variable {K : Type _} [NontriviallyNormedField K] {L : Type _} [Field L] [Algebr
 /- ./././Mathport/Syntax/Translate/Expr.lean:192:11: unsupported (impossible) -/
 /- ./././Mathport/Syntax/Translate/Expr.lean:192:11: unsupported (impossible) -/
 /- ./././Mathport/Syntax/Translate/Expr.lean:192:11: unsupported (impossible) -/
-/-- If `K` is a field complete with respect to a nontrivial nonarchimedean multiplicative norm and 
+/-- If `K` is a field complete with respect to a nontrivial nonarchimedean multiplicative norm and
   `L/K` is an algebraic extension, then any power-multiplicative `K`-algebra norm on `L` coincides
   with the spectral norm. -/
 theorem spectral_norm_unique' [CompleteSpace K] {f : AlgebraNorm K L} (hf_pm : IsPowMul f)
@@ -98,7 +98,7 @@ theorem spectral_norm_unique' [CompleteSpace K] {f : AlgebraNorm K L} (hf_pm : I
       eq_zero_of_map_eq_zero' := fun a ha =>
         by
         simp only [← spectralAlgNorm_def h_alg hna, LinearMap.coe_mk, id.def,
-          map_eq_zero_iff_eq_zero, algebraMap.lift_map_eq_zero_iff] at ha 
+          map_eq_zero_iff_eq_zero, algebraMap.lift_map_eq_zero_iff] at ha
         exact ha }
   letI n1 : NormedRing E := normToNormedRing hs_norm
   letI N1 : NormedSpace K E :=
@@ -117,7 +117,7 @@ theorem spectral_norm_unique' [CompleteSpace K] {f : AlgebraNorm K L} (hf_pm : I
       hMul_le' := fun a b => map_mul_le_mul _ _ _
       eq_zero_of_map_eq_zero' := fun a ha =>
         by
-        simp only [map_eq_zero_iff_eq_zero, map_eq_zero] at ha 
+        simp only [map_eq_zero_iff_eq_zero, map_eq_zero] at ha
         exact ha }
   letI n2 : NormedRing K⟮⟯ := normToNormedRing hf_norm
   letI N2 : NormedSpace K K⟮⟯ :=
@@ -144,7 +144,7 @@ theorem spectral_norm_unique' [CompleteSpace K] {f : AlgebraNorm K L} (hf_pm : I
   · intro y; exact hC2 ⟨y, (IntermediateField.algebra_adjoin_le_adjoin K _) y.2⟩
   · intro y; exact hC1 ⟨y, (IntermediateField.algebra_adjoin_le_adjoin K _) y.2⟩
 
-/-- If `K` is a field complete with respect to a nontrivial nonarchimedean multiplicative norm and 
+/-- If `K` is a field complete with respect to a nontrivial nonarchimedean multiplicative norm and
   `L/K` is an algebraic extension, then any multiplicative ring norm on `L` extending the norm on
   `K` coincides with the spectral norm. -/
 theorem spectralNorm_unique_field_norm_ext [CompleteSpace K] (h_alg : Algebra.IsAlgebraic K L)
@@ -194,7 +194,7 @@ theorem algNormFromConst_def (hna : IsNonarchimedean (norm : K → ℝ))
       seminormFromConst h1 hx (spectralNorm_isPowMul h_alg hna) y :=
   rfl
 
-/-- If `K` is a field complete with respect to a nontrivial nonarchimedean multiplicative norm and 
+/-- If `K` is a field complete with respect to a nontrivial nonarchimedean multiplicative norm and
   `L/K` is an algebraic extension, then the spectral norm on `L` is multiplicative. -/
 theorem spectral_norm_is_hMul [CompleteSpace K] (hna : IsNonarchimedean (norm : K → ℝ)) (x y : L) :
     spectralAlgNorm h_alg hna (x * y) = spectralAlgNorm h_alg hna x * spectralAlgNorm h_alg hna y :=
@@ -244,7 +244,7 @@ def spectralNormToNormedField [CompleteSpace K] (h_alg : Algebra.IsAlgebraic K L
         add_le_of_isNonarchimedean spectralNorm_nonneg (spectralNorm_isNonarchimedean h_alg h) _ _
     eq_of_dist_eq_zero := fun x y hxy =>
       by
-      simp only [← spectral_mul_ring_norm_def h_alg h] at hxy 
+      simp only [← spectral_mul_ring_norm_def h_alg h] at hxy
       rw [← sub_eq_zero]
       exact MulAlgebraNorm.eq_zero_of_map_eq_zero' _ _ hxy
     dist_eq := fun x y => by rfl
@@ -291,4 +291,3 @@ instance (priority := 100) spectral_norm_completeSpace [CompleteSpace K]
     @CompleteSpace L (us h_alg h) :=
   @FiniteDimensional.complete K _ L (spectralNormToNormedAddCommGroup h_alg h)
     (spectralNormToNormedSpace h_alg h) _ h_fin
-

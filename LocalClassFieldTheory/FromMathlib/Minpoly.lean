@@ -3,7 +3,7 @@ Copyright (c) 2023 María Inés de Frutos-Fernández. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: María Inés de Frutos-Fernández
 -/
-import FieldTheory.Normal
+import Mathlib.FieldTheory.Normal
 
 #align_import from_mathlib.minpoly
 
@@ -20,9 +20,9 @@ We prove some auxiliary lemmas about minimal polynomials.
 
 ## Main Results
 
-* `minpoly.eq_of_conj` : For any `σ : L ≃ₐ[K] L` and `x : L`, the minimal polynomials of `x` and 
+* `minpoly.eq_of_conj` : For any `σ : L ≃ₐ[K] L` and `x : L`, the minimal polynomials of `x` and
   `σ x` are equal.
-* `minpoly.conj_of_root` :If `y : L` is a root of `minpoly K x`, then we can find `σ : L ≃ₐ[K] L)` 
+* `minpoly.conj_of_root` :If `y : L` is a root of `minpoly K x`, then we can find `σ : L ≃ₐ[K] L)`
    with `σ x = y`. That is, `x` and `y` are Galois conjugates.
 
 ## Tags
@@ -99,7 +99,7 @@ theorem eq_of_conj (h_alg : Algebra.IsAlgebraic K L) (σ : L ≃ₐ[K] L) (x : L
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:192:11: unsupported (impossible) -/
 /- ./././Mathport/Syntax/Translate/Expr.lean:192:11: unsupported (impossible) -/
-/-- The canonical `alg_equiv` between `K⟮x⟯`and `K⟮y⟯`, sending `x` to `y`, where `x` and `y` have 
+/-- The canonical `alg_equiv` between `K⟮x⟯`and `K⟮y⟯`, sending `x` to `y`, where `x` and `y` have
   the same minimal polynomial over `K`. -/
 def algEquiv (h_alg : Algebra.IsAlgebraic K L) {x y : L} (h_mp : minpoly K x = minpoly K y) :
     K⟮⟯ ≃ₐ[K] K⟮⟯ :=
@@ -152,4 +152,3 @@ theorem conj_of_root' (h_alg : Algebra.IsAlgebraic K L) (hn : Normal K L) {x y :
 end minpoly
 
 end minpoly
-

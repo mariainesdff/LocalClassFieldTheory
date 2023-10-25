@@ -3,7 +3,7 @@ Copyright (c) 2023 María Inés de Frutos-Fernández. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: María Inés de Frutos-Fernández
 -/
-import Topology.Instances.Nnreal
+import Mathlib.Topology.Instances.Nnreal
 
 #align_import from_mathlib.filter
 
@@ -14,7 +14,7 @@ We prove some auxiliary results about limits of `ℝ`-valued and `ℝ≥0`-value
 
 ## Main Results
 
-* `real.tendsto_of_is_bounded_antitone` : an antitone, bounded below sequence `f : ℕ → ℝ` has a 
+* `real.tendsto_of_is_bounded_antitone` : an antitone, bounded below sequence `f : ℕ → ℝ` has a
   finite limit.
 * `nnreal.tendsto_of_is_bounded_antitone` : an antitone sequence `f : ℕ → ℝ≥0` has a finite limit.
 
@@ -67,4 +67,3 @@ theorem NNReal.tendsto_of_is_bounded_antitone {f : ℕ → NNReal} (h_ant : Anti
   use⟨L, hL0⟩
   rw [← NNReal.tendsto_coe]
   exact hL
-

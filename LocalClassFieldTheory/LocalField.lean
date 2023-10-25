@@ -1,12 +1,12 @@
-import DiscreteValuationRing.ResidueField
-import EqCharacteristic.Valuation
-import MixedCharacteristic.Valuation
+import LocalClassFieldTheory.DiscreteValuationRing.ResidueField
+import LocalClassFieldTheory.EqCharacteristic.Valuation
+import LocalClassFieldTheory.MixedCharacteristic.Valuation
 
 #align_import local_field
 
 /-!
 # Local fields
-In this file we define the `class local_field` on a valued field `K`, requiring that it is 
+In this file we define the `class local_field` on a valued field `K`, requiring that it is
 * complete (with respect to the uniform structure induced by the valuation)
 * that its valuation is discrete
 * that the residue field of its unit ball is finite
@@ -80,4 +80,3 @@ noncomputable def localField : LocalField K :=
       apply ring_of_integers.residue_field_fintype_of_completion }
 
 end MixedCharLocalField
-

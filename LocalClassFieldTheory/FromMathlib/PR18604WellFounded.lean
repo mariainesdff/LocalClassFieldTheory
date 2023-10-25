@@ -3,8 +3,8 @@ Copyright (c) 2023 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Order.LocallyFinite
-import Order.WellFoundedSet
+import Mathlib.Order.LocallyFinite
+import Mathlib.Order.WellFoundedSet
 
 #align_import from_mathlib.PR18604_well_founded
 
@@ -45,4 +45,3 @@ theorem BddBelow.wellFoundedOn_lt : BddBelow s → s.WellFoundedOn (· < ·) :=
 
 theorem BddAbove.wellFoundedOn_gt (hs : BddAbove s) : s.WellFoundedOn (· > ·) :=
   hs.dual.wellFoundedOn_lt
-
