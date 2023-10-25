@@ -1,5 +1,5 @@
-import NumberTheory.Padics.PadicIntegers
-import NumberTheory.Padics.RingHoms
+import Mathlib.NumberTheory.Padics.PadicIntegers
+import Mathlib.NumberTheory.Padics.RingHoms
 
 #align_import for_mathlib.number_theory.padics.padic_integers
 
@@ -17,8 +17,7 @@ namespace PadicInt
 noncomputable def residueField : LocalRing.ResidueField ℤ_[p] ≃+* ZMod p :=
   by
   let α := RingHom.quotientKerEquivOfSurjective (ZMod.ringHom_surjective (@PadicInt.toZMod p _))
-  rw [PadicInt.ker_toZMod] at α 
+  rw [PadicInt.ker_toZMod] at α
   use α
 
 end PadicInt
-

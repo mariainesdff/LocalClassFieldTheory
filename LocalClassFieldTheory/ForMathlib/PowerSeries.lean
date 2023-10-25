@@ -1,34 +1,34 @@
-import FieldTheory.Finite.GaloisField
-import RingTheory.PowerSeries.Basic
-import RingTheory.Valuation.ValuationSubring
-import ForMathlib.DiscreteUniformity
-import ForMathlib.Polynomial
-import Algebra.Order.Hom.Monoid
-import RingTheory.LaurentSeries
-import RingTheory.PowerSeries.WellKnown
+import Mathlib.FieldTheory.Finite.GaloisField
+import Mathlib.RingTheory.PowerSeries.Basic
+import Mathlib.RingTheory.Valuation.ValuationSubring
+import LocalClassFieldTheory.ForMathlib.DiscreteUniformity
+import LocalClassFieldTheory.ForMathlib.Polynomial
+import LocalClassFieldTheory.Mathlib.Algebra.Order.Hom.Monoid
+import Mathlib.RingTheory.LaurentSeries
+import Mathlib.RingTheory.PowerSeries.WellKnown
 
 #align_import for_mathlib.power_series
 
 /-!
 # Generalities on power series
-In this file we gather some general results concerning power series. 
+In this file we gather some general results concerning power series.
 
 ## Main Definitions
 * Given a  power series `f`, we define `divided_by_X_pow f` to be the power series obtained by
 dividing `f` bythe largest power of `X` occurring in `f`, namely `f.order` (this is also equal to
-its `X`-adic valuation, up to some type-theoretical difference). 
+its `X`-adic valuation, up to some type-theoretical difference).
 
 ## Main Results
 We obtain instances of Dedekind domain and of normalization monoid on the power series with
-coefficients in a field. 
+coefficients in a field.
 * The definition `residue_field_of_power_series` is the ring isomorphism between the residue field
 of the ring of power series valued in a field `K` and `K` itself.
 
-In the final section, we prove 
+In the final section, we prove
 * `single_pow`
 * `single_inv`
 * `single_zpow`
-relating the powers and the inverse of the Hahn series `single 1 1` with the Hahn series 
+relating the powers and the inverse of the Hahn series `single 1 1` with the Hahn series
 `single n 1` for `n : ℤ`.
 -/
 
@@ -91,7 +91,7 @@ theorem dividedByXPow_hMul {f g : PowerSeries K} (hf : f ≠ 0) (hg : g ≠ 0) :
       _ = X ^ (df + dg) * divided_by_X_pow hf * divided_by_X_pow hg := by rw [pow_add]
       _ = X ^ dfg * divided_by_X_pow hf * divided_by_X_pow hg := by rw [H_add_d]
       _ = X ^ dfg * (divided_by_X_pow hf * divided_by_X_pow hg) := by rw [mul_assoc]
-  simp_rw [← dfg, this] at H 
+  simp_rw [← dfg, this] at H
   convert (IsDomain.hMul_left_cancel_of_ne_zero _ H).symm
   exact pow_ne_zero dfg X_ne_zero
 
@@ -191,7 +191,7 @@ theorem maximalIdeal_eq_span_x :
     · rw [Ideal.mem_span_singleton]
       exact Prime.not_dvd_one PowerSeries.X_prime
     intro I f hI hfX hfI
-    rw [Ideal.mem_span_singleton, PowerSeries.X_dvd_iff] at hfX 
+    rw [Ideal.mem_span_singleton, PowerSeries.X_dvd_iff] at hfX
     have hfI0 : PowerSeries.C K (f 0) ∈ I :=
       by
       have : PowerSeries.C K (f 0) = f - (f - PowerSeries.C K (f 0)) := by rw [sub_sub_cancel]
@@ -296,4 +296,3 @@ theorem single_zpow (n : ℤ) : HahnSeries.single (n : ℤ) (1 : K) = HahnSeries
       algebraMap.coe_one, inv_inj, zpow_ofNat, single_pow, inv_one]
 
 end HahnSeries
-

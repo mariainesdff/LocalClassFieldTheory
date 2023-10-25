@@ -1,12 +1,12 @@
-import FieldTheory.Adjoin
-import RingTheory.Valuation.ValuationSubring
+import Mathlib.FieldTheory.Adjoin
+import Mathlib.RingTheory.Valuation.ValuationSubring
 
 #align_import for_mathlib.ring_theory.valuation.minpoly
 
 /-!
 # Minimal polynomials.
 
-We prove some results about valuations of zero coefficients of minimal polynomials. 
+We prove some results about valuations of zero coefficients of minimal polynomials.
 
 Let `K` be a field with a valuation `v` and let `L` be a field extension of `K`.
 
@@ -14,7 +14,7 @@ Let `K` be a field with a valuation `v` and let `L` be a field extension of `K`.
 * `coeff_zero` : for `x ∈ K` the valuation of the zeroth coefficient of the minimal polynomial
   of `algebra_map K L x` over `K` is equal to the valuation of `x`.
 * `unit_pow_ne_zero` : for any unit `x : Lˣ`, we prove that a certain power of the valuation of
-  zeroth coefficient of the minimal polynomial of `x` over `K` is nonzero. This lemma is helpful 
+  zeroth coefficient of the minimal polynomial of `x` over `K` is nonzero. This lemma is helpful
   for defining the valuation on `L` inducing `v`.
 -/
 
@@ -37,7 +37,7 @@ theorem unit_ne_zero (x : Kˣ) : v x ≠ (0 : Γ₀) := by
   simp only [Ne.def, Valuation.zero_iff, Units.ne_zero x, not_false_iff]
 
 /- For any unit `x : Lˣ`, we prove that a certain power of the valuation of
-  zeroth coefficient of the minimal polynomial of `x` over `K` is nonzero. This lemma is helpful 
+  zeroth coefficient of the minimal polynomial of `x` over `K` is nonzero. This lemma is helpful
   for defining the valuation on `L` inducing `v`.-/
 theorem unit_pow_ne_zero [FiniteDimensional K L] (x : Lˣ) :
     v ((minpoly K x.1).coeff 0) ^ (finrank K L / (minpoly K x.1).natDegree) ≠ (0 : Γ₀) :=
@@ -51,4 +51,3 @@ theorem unit_pow_ne_zero [FiniteDimensional K L] (x : Lˣ) :
   infer_instance
 
 end Valuation
-

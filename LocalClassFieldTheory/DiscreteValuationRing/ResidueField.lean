@@ -1,6 +1,6 @@
-import DiscreteValuationRing.Extensions
-import NumberTheory.RamificationInertia
-import RingTheory.DedekindDomain.IntegralClosure
+import LocalClassFieldTheory.DiscreteValuationRing.Extensions
+import Mathlib.NumberTheory.RamificationInertia
+import Mathlib.RingTheory.DedekindDomain.IntegralClosure
 
 #align_import discrete_valuation_ring.residue_field
 
@@ -124,7 +124,7 @@ theorem ramificationIdx_extended_neZero :
     apply pow_lt_self
     apply extended_max_ideal_ne_zero
     · intro h
-      rw [← is_unit_iff] at h 
+      rw [← is_unit_iff] at h
       exact extended_max_ideal_not_is_unit K L h
     exact le_refl _
 
@@ -283,7 +283,7 @@ noncomputable def quotientLinearIso :
       let scalar_tower_v := (scalar_tower_extended K L).1 a 1 v
       let scalar_tower_fv := (scalar_tower_power_e K L).1 a 1 (f v)
       rw [← Algebra.algebraMap_eq_smul_one a, one_smul, algebra_map_eq_quot_mk] at scalar_tower_v
-        scalar_tower_fv 
+        scalar_tower_fv
       rw [scalar_tower_v, RingHom.id_apply, scalar_tower_fv]
       apply f.map_smul
   have h : Function.Bijective g := by apply f.bijective
@@ -350,7 +350,7 @@ theorem finiteDimensional_residueField_of_integralClosure [IsSeparable K L] :
     FiniteDimensional (ResidueField K₀) (ResidueField (integralClosure K₀ L)) :=
   by
   let alg := algebra_residue_fields K L
-  dsimp only [residue_field] at alg 
+  dsimp only [residue_field] at alg
   letI := alg
   letI h0 := ramification_idx_maximal_ne_zero K L
   have zero_lt :
@@ -385,4 +385,3 @@ noncomputable def finiteResidueFieldOfUnitBall [IsSeparable K L]
           (DiscreteValuation.Extension.integralClosure_eq_integer K L))).toEquiv
 
 end DiscreteValuation
-

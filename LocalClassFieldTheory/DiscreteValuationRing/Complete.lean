@@ -1,5 +1,5 @@
-import DiscreteValuationRing.Basic
-import RingTheory.DedekindDomain.AdicValuation
+import LocalClassFieldTheory.DiscreteValuationRing.Basic
+import Mathlib.RingTheory.DedekindDomain.AdicValuation
 
 #align_import discrete_valuation_ring.complete
 
@@ -7,10 +7,10 @@ open scoped DiscreteValuation
 
 open Multiplicative
 
-/-! 
+/-!
 # Complete DVR's
-Starting with a Dedekind domain `R` with fraction field `K` and a maximal ideal `v`, 
-the adic completion `K_v` of `K` with respect to `v.valuation` has a valuation that extends 
+Starting with a Dedekind domain `R` with fraction field `K` and a maximal ideal `v`,
+the adic completion `K_v` of `K` with respect to `v.valuation` has a valuation that extends
 `v.valuation`. We prove that since `v.valuation` is discrete, so is its extension and therefore, by
 the results in `discrete_valuation_ring.basic`, the unit ball in `K_v` is a discrete valuation ring.
 In particular, `K_v` can be endowed with the adic valuation associated to the unique maximal ideal
@@ -31,16 +31,16 @@ term of the `height_one_spectrum` of `R_v`. The underlying ideal is `height_one_
 * `is_dedekind_domain.height_one_spectrum.completion.is_discrete` is the instance that the extension
 of the adic valuation to the completion is discrete (i.e. surjective onto `ℤₘ₀`). As a consequence,
 the unit ball `R_v` is a discrete valuation ring.
-* `adic_of_compl_eq_compl_of_adic` shows that the two valuations on `K_v`, namely 
+* `adic_of_compl_eq_compl_of_adic` shows that the two valuations on `K_v`, namely
 `v_adic_of_compl` and `compl_of_v_adic`, coincide.
 
 ## Implementation details
-* When viewing `K_v` as the completion of `K`, its `valued` instance comes from the completion of 
+* When viewing `K_v` as the completion of `K`, its `valued` instance comes from the completion of
 the valuation on `K`, and this is of course different from the `valued` instance on the fraction
 field of `R_v`, itself isomorphic (but not **equal**) to `K_v`, that instead comes from the
 `discrete_valuation_ring` instance on `R_v`. In particular, no diamond arises because the types
 `fraction_ring R_v` and `K_v` are different, although equivalent as fields.
-* The terms `max_ideal_of_completion_def` and `max_ideal_of_completion` represent the same 
+* The terms `max_ideal_of_completion_def` and `max_ideal_of_completion` represent the same
 mathematical object but one is an ideal, the other is a term of the height-one spectrum and it is
 the second that has an adic valuation attached to it.
 -/
@@ -113,8 +113,8 @@ theorem adicCompletionIntegers_not_isField :
       rw [max_ideal_of_completion_def, LocalRing.mem_maximalIdeal, mem_nonunits_iff,
         Valuation.integer.not_isUnit_iff_valuation_lt_one, hπ]
       exact WithZero.ofAdd_neg_one_lt_one
-    rw [h, Ideal.mem_bot] at h1 
-    simp only [h1, algebraMap.coe_zero, Valuation.map_zero, WithZero.zero_ne_coe] at hπ 
+    rw [h, Ideal.mem_bot] at h1
+    simp only [h1, algebraMap.coe_zero, Valuation.map_zero, WithZero.zero_ne_coe] at hπ
     exact hπ
   ·
     simp only [lt_top_iff_ne_top, Ne.def, Ideal.eq_top_iff_one, max_ideal_of_completion_def,
@@ -152,7 +152,7 @@ theorem int_adic_of_compl_eq_int_compl_of_adic (a : R_v) :
         have := (mem_integer v_compl_of_adic ↑a).mp a.2
         obtain ⟨α, hα⟩ := with_zero.ne_zero_iff_exists.mp ha
         rw [← hα, ← WithZero.coe_one, ← ofAdd_zero, WithZero.coe_le_coe, ← ofAdd_toAdd α,
-          Multiplicative.ofAdd_le] at this 
+          Multiplicative.ofAdd_le] at this
         obtain ⟨n, hn⟩ := Int.exists_eq_neg_ofNat this
         use n
         rw [← hα, WithZero.coe_inj, ← ofAdd_toAdd α, hn]
@@ -165,14 +165,14 @@ theorem int_adic_of_compl_eq_int_compl_of_adic (a : R_v) :
         have : (max_ideal_of_completion R v K).Valuation (↑a : K_v) ≤ 1 := valuation_le_one _ _
         obtain ⟨α, hα⟩ := with_zero.ne_zero_iff_exists.mp ha
         rw [← hα, ← WithZero.coe_one, ← ofAdd_zero, WithZero.coe_le_coe, ← ofAdd_toAdd α,
-          Multiplicative.ofAdd_le] at this 
+          Multiplicative.ofAdd_le] at this
         obtain ⟨m, hm⟩ := Int.exists_eq_neg_ofNat this
         use m
         rw [← hα, WithZero.coe_inj, ← ofAdd_toAdd α, hm]
-      erw [valuation_of_algebra_map, int_valuation_apply] at hm 
+      erw [valuation_of_algebra_map, int_valuation_apply] at hm
       rw [hm]
       replace hm := le_of_eq hm
-      rw [int_valuation_le_pow_iff_dvd] at hm 
+      rw [int_valuation_le_pow_iff_dvd] at hm
       rw [DiscreteValuation.val_le_iff_dvd K_v _ m]
       apply hm
       infer_instance
@@ -190,9 +190,8 @@ theorem adic_of_compl_eq_compl_of_adic (x : K_v) : v_adic_of_compl x = v_compl_o
     apply congr_arg
     simp only [IsFractionRing.mk'_eq_div, ValuationSubring.algebraMap_apply, _root_.coe_coe,
       div_eq_mul_inv]
-  rw [H] at h1 h2 
+  rw [H] at h1 h2
   rw [h1, h2]
   congr <;> apply int_adic_of_compl_eq_int_compl_of_adic
 
 end IsDedekindDomain.HeightOneSpectrum.Completion
-

@@ -1,33 +1,33 @@
-import DiscreteValuationRing.Basic
-import ForMathlib.FieldTheory.Minpoly.IsIntegrallyClosed
-import SpectralNorm
+import LocalClassFieldTheory.DiscreteValuationRing.Basic
+import LocalClassFieldTheory.ForMathlib.FieldTheory.Minpoly.IsIntegrallyClosed
+import LocalClassFieldTheory.SpectralNorm
 
 #align_import discrete_valuation_ring.discrete_norm
 
 /-!
 # Extensions of discrete norms
 
-Let `K` be a field complete with respect to a discrete valuation, and let `L/K` be an algebraic 
+Let `K` be a field complete with respect to a discrete valuation, and let `L/K` be an algebraic
 field extension. We endow `K` with the `norm` induced by its discrete valuation and construct
-the unique norm on `L` extending the norm on `K`. 
+the unique norm on `L` extending the norm on `K`.
 
 ##  Main Definitions
-* `discretely_normed_field` : the normed field structure on `K` induced by its discrete valuation. 
-* `nontrivially_discretely_normed_field` : the nontrivially normed field structure on `K` induced 
+* `discretely_normed_field` : the normed field structure on `K` induced by its discrete valuation.
+* `nontrivially_discretely_normed_field` : the nontrivially normed field structure on `K` induced
   by its discrete valuation.
 * `discrete_norm_extension` : the unique norm on `L` extending the norm on `K`.
 
 ##  Main Theorems
-* `eq_root_zero_coeff` : for any `x : L`, `discrete_norm_extension h_alg x` is equal to the norm of 
+* `eq_root_zero_coeff` : for any `x : L`, `discrete_norm_extension h_alg x` is equal to the norm of
   the zeroth coefficient of the minimal polynomial of `x` over `K`, raised to the
   `(1/(minpoly K x).nat_degree` power.
 
 ## Implementation Remarks
 
 Note that in Lean 3 it is not possible to turn `discretely_normed_field K` into a global instance,
-since this together with `valued K ℤₘ₀` leads to an infinite type class inference loop. This 
+since this together with `valued K ℤₘ₀` leads to an infinite type class inference loop. This
 will not be the case in Lean 4 (the Lean 4 type class algorithm can detect and get out of simple
-loops like this one), so we will turn it into an instance when we port the project to Lean 4. 
+loops like this one), so we will turn it into an instance when we port the project to Lean 4.
 In the meantime, we create definitions for all of the needed structures on `K` (like `has_norm K`,
 `semi_normed_comm_ring K`, etc) which can be derived from `discretely_normed_field K`.
 -/
@@ -229,4 +229,3 @@ end DiscreteNormExtension
 end DiscreteNorm
 
 end DiscreteValuation
-

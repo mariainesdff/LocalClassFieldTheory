@@ -1,12 +1,12 @@
-import Order.Filter.Basic
-import Topology.UniformSpace.Cauchy
+import Mathlib.Order.Filter.Basic
+import Mathlib.Topology.UniformSpace.Cauchy
 
 #align_import for_mathlib.discrete_uniformity
 
 /-!
 # Discrete uniformity
 This file contains generalities about Cauchy filters (and convergence theoref) in spaces endowed
-with the discrete uniformity. 
+with the discrete uniformity.
 
 # Main Results
 
@@ -26,17 +26,17 @@ theorem prod_subset_diag_singleton_left {X : Type _} {S T : Set X} (hS : S.Nonem
   rcases hS, hT with ⟨⟨s, hs⟩, ⟨t, ht⟩⟩
   refine' ⟨s, eq_singleton_iff_nonempty_unique_mem.mpr ⟨⟨s, hs⟩, _⟩⟩
   intro x hx
-  rw [prod_subset_iff] at h_diag 
+  rw [prod_subset_iff] at h_diag
   replace hs := h_diag s hs t ht
   replace hx := h_diag x hx t ht
-  simp only [idRel, mem_set_of_eq] at hx hs 
-  rwa [← hs] at hx 
+  simp only [idRel, mem_set_of_eq] at hx hs
+  rwa [← hs] at hx
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 theorem prod_subset_diag_singleton_right {X : Type _} {S T : Set X} (hS : S.Nonempty)
     (hT : T.Nonempty) (h_diag : S ×ˢ T ⊆ idRel) : ∃ x, T = {x} :=
   by
-  rw [Set.prod_subset_iff] at h_diag 
+  rw [Set.prod_subset_iff] at h_diag
   replace h_diag := fun x hx y hy => (h_diag y hy x hx).symm
   exact prod_subset_diag_singleton_left hT hS (prod_subset_iff.mpr h_diag)
 
@@ -64,10 +64,10 @@ theorem cauchy_discrete_le_principal {X : Type _} {uX : UniformSpace X}
     (hX : uniformity X = 𝓟 idRel) {α : Filter X} (hα : Cauchy α) : ∃ x : X, α ≤ 𝓟 {x} :=
   by
   rcases hα with ⟨α_ne_bot, α_le⟩
-  rw [Filter.le_def] at α_le 
+  rw [Filter.le_def] at α_le
   specialize α_le idRel
   simp only [Filter.le_def, hX, mem_principal, idRel_subset, mem_idRel, eq_self_iff_true,
-    imp_true_iff, forall_true_left, Filter.mem_prod_iff] at α_le 
+    imp_true_iff, forall_true_left, Filter.mem_prod_iff] at α_le
   obtain ⟨_, ⟨hS, ⟨_, ⟨hT, H⟩⟩⟩⟩ := α_le
   obtain ⟨x, hx⟩ :=
     prod_subset_diag_singleton_left (@Filter.nonempty_of_mem X α α_ne_bot _ hS)
@@ -98,4 +98,3 @@ theorem neBot_unique_principal {X : Type _} [UniformSpace X] (hX : uniformity X 
   exact ⟨le_principal_iff.mp hx, le_principal_iff.mp hy⟩
 
 end CauchyDiscrete
-

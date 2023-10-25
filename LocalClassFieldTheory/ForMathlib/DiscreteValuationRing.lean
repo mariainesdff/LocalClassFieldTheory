@@ -1,4 +1,4 @@
-import RingTheory.DiscreteValuationRing.Basic
+import Mathlib.RingTheory.DiscreteValuationRing.Basic
 
 #align_import for_mathlib.discrete_valuation_ring
 
@@ -26,4 +26,3 @@ theorem RingEquiv.discreteValuationRing {A B : Type _} [CommRing A] [IsDomain A]
         exact a.2
       · rw [map_ne_zero_iff _ e.injective]
         simp only [Ne.def, Submodule.coe_eq_zero]; exact ha }
-

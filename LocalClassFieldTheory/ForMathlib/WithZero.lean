@@ -1,7 +1,7 @@
-import Algebra.Group.WithOne.Units
-import Data.Real.Nnreal
-import Logic.Equiv.TransferInstance
-import RingTheory.Valuation.Basic
+import Mathlib.Algebra.Group.WithOne.Units
+import Mathlib.Data.Real.Nnreal
+import Mathlib.Logic.Equiv.TransferInstance
+import Mathlib.RingTheory.Valuation.Basic
 
 #align_import for_mathlib.with_zero
 
@@ -13,8 +13,8 @@ the morphism `with_zero_mult_int_to_nnreal`.
 
 ## Main Definitions
 
-* `with_zero_mult_int_to_nnreal` : The `monoid_with_zero_hom` from `ℤₘ₀ → ℝ≥0` sending `0 ↦ 0` and 
-  `x ↦ e^(multiplicative.to_add (with_zero.unzero hx)` when `x ≠ 0`, for a nonzero `e : ℝ≥0`. 
+* `with_zero_mult_int_to_nnreal` : The `monoid_with_zero_hom` from `ℤₘ₀ → ℝ≥0` sending `0 ↦ 0` and
+  `x ↦ e^(multiplicative.to_add (with_zero.unzero hx)` when `x ≠ 0`, for a nonzero `e : ℝ≥0`.
 
 ## Main Results
 
@@ -89,7 +89,7 @@ open scoped DiscreteValuation
 
 theorem strictMonoOn_zpow {n : ℤ} (hn : 0 < n) : StrictMonoOn (fun x : ℤₘ₀ => x ^ n) (Set.Ioi 0) :=
   fun a ha b hb hab => by
-  simp only [Set.mem_Ioi] at ha hb 
+  simp only [Set.mem_Ioi] at ha hb
   have ha0 : a ≠ 0 := ne_of_gt ha
   have han : a ^ n ≠ 0 := by
     rw [WithZero.ne_zero_iff_exists] at ha0 ⊢
@@ -129,15 +129,15 @@ theorem lt_succ_iff_le (x : ℤₘ₀) (m : ℤ) : x < (ofAdd (m + 1) : ℤₘ�
 
 end WithZero
 
-/-- Given `e : ℝ≥0`, we define a map `ℤₘ₀ → ℝ≥0` sending `0 ↦ 0` and 
-  `x ↦ e^(multiplicative.to_add (with_zero.unzero hx)` when `x ≠ 0`. 
+/-- Given `e : ℝ≥0`, we define a map `ℤₘ₀ → ℝ≥0` sending `0 ↦ 0` and
+  `x ↦ e^(multiplicative.to_add (with_zero.unzero hx)` when `x ≠ 0`.
   We regard this map as an inclusion of `ℤₘ₀` in `ℝ≥0`. -/
 def withZeroMultIntToNnrealDef (e : NNReal) : ℤₘ₀ → ℝ≥0 := fun x =>
   if hx : x = 0 then 0 else e ^ Multiplicative.toAdd (WithZero.unzero hx)
 
 open WithZero
 
-/-- Given a nonzero `e : ℝ≥0`, this is the map `ℤₘ₀ → ℝ≥0` sending `0 ↦ 0` and 
+/-- Given a nonzero `e : ℝ≥0`, this is the map `ℤₘ₀ → ℝ≥0` sending `0 ↦ 0` and
   `x ↦ e^(multiplicative.to_add (with_zero.unzero hx)` when `x ≠ 0` as a `monoid_with_zero_hom`. -/
 def withZeroMultIntToNnreal {e : NNReal} (he : e ≠ 0) : ℤₘ₀ →*₀ ℝ≥0
     where
@@ -186,4 +186,3 @@ theorem withZeroMultIntToNnreal_strictMono {e : NNReal} (he : 1 < e) :
   · rw [zpow_lt_iff_lt he, Multiplicative.toAdd_lt, ← WithZero.coe_lt_coe, WithZero.coe_unzero hx,
       WithZero.coe_unzero hy]
     exact hxy
-

@@ -1,5 +1,5 @@
-import DiscreteValuationRing.TrivialExtension
-import MixedCharacteristic.Basic
+import LocalClassFieldTheory.DiscreteValuationRing.TrivialExtension
+import LocalClassFieldTheory.MixedCharacteristic.Basic
 
 #align_import mixed_characteristic.valuation
 
@@ -14,20 +14,20 @@ In this file we define the canonical valuation on a mixed characteristic local f
   field, induced by the extension of the `p`-adic valuation.
 
 ##  Main Theorems
-* `mixed_char_local_field.complete_space` : a mixed characteristic local field is a complete space. 
+* `mixed_char_local_field.complete_space` : a mixed characteristic local field is a complete space.
 
-* `mixed_char_local_field.valuation.is_discrete` : the canonical valuation in a mixed characteristic 
+* `mixed_char_local_field.valuation.is_discrete` : the canonical valuation in a mixed characteristic
   local field is discrete.
 
-* `mixed_char_local_field.ring_of_integers.discrete_valuation_ring` : the ring of integers of a 
-  mixed characteristic local field is a discrete valuation ring. 
+* `mixed_char_local_field.ring_of_integers.discrete_valuation_ring` : the ring of integers of a
+  mixed characteristic local field is a discrete valuation ring.
 
 ## Implementation details
 Note that when `K = Q_p p`, there are two valued instances on it : the one coming from the fact that
 `Q_p p` is defined as the `adic_completion` of `ℚ` with respect to the ideal `(p)`, and the one
 obtained by extending this valuation on `Q_p p` to its trivial field extension `Q_p p`.
 These instances are mathematically equivalent, but not definitionally equal. However, the lemma
-`discrete_valuation.extension.trivial_extension_eq_valuation` from the file 
+`discrete_valuation.extension.trivial_extension_eq_valuation` from the file
 `discrete_valuation_ring.trivial_extension` allow us to easily translate between the two instances
 on `Q_p p`, whenever the diamond comes up.
 
@@ -56,7 +56,7 @@ namespace MixedCharLocalField
 
 variable (K : Type _) [Field K] [MixedCharLocalField p K]
 
-/-- The valued instance in a mixed characteristic local field, induced by the extension of the 
+/-- The valued instance in a mixed characteristic local field, induced by the extension of the
   `p`-adic valuation. -/
 instance (priority := 100) : Valued K ℤₘ₀ :=
   Extension.valued (QP p) K
@@ -78,7 +78,7 @@ variable {p}
 theorem valuation_p_ne_zero : Valued.v (p : K) ≠ (0 : ℤₘ₀) := by
   simp only [Ne.def, Valuation.zero_iff, Nat.cast_eq_zero, hp.1.NeZero, not_false_iff]
 
-/-- The ramification index of a mixed characteristic local field `K` is given by the 
+/-- The ramification index of a mixed characteristic local field `K` is given by the
   additive valuation of the element `(p : K)`. -/
 def ramificationIndex (K : Type _) [Field K] [MixedCharLocalField p K] : ℤ :=
   -(WithZero.unzero (valuation_p_ne_zero K)).toAdd
@@ -127,4 +127,3 @@ theorem PadicInt.equivValuationSubring_comm :
   rfl
 
 end MixedCharLocalField
-

@@ -1,16 +1,16 @@
-import DiscreteValuationRing.Extensions
+import LocalClassFieldTheory.DiscreteValuationRing.Extensions
 
 #align_import discrete_valuation_ring.trivial_extension
 
 /-!
 # Trivial extensions of discrete valuations
 
-When `K` is a complete, discretely valued field, the trivial extension of the valuation 
+When `K` is a complete, discretely valued field, the trivial extension of the valuation
 `extended_valuation K K` is mathematically, but not definitionally, equal to the valuation on `K`.
 In this file, we provide some rewrite lemmas for dealing with this trivial extension.
 
 ##  Main Theorems
-* `discrete_valuation.extension.trivial_extension_eq_valuation` : the extension of the valuation on 
+* `discrete_valuation.extension.trivial_extension_eq_valuation` : the extension of the valuation on
   `K` to itself is equal to the original valuation.
 -/
 
@@ -72,4 +72,3 @@ theorem trivial_extension_eq_valuation : extendedValuation K K = hv.V :=
         Nat.lt_one_iff, pow_one]
 
 end DiscreteValuation.Extension
-

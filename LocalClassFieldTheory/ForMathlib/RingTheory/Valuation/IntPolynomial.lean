@@ -1,18 +1,18 @@
-import ForMathlib.RingTheory.Valuation.AlgebraInstances
+import LocalClassFieldTheory.ForMathlib.RingTheory.Valuation.AlgebraInstances
 
 #align_import for_mathlib.ring_theory.valuation.int_polynomial
 
 /-!
 # Polynomials over the valuation subring.
 
-Given a field `K` with a valuation `v`, in this file we construct a map from polynomials in `K[X]` 
+Given a field `K` with a valuation `v`, in this file we construct a map from polynomials in `K[X]`
 with integer coefficients to `v.valuation_subring[X]`. We provide several lemmas to deal with
 coefficients, degree, and evaluation of `int_polynomial`.
 This is useful when dealing with integral elements in an extension of fields.
 
 # Main Definitions
 * `valuation.int_polynomial` : given a polynomial in `K[X]` with coefficients in a field `K` with a
-  valuation `v` such that all coefficients belong to `v.valuation_subring`, `int_polynomial` is the 
+  valuation `v` such that all coefficients belong to `v.valuation_subring`, `int_polynomial` is the
   corresponding polynomial in `v.valuation_subring[X]`.
 -/
 
@@ -27,7 +27,7 @@ open Polynomial
 
 open scoped Polynomial
 
-/-- Given a polynomial in `K[X]` such that all coefficients belong to `v.valuation_subring`, 
+/-- Given a polynomial in `K[X]` such that all coefficients belong to `v.valuation_subring`,
   `int_polynomial` is the corresponding polynomial in `v.valuation_subring[X]`. -/
 def intPolynomial {P : K[X]} (hP : ∀ n : ℕ, P.coeff n ∈ v.ValuationSubring) : v.ValuationSubring[X]
     where toFinsupp :=
@@ -68,4 +68,3 @@ theorem eval₂_eq {P : K[X]} (hP : ∀ n : ℕ, P.coeff n ∈ v.ValuationSubrin
 end IntPolynomial
 
 end Valuation
-

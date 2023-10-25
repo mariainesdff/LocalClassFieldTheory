@@ -1,8 +1,8 @@
-import RingTheory.Valuation.Integers
+import Mathlib.RingTheory.Valuation.Integers
 
 #align_import for_mathlib.ring_theory.valuation.integers
 
-/-! 
+/-!
 # Valutation of units
 
 The main result of this file, `valuation_one_of_is_unit` is a generalization of
@@ -27,4 +27,3 @@ theorem valuation_one_of_isUnit {x : O} (hx : IsUnit x) (hv : ∀ x, v (algebraM
     exact mul_le_mul_left' (hv (u⁻¹ : Units O)) _
 
 end Valuation
-

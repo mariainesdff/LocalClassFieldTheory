@@ -1,4 +1,4 @@
-import RingTheory.DedekindDomain.Ideal
+import Mathlib.RingTheory.DedekindDomain.Ideal
 
 #align_import for_mathlib.ring_theory.dedekind_domain.ideal
 
@@ -61,4 +61,3 @@ theorem count_normalizedFactors_eq_associates_count (R : Type _) [CommRing R] [I
     linarith
 
 end NormalizationMonoid
-

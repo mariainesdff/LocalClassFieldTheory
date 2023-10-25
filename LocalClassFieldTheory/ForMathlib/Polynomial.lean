@@ -1,5 +1,5 @@
-import FieldTheory.Ratfunc
-import RingTheory.DedekindDomain.AdicValuation
+import Mathlib.FieldTheory.Ratfunc
+import Mathlib.RingTheory.DedekindDomain.AdicValuation
 
 #align_import for_mathlib.polynomial
 
@@ -86,4 +86,3 @@ theorem WithZero.valued_def {x : RatFunc K} :
   rfl
 
 end RatFunc
-

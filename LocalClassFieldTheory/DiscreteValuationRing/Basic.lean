@@ -1,13 +1,13 @@
-import RingTheory.DedekindDomain.AdicValuation
-import RingTheory.DedekindDomain.Pid
-import RingTheory.DiscreteValuationRing.Basic
-import RingTheory.Ideal.Basic
-import RingTheory.Valuation.ValuationSubring
-import Topology.Algebra.ValuedField
-import Topology.Algebra.WithZeroTopology
-import ForMathlib.RankOneValuation
-import ForMathlib.WithZero
-import ForMathlib.RingTheory.Valuation.Integers
+import Mathlib.RingTheory.DedekindDomain.AdicValuation
+import Mathlib.RingTheory.DedekindDomain.PID
+import Mathlib.RingTheory.DiscreteValuationRing.Basic
+import Mathlib.RingTheory.Ideal.Basic
+import Mathlib.RingTheory.Valuation.ValuationSubring
+import Mathlib.Topology.Algebra.ValuedField
+import Mathlib.Topology.Algebra.WithZeroTopology
+import LocalClassFieldTheory.ForMathlib.RankOneValuation
+import LocalClassFieldTheory.ForMathlib.WithZero
+import LocalClassFieldTheory.ForMathlib.RingTheory.Valuation.Integers
 
 #align_import discrete_valuation_ring.basic
 
@@ -42,7 +42,7 @@ structure on the unit ball of a `valued` field whose valuation is discrete.
 * `is_uniformizer_of_generator` A uniformizer generates the maximal ideal.
 * `discrete_valuation.is_discrete` Given a DVR, the valuation induced on its ring of fractions is
   discrete.
-* `discrete_valuation.dvr_equiv_unit_ball` The ring isomorphism between a DVR and the unit ball in 
+* `discrete_valuation.dvr_equiv_unit_ball` The ring isomorphism between a DVR and the unit ball in
   its field of fractions endowed with the adic valuation of the maximal ideal.
 
 ## Implementation details
@@ -75,10 +75,10 @@ theorem add_eq_max_of_ne {Γ₀ : Type _} [LinearOrderedCommGroupWithZero Γ₀]
     have hnge : v b ≤ v (a + b) := by
       apply le_of_not_gt
       intro hgt
-      rw [max_eq_right_of_lt hgt] at this 
+      rw [max_eq_right_of_lt hgt] at this
       apply not_lt_of_ge this
       assumption
-    have : v a ≤ v (a + b) := by rwa [max_eq_left hnge] at this 
+    have : v a ≤ v (a + b) := by rwa [max_eq_left hnge] at this
     apply le_antisymm
     · exact Valuation.map_add _ _ _
     · rw [max_eq_left_of_lt hlt]
@@ -102,7 +102,7 @@ theorem isUnit_iff_valuation_eq_one {K : Type _} [Field K] {Γ₀ : Type _}
       _⟩
   have hx0 : (x : K) ≠ 0 := by
     by_contra h0
-    rw [h0, map_zero] at hx 
+    rw [h0, map_zero] at hx
     exact zero_ne_one hx
   have hx' : v (x : K)⁻¹ = (1 : Γ₀) := by rw [map_inv₀, inv_eq_one]; exact hx
   rw [isUnit_iff_exists_inv]
@@ -172,7 +172,7 @@ theorem isDiscreteOfExistsUniformizer {K : Type _} [Field K] (v : Valuation K �
   intro x
   apply WithZero.cases_on x
   · exact ⟨0, Valuation.map_zero v⟩
-  · rw [is_uniformizer] at hπ 
+  · rw [is_uniformizer] at hπ
     intro m
     use π ^ (-Multiplicative.toAdd m)
     rw [map_zpow₀, hπ, ← coe_zpow, coe_inj, ← ofAdd_zsmul, ← zsmul_neg', neg_neg, zsmul_one,
@@ -181,7 +181,7 @@ theorem isDiscreteOfExistsUniformizer {K : Type _} [Field K] (v : Valuation K �
 theorem uniformizer_ne_zero {π : R} (hπ : IsUniformizer vR π) : π ≠ 0 :=
   by
   intro h0
-  rw [h0, is_uniformizer, Valuation.map_zero] at hπ 
+  rw [h0, is_uniformizer, Valuation.map_zero] at hπ
   exact WithZero.zero_ne_coe hπ
 
 theorem uniformizer_ne_zero' (π : Uniformizer vR) : π.1.1 ≠ 0 :=
@@ -196,7 +196,7 @@ theorem uniformizer_not_isUnit {π : vR.integer} (hπ : IsUniformizer vR π) : �
   have h1 :=
     @Valuation.Integers.one_of_isUnit R ℤₘ₀ _ _ vR vR.integer _ _ (Valuation.integer.integers vR) π
       h
-  erw [is_uniformizer, h1] at hπ 
+  erw [is_uniformizer, h1] at hπ
   exact ne_of_gt of_add_neg_one_lt_one hπ
 
 theorem uniformizer_valuation_lt_one {π : R} (hπ : IsUniformizer vR π) : vR π < 1 := by
@@ -230,7 +230,7 @@ open Valuation Ideal Multiplicative WithZero LocalRing
 -- is_dedekind_domain
 variable {K : Type _} [Field K] (v : Valuation K ℤₘ₀)
 
-/- When the valuation is defined on a field instead that simply on a (commutative) ring, we use the 
+/- When the valuation is defined on a field instead that simply on a (commutative) ring, we use the
 notion of `valuation_subring` instead of the weaker one of `integer`s to access the corresponding
 API. -/
 local notation "K₀" => v.ValuationSubring
@@ -294,7 +294,7 @@ theorem uniformizer_is_generator (π : Uniformizer v) :
   by
   apply (maximal_ideal.is_maximal _).eq_of_le
   · intro h
-    rw [Ideal.span_singleton_eq_top] at h 
+    rw [Ideal.span_singleton_eq_top] at h
     apply uniformizer_not_is_unit v π.2 h
   · intro x hx
     by_cases hx₀ : x = 0
@@ -333,9 +333,9 @@ theorem not_isField : ¬IsField K₀ :=
   obtain ⟨π, hπ⟩ := exists_uniformizer_of_discrete v
   rintro ⟨-, -, h⟩
   have := uniformizer_ne_zero v hπ
-  simp only [uniformizer_ne_zero v hπ, Ne.def, Subring.coe_eq_zero_iff] at this 
+  simp only [uniformizer_ne_zero v hπ, Ne.def, Subring.coe_eq_zero_iff] at this
   specialize h this
-  rw [← isUnit_iff_exists_inv] at h 
+  rw [← isUnit_iff_exists_inv] at h
   exact uniformizer_not_is_unit v hπ h
 
 theorem isUniformizerOfGenerator {r : K₀} (hr : maximalIdeal v.ValuationSubring = Ideal.span {r}) :
@@ -343,13 +343,13 @@ theorem isUniformizerOfGenerator {r : K₀} (hr : maximalIdeal v.ValuationSubrin
   by
   have hr₀ : r ≠ 0 := by
     intro h
-    rw [h, Set.singleton_zero, span_zero] at hr 
+    rw [h, Set.singleton_zero, span_zero] at hr
     exact
       Ring.ne_bot_of_isMaximal_of_not_isField (maximal_ideal.is_maximal v.valuation_subring)
         (not_is_field v) hr
   obtain ⟨π, hπ⟩ := exists_uniformizer_of_discrete v
   obtain ⟨n, u, hu⟩ := pow_uniformizer v hr₀ ⟨π, hπ⟩
-  rw [uniformizer_is_generator v ⟨π, hπ⟩, span_singleton_eq_span_singleton] at hr 
+  rw [uniformizer_is_generator v ⟨π, hπ⟩, span_singleton_eq_span_singleton] at hr
   exact uniformizer_of_associated v hπ hr
 
 theorem val_le_iff_dvd (L : Type _) [Field L] {w : Valuation L ℤₘ₀} [IsDiscrete w]
@@ -411,11 +411,11 @@ theorem ideal_isPrincipal (I : Ideal K₀) : I.IsPrincipal :=
     obtain ⟨x, ⟨hx_mem, hx₀⟩⟩ := Submodule.exists_mem_ne_zero_of_ne_bot h_ne_bot
     obtain ⟨n, ⟨u, hu⟩⟩ := pow_uniformizer v hx₀ π
     by_cases hn : n = 0
-    · rw [hu, hn, pow_zero, one_mul] at hx_mem 
+    · rw [hu, hn, pow_zero, one_mul] at hx_mem
       exact (hP.ne_top (Ideal.eq_top_of_isUnit_mem P hx_mem u.is_unit)).elim
     · rw [hu, Ideal.mul_unit_mem_iff_mem P u.is_unit,
         is_prime.pow_mem_iff_mem hP _ (pos_iff_ne_zero.mpr hn), ← Ideal.span_singleton_le_iff_mem, ←
-        uniformizer_is_generator v π] at hx_mem 
+        uniformizer_is_generator v π] at hx_mem
       rw [← Ideal.IsMaximal.eq_of_le (LocalRing.maximalIdeal.isMaximal K₀) hP.ne_top hx_mem]
       use⟨π.1, uniformizer_is_generator v π⟩
 
@@ -459,7 +459,7 @@ theorem exists_of_le_one {x : FractionRing A} (H : Valued.v x ≤ (1 : ℤₘ₀
   · rw [← h_frac]
     use 0
     rw [ha, _root_.map_zero, zero_div]
-  · rw [← h_frac] at H 
+  · rw [← h_frac] at H
     obtain ⟨n, u, rfl⟩ := eq_unit_mul_pow_irreducible ha hπ
     obtain ⟨m, v, rfl⟩ := eq_unit_mul_pow_irreducible (nonZeroDivisors.ne_zero hb) hπ
     replace hb := (mul_mem_non_zero_divisors.mp hb).2
@@ -468,20 +468,20 @@ theorem exists_of_le_one {x : FractionRing A} (H : Valued.v x ≤ (1 : ℤₘ₀
       Valuation.map_mul, map_inv₀, valuation_one_of_is_unit v.is_unit, inv_one, mul_one, ←
       div_eq_mul_inv, ← @IsFractionRing.mk'_mk_eq_div _ _ _ (FractionRing A) _ _ _ (π ^ n) _ hb,
       @valuation_of_mk' A _ _ _ (FractionRing A) _ _ _ (maximal_ideal A) (π ^ n) ⟨π ^ m, hb⟩,
-      SetLike.coe_mk, Valuation.map_pow, Valuation.map_pow] at H 
+      SetLike.coe_mk, Valuation.map_pow, Valuation.map_pow] at H
     have h_mn : m ≤ n :=
       by
       have π_lt_one :=
         (int_valuation_lt_one_iff_dvd (maximal_ideal A) π).mpr
           (dvd_of_eq ((irreducible_iff_uniformizer _).mp hπ))
-      rw [← int_valuation_apply] at π_lt_one 
+      rw [← int_valuation_apply] at π_lt_one
       have : (maximal_ideal A).intValuation π ≠ 0 := int_valuation_ne_zero _ _ hπ.ne_zero
       zify
       rw [← sub_nonneg]
-      rw [← coe_unzero this, ← WithZero.coe_one] at H π_lt_one 
+      rw [← coe_unzero this, ← WithZero.coe_one] at H π_lt_one
       rw [div_eq_mul_inv, ← WithZero.coe_pow, ← WithZero.coe_pow, ← WithZero.coe_inv, ← zpow_ofNat,
         ← zpow_ofNat, ← WithZero.coe_mul, WithZero.coe_le_coe, ← zpow_sub, ← ofAdd_zero, ←
-        ofAdd_toAdd (unzero _ ^ (↑n - ↑m)), of_add_le, Int.toAdd_zpow] at H 
+        ofAdd_toAdd (unzero _ ^ (↑n - ↑m)), of_add_le, Int.toAdd_zpow] at H
       apply nonneg_of_mul_nonpos_right H
       rwa [← toAdd_one, to_add_lt, ← WithZero.coe_lt_coe]
     use u * π ^ (n - m) * v.2
@@ -507,7 +507,7 @@ theorem alg_map_eq_integers :
     rw [Subring.mem_map]
     exact ⟨y, mem_top _, rfl⟩
 
-/-- The ring isomorphism between a DVR and the unit ball in 
+/-- The ring isomorphism between a DVR and the unit ball in
   its field of fractions endowed with the adic valuation of the maximal ideal.-/
 noncomputable def dvrEquivUnitBall :
     A ≃+* (@Valued.v (FractionRing A) _ ℤₘ₀ _ _).ValuationSubring :=
@@ -535,4 +535,3 @@ instance [hv : Valued K ℤₘ₀] [IsDiscrete hv.V] : Nonempty (Uniformizer K) 
   ⟨⟨(exists_uniformizer_of_discrete hv.V).some, (exists_uniformizer_of_discrete hv.V).choose_spec⟩⟩
 
 end DiscretelyValued
-

@@ -1,5 +1,5 @@
-import Algebra.Order.Group.TypeTags
-import RingTheory.Valuation.ValuationSubring
+import Mathlib.Algebra.Order.Group.TypeTags
+import Mathlib.RingTheory.Valuation.ValuationSubring
 
 #align_import for_mathlib.ring_theory.valuation.algebra_instances
 
@@ -10,7 +10,7 @@ This file contains several `algebra` and `is_scalar_tower` instances related to 
 of a field with a valuation, as well as their unit balls.
 
 # Main Definitions
-* `valuation_subring_algebra` : Given an algebra between two field extensions `L` and `E` of a 
+* `valuation_subring_algebra` : Given an algebra between two field extensions `L` and `E` of a
   field `K` with a valuation, create an algebra between their two rings of integers.
 
 # Main Results
@@ -58,9 +58,9 @@ instance int_isScalarTower : IsScalarTower v.ValuationSubring L E
     rw [← one_smul K (y • z), ← smul_assoc, ← smul_assoc, ← smul_assoc]
 
 /-- Given an algebra between two field extensions `L` and `E` of a field `K` with a valuation `v`,
-  create an algebra between their two rings of integers. For now, this is not an instance by 
-  default as it creates an equal-but-not-defeq diamond with `algebra.id` when `L = E`. 
-  This is caused by `x = ⟨x, x.prop⟩` not being defeq on subtypes. It will be an instance when 
+  create an algebra between their two rings of integers. For now, this is not an instance by
+  default as it creates an equal-but-not-defeq diamond with `algebra.id` when `L = E`.
+  This is caused by `x = ⟨x, x.prop⟩` not being defeq on subtypes. It will be an instance when
   ported to Lean 4, since the above will not be an issue. -/
 def valuationSubringAlgebra :
     Algebra (integralClosure v.ValuationSubring L) (integralClosure v.ValuationSubring E) :=
@@ -90,9 +90,8 @@ theorem integralClosure_algebraMap_injective :
   rw [injective_iff_map_eq_zero
       (algebraMap v.valuation_subring ↥(integralClosure v.valuation_subring L))]
   intro x hx
-  rw [← Subtype.coe_inj, Subalgebra.coe_zero] at hx 
-  rw [injective_iff_map_eq_zero (algebraMap v.valuation_subring L)] at hinj 
+  rw [← Subtype.coe_inj, Subalgebra.coe_zero] at hx
+  rw [injective_iff_map_eq_zero (algebraMap v.valuation_subring L)] at hinj
   exact hinj x hx
 
 end ValuationSubring
-

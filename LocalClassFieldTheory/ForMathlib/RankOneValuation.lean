@@ -1,5 +1,5 @@
-import RingTheory.DedekindDomain.AdicValuation
-import FromMathlib.NormedValued
+import Mathlib.RingTheory.DedekindDomain.AdicValuation
+import LocalClassFieldTheory.FromMathlib.NormedValued
 
 #align_import for_mathlib.rank_one_valuation
 
@@ -17,10 +17,10 @@ Let `L` be a valued field whose valuation has rank one.
 
 ## Main Results
 
-* `norm_le_one_iff_val_le_one` : the norm of `x : L` is `≤ 1` if and only if the valuation of `x` 
-  is `≤ 1`. 
-* `norm_lt_one_iff_val_lt_one` : the norm of `x : L` is `< 1` if and only if the valuation of `x` 
-  is `< 1`. 
+* `norm_le_one_iff_val_le_one` : the norm of `x : L` is `≤ 1` if and only if the valuation of `x`
+  is `≤ 1`.
+* `norm_lt_one_iff_val_lt_one` : the norm of `x : L` is `< 1` if and only if the valuation of `x`
+  is `< 1`.
 * `norm_pos_iff_val_pos` : `x ; L` has positive norm if and only if it has positive valuation.
 
 
@@ -89,4 +89,3 @@ theorem intValuation_apply {R : Type _} [CommRing R] [IsDomain R] [IsDedekindDom
   refl _
 
 end IsDedekindDomain.HeightOneSpectrum
-

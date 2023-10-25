@@ -1,15 +1,15 @@
-import ForMathlib.RingTheory.Valuation.AlgebraInstances
-import PadicCompare
-import NumberTheory.Padics.PadicIntegers
-import RingTheory.DedekindDomain.IntegralClosure
-import RingTheory.DiscreteValuationRing.Basic
+import LocalClassFieldTheory.ForMathlib.RingTheory.Valuation.AlgebraInstances
+import LocalClassFieldTheory.PadicCompare
+import Mathlib.NumberTheory.Padics.PadicIntegers
+import Mathlib.RingTheory.DedekindDomain.IntegralClosure
+import Mathlib.RingTheory.DiscreteValuationRing.Basic
 
 #align_import mixed_characteristic.basic
 
 /-!
 # Mixed characteristic local fields
 
-In this file we define a mixed characteristic local field as a finite extension of 
+In this file we define a mixed characteristic local field as a finite extension of
 the field of `p`-adic numbers, defined as the completion `Q_p` of `ℚ` with respect to the adic
 valuation associated with the maximal ideal `pℤ ⊆ ℤ`. See `padic_compare.lean` for more details
 about the comparison between this type and the type `ℚ_[p]` as defined in `mathlib`.
@@ -146,4 +146,3 @@ def residueFieldFintypeOfCompletion : Fintype (LocalRing.ResidueField (zP p)) :=
 end RingOfIntegers
 
 end Padic
-

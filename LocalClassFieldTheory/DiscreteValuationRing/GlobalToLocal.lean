@@ -1,5 +1,5 @@
-import RingTheory.DedekindDomain.AdicValuation
-import DiscreteValuationRing.Basic
+import Mathlib.RingTheory.DedekindDomain.AdicValuation
+import LocalClassFieldTheory.DiscreteValuationRing.Basic
 
 #align_import discrete_valuation_ring.global_to_local
 
@@ -62,4 +62,3 @@ instance : DiscreteValuationRing R_v :=
   DiscreteValuation.dvr_of_isDiscrete (@Valued.v K_v _ ℤₘ₀ _ _)
 
 end IsDedekindDomain.HeightOneSpectrum
-
