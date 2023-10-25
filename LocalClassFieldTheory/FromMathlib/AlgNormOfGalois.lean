@@ -3,8 +3,8 @@ Copyright (c) 2023 María Inés de Frutos-Fernández. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: María Inés de Frutos-Fernández
 -/
-import Data.Fintype.Order
-import FieldTheory.Fixed
+import Mahtlib.Data.Fintype.Order
+import Mathlib.FieldTheory.Fixed
 import FromMathlib.NormedSpace
 
 #align_import from_mathlib.alg_norm_of_galois
@@ -15,16 +15,16 @@ import FromMathlib.NormedSpace
 In the section `supr` we prove some lemmas about indexed supremums, which will be PRd to the
 appropriate files in mathlib.
 
-For the rest of the file, we let `K` be a nonarchimedean normed field and `L/K` be a finite 
-algebraic extension. In the comments, `‖ ⬝ ‖` denotes any power-multiplicative algebra norm on `L` 
+For the rest of the file, we let `K` be a nonarchimedean normed field and `L/K` be a finite
+algebraic extension. In the comments, `‖ ⬝ ‖` denotes any power-multiplicative algebra norm on `L`
 extending the norm  on `K`.
 
 ## Main Definitions
 
 * `alg_norm_of_auto` : given `σ : L ≃ₐ[K] L`, the function `L → ℝ` sending `x : L` to `‖ σ x ‖` is
-  an algebra norm on `K`. 
+  an algebra norm on `K`.
 * `alg_norm_of_galois` : the function `L → ℝ` sending `x : L` to the maximum of `‖ σ x ‖` over
-  all `σ : L ≃ₐ[K] L` is an algebra norm on `L`. 
+  all `σ : L ≃ₐ[K] L` is an algebra norm on `L`.
 
 ## Main Results
 * `alg_norm_of_auto_is_pow_mul` : `alg_norm_of_auto` is power-multiplicative.
@@ -294,4 +294,3 @@ theorem algNormOfGalois_extends (hna : IsNonarchimedean (norm : K → ℝ)) :
   simp only [AlgebraNorm.toFun_eq_coe, algNormOfAuto_extends h_fin _ hna r, ciSup_const]
 
 end algNormOfGalois
-

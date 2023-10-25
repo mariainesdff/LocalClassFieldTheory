@@ -3,8 +3,8 @@ Copyright (c) 2023 María Inés de Frutos-Fernández. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: María Inés de Frutos-Fernández
 -/
-import FromMathlib.RingSeminorm
-import Analysis.SpecialFunctions.Pow.Continuity
+import LocalClassFieldTheory.FromMathlib.RingSeminorm
+import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
 
 #align_import from_mathlib.pow_mult_faithful
 
@@ -17,8 +17,8 @@ every subring `R[y]` for `y : S`, it follows that `f₁ = f₂`.
 
 ## Main Definitions
 * `algebra_norm.restriction` : The restriction of an algebra norm to a subalgebra.
-* `ring_hom.is_bounded_wrt` :A ring homomorphism `f : α →+* β` is bounded with respect to the 
-  functions `nα : α → ℝ` and `nβ : β → ℝ` if there exists a positive constant `C` such that for all 
+* `ring_hom.is_bounded_wrt` :A ring homomorphism `f : α →+* β` is bounded with respect to the
+  functions `nα : α → ℝ` and `nβ : β → ℝ` if there exists a positive constant `C` such that for all
   `x` in `α`, `nβ (f x) ≤ C * nα x`.
 
 ## Main Results
@@ -48,7 +48,7 @@ def RingHom.IsBoundedWrt {α : Type _} [Ring α] {β : Type _} [Ring β] (nα : 
     (f : α →+* β) : Prop :=
   ∃ C : ℝ, 0 < C ∧ ∀ x : α, nβ (f x) ≤ C * nα x
 
-/-- If `f : α →+* β` is bounded with respect to a ring seminorm `nα` on `α` and a 
+/-- If `f : α →+* β` is bounded with respect to a ring seminorm `nα` on `α` and a
   power-multiplicative function `nβ : β → ℝ`, then `∀ x : α, nβ (f x) ≤ nα x`. -/
 theorem contraction_of_is_pm_wrt {F : Type _} {α : outParam (Type _)} [Ring α]
     [RingSeminormClass F α ℝ] {β : Type _} [Ring β] (nα : F) {nβ : β → ℝ} (hβ : IsPowMul nβ)
@@ -122,7 +122,7 @@ def AlgebraNorm.restriction (A : Subalgebra R S) (f : AlgebraNorm R S) : Algebra
   smul' r x := map_smul_eq_hMul _ _ _
 
 /-- If `R` is a normed commutative ring and `f₁` and `f₂` are two power-multiplicative `R`-algebra
-  norms on `S`, then if `f₁` and `f₂` are equivalent on every  subring `R[y]` for `y : S`, it 
+  norms on `S`, then if `f₁` and `f₂` are equivalent on every  subring `R[y]` for `y : S`, it
   follows that `f₁ = f₂` [BGR, Proposition 3.1.5/1].  -/
 theorem eq_of_pow_mult_faithful (f₁ : AlgebraNorm R S) (hf₁_pm : IsPowMul f₁) (f₂ : AlgebraNorm R S)
     (hf₂_pm : IsPowMul f₂)
@@ -143,4 +143,3 @@ theorem eq_of_pow_mult_faithful (f₁ : AlgebraNorm R S) (hf₁_pm : IsPowMul f�
   obtain ⟨C₁, C₂, hC₁_pos, hC₂_pos, hC⟩ := h_eq x
   obtain ⟨hC₁, hC₂⟩ := forall_and_distrib.mp hC
   rw [hy, h1, h2, eq_seminorms g₁ g₂ hg₁_pm hg₂_pm ⟨C₁, hC₁_pos, hC₁⟩ ⟨C₂, hC₂_pos, hC₂⟩]
-

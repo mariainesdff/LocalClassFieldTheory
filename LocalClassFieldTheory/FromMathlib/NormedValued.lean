@@ -3,9 +3,9 @@ Copyright (c) 2023 María Inés de Frutos-Fernández. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: María Inés de Frutos-Fernández
 -/
-import FromMathlib.RankOneValuation
-import FromMathlib.RingSeminorm
-import Topology.Algebra.Valuation
+import LocalClassFieldTheory.FromMathlib.RankOneValuation
+import LocalClassFieldTheory.FromMathlib.RingSeminorm
+import Mathlib.Topology.Algebra.Valuation
 
 #align_import from_mathlib.normed_valued
 
@@ -20,8 +20,8 @@ Nontrivial nonarchimedean norms correspond to rank one valuations.
 * `valued_field.to_normed_field` : the normed field structure determined by a rank one valuation.
 
 ## Main Results
-* `real.exists_strict_mono_lt` : if `Γ₀ˣ` is nontrivial and `f : Γ₀ →*₀ ℝ≥0` is a strict 
-  monomorphism, then for any positive real `r`, there exists `d : Γ₀ˣ` with `f d < r`. 
+* `real.exists_strict_mono_lt` : if `Γ₀ˣ` is nontrivial and `f : Γ₀ →*₀ ℝ≥0` is a strict
+  monomorphism, then for any positive real `r`, there exists `d : Γ₀ˣ` with `f d < r`.
 
 ## Tags
 
@@ -151,7 +151,7 @@ def ValuedField.toNormedField : NormedField L :=
           use δ, hδ_pos
           apply subset_trans _ hε
           intro x hx
-          simp only [Set.mem_setOf_eq, norm_def, hδ, NNReal.val_eq_coe, NNReal.coe_lt_coe] at hx 
+          simp only [Set.mem_setOf_eq, norm_def, hδ, NNReal.val_eq_coe, NNReal.coe_lt_coe] at hx
           rw [Set.mem_setOf, ← neg_sub, Valuation.map_neg]
           exact hv.strict_mono.lt_iff_lt.mp hx
         · letI : Nontrivial Γ₀ˣ :=
@@ -176,4 +176,3 @@ def ValuedField.toNormedField : NormedField L :=
             lt_of_lt_of_le hab (min_le_right _ _)⟩ }
 
 end RankOneValuation
-

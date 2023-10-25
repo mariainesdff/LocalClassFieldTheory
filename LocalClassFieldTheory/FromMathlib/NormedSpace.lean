@@ -3,21 +3,21 @@ Copyright (c) 2023 María Inés de Frutos-Fernández. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: María Inés de Frutos-Fernández
 -/
-import Analysis.NormedSpace.BoundedLinearMaps
-import FromMathlib.SeminormFromBounded
-import FromMathlib.SmoothingSeminorm
+import Mathlib.Analysis.NormedSpace.BoundedLinearMaps
+import LocalClassFieldTheory.FromMathlib.SeminormFromBounded
+import LocalClassFieldTheory.FromMathlib.SmoothingSeminorm
 
 #align_import from_mathlib.normed_space
 
 /-!
 # Basis.norm
 
-In this file, we prove [BGR, Lemma 3.2.1./3]: if `K` is a normed field with a nonarchimedean 
+In this file, we prove [BGR, Lemma 3.2.1./3]: if `K` is a normed field with a nonarchimedean
 power-multiplicative norm and `L/K` is a finite extension, then there exists at least one
 power-multiplicative `K`-algebra norm on `L` extending the norm on `K`.
 
 ## Main Definitions
-* `basis.norm` : the function sending an element `x : L` to the maximum of the norms of its 
+* `basis.norm` : the function sending an element `x : L` to the maximum of the norms of its
   coefficients with respect to the `K`-basis `B` of `L`.
 
 ## Main Results
@@ -88,9 +88,9 @@ theorem LinearIndependent.eq_coords_of_eq {R : Type _} [Ring R] {M : Type _} [Ad
     [Module R M] {ι : Type _} [Fintype ι] {v : ι → M} (hv : LinearIndependent R v) {f : ι → R}
     {g : ι → R} (heq : ∑ i, f i • v i = ∑ i, g i • v i) (i : ι) : f i = g i :=
   by
-  rw [← sub_eq_zero, ← sum_sub_distrib] at heq 
-  simp_rw [← sub_smul] at heq 
-  rw [linearIndependent_iff'] at hv 
+  rw [← sub_eq_zero, ← sum_sub_distrib] at heq
+  simp_rw [← sub_smul] at heq
+  rw [linearIndependent_iff'] at hv
   exact sub_eq_zero.mp (hv univ (fun i => f i - g i) HEq i (mem_univ i))
 
 end finsum
@@ -155,9 +155,9 @@ theorem norm_extends {ι : Type _} [Fintype ι] [Nonempty ι] {B : Basis ι K L}
         have h_max :=
           Classical.choose_spec
             (Finite.exists_max fun j : ι => ‖(fun n : ι => if n = i then k else 0) j‖)
-        simp only [if_neg h] at h_max 
+        simp only [if_neg h] at h_max
         specialize h_max i
-        rw [if_pos rfl, norm_zero, norm_le_zero_iff] at h_max 
+        rw [if_pos rfl, norm_zero, norm_le_zero_iff] at h_max
         exact hk h_max
       rw [if_pos h_max]
 
@@ -176,7 +176,7 @@ theorem norm_isNonarchimedean {ι : Type _} [Fintype ι] [Nonempty ι] {B : Basi
   · apply le_max_of_le_left (le_trans hx (hix ixy))
   · apply le_max_of_le_right (le_trans hy (hiy ixy))
 
-/-- For any `K`-basis of `L`, `B.norm` is bounded with respect to multiplication. That is, 
+/-- For any `K`-basis of `L`, `B.norm` is bounded with respect to multiplication. That is,
   `∃ (c : ℝ), c > 0` such that ` ∀ (x y : L), B.norm (x * y) ≤ c * B.norm x * B.norm y`. -/
 theorem norm_is_bdd {ι : Type _} [Fintype ι] [Nonempty ι] {B : Basis ι K L} {i : ι}
     (hBi : B i = (1 : L)) (hna : IsNonarchimedean (Norm.norm : K → ℝ)) :
@@ -265,8 +265,8 @@ theorem norm_smul {ι : Type _} [Fintype ι] [Nonempty ι] {B : Basis ι K L} {i
       by
       refine' le_antisymm _ (hi j)
       · specialize hj i
-        rw [← hj_def] at hj 
-        simp only [repr_smul, norm_mul] at hj 
+        rw [← hj_def] at hj
+        simp only [repr_smul, norm_mul] at hj
         exact
           (mul_le_mul_left (lt_of_le_of_ne (norm_nonneg _) (Ne.symm (norm_ne_zero_iff.mpr hk)))).mp
             hj
@@ -274,7 +274,7 @@ theorem norm_smul {ι : Type _} [Fintype ι] [Nonempty ι] {B : Basis ι K L} {i
 
 end Basis
 
-/-- If `K` is a nonarchimedean normed field `L/K` is a finite extension, then there exists a 
+/-- If `K` is a nonarchimedean normed field `L/K` is a finite extension, then there exists a
 power-multiplicative nonarchimedean `K`-algebra norm on `L` extending the norm on `K`. -/
 theorem finite_extension_pow_mul_seminorm (hfd : FiniteDimensional K L)
     (hna : IsNonarchimedean (norm : K → ℝ)) :
@@ -322,7 +322,7 @@ theorem finite_extension_pow_mul_seminorm (hfd : FiniteDimensional K L)
     intro k
     rw [← hg_ext]
     exact seminorm_from_bounded_of_hMul_apply hg_nonneg hg_bdd (hg_mul k)
-  -- Using BGR Prop. 1.3.2/1, we obtain from f  a power multiplicative K-algebra norm on L 
+  -- Using BGR Prop. 1.3.2/1, we obtain from f  a power multiplicative K-algebra norm on L
   -- extending the norm on K.
   set F' := smoothingSeminorm f hf_1 hf_na with hF'
   have hF'_ext : ∀ k : K, F' ((algebraMap K L) k) = ‖k‖ :=
@@ -362,4 +362,3 @@ theorem finite_extension_pow_mul_seminorm (hfd : FiniteDimensional K L)
   exact
     ⟨F, smoothing_seminorm_isPowMul f hf_1, hF_ext,
       smoothing_seminorm_isNonarchimedean f hf_1 hf_na⟩
-

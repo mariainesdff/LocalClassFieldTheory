@@ -1,8 +1,8 @@
-import Algebra.CharP.Subring
-import DiscreteValuationRing.Complete
-import LaurentSeriesEquivAdicCompletion
-import ForMathlib.RingTheory.Valuation.AlgebraInstances
-import RingTheory.DedekindDomain.AdicValuation
+import Mathlib.Algebra.CharP.Subring
+import LocalClassFieldTheory.DiscreteValuationRing.Complete
+import LocalClassFieldTheory.LaurentSeriesEquivAdicCompletion
+import LocalClassFieldTheory.ForMathlib.RingTheory.Valuation.AlgebraInstances
+import Mathlib.RingTheory.DedekindDomain.AdicValuation
 
 #align_import eq_characteristic.basic
 
@@ -19,16 +19,16 @@ extension of `FpX_completion`.
 * `isom_laurent` is the ring isomorphism `(laurent_series 𝔽_[p]) ≃+* FpX_completion`
 * `integers_equiv_power_series` is the isomorphism `(power_series 𝔽_[p]) ≃+* FpX_int_completion`.
 * `eq_char_local_field` defines an equal characteristic local field as a finite dimensional
-FpX_completion`-algebra for some prime number `p`. 
+FpX_completion`-algebra for some prime number `p`.
 
 ##  Main Theorems
 * `residue_field_card_eq_char` stated the the (natural) cardinality of the residue field of
   `FpX_completion` is `p`.
 * For the comparison between the `valued` structures on `FpX_completion` (as adic completion)
-  and on `(laurent_series 𝔽_[p])` (coming from its `X`-adic valuation), see `valuation_compare` in 
+  and on `(laurent_series 𝔽_[p])` (coming from its `X`-adic valuation), see `valuation_compare` in
   `power_series_adic_completion`.
 * We record as an `instance` that `FpX_completion` itself is an equal characteristic local
-  field and that its `ring_of_integers` is isomorphic to `FpX_int_completion` := 
+  field and that its `ring_of_integers` is isomorphic to `FpX_int_completion` :=
 -/
 
 
@@ -271,11 +271,11 @@ theorem dvd_of_norm_lt_one {F : fpXIntCompletion p} :
   obtain ⟨G, h_Gg⟩ : ∃ G : PowerSeries 𝔽_[p], ↑G = g :=
     by
     replace h := le_of_lt h
-    rwa [neg_zero, ofAdd_zero, WithZero.coe_one, val_le_one_iff_eq_coe] at h 
+    rwa [neg_zero, ofAdd_zero, WithZero.coe_one, val_le_one_iff_eq_coe] at h
   rw [neg_zero, ← neg_add_self (1 : ℤ), WithZero.lt_succ_iff_le, ← h_Gg, ← Int.ofNat_one,
-    LaurentSeries.int_valuation_le_iff_coeff_zero_of_lt] at h 
+    LaurentSeries.int_valuation_le_iff_coeff_zero_of_lt] at h
   specialize h 0 zero_lt_one
-  rw [PowerSeries.coeff_zero_eq_constantCoeff, ← PowerSeries.X_dvd_iff] at h 
+  rw [PowerSeries.coeff_zero_eq_constantCoeff, ← PowerSeries.X_dvd_iff] at h
   obtain ⟨C, rfl⟩ := dvd_iff_exists_eq_mul_left.mp h
   refine' dvd_of_mul_left_eq ⟨(laurent_series_ring_equiv 𝔽_[p]) C, _⟩ _
   · erw [FpXCompletion.mem_fpXIntCompletion, valuation_compare, val_le_one_iff_eq_coe]
@@ -303,8 +303,8 @@ theorem norm_lt_one_of_dvd {F : fpXIntCompletion p} :
   clear hn n
   rw [PowerSeries.coeff_zero_eq_constantCoeff, ← PowerSeries.X_dvd_iff]
   replace h_fy : f = y * X p
-  · apply_fun algebraMap (fpXIntCompletion p) (FpXCompletion p) at h 
-    simp only [map_mul, algebra_map_eq_coe, mul_comm, SetLike.coe_mk, Subring.coe_mul] at h 
+  · apply_fun algebraMap (fpXIntCompletion p) (FpXCompletion p) at h
+    simp only [map_mul, algebra_map_eq_coe, mul_comm, SetLike.coe_mk, Subring.coe_mul] at h
     exact h
   obtain ⟨Z, hZ⟩ := exists_power_series_of_mem_integers 𝔽_[p] y_mem
   refine' dvd_of_mul_left_eq Z _
@@ -478,4 +478,3 @@ instance : Algebra (RatFunc 𝔽_[p]) K :=
       (algebraMap (RatFunc 𝔽_[p]) (FpXCompletion p))).toAlgebra
 
 end fpXIntCompletion
-

@@ -3,15 +3,15 @@ Copyright (c) 2023 María Inés de Frutos-Fernández. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: María Inés de Frutos-Fernández
 -/
-import Analysis.Normed.Ring.Seminorm
-import Analysis.Seminorm
+import Mathlib.Analysis.Normed.Ring.Seminorm
+import Mathlib.Analysis.Seminorm
 
 #align_import from_mathlib.ring_seminorm
 
 /-!
 # Nonarchimedean ring seminorms and algebra norms
 
-In this file, we define some properties of functions (power-multiplicative, extends, 
+In this file, we define some properties of functions (power-multiplicative, extends,
 nonarchimedean) which will be of special interest to us when applied to ring seminorms or
 additive group seminorms.
 
@@ -22,17 +22,17 @@ We also define algebra norms and multiplicative algebra norms.
 ## Main Definitions
 * `is_pow_mul` : `f : R → ℝ` is power-multiplicative if for all `r ∈ R` and all positive `n ∈ ℕ`,
   `f (r ^ n) = (f r) ^ n`.
-* `function_extends` : given an `α`-algebra `β`, a function `f : β → ℝ` extends a function 
-  `g : α → ℝ` if `∀ x : α, f (algebra_map α β x) = g x`. 
-* `is_nonarchimedean`: a function `f : R → ℝ≥0` is nonarchimedean if it satisfies the strong 
+* `function_extends` : given an `α`-algebra `β`, a function `f : β → ℝ` extends a function
+  `g : α → ℝ` if `∀ x : α, f (algebra_map α β x) = g x`.
+* `is_nonarchimedean`: a function `f : R → ℝ≥0` is nonarchimedean if it satisfies the strong
   triangle inequality `f (r + s) ≤ max (f r) (f s)` for all `r s : R`.
 * `algebra_norm` : an algebra norm on an `R`-algebra norm `S` is a ring norm on `S` compatible with
   the action of `R`.
 * `mul_algebra_norm` : amultiplicative algebra norm on an `R`-algebra norm `S` is a multiplicative
-  ring norm on `S` compatible with the action of `R`. 
+  ring norm on `S` compatible with the action of `R`.
 
 ## Main Results
-* `is_nonarchimedean_multiset_image_add` : given a nonarchimedean additive group seminorm `f` on 
+* `is_nonarchimedean_multiset_image_add` : given a nonarchimedean additive group seminorm `f` on
   `α`, a function `g : β → α` and a multiset `s : multiset β`, we can always find `b : β`, belonging
   to `s` if `s` is nonempty, such that `f (t.sum g) ≤ f (g b)` .
 
@@ -67,7 +67,7 @@ end Nat
 def IsPowMul {R : Type _} [Ring R] (f : R → ℝ) :=
   ∀ (a : R) {n : ℕ} (hn : 1 ≤ n), f (a ^ n) = f a ^ n
 
-/-- Given an `α`-algebra `β`, a function `f : β → ℝ` extends a function `g : α → ℝ` if 
+/-- Given an `α`-algebra `β`, a function `f : β → ℝ` extends a function `g : α → ℝ` if
   `∀ x : α, f (algebra_map α β x) = g x`. -/
 def FunctionExtends {α : Type _} [CommRing α] (g : α → ℝ) {β : Type _} [Ring β] [Algebra α β]
     (f : β → ℝ) : Prop :=
@@ -122,10 +122,10 @@ theorem isNonarchimedean_add_eq_max_of_ne {F α : Type _} [Ring α] [AddGroupSem
     have hnge : f y ≤ f (x + y) := by
       apply le_of_not_gt
       intro hgt
-      rw [max_eq_right_of_lt hgt] at this 
+      rw [max_eq_right_of_lt hgt] at this
       apply not_lt_of_ge this
       assumption
-    have : f x ≤ f (x + y) := by rwa [max_eq_left hnge] at this 
+    have : f x ≤ f (x + y) := by rwa [max_eq_left hnge] at this
     apply le_antisymm
     · exact hna _ _
     · rw [max_eq_left_of_lt hlt]
@@ -150,7 +150,7 @@ theorem isNonarchimedean_finset_image_add {F α : Type _} [Ring α] [AddGroupSem
     · refine' ⟨a, _, le_trans (hna _ _) (max_le_iff.mpr ⟨le_refl _, le_trans hM hMa⟩)⟩
       simp only [Finset.nonempty_coe_sort, Finset.insert_nonempty, Finset.mem_insert,
         eq_self_iff_true, true_or_iff, forall_true_left]
-    · rw [not_le] at hMa 
+    · rw [not_le] at hMa
       by_cases hs : s.nonempty
       · refine' ⟨M, _, le_trans (hna _ _) (max_le_iff.mpr ⟨le_of_lt hMa, hM⟩)⟩
         simp only [Finset.nonempty_coe_sort, Finset.insert_nonempty, Finset.mem_insert,
@@ -167,8 +167,8 @@ theorem isNonarchimedean_finset_image_add {F α : Type _} [Ring α] [AddGroupSem
         rw [h0]
         exact max_le_iff.mpr ⟨le_refl _, map_nonneg _ _⟩
 
-/-- Given a nonarchimedean additive group seminorm `f` on `α`, a function `g : β → α` and a 
-  multiset `s : multiset β`, we can always find `b : β`, belonging to `s` if `s` is nonempty, 
+/-- Given a nonarchimedean additive group seminorm `f` on `α`, a function `g : β → α` and a
+  multiset `s : multiset β`, we can always find `b : β`, belonging to `s` if `s` is nonempty,
   such that `f (t.sum g) ≤ f (g b)` . -/
 theorem isNonarchimedean_multiset_image_add {F α : Type _} [Ring α] [AddGroupSeminormClass F α ℝ]
     {f : F} (hna : IsNonarchimedean f) {β : Type _} [hβ : Nonempty β] (g : β → α) (s : Multiset β) :
@@ -183,7 +183,7 @@ theorem isNonarchimedean_multiset_image_add {F α : Type _} [Ring α] [AddGroupS
       · simp only [Multiset.card_cons, Nat.succ_pos', Multiset.mem_cons_self, forall_true_left]
       · rw [Multiset.map_cons, Multiset.sum_cons]
         exact le_trans (hna _ _) (max_le_iff.mpr ⟨le_refl _, le_trans hM hMa⟩)
-    · rw [not_le] at hMa 
+    · rw [not_le] at hMa
       by_cases ht : 0 < t.card
       · refine' ⟨M, _, _⟩
         · simp only [Multiset.card_cons, Nat.succ_pos', Multiset.mem_cons, forall_true_left]
@@ -194,14 +194,14 @@ theorem isNonarchimedean_multiset_image_add {F α : Type _} [Ring α] [AddGroupS
         · simp only [Multiset.card_cons, Nat.succ_pos', Multiset.mem_cons_self, forall_true_left]
         · have h0 : f (Multiset.map g t).Sum = 0 :=
             by
-            simp only [not_lt, le_zero_iff, Multiset.card_eq_zero] at ht 
+            simp only [not_lt, le_zero_iff, Multiset.card_eq_zero] at ht
             rw [ht, Multiset.map_zero, Multiset.sum_zero, map_zero f]
           rw [Multiset.map_cons, Multiset.sum_cons]
           apply le_trans (hna _ _)
           rw [h0]
           exact max_le_iff.mpr ⟨le_refl _, map_nonneg _ _⟩
 
-/-- Given a nonarchimedean additive group seminorm `f` on `α`, a number `n : ℕ` and a function 
+/-- Given a nonarchimedean additive group seminorm `f` on `α`, a number `n : ℕ` and a function
   `g : ℕ → α`, there exists `m : ℕ` such that `f ((finset.range n).sum g) ≤ f (g m)`.
   If `0 < n`, this `m` satisfies `m < n`. -/
 theorem isNonarchimedean_finset_range_add_le {F α : Type _} [Ring α] [AddGroupSeminormClass F α ℝ]
@@ -209,11 +209,11 @@ theorem isNonarchimedean_finset_range_add_le {F α : Type _} [Ring α] [AddGroup
     ∃ (m : ℕ) (hm : 0 < n → m < n), f ((Finset.range n).Sum g) ≤ f (g m) :=
   by
   obtain ⟨m, hm, h⟩ := isNonarchimedean_finset_image_add hna g (Finset.range n)
-  rw [Finset.nonempty_range_iff, ← zero_lt_iff, Finset.mem_range] at hm 
+  rw [Finset.nonempty_range_iff, ← zero_lt_iff, Finset.mem_range] at hm
   exact ⟨m, hm, h⟩
 
-/-- If `f` is a nonarchimedean additive group seminorm on a commutative ring `α`, `n : ℕ`, and 
-  `a b : α`, then we can find `m : ℕ` such that `m ≤ n` and 
+/-- If `f` is a nonarchimedean additive group seminorm on a commutative ring `α`, `n : ℕ`, and
+  `a b : α`, then we can find `m : ℕ` such that `m ≤ n` and
   `f ((a + b) ^ n) ≤ (f (a ^ m)) * (f (b ^ (n - m)))`. -/
 theorem isNonarchimedean_add_pow {F α : Type _} [CommRing α] [RingSeminormClass F α ℝ] {f : F}
     (hna : IsNonarchimedean f) (n : ℕ) (a b : α) :
@@ -223,10 +223,10 @@ theorem isNonarchimedean_add_pow {F α : Type _} [CommRing α] [RingSeminormClas
     isNonarchimedean_finset_image_add hna (fun m : ℕ => a ^ m * b ^ (n - m) * ↑(n.choose m))
       (Finset.range (n + 1))
   simp only [Finset.nonempty_range_iff, Ne.def, Nat.succ_ne_zero, not_false_iff, Finset.mem_range,
-    if_true, forall_true_left] at hm_lt 
+    if_true, forall_true_left] at hm_lt
   refine' ⟨m, list.mem_range.mpr hm_lt, _⟩
-  simp only [← add_pow] at hM 
-  rw [mul_comm] at hM 
+  simp only [← add_pow] at hM
+  rw [mul_comm] at hM
   exact le_trans hM (le_trans (isNonarchimedean_nmul hna _ _) (map_mul_le_mul _ _ _))
 
 /-- If `f` is a ring seminorm on `a`, then `∀ {n : ℕ}, n ≠ 0 → f (a ^ n) ≤ f a ^ n`. -/
@@ -288,7 +288,7 @@ instance algebraNormClass : AlgebraNormClass (AlgebraNorm R S) R S
   coe f := f.toFun
   coe_injective' f f' h :=
     by
-    simp only [RingNorm.toFun_eq_coe, FunLike.coe_fn_eq] at h 
+    simp only [RingNorm.toFun_eq_coe, FunLike.coe_fn_eq] at h
     cases f <;> cases f' <;> congr
   map_zero f := f.map_zero'
   map_add_le_add f := f.add_le'
@@ -355,7 +355,7 @@ instance mulAlgebraNormClass : MulAlgebraNormClass (MulAlgebraNorm R S) R S
   coe f := f.toFun
   coe_injective' f f' h :=
     by
-    simp only [RingNorm.toFun_eq_coe, FunLike.coe_fn_eq] at h 
+    simp only [RingNorm.toFun_eq_coe, FunLike.coe_fn_eq] at h
     cases f <;> cases f' <;> congr
   map_zero f := f.map_zero'
   map_add_le_add f := f.add_le'
@@ -408,7 +408,7 @@ theorem isPowMul {A : Type _} [Ring A] (f : MulRingNorm A) : IsPowMul f := fun x
   · exfalso; linarith
   · by_cases hn1 : 1 ≤ n
     · rw [pow_succ, pow_succ, map_mul, ih hn1]
-    · rw [not_le, Nat.lt_one_iff] at hn1 
+    · rw [not_le, Nat.lt_one_iff] at hn1
       rw [hn1, pow_one, pow_one]
 
 end MulRingNorm
@@ -448,4 +448,3 @@ def NormedField.toMulRingNorm (R : Type _) [NormedField R] : MulRingNorm R
   map_mul' := norm_mul
   neg' := norm_neg
   eq_zero_of_map_eq_zero' x hx := by rw [← norm_eq_zero]; exact hx
-
