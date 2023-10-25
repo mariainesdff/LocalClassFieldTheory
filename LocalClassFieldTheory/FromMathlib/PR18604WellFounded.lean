@@ -34,14 +34,46 @@ open Set
 
 theorem BddBelow.wellFoundedOn_lt : BddBelow s → s.WellFoundedOn (· < ·) :=
   by
-  rw [well_founded_on_iff_no_descending_seq]
+  rw [wellFoundedOn_iff_no_descending_seq]
   rintro ⟨a, ha⟩ f hf
-  exact
-    infinite_range_of_injective f.injective
-      ((finite_Icc a <| f 0).Subset <|
-        range_subset_iff.2 fun n =>
-          ⟨ha <| hf _,
-            (antitone_iff_forall_lt.2 fun a b hab => (f.map_rel_iff.2 hab).le) <| zero_le _⟩)
+
+  apply infinite_range_of_injective f.injective <| Finite.subset _ _ -- <| range_subset_iff.2 hf
+  -- exact range_subset_iff.2 fun n =>
+  --         ⟨ha <| hf _,
+  --           (antitone_iff_forall_lt.2 fun a b hab => (f.map_rel_iff.2 hab).le) <| zero_le _⟩)
+
+  use Icc a (f 0)
+  apply finite_Icc
+  apply range_subset_iff.2
+  intro n
+  apply mem_Icc.2
+  constructor
+  · apply le_trans <| ha <| hf n
+    apply antitone_iff_forall_lt.2
+    exacts [fun a b hab => le_of_lt <| (@RelEmbedding.map_rel_iff (f := f) b a).2 hab, le_refl _]
+  · apply le_trans (b := f 0)
+    · apply antitone_iff_forall_lt (f := f).2
+      · intro a b hab
+        apply le_of_lt <| (@RelEmbedding.map_rel_iff (f := f) b a).2 hab
+      · simp only [zero_le]
+    simp only [le_refl]
+    --   intro a b hab
+
+
+
+  -- apply this
+
+
+  -- apply hf
+  -- intro ha <| hf
+
+  -- have := @antitone_iff_forall_lt
+  -- exact
+  --   infinite_range_of_injective f.injective
+  --     ((finite_Icc a <| f 0).Subset <|
+  --       range_subset_iff.2 fun n =>
+  --         ⟨ha <| hf _,
+  --           (antitone_iff_forall_lt.2 fun a b hab => (f.map_rel_iff.2 hab).le) <| zero_le _⟩)
 
 theorem BddAbove.wellFoundedOn_gt (hs : BddAbove s) : s.WellFoundedOn (· > ·) :=
   hs.dual.wellFoundedOn_lt
