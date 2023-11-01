@@ -261,7 +261,7 @@ instance (K : Type _) [NormedField K] : Inhabited (AlgebraNorm K K) :=
 /-- `algebra_norm_class F α` states that `F` is a type of algebra norms on the ring `β`.
 You should extend this class when you extend `algebra_norm`. -/
 class AlgebraNormClass (F : Type _) (R : outParam <| Type _) [SeminormedCommRing R]
-    (S : outParam <| Type _) [Ring S] [Algebra R S] extends SeminormClass F R S, RingNormClass F S ℝ
+    (S : outParam <| Type _) [Ring S] [Algebra R S] extends RingNormClass F S ℝ, SeminormClass F R S
 
 -- `R` is an `out_param`, so this is a false positive.
 --attribute [nolint DangerousInstance] AlgebraNormClass.toRingNormClass
@@ -332,8 +332,9 @@ instance (K : Type _) [NormedField K] : Inhabited (MulAlgebraNorm K K) :=
 /-- `algebra_norm_class F α` states that `F` is a type of algebra norms on the ring `β`.
 You should extend this class when you extend `algebra_norm`. -/
 class MulAlgebraNormClass (F : Type _) (R : outParam <| Type _) [SeminormedCommRing R]
-    (S : outParam <| Type _) [Ring S] [Algebra R S] extends SeminormClass F R S,
-    MulRingNormClass F S ℝ
+    (S : outParam <| Type _) [Ring S] [Algebra R S] extends MulRingNormClass F S ℝ,
+    SeminormClass F R S
+
 
 -- `R` is an `out_param`, so this is a false positive.
 --attribute [nolint dangerous_instance] MulAlgebraNormClass.toMulRingNormClass
