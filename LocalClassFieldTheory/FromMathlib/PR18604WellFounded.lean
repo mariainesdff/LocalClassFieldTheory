@@ -37,11 +37,7 @@ theorem BddBelow.wellFoundedOn_lt : BddBelow s → s.WellFoundedOn (· < ·) :=
   rw [wellFoundedOn_iff_no_descending_seq]
   rintro ⟨a, ha⟩ f hf
 
-  apply infinite_range_of_injective f.injective <| Finite.subset _ _ -- <| range_subset_iff.2 hf
-  -- exact range_subset_iff.2 fun n =>
-  --         ⟨ha <| hf _,
-  --           (antitone_iff_forall_lt.2 fun a b hab => (f.map_rel_iff.2 hab).le) <| zero_le _⟩)
-
+  apply infinite_range_of_injective f.injective <| Finite.subset _ _
   use Icc a (f 0)
   apply finite_Icc
   apply range_subset_iff.2
@@ -57,23 +53,6 @@ theorem BddBelow.wellFoundedOn_lt : BddBelow s → s.WellFoundedOn (· < ·) :=
         apply le_of_lt <| (@RelEmbedding.map_rel_iff (f := f) b a).2 hab
       · simp only [zero_le]
     simp only [le_refl]
-    --   intro a b hab
-
-
-
-  -- apply this
-
-
-  -- apply hf
-  -- intro ha <| hf
-
-  -- have := @antitone_iff_forall_lt
-  -- exact
-  --   infinite_range_of_injective f.injective
-  --     ((finite_Icc a <| f 0).Subset <|
-  --       range_subset_iff.2 fun n =>
-  --         ⟨ha <| hf _,
-  --           (antitone_iff_forall_lt.2 fun a b hab => (f.map_rel_iff.2 hab).le) <| zero_le _⟩)
 
 theorem BddAbove.wellFoundedOn_gt (hs : BddAbove s) : s.WellFoundedOn (· > ·) :=
   hs.dual.wellFoundedOn_lt

@@ -3,9 +3,9 @@ import Mathlib.NumberTheory.Padics.PadicIntegers
 import Mathlib.RingTheory.DedekindDomain.AdicValuation
 import LocalClassFieldTheory.ForMathlib.NumberTheory.Padics.PadicIntegers
 import LocalClassFieldTheory.ForMathlib.RingTheory.DedekindDomain.Ideal
-import LocalClassFieldTheory.FromMathlib.SpecificLimits
+-- import LocalClassFieldTheory.FromMathlib.SpecificLimits
 
-#align_import padic_compare
+-- #align_import padic_compare
 
 /-!
 

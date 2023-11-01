@@ -36,7 +36,7 @@ import LocalClassFieldTheory.FromMathlib.RankOneValuation
 import LocalClassFieldTheory.FromMathlib.Limsup
 import LocalClassFieldTheory.FromMathlib.CpDef
 import LocalClassFieldTheory.FromMathlib.NormedValued
-import LocalClassFieldTheory.FromMathlib.SpecificLimits
+-- import LocalClassFieldTheory.FromMathlib.SpecificLimits
 import LocalClassFieldTheory.FromMathlib.SeminormFromConst
 import LocalClassFieldTheory.FromMathlib.SpectralNormUnique
 import LocalClassFieldTheory.FromMathlib.NormalClosure
