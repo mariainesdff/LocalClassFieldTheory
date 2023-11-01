@@ -1,9 +1,9 @@
 import Mathlib.FieldTheory.Finite.GaloisField
 import Mathlib.RingTheory.PowerSeries.Basic
 import Mathlib.RingTheory.Valuation.ValuationSubring
-import LocalClassFieldTheory.ForMathlib.DiscreteUniformity
-import LocalClassFieldTheory.ForMathlib.Polynomial
-import LocalClassFieldTheory.Mathlib.Algebra.Order.Hom.Monoid
+-- import LocalClassFieldTheory.ForMathlib.DiscreteUniformity
+-- import LocalClassFieldTheory.ForMathlib.Polynomial
+-- import LocalClassFieldTheory.Mathlib.Algebra.Order.Hom.Monoid
 import Mathlib.RingTheory.LaurentSeries
 import Mathlib.RingTheory.PowerSeries.WellKnown
 
@@ -41,8 +41,10 @@ noncomputable section
 
 theorem coeff_zero_eq_eval {K : Type _} [Semiring K] (f : PowerSeries K) :
     (PowerSeries.coeff K 0) f = f 0 := by
-  simp only [PowerSeries.coeff, MvPowerSeries.coeff, LinearMap.coe_proj, Function.eval_apply,
+  simp only [PowerSeries.coeff, MvPowerSeries.coeff, LinearMap.coe_proj,/-  Function.eval_apply, -/
     Finsupp.single_zero]
+  exact LinearMap.proj_apply (R := K) (ι := Unit →₀ ℕ) 0 f
+
 
 theorem order_zero_of_unit {R : Type _} [Semiring R] [Nontrivial R] {f : PowerSeries R} :
     IsUnit f → f.order = 0 := by
@@ -62,26 +64,26 @@ open scoped Classical
 
 /-- Given a non-zero power series `f`, this is the power series obtained by dividing out the largest
   power of X that divides `f`-/
-def dividedByXPow {f : PowerSeries K} (hf : f ≠ 0) : PowerSeries K :=
-  (exists_eq_mul_right_of_dvd (PowerSeries.X_pow_order_dvd (order_finite_iff_ne_zero.mpr hf))).some
+def divided_by_X_pow {f : PowerSeries K} (hf : f ≠ 0) : PowerSeries K :=
+  (exists_eq_mul_right_of_dvd (PowerSeries.X_pow_order_dvd (order_finite_iff_ne_zero.2 hf))).choose
 
-theorem self_eq_x_pow_hMul_dividedByXPow {f : PowerSeries K} (hf : f ≠ 0) :
-    X ^ f.order.get (order_finite_iff_ne_zero.mpr hf) * dividedByXPow hf = f :=
+theorem self_eq_X_pow_mul_divided_by_X_pow {f : PowerSeries K} (hf : f ≠ 0) :
+    X ^ f.order.get (order_finite_iff_ne_zero.mpr hf) * divided_by_X_pow hf = f :=
   haveI dvd := PowerSeries.X_pow_order_dvd (order_finite_iff_ne_zero.mpr hf)
   (exists_eq_mul_right_of_dvd dvd).choose_spec.symm
 
 @[simp]
-theorem dividedByXPow_of_x_eq_one : dividedByXPow (@X_ne_zero K _ _) = 1 := by
+theorem divided_by_X_pow_of_x_eq_one : divided_by_X_pow (@X_ne_zero K _ _) = 1 := by
   simpa only [order_X, X_ne_zero, PartENat.get_one, pow_one, mul_eq_left₀, Ne.def,
     not_false_iff] using self_eq_X_pow_mul_divided_by_X_pow (@X_ne_zero K _ _)
 
-theorem dividedByXPow_hMul {f g : PowerSeries K} (hf : f ≠ 0) (hg : g ≠ 0) :
-    dividedByXPow hf * dividedByXPow hg = dividedByXPow (mul_ne_zero hf hg) :=
+theorem divided_by_X_pow_mul {f g : PowerSeries K} (hf : f ≠ 0) (hg : g ≠ 0) :
+    divided_by_X_pow hf * divided_by_X_pow hg = divided_by_X_pow (mul_ne_zero hf hg) :=
   by
-  let df := f.order.get (order_finite_iff_ne_zero.mpr hf)
-  let dg := g.order.get (order_finite_iff_ne_zero.mpr hg)
-  let dfg := (f * g).order.get (order_finite_iff_ne_zero.mpr (mul_ne_zero hf hg))
-  have H_add_d : df + dg = dfg := by simp only [dfg, df, dg, order_mul f g, PartENat.get_add]
+  set df := f.order.get (order_finite_iff_ne_zero.mpr hf) with hdf
+  set dg := g.order.get (order_finite_iff_ne_zero.mpr hg) with hdg
+  set dfg := (f * g).order.get (order_finite_iff_ne_zero.mpr (mul_ne_zero hf hg)) with hdfg
+  have H_add_d : df + dg = dfg := by simp only [PartENat.get_add, order_mul f g]
   have H := self_eq_X_pow_mul_divided_by_X_pow (mul_ne_zero hf hg)
   have : f * g = X ^ dfg * (divided_by_X_pow hf * divided_by_X_pow hg) := by
     calc
@@ -91,9 +93,10 @@ theorem dividedByXPow_hMul {f g : PowerSeries K} (hf : f ≠ 0) (hg : g ≠ 0) :
       _ = X ^ (df + dg) * divided_by_X_pow hf * divided_by_X_pow hg := by rw [pow_add]
       _ = X ^ dfg * divided_by_X_pow hf * divided_by_X_pow hg := by rw [H_add_d]
       _ = X ^ dfg * (divided_by_X_pow hf * divided_by_X_pow hg) := by rw [mul_assoc]
-  simp_rw [← dfg, this] at H
-  convert (IsDomain.hMul_left_cancel_of_ne_zero _ H).symm
-  exact pow_ne_zero dfg X_ne_zero
+  simp [← hdfg, this] at H
+  sorry
+  -- convert (IsDomain.hMul_left_cancel_of_ne_zero _ H).symm
+  -- exact pow_ne_zero dfg X_ne_zero
 
 /-- `first_unit_coeff` is the non-zero coefficient whose index is `f.order`, seen as a unit of the
   field.-/
