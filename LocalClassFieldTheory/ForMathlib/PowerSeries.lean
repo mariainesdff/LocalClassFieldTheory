@@ -102,25 +102,29 @@ theorem divided_by_X_pow_mul {f g : PowerSeries K} (hf : f ≠ 0) (hg : g ≠ 0)
   field.-/
 def firstUnitCoeff {f : PowerSeries K} (hf : f ≠ 0) : Kˣ :=
   by
-  set d := f.order.get (power_series.order_finite_iff_ne_zero.mpr hf) with hd
+  set d := f.order.get (PowerSeries.order_finite_iff_ne_zero.mpr hf) with hd
   have f_const : PowerSeries.coeff K d f ≠ 0 := by apply PowerSeries.coeff_order
-  have : Invertible (PowerSeries.constantCoeff K (divided_by_X_pow hf)) :=
-    by
-    apply invertibleOfNonzero
+  have : Invertible (PowerSeries.constantCoeff K (divided_by_X_pow hf))
+    -- by
+  · apply invertibleOfNonzero
     convert f_const
-    rw [← PowerSeries.coeff_zero_eq_constantCoeff, ← zero_add d]
-    convert
+    · rw [← PowerSeries.coeff_zero_eq_constantCoeff, ← zero_add d]
+      convert
       (PowerSeries.coeff_X_pow_mul
           (exists_eq_mul_right_of_dvd
-              (PowerSeries.X_pow_order_dvd (power_series.order_finite_iff_ne_zero.mpr hf))).some
+              (PowerSeries.X_pow_order_dvd (PowerSeries.order_finite_iff_ne_zero.mpr hf))).choose
           d 0).symm
-    exact (self_eq_X_pow_mul_divided_by_X_pow hf).symm
-  use unitOfInvertible (PowerSeries.constantCoeff K (divided_by_X_pow hf))
+      have := (@self_eq_X_pow_mul_divided_by_X_pow K _ f hf).symm
+      sorry
+    · sorry
+  sorry
+    -- exact (self_eq_X_pow_mul_divided_by_X_pow hf).symm
+  -- use unitOfInvertible (PowerSeries.constantCoeff K (divided_by_X_pow hf))
 
 /-- `divided_by_X_pow_inv` is the inverse of the element obtained by diving a non-zero power series
 by the larges power of `X` dividing it. Useful to create a term of type `units` -/
 def dividedByXPowInv {f : PowerSeries K} (hf : f ≠ 0) : PowerSeries K :=
-  PowerSeries.invOfUnit (dividedByXPow hf) (firstUnitCoeff hf)
+  PowerSeries.invOfUnit (divided_by_X_pow hf) (firstUnitCoeff hf)
 
 theorem dividedByXPowInv_right_inv {f : PowerSeries K} (hf : f ≠ 0) :
     dividedByXPow hf * dividedByXPowInv hf = 1 :=
