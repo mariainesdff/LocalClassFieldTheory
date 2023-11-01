@@ -3,7 +3,7 @@ Copyright (c) 2023 María Inés de Frutos-Fernández. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: María Inés de Frutos-Fernández
 -/
-import Mathlib.Data.Real.Nnreal
+import Mathlib.Data.Real.NNReal
 import Mathlib.RingTheory.Valuation.Basic
 
 #align_import from_mathlib.rank_one_valuation
@@ -14,7 +14,7 @@ import Mathlib.RingTheory.Valuation.Basic
 We define rank one valuations and discrete valuations
 
 ## Main Definitions
-* `is_rank_one` : A valuation has rank one if it is nontrivial and its image is contained in `ℝ≥0`.
+* `IsRankOne` : A valuation has rank one if it is nontrivial and its image is contained in `ℝ≥0`.
 
 ## Tags
 
@@ -39,35 +39,32 @@ section IsRankOne
 /-- A valuation has rank one if it is nontrivial and its image is contained in `ℝ≥0`. -/
 class IsRankOne (v : Valuation R Γ₀) where
   hom : Γ₀ →*₀ ℝ≥0
-  StrictMono : StrictMono hom
-  Nontrivial : ∃ r : R, v r ≠ 0 ∧ v r ≠ 1
+  strictMono : StrictMono hom
+  nontrivial : ∃ r : R, v r ≠ 0 ∧ v r ≠ 1
 
 /-- If `v` is a rank one valuation and `x : Γ₀` has image `0` under `is_rank_one.hom v`, then
   `x = 0`. -/
 theorem zero_of_isRankOne_hom_zero (v : Valuation R Γ₀) [IsRankOne v] {x : Γ₀}
-    (hx : IsRankOne.hom v x = 0) : x = 0 :=
-  by
+    (hx : IsRankOne.hom v x = 0) : x = 0 := by
   have hx0 : 0 ≤ x := zero_le'
   cases' le_iff_lt_or_eq.mp hx0 with h_lt h_eq
-  · have hs := IsRankOne.strictMono h_lt
+  · have hs := @IsRankOne.strictMono _ _ _ _ v _ _ _ h_lt
     rw [map_zero, hx] at hs
     exact absurd hs not_lt_zero'
   · exact h_eq.symm
 
 /-- If `v` is a rank one valuation, then`x : Γ₀` has image `0` under `is_rank_one.hom v` if and
   only if `x = 0`. -/
-@[simp]
 theorem isRankOne_hom_eq_zero_iff (v : Valuation R Γ₀) [hv : IsRankOne v] {x : Γ₀} :
     IsRankOne.hom v x = 0 ↔ x = 0 :=
   ⟨fun h => zero_of_isRankOne_hom_zero v h, fun h => by rw [h, map_zero]⟩
 
 /-- A nontrivial unit of `Γ₀`, given that there exists a rank one valuation `v : valuation R Γ₀`. -/
 def isRankOneUnit (v : Valuation R Γ₀) [hv : IsRankOne v] : Γ₀ˣ :=
-  Units.mk0 (v (Classical.choose hv.Nontrivial)) (Classical.choose_spec hv.Nontrivial).1
+  Units.mk0 (v (Classical.choose hv.nontrivial)) (Classical.choose_spec hv.nontrivial).1
 
 /-- A proof that `is_rank_one_unit v ≠ 1`. -/
-theorem isRankOneUnit_ne_one (v : Valuation R Γ₀) [hv : IsRankOne v] : isRankOneUnit v ≠ 1 :=
-  by
+theorem isRankOneUnit_ne_one (v : Valuation R Γ₀) [hv : IsRankOne v] : isRankOneUnit v ≠ 1 := by
   rw [Ne.def, ← Units.eq_iff, Units.val_one]
   exact (Classical.choose_spec hv.nontrivial).2
 
@@ -105,17 +102,17 @@ def coeMonoidHom [Monoid G] [Monoid H] (f : G →* H) [DecidableEq (WithZero G)]
   map_one' := by
     have h1 : (1 : WithZero G) ≠ 0 := one_ne_zero
     have h := Classical.choose_spec (ne_zero_iff_exists.mp h1)
-    rw [dif_neg h1]
+    simp only [dif_neg h1]
     simp_rw [← coe_one] at h ⊢
     rw [coe_inj, some_coe, f.map_one]
   map_mul' x y := by
     by_cases hxy : x * y = 0
-    · rw [dif_pos hxy]
+    · simp only [dif_pos hxy]
       cases' zero_eq_mul.mp (Eq.symm hxy) with hx hy
       · rw [dif_pos hx, MulZeroClass.zero_mul]
       · rw [dif_pos hy, MulZeroClass.mul_zero]
-    ·
+    · simp only
       rw [dif_neg hxy, dif_neg (left_ne_zero_of_mul hxy), dif_neg (right_ne_zero_of_mul hxy), ←
-        coe_mul, coe_inj, ← f.map_mul, some_mul hxy]
+        coe_mul, coe_inj, ← f.map_mul, some_hMul hxy]
 
 end WithZero
