@@ -64,35 +64,35 @@ open scoped Classical
 
 /-- Given a non-zero power series `f`, this is the power series obtained by dividing out the largest
   power of X that divides `f`-/
-def divided_by_X_pow {f : PowerSeries K} (hf : f ≠ 0) : PowerSeries K :=
+def dividedByXPow {f : PowerSeries K} (hf : f ≠ 0) : PowerSeries K :=
   (exists_eq_mul_right_of_dvd (PowerSeries.X_pow_order_dvd (order_finite_iff_ne_zero.2 hf))).choose
 
 theorem self_eq_X_pow_mul_divided_by_X_pow {f : PowerSeries K} (hf : f ≠ 0) :
-    X ^ f.order.get (order_finite_iff_ne_zero.mpr hf) * divided_by_X_pow hf = f :=
+    X ^ f.order.get (order_finite_iff_ne_zero.mpr hf) * dividedByXPow hf = f :=
   haveI dvd := PowerSeries.X_pow_order_dvd (order_finite_iff_ne_zero.mpr hf)
   (exists_eq_mul_right_of_dvd dvd).choose_spec.symm
 
 @[simp]
-theorem divided_by_X_pow_of_x_eq_one : divided_by_X_pow (@X_ne_zero K _ _) = 1 := by
+theorem dividedByXPow_ofX_eq_one : dividedByXPow (@X_ne_zero K _ _) = 1 := by
   simpa only [order_X, X_ne_zero, PartENat.get_one, pow_one, mul_eq_left₀, Ne.def,
     not_false_iff] using self_eq_X_pow_mul_divided_by_X_pow (@X_ne_zero K _ _)
 
-theorem divided_by_X_pow_mul {f g : PowerSeries K} (hf : f ≠ 0) (hg : g ≠ 0) :
-    divided_by_X_pow hf * divided_by_X_pow hg = divided_by_X_pow (mul_ne_zero hf hg) :=
+theorem dividedByXPowMul {f g : PowerSeries K} (hf : f ≠ 0) (hg : g ≠ 0) :
+    dividedByXPow hf * dividedByXPow hg = dividedByXPow (mul_ne_zero hf hg) :=
   by
   set df := f.order.get (order_finite_iff_ne_zero.mpr hf) with hdf
   set dg := g.order.get (order_finite_iff_ne_zero.mpr hg) with hdg
   set dfg := (f * g).order.get (order_finite_iff_ne_zero.mpr (mul_ne_zero hf hg)) with hdfg
   have H_add_d : df + dg = dfg := by simp only [PartENat.get_add, order_mul f g]
   have H := self_eq_X_pow_mul_divided_by_X_pow (mul_ne_zero hf hg)
-  have : f * g = X ^ dfg * (divided_by_X_pow hf * divided_by_X_pow hg) := by
+  have : f * g = X ^ dfg * (dividedByXPow hf * dividedByXPow hg) := by
     calc
-      f * g = X ^ df * divided_by_X_pow hf * (X ^ dg * divided_by_X_pow hg) := by
+      f * g = X ^ df * dividedByXPow hf * (X ^ dg * dividedByXPow hg) := by
         simp only [self_eq_X_pow_mul_divided_by_X_pow]
-      _ = X ^ df * X ^ dg * divided_by_X_pow hf * divided_by_X_pow hg := by ring
-      _ = X ^ (df + dg) * divided_by_X_pow hf * divided_by_X_pow hg := by rw [pow_add]
-      _ = X ^ dfg * divided_by_X_pow hf * divided_by_X_pow hg := by rw [H_add_d]
-      _ = X ^ dfg * (divided_by_X_pow hf * divided_by_X_pow hg) := by rw [mul_assoc]
+      _ = X ^ df * X ^ dg * dividedByXPow hf * dividedByXPow hg := by ring
+      _ = X ^ (df + dg) * dividedByXPow hf * dividedByXPow hg := by rw [pow_add]
+      _ = X ^ dfg * dividedByXPow hf * dividedByXPow hg := by rw [H_add_d]
+      _ = X ^ dfg * (dividedByXPow hf * dividedByXPow hg) := by rw [mul_assoc]
   simp [← hdfg, this] at H
   sorry
   -- convert (IsDomain.hMul_left_cancel_of_ne_zero _ H).symm
@@ -104,7 +104,7 @@ def firstUnitCoeff {f : PowerSeries K} (hf : f ≠ 0) : Kˣ :=
   by
   set d := f.order.get (PowerSeries.order_finite_iff_ne_zero.mpr hf) with hd
   have f_const : PowerSeries.coeff K d f ≠ 0 := by apply PowerSeries.coeff_order
-  have : Invertible (PowerSeries.constantCoeff K (divided_by_X_pow hf))
+  have : Invertible (PowerSeries.constantCoeff K (dividedByXPow hf))
     -- by
   · apply invertibleOfNonzero
     convert f_const
@@ -121,14 +121,19 @@ def firstUnitCoeff {f : PowerSeries K} (hf : f ≠ 0) : Kˣ :=
     -- exact (self_eq_X_pow_mul_divided_by_X_pow hf).symm
   -- use unitOfInvertible (PowerSeries.constantCoeff K (divided_by_X_pow hf))
 
-/-- `divided_by_X_pow_inv` is the inverse of the element obtained by diving a non-zero power series
-by the larges power of `X` dividing it. Useful to create a term of type `units` -/
+/-- `dividedByXPowInv` is the inverse of the element obtained by diving a non-zero power series
+by the largest power of `X` dividing it. Useful to create a term of type `units` -/
 def dividedByXPowInv {f : PowerSeries K} (hf : f ≠ 0) : PowerSeries K :=
-  PowerSeries.invOfUnit (divided_by_X_pow hf) (firstUnitCoeff hf)
+  PowerSeries.invOfUnit (dividedByXPow hf) (firstUnitCoeff hf)
 
 theorem dividedByXPowInv_right_inv {f : PowerSeries K} (hf : f ≠ 0) :
-    dividedByXPow hf * dividedByXPowInv hf = 1 :=
-  mul_invOfUnit (dividedByXPow hf) (firstUnitCoeff hf) rfl
+    dividedByXPowInv hf * dividedByXPowInv hf = 1 := by /- sorry -/
+  -- mul_invOfUnit (dividedByXPow hf) (firstUnitCoeff hf) rfl
+  simp only [dividedByXPowInv]
+  have := @mul_invOfUnit _ _ (dividedByXPow hf) (firstUnitCoeff hf) ?_
+  simp only [dividedByXPowInv] at this
+  sorry
+  -- rfl
 
 theorem dividedByXPowInv_left_inv {f : PowerSeries K} (hf : f ≠ 0) :
     dividedByXPowInv hf * dividedByXPow hf = 1 := by rw [mul_comm];
