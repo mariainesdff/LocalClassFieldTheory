@@ -1,4 +1,4 @@
-import Data.Set.Lattice
+import Mathlib.Data.Set.Lattice
 
 #align_import for_mathlib.data.set.lattice
 
@@ -15,7 +15,7 @@ theorem set_inter_Iio {α β : Type _} [LinearOrder β] {X : β → Set α} {D N
   by_cases hND₀ : N = D
   · have : IsEmpty {d | D ≤ d ∧ d < D} := by
       simp only [Set.coe_setOf, isEmpty_subtype, not_and, not_lt, imp_self, imp_true_iff]
-    have aux : (⋂ (d : β) (x : D ≤ d ∧ d < D), X d) = Set.univ :=
+    have aux : (⋂ (d : β) (_ : D ≤ d ∧ d < D), X d) = Set.univ :=
       by
       erw [Set.biInter_eq_iInter {d | D ≤ d ∧ d < D} fun x _ => X x]
       apply Set.iInter_of_empty
@@ -26,9 +26,8 @@ theorem set_inter_Iio {α β : Type _} [LinearOrder β] {X : β → Set α} {D N
     congr with d
     simp only [Set.mem_union, Set.mem_Iio, Set.mem_Ico, Set.mem_Ioo, Set.mem_iInter,
       Set.mem_inter_iff, and_imp]
-    refine'
-      ⟨fun h => ⟨fun H => h <| Or.inl <| H.trans hND, fun H h_ND => h <| Or.inl h_ND⟩, fun h H => _⟩
+    refine ⟨fun h b => ⟨fun H => h b <| Or.inl <| H.trans hND, fun _ h_ND => h b <| Or.inl h_ND⟩,
+      fun h b H => ?_⟩
     rcases H with (Ha | Hb)
-    by_cases H_Nd : d < N
-    exacts [h.1 H_Nd, h.2 (le_of_not_lt H_Nd) Ha, h.2 (le_of_lt Hb.1) Hb.2]
-
+    by_cases H_bN : b < N
+    exacts [(h b).1 H_bN, (h b).2 (le_of_not_lt H_bN) Ha, (h b).2 (le_of_lt Hb.1) Hb.2]
