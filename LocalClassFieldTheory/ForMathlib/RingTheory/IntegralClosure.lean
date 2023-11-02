@@ -31,8 +31,8 @@ theorem isIntegral_iff_of_equiv {R S T : Type _} [CommRing R] [CommRing S] [Comm
   by
   constructor <;> intro ha
   · rw [← id_apply a]
-    refine' isIntegral_map_of_comp_eq_of_isIntegral φ.to_ring_hom (RingHom.id S) _ ha
+    refine' isIntegral_map_of_comp_eq_of_isIntegral φ.toRingHom (RingHom.id S) _ ha
     rw [id_comp, h]
   · rw [← id_apply a]
-    refine' isIntegral_map_of_comp_eq_of_isIntegral φ.symm.to_ring_hom (RingHom.id S) _ ha
+    refine' isIntegral_map_of_comp_eq_of_isIntegral φ.symm.toRingHom (RingHom.id S) _ ha
     rw [id_comp, ← h, comp_assoc, RingEquiv.toRingHom_comp_symm_toRingHom, comp_id]
