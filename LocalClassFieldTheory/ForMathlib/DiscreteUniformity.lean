@@ -19,7 +19,7 @@ contain a non-trivial filter coincide
 
 namespace Set
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
+
 theorem prod_subset_diag_singleton_left {X : Type _} {S T : Set X} (hS : S.Nonempty)
     (hT : T.Nonempty) (h_diag : S ×ˢ T ⊆ idRel) : ∃ x, S = {x} :=
   by
@@ -29,7 +29,7 @@ theorem prod_subset_diag_singleton_left {X : Type _} {S T : Set X} (hS : S.Nonem
   rw [prod_subset_iff] at h_diag
   replace hs := h_diag s hs t ht
   replace hx := h_diag x hx t ht
-  simp only [idRel, mem_set_of_eq] at hx hs
+  simp only [idRel, mem_setOf_eq] at hx hs
   rwa [← hs] at hx
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
@@ -49,7 +49,7 @@ theorem prod_subset_diag_singleton_eq {X : Type _} {S T : Set X} (hS : S.Nonempt
   refine' ⟨x, ⟨hx, _⟩⟩
   rw [hy, Set.singleton_eq_singleton_iff]
   exact
-    (set.prod_subset_iff.mp h_diag x (by simp only [hx, Set.mem_singleton]) y
+    (Set.prod_subset_iff.mp h_diag x (by simp only [hx, Set.mem_singleton]) y
         (by simp only [hy, Set.mem_singleton])).symm
 
 end Set
@@ -77,23 +77,23 @@ theorem cauchy_discrete_le_principal {X : Type _} {uX : UniformSpace X}
 
 /-- The constant to which a Cauchy filter in a discrete space converges.
 -/
-noncomputable def cauchyDiscreteIsConstant {X : Type _} {uX : UniformSpace X}
+noncomputable def cauchyDiscreteIsConstant {X : Type _} {_ : UniformSpace X}
     (hX : uniformity X = 𝓟 idRel) {α : Filter X} (hα : Cauchy α) : X :=
-  (cauchy_discrete_le_principal hX hα).some
+  (cauchy_discrete_le_principal hX hα).choose
 
-theorem cauchy_discrete_le {X : Type _} {uX : UniformSpace X} (hX : uniformity X = 𝓟 idRel)
+theorem cauchy_discrete_le {X : Type _} {_ : UniformSpace X} (hX : uniformity X = 𝓟 idRel)
     {α : Filter X} (hα : Cauchy α) : α ≤ 𝓟 {cauchyDiscreteIsConstant hX hα} :=
   Exists.choose_spec (cauchy_discrete_le_principal hX hα)
 
 theorem neBot_unique_principal {X : Type _} [UniformSpace X] (hX : uniformity X = 𝓟 idRel)
-    {α : Filter X} (hα : α.ne_bot) {x y : X} (hx : α ≤ 𝓟 {x}) (hy : α ≤ 𝓟 {y}) : x = y :=
+    {α : Filter X} (hα : α.NeBot) {x y : X} (hx : α ≤ 𝓟 {x}) (hy : α ≤ 𝓟 {y}) : x = y :=
   by
   have h_disc : DiscreteTopology X
   apply discreteTopology_of_discrete_uniformity hX
   have t2X := @DiscreteTopology.toT2Space X _ h_disc
   apply @eq_of_nhds_neBot X _ t2X x y
-  simp only [discrete_topology_iff_nhds.mp h_disc]
-  apply @ne_bot_of_le _ _ _ hα
+  simp only [discreteTopology_iff_nhds.mp h_disc]
+  apply @neBot_of_le _ _ _ hα
   simp only [le_inf_iff, le_pure_iff]
   exact ⟨le_principal_iff.mp hx, le_principal_iff.mp hy⟩
 
