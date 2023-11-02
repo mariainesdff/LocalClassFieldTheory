@@ -18,6 +18,6 @@ noncomputable def residueField : LocalRing.ResidueField ℤ_[p] ≃+* ZMod p :=
   by
   let α := RingHom.quotientKerEquivOfSurjective (ZMod.ringHom_surjective (@PadicInt.toZMod p _))
   rw [PadicInt.ker_toZMod] at α
-  use α
+  exact α
 
 end PadicInt
