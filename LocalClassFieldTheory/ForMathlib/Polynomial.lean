@@ -22,7 +22,7 @@ Hahn series in general and it is meant to expand the current `mathlib` library.#
 -/
 
 
-open IsDedekindDomain
+open IsDedekindDomain.HeightOneSpectrum
 
 noncomputable section
 
@@ -36,8 +36,9 @@ variable {R : Type _} [CommRing R] [IsDomain R] [IsDedekindDomain R] {K : Type _
 theorem intValuation_singleton {r : R} (hr : r ≠ 0) (hv : v.asIdeal = Ideal.span {r}) :
     v.intValuation r = Multiplicative.ofAdd (-1 : ℤ) :=
   by
-  have h : v.int_valuation r = v.int_valuation_def r := rfl
-  rw [h, v.int_valuation_def_if_neg hr, ← hv, Associates.count_self, algebraMap.coe_one]
+  have h : v.intValuation r = v.intValuationDef r := rfl
+  rw [h, v.intValuationDef_if_neg hr, ← hv, Associates.count_self, Int.ofNat_one, ofAdd_neg,
+    WithZero.coe_inv]
   apply v.associates_irreducible
 
 -- much faster than doing this inside the rw
@@ -56,7 +57,7 @@ namespace Polynomial
 def idealX : IsDedekindDomain.HeightOneSpectrum (Polynomial K)
     where
   asIdeal := Ideal.span {X}
-  IsPrime := by rw [Ideal.span_singleton_prime]; exacts [prime_X, X_ne_zero]
+  isPrime := by rw [Ideal.span_singleton_prime]; exacts [prime_X, X_ne_zero]
   ne_bot := by rw [Ne.def, Ideal.span_singleton_eq_bot]; exact X_ne_zero
 
 @[simp]
@@ -64,12 +65,12 @@ theorem idealX_span : (idealX K).asIdeal = Ideal.span {Polynomial.X} :=
   rfl
 
 theorem val_x_eq_neg_one :
-    (idealX K).Valuation (RatFunc.X : RatFunc K) = Multiplicative.ofAdd (-1 : ℤ) :=
+    (idealX K).valuation (RatFunc.X : RatFunc K) = Multiplicative.ofAdd (-1 : ℤ) :=
   by
-  rw [← RatFunc.algebraMap_X, valuation_of_algebra_map, int_valuation_singleton]
+  rw [← RatFunc.algebraMap_X, valuation_of_algebraMap, intValuation_singleton]
   · exact X_ne_zero
   -- times out if within the rw (?)
-  · exact ideal_X_span K
+  · exact idealX_span K
 
 --same (?)
 end Polynomial
@@ -79,10 +80,10 @@ namespace RatFunc
 open Polynomial
 
 instance : Valued (RatFunc K) ℤₘ₀ :=
-  Valued.mk' (idealX K).Valuation
+  Valued.mk' (idealX K).valuation
 
 theorem WithZero.valued_def {x : RatFunc K} :
-    @Valued.v (RatFunc K) _ _ _ (RatFunc.WithZero.valued K) x = (idealX K).Valuation x :=
-  rfl
+    @Valued.v (RatFunc K) _ _ _ _ x = (idealX K).valuation x := rfl
+
 
 end RatFunc
