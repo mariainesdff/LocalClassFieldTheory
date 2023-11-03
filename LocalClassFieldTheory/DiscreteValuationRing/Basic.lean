@@ -10,8 +10,6 @@ import Mathlib.Topology.Algebra.WithZeroTopology
 import LocalClassFieldTheory.ForMathlib.WithZero
 -- import LocalClassFieldTheory.ForMathlib.RingTheory.Valuation.Integers
 
-#align_import discrete_valuation_ring.basic
-
 /-!
 # Discrete Valuation Rings
 
@@ -24,7 +22,7 @@ structure on the unit ball of a `valued` field whose valuation is discrete.
 * `is_discrete`: We define a valuation to be discrete if it is ℤₘ₀-valued and surjective.
 * `IsUniformizer`: Given a ℤₘ₀-valued valuation `v` on a ring `R`, an element `π : R` is a
   uniformizer if `v π = multiplicative.of_add (- 1 : ℤ) : ℤₘ₀`.
-* `uniformizer`: A strucure bundling an element of a ring and a proof that it is a uniformizer.
+* `Uniformizer`: A strucure bundling an element of a ring and a proof that it is a uniformizer.
 * `base`: Given a valued field `K`, if the residue field of its unit ball (that is a local field)
   is finite, then `valuation_base` is the cardinal of the residue field, and otherwise it takes the
   value `6` which  is not a prime power.
@@ -33,8 +31,8 @@ structure on the unit ball of a `valued` field whose valuation is discrete.
 
 
 ## Main Results
-* `associated_of_uniformizer` An element associated to a uniformizer is itself a uniformizer
-* `uniformizer_of_associated` If two elements are uniformizers, they are associated.
+* `associated_of_Uniformizer` An element associated to a uniformizer is itself a uniformizer
+* `Uniformizer_of_associated` If two elements are uniformizers, they are associated.
 * `IsUniformizer_is_generator` A generator of the maximal ideal is a uniformizer if the valuation
   is discrete.
 * `is_discrete_of_exists_uniformizer` If there exists a uniformizer, the valuation is discrete.
@@ -143,7 +141,7 @@ theorem IsUniformizer_iff {π : R} :
 
 variable (vR)
 
-/-- The structure `uniformizer` bundles together the term in the ring and a proof that it is a
+/-- The structure `Uniformizer` bundles together the term in the ring and a proof that it is a
   uniformizer.-/
 @[ext]
 structure Uniformizer where
@@ -180,19 +178,19 @@ theorem isDiscreteOfExistsUniformizer {K : Type _} [Field K] (v : Valuation K �
     rw [map_zpow₀, hπ, ← coe_zpow, coe_inj, ← ofAdd_zsmul, ← zsmul_neg', neg_neg, zsmul_one,
       Int.cast_id, ofAdd_toAdd]
 
-theorem uniformizer_ne_zero {π : R} (hπ : IsUniformizer vR π) : π ≠ 0 :=
+theorem Uniformizer_ne_zero {π : R} (hπ : IsUniformizer vR π) : π ≠ 0 :=
   by
   intro h0
   rw [h0, IsUniformizer, Valuation.map_zero] at hπ
   exact WithZero.zero_ne_coe hπ
 
-theorem uniformizer_ne_zero' (π : Uniformizer vR) : π.1.1 ≠ 0 :=
-  uniformizer_ne_zero vR π.2
+theorem Uniformizer_ne_zero' (π : Uniformizer vR) : π.1.1 ≠ 0 :=
+  Uniformizer_ne_zero vR π.2
 
-theorem uniformizer_valuation_pos {π : R} (hπ : IsUniformizer vR π) : 0 < vR π := by
+theorem Uniformizer_valuation_pos {π : R} (hπ : IsUniformizer vR π) : 0 < vR π := by
   rw [IsUniformizer_iff] at hπ ; simp only [zero_lt_iff, Ne.def, hπ, coe_ne_zero, not_false_iff]
 
-theorem uniformizer_not_isUnit {π : vR.integer} (hπ : IsUniformizer vR π) : ¬IsUnit π :=
+theorem Uniformizer_not_isUnit {π : vR.integer} (hπ : IsUniformizer vR π) : ¬IsUnit π :=
   by
   intro h
   have h1 :=
@@ -201,7 +199,7 @@ theorem uniformizer_not_isUnit {π : vR.integer} (hπ : IsUniformizer vR π) : �
   erw [IsUniformizer, h1] at hπ
   exact ne_of_gt ofAdd_neg_one_lt_one hπ
 
-theorem uniformizer_valuation_lt_one {π : R} (hπ : IsUniformizer vR π) : vR π < 1 := by
+theorem Uniformizer_valuation_lt_one {π : R} (hπ : IsUniformizer vR π) : vR π < 1 := by
   rw [IsUniformizer_iff.mp hπ]; exact ofAdd_neg_one_lt_one
 
 open scoped NNReal
@@ -237,159 +235,149 @@ notion of `valuation_subring` instead of the weaker one of `integer`s to access 
 API. -/
 local notation "K₀" => v.valuationSubring
 
-theorem uniformizerOfAssociated {π₁ π₂ : K₀} (h1 : IsUniformizer v π₁) (H : Associated π₁ π₂) :
+theorem UniformizerOfAssociated {π₁ π₂ : K₀} (h1 : IsUniformizer v π₁) (H : Associated π₁ π₂) :
     IsUniformizer v π₂ := by
   obtain ⟨u, hu⟩ := H
   rwa [IsUniformizer_iff, ← hu, Subring.coe_mul, Valuation.map_mul,
     (Integer.isUnit_iff_valuation_eq_one u.1).mp u.isUnit, mul_one, ← IsUniformizer_iff]
 
 
-theorem associated_of_uniformizer {π₁ π₂ : Uniformizer v} : Associated π₁.1 π₂.1 :=
+theorem associatedOfUniformizer {π₁ π₂ : Uniformizer v} : Associated π₁.1 π₂.1 :=
   by
   have hval : v ((π₁.1 : K)⁻¹ * π₂.1) = 1
-  simp only [/- uniformizer.val_eq_coe,  -/Valuation.map_mul, map_inv₀, IsUniformizer_iff.mp π₁.2,
+  simp only [Valuation.map_mul, map_inv₀, IsUniformizer_iff.mp π₁.2,
     IsUniformizer_iff.mp π₂.2, ofAdd_neg, coe_inv, inv_inv, mul_inv_cancel, Ne.def, coe_ne_zero,
     not_false_iff]
   let p : v.integer := ⟨(π₁.1 : K)⁻¹ * π₂.1, (Valuation.mem_integer v _).mpr (le_of_eq hval)⟩
   use ((Integer.isUnit_iff_valuation_eq_one p).mpr hval).unit
   simp only [IsUnit.unit_spec]
   apply_fun ((↑·) : K₀ → K) using Subtype.val_injective
-  simp only [Submonoid.coe_mul, ne_eq, ← mul_assoc, mul_inv_cancel (uniformizer_ne_zero v π₁.2),
+  simp only [Submonoid.coe_mul, ne_eq, ← mul_assoc, mul_inv_cancel (Uniformizer_ne_zero v π₁.2),
     one_mul]
 
-
-theorem pow_uniformizer {r : K₀} (hr : r ≠ 0) (π : Uniformizer v) :
-    /- ∃ n : ℕ, ∃ u : K₀ˣ, r = π.1 ^ n  * (u.1 : integer v)-/
-    ∃ n : ℕ, ∃ u : K₀ˣ, r = Mul.mul (π.1 ^ n) (u.1 : integer v) :=
-  by
+theorem pow_Uniformizer {r : K₀} (hr : r ≠ 0) (π : Uniformizer v) :
+    ∃ n : ℕ, ∃ u : K₀ˣ, r = (π.1 ^ n).1  * u.1 := by
   have hr₀ : v r ≠ 0 := by rw [Ne.def, zero_iff, Subring.coe_eq_zero_iff]; exact hr
-  set m := -(unzero hr₀).toAdd with hm
+  set m := -(Multiplicative.toAdd (unzero hr₀)) with hm
   have hm₀ : 0 ≤ m :=
     by
-    rw [hm, Right.nonneg_neg_iff, ← toAdd_one, to_add_le, ← coe_le_coe, coe_unzero]
+    rw [hm, Right.nonneg_neg_iff, ← toAdd_one, toAdd_le, ← coe_le_coe, coe_unzero]
     exact r.2
   obtain ⟨n, hn⟩ := Int.eq_ofNat_of_zero_le hm₀
   use n
-  have hpow : v (π.1 ^ (-m) * r) = 1 := by
+  have hpow : v (π.1.1 ^ (-m) * r) = 1 := by
     rw [Valuation.map_mul, map_zpow₀, IsUniformizer_iff.mp π.2, ofAdd_neg, coe_inv, inv_zpow',
       neg_neg, ← WithZero.coe_zpow, ← Int.ofAdd_mul, one_mul, ofAdd_neg, ofAdd_toAdd, coe_inv,
       coe_unzero, inv_mul_cancel hr₀]
-  set a : K₀ := ⟨π.1 ^ (-m) * r, by apply le_of_eq hpow⟩ with ha
+  set a : K₀ := ⟨π.1.1 ^ (-m) * r, by apply le_of_eq hpow⟩ with ha
   have ha₀ : (↑a : K) ≠ 0 :=
     by
-    simp only [ha, neg_neg, SetLike.coe_mk, Ne.def]
-    by_cases h0 : to_add (unzero hr₀) = 0
+    simp only [ha, neg_neg, Ne.def]
+    by_cases h0 : toAdd (unzero hr₀) = 0
     · rw [h0, zpow_zero, one_mul, Subring.coe_eq_zero_iff]; exact hr
     · apply mul_ne_zero
       · rw [Ne.def, zpow_eq_zero_iff h0]
-        exact uniformizer_ne_zero' v π
+        exact Uniformizer_ne_zero' v π
       · rw [Ne.def, Subring.coe_eq_zero_iff]; exact hr
   have h_unit_a : IsUnit a :=
-    integers.is_unit_of_one (integer.integers v) (isUnit_iff_ne_zero.mpr ha₀) hpow
+    Integers.isUnit_of_one (integer.integers v) (isUnit_iff_ne_zero.mpr ha₀) hpow
   use h_unit_a.unit
-  ext
-  rw [IsUnit.unit_spec, Subring.coe_mul, Subring.coe_pow, Subtype.coe_mk, hn, ← mul_assoc, zpow_neg,
-    zpow_ofNat, mul_inv_cancel, one_mul]
-  apply pow_ne_zero
-  exact uniformizer_ne_zero' _ π
+  rw [IsUnit.unit_spec, Subring.coe_pow, ha, ← mul_assoc, zpow_neg, hn, zpow_ofNat, mul_inv_cancel,
+    one_mul]
+  · apply pow_ne_zero
+    exact Uniformizer_ne_zero' _ π
 
-
-#exit
 
 /-- This proof of the lemma does not need the valuation to be discrete, although the fact that a
 uniformizer exists forces the condition.-/
-theorem uniformizer_is_generator (π : Uniformizer v) :
-    maximalIdeal v.ValuationSubring = Ideal.span {π.1} :=
-  by
-  apply (maximal_ideal.is_maximal _).eq_of_le
+theorem Uniformizer_is_generator (π : Uniformizer v) :
+    maximalIdeal (Valuation.valuationSubring v) = Ideal.span {π.1} := by
+  apply (maximalIdeal.isMaximal _).eq_of_le
   · intro h
     rw [Ideal.span_singleton_eq_top] at h
-    apply uniformizer_not_is_unit v π.2 h
+    apply Uniformizer_not_isUnit v π.2 h
   · intro x hx
     by_cases hx₀ : x = 0
     · simp only [hx₀, Ideal.zero_mem]
-    · obtain ⟨n, ⟨u, hu⟩⟩ := pow_uniformizer v hx₀ π
+    · obtain ⟨n, ⟨u, hu⟩⟩ := pow_Uniformizer v hx₀ π
+      rw [← Subring.coe_mul, Subtype.coe_inj] at hu
       have hn : Not (IsUnit x) := fun h =>
-        (maximal_ideal.is_maximal _).ne_top (eq_top_of_is_unit_mem _ hx h)
-      replace hn : n ≠ 0 := fun h => by rw [hu, h, pow_zero, one_mul] at hn ; exact hn u.is_unit
-      simpa [Ideal.mem_span_singleton, hu, IsUnit.dvd_mul_right, Units.isUnit] using
-        dvd_pow_self _ hn
+        (maximalIdeal.isMaximal _).ne_top (eq_top_of_isUnit_mem _ hx h)
+      replace hn : n ≠ 0 := fun h => by
+        simp only [hu, h, pow_zero, one_mul, Units.isUnit, not_true] at hn
+      simp only [Ideal.mem_span_singleton, hu, IsUnit.dvd_mul_right, Units.isUnit,
+        dvd_pow_self _ hn]
 
-theorem IsUniformizer_is_generator {π : v.ValuationSubring} (hπ : IsUniformizer v π) :
-    maximalIdeal v.ValuationSubring = Ideal.span {π} :=
-  uniformizer_is_generator _ ⟨π, hπ⟩
 
-theorem pow_uniformizer_is_pow_generator {π : Uniformizer v} (n : ℕ) :
-    maximalIdeal v.ValuationSubring ^ n = Ideal.span {π.1 ^ n} := by
-  rw [← Ideal.span_singleton_pow, uniformizer_is_generator]
+theorem IsUniformizer_is_generator {π : v.valuationSubring} (hπ : IsUniformizer v π) :
+    maximalIdeal v.valuationSubring = Ideal.span {π} :=
+  Uniformizer_is_generator _ ⟨π, hπ⟩
+
+theorem pow_Uniformizer_is_pow_generator {π : Uniformizer v} (n : ℕ) :
+    maximalIdeal v.valuationSubring ^ n = Ideal.span {π.1 ^ n} := by
+  rw [← Ideal.span_singleton_pow, Uniformizer_is_generator]
 
 variable [IsDiscrete v]
 
-theorem exists_uniformizer_of_discrete : ∃ π : K₀, IsUniformizer v (π : K) :=
-  by
-  let surj_v : is_discrete v; infer_instance
+theorem exists_Uniformizer_ofDiscrete : ∃ π : K₀, IsUniformizer v (π : K) := by
+  let surj_v : IsDiscrete v; infer_instance
   refine'
-    ⟨⟨(surj_v.surj (Multiplicative.ofAdd (-1 : ℤ) : ℤₘ₀)).some, _⟩,
+    ⟨⟨(surj_v.surj (Multiplicative.ofAdd (-1 : ℤ) : ℤₘ₀)).choose, _⟩,
       (surj_v.surj (Multiplicative.ofAdd (-1 : ℤ) : ℤₘ₀)).choose_spec⟩
-  rw [mem_valuation_subring_iff, (surj_v.surj (Multiplicative.ofAdd (-1 : ℤ) : ℤₘ₀)).choose_spec]
-  exact le_of_lt of_add_neg_one_lt_one
+  rw [mem_valuationSubring_iff, (surj_v.surj (Multiplicative.ofAdd (-1 : ℤ) : ℤₘ₀)).choose_spec]
+  exact le_of_lt ofAdd_neg_one_lt_one
 
 instance : Nonempty (Uniformizer v) :=
-  ⟨⟨(exists_uniformizer_of_discrete v).some, (exists_uniformizer_of_discrete v).choose_spec⟩⟩
+  ⟨⟨(exists_Uniformizer_ofDiscrete v).choose, (exists_Uniformizer_ofDiscrete v).choose_spec⟩⟩
 
-theorem not_isField : ¬IsField K₀ :=
-  by
-  obtain ⟨π, hπ⟩ := exists_uniformizer_of_discrete v
+theorem not_isField : ¬IsField K₀ := by
+  obtain ⟨π, hπ⟩ := exists_Uniformizer_ofDiscrete v
   rintro ⟨-, -, h⟩
-  have := uniformizer_ne_zero v hπ
-  simp only [uniformizer_ne_zero v hπ, Ne.def, Subring.coe_eq_zero_iff] at this
+  have := Uniformizer_ne_zero v hπ
+  simp only [Uniformizer_ne_zero v hπ, Ne.def, Subring.coe_eq_zero_iff] at this
   specialize h this
   rw [← isUnit_iff_exists_inv] at h
-  exact uniformizer_not_is_unit v hπ h
+  exact Uniformizer_not_isUnit v hπ h
 
-theorem IsUniformizerOfGenerator {r : K₀} (hr : maximalIdeal v.ValuationSubring = Ideal.span {r}) :
+theorem IsUniformizerOfGenerator {r : K₀} (hr : maximalIdeal v.valuationSubring = Ideal.span {r}) :
     IsUniformizer v r :=
   by
   have hr₀ : r ≠ 0 := by
     intro h
     rw [h, Set.singleton_zero, span_zero] at hr
     exact
-      Ring.ne_bot_of_isMaximal_of_not_isField (maximal_ideal.is_maximal v.valuation_subring)
-        (not_is_field v) hr
-  obtain ⟨π, hπ⟩ := exists_uniformizer_of_discrete v
-  obtain ⟨n, u, hu⟩ := pow_uniformizer v hr₀ ⟨π, hπ⟩
-  rw [uniformizer_is_generator v ⟨π, hπ⟩, span_singleton_eq_span_singleton] at hr
-  exact uniformizer_of_associated v hπ hr
+      Ring.ne_bot_of_isMaximal_of_not_isField (maximalIdeal.isMaximal v.valuationSubring)
+        (not_isField v) hr
+  obtain ⟨π, hπ⟩ := exists_Uniformizer_ofDiscrete v
+  obtain ⟨n, u, hu⟩ := pow_Uniformizer v hr₀ ⟨π, hπ⟩
+  rw [Uniformizer_is_generator v ⟨π, hπ⟩, span_singleton_eq_span_singleton] at hr
+  exact UniformizerOfAssociated v hπ hr
 
 theorem val_le_iff_dvd (L : Type _) [Field L] {w : Valuation L ℤₘ₀} [IsDiscrete w]
-    [DiscreteValuationRing w.ValuationSubring] (x : w.ValuationSubring) (n : ℕ) :
-    w x ≤ ofAdd (-(n : ℤ)) ↔ LocalRing.maximalIdeal w.ValuationSubring ^ n ∣ Ideal.span {x} :=
-  by
+    [DiscreteValuationRing w.valuationSubring] (x : w.valuationSubring) (n : ℕ) :
+    w x ≤ ofAdd (-(n : ℤ)) ↔ LocalRing.maximalIdeal w.valuationSubring ^ n ∣ Ideal.span {x} := by
   by_cases hx : x = 0
-  ·
-    simp_rw [ideal.span_singleton_eq_bot.mpr hx, hx, algebraMap.coe_zero, Valuation.map_zero,
-      WithZero.zero_le, true_iff_iff, ← Ideal.zero_eq_bot, dvd_zero]
-  · set r := Submodule.IsPrincipal.generator (LocalRing.maximalIdeal w.valuation_subring) with hr
-    have hrn : w (r ^ n) = of_add (-(n : ℤ)) :=
-      by
-      simp only [Valuation.map_pow, ofAdd_neg, WithZero.coe_inv, inv_pow, inv_inj, ←
-        WithZero.coe_pow, ← ofAdd_nsmul, Nat.smul_one_eq_coe]
-      rw [WithZero.ofAdd_zpow, ← zpow_neg, ← Nat.cast_one, ← WithZero.ofAdd_neg_one_pow_comm (-n) 1,
-        neg_neg, ← zpow_ofNat, ← zpow_ofNat, WithZero.ofAdd_pow_pow_comm, Nat.cast_one, zpow_one]
+  · rw [Ideal.span_singleton_eq_bot.mpr hx, hx, Subring.coe_zero, Valuation.map_zero]
+    simp only [WithZero.zero_le, true_iff_iff, ← Ideal.zero_eq_bot, dvd_zero]
+  · set r := Submodule.IsPrincipal.generator (LocalRing.maximalIdeal w.valuationSubring) with hr
+    have hrn : w (r ^ n) = ofAdd (-(n : ℤ))
+    · replace hr : IsUniformizer w r := DiscreteValuation.IsUniformizerOfGenerator w ?_
+      rw [WithZero.ofAdd_zpow, zpow_neg, ← Nat.cast_one, WithZero.coe_inv,
+        ← WithZero.ofAdd_neg_one_pow_comm ↑n 1, pow_one, zpow_neg, inv_inv, zpow_ofNat,
+          Subring.coe_pow, Valuation.map_pow]
       congr
-      rw [← IsUniformizer_iff]
-      apply DiscreteValuation.IsUniformizerOfGenerator
-      rw [← Submodule.IsPrincipal.span_singleton_generator (maximal_ideal w.valuation_subring), ←
-        hr]
-      rfl
+      rw [span_singleton_generator]
     have :=
-      @Valuation.Integers.le_iff_dvd L ℤₘ₀ _ _ w w.valuation_subring _ _
+      @Valuation.Integers.le_iff_dvd L ℤₘ₀ _ _ w w.valuationSubring _ _
         (Valuation.integer.integers w) x (r ^ n)
     erw [← hrn, this]
-    rw [← Ideal.span_singleton_generator (LocalRing.maximalIdeal w.valuation_subring), ← hr,
+    have : IsDedekindDomain { x // x ∈ valuationSubring w } := sorry
+    rw [← Ideal.span_singleton_generator (LocalRing.maximalIdeal w.valuationSubring), ← hr,
       Ideal.span_singleton_pow, Ideal.dvd_iff_le, Ideal.span_singleton_le_iff_mem,
       Ideal.mem_span_singleton', dvd_iff_exists_eq_mul_left]
     tauto
+
+#exit
 
 section RankOne
 
