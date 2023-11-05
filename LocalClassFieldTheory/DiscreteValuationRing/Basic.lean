@@ -353,12 +353,8 @@ theorem IsUniformizerOfGenerator {r : K₀} (hr : maximalIdeal v.valuationSubrin
   rw [Uniformizer_is_generator v ⟨π, hπ⟩, span_singleton_eq_span_singleton] at hr
   exact UniformizerOfAssociated v hπ hr
 
-example (A : Type _) [CommRing A] [IsDomain A] [DiscreteValuationRing A] : IsDedekindDomain A := by
-  apply ((DiscreteValuationRing.TFAE A <| DiscreteValuationRing.not_isField A).out 0 2).mp
+lemma foo (A : Type _) [CommRing A] [IsDomain A] [DiscreteValuationRing A] : IsNoetherianRing A := by
   infer_instance
-
-example (A : Type _) [CommRing A] (B : Subring A) : B = {a : A // a ∈ B}:= by
-  rfl
 
 theorem val_le_iff_dvd (L : Type _) [Field L] {w : Valuation L ℤₘ₀} [IsDiscrete w]
     [DiscreteValuationRing w.valuationSubring] (x : w.valuationSubring) (n : ℕ) :
@@ -382,7 +378,7 @@ theorem val_le_iff_dvd (L : Type _) [Field L] {w : Valuation L ℤₘ₀} [IsDis
     -- finding the instance `IsNotherianRing w.valuationSubring`is extremely long
     apply ((@DiscreteValuationRing.TFAE w.valuationSubring _ ?_ _ _ <| not_isField w).out 0 2).mp
       (by infer_instance)
-    sorry
+    apply foo
     rw [← Ideal.span_singleton_generator (LocalRing.maximalIdeal w.valuationSubring), ← hr,
       Ideal.span_singleton_pow, Ideal.dvd_iff_le, Ideal.span_singleton_le_iff_mem,
       Ideal.mem_span_singleton', dvd_iff_exists_eq_mul_left]
