@@ -64,7 +64,7 @@ end RankOneValuation
 namespace RankOneValuation
 
 variable (L : Type _) [Field L] (Γ₀ : Type _) [LinearOrderedCommGroupWithZero Γ₀]
-  [val : Valued L Γ₀] [hv : IsRankOne val.V]
+  [val : Valued L Γ₀] [hv : IsRankOne val.v]
 
 theorem normDef_isNonarchimedean : IsNonarchimedean (@normDef L _ Γ₀ _ val hv) :=
   normDef_add_le
@@ -73,11 +73,11 @@ theorem normDef_isNonarchimedean : IsNonarchimedean (@normDef L _ Γ₀ _ val hv
   multiplicative norm on `L` induced by this valuation. -/
 def mulRingNormDef : MulRingNorm L where
   toFun := normDef
-  map_zero' := by simp only [norm_def, map_zero, Nonneg.coe_zero]
+  map_zero' := by simp only [normDef, map_zero, Nonneg.coe_zero, NNReal.coe_zero]
   add_le' x y := add_le_of_isNonarchimedean normDef_nonneg (normDef_isNonarchimedean L Γ₀) x y
-  neg' x := by simp only [norm_def, Valuation.map_neg]
-  map_one' := by simp only [norm_def, map_one, Nonneg.coe_one]
-  map_mul' x y := by simp only [norm_def, map_mul, Nonneg.coe_mul]
+  neg' x := by simp only [normDef, Valuation.map_neg]
+  map_one' := by simp only [normDef, map_one, Nonneg.coe_one, NNReal.coe_one]
+  map_mul' x y := by simp only [normDef, map_mul, Nonneg.coe_mul,NNReal.coe_mul]
   eq_zero_of_map_eq_zero' x := normDef_eq_zero
 
 end RankOneValuation
