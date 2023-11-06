@@ -5,7 +5,7 @@ import Mathlib.RingTheory.Valuation.Integers
 /-!
 # Valutation of units
 
-The main result of this file, `valuation_one_of_is_unit` is a generalization of
+The main result of this file, `valuation_one_of_isUnit` is a generalization of
 `valuation.integers.one_of_is_unit` with a slightly weaker assumption
 
 -/
@@ -23,7 +23,7 @@ theorem valuation_one_of_isUnit {x : O} (hx : IsUnit x) (hv : ∀ x, v (algebraM
   le_antisymm (hv _) <|
     by
     rw [← v.map_one, ← (algebraMap O R).map_one, ← u.mul_inv, ← mul_one (v (algebraMap O R x)), hu,
-      (algebraMap O R).map_hMul, v.map_mul]
+      (algebraMap O R).map_mul, v.map_mul]
     exact mul_le_mul_left' (hv (u⁻¹ : Units O)) _
 
 end Valuation
