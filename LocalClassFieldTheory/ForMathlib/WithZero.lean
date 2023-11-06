@@ -1,5 +1,5 @@
 import Mathlib.Algebra.Group.WithOne.Units
-import Mathlib.Data.Real.Nnreal
+import Mathlib.Data.Real.NNReal
 import Mathlib.Logic.Equiv.TransferInstance
 import Mathlib.RingTheory.Valuation.Basic
 
