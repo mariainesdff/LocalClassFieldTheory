@@ -63,24 +63,23 @@ local notation "K_v" => adicCompletion K v
 instance isDiscrete : IsDiscrete (@Valued.v K_v _ ℤₘ₀ _ _) :=
   by
   obtain ⟨π, hπ⟩ := valuation_exists_uniformizer K v
-  apply is_discrete_of_exists_uniformizer
+  apply isDiscreteOfExistsUniformizer
   swap
   use(↑π : K_v)
-  rw [is_uniformizer_iff, ← hπ]
+  rw [IsUniformizer_iff, ← hπ]
   convert @Valued.extension_extends K _ _ _ (Valued.mk' v.valuation) π
 
 /-- The maximal ideal of `R_v`, that is a discrete valuation ring. -/
 def maxIdealOfCompletionDef : Ideal R_v :=
   LocalRing.maximalIdeal R_v
 
-instance : DiscreteValuationRing R_v :=
-  DiscreteValuation.dvr_of_isDiscrete _
+instance : DiscreteValuationRing R_v := DiscreteValuation.dvr_of_isDiscrete _
 
 theorem IsDedekindDomain.HeightOneSpectrum.valuation_completion_integers_exists_uniformizer :
     ∃ π : R_v, Valued.v (π : K_v) = ofAdd (-1 : ℤ) :=
   by
   obtain ⟨x, hx⟩ := IsDedekindDomain.HeightOneSpectrum.int_valuation_exists_uniformizer v
-  have h : algebraMap R_v K_v ↑x = (↑(↑x : K) : K_v) := rfl
+  have h : algebraMap R_v K_v (x : R_v) = ((x : K) : K_v) := rfl
   use⟨algebraMap R_v K_v ↑x, by simp only [ValuationSubring.algebraMap_apply, SetLike.coe_mem]⟩
   simp_rw [h]
   have h1 : (↑x : K) = algebraMap R K x := rfl
