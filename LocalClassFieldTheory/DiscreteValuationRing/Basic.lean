@@ -162,10 +162,6 @@ def Uniformizer.mk' (x : R) (hx : IsUniformizer vR x) : Uniformizer vR
 instance : Coe (Uniformizer vR) vR.integer :=
   ⟨fun π => π.val⟩
 
--- @[simp]
--- theorem Uniformizer.val_eq_coe {π : Uniformizer vR} : (π : R) = π.val :=
---   rfl
-
 theorem isDiscreteOfExistsUniformizer {K : Type w₁} [Field K] (v : Valuation K ℤₘ₀) {π : K}
     (hπ : IsUniformizer v π) : IsDiscrete v :=
   by
@@ -355,14 +351,11 @@ theorem IsUniformizerOfGenerator {r : K₀} (hr : maximalIdeal v.valuationSubrin
   exact UniformizerOfAssociated v hπ hr
 
 
+-- /-The following instance cannot be automatically found, see
+-- [https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/adding.20imports.20breaks.20class.20inference.3F]-/
 
-/-The following auxiliary lemma is used in the proof of `val_le_iff_dvd` to find an instance of
-Noetherian ring on `w.valuationSubring` that the class type inference cannot find, see
-[https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/adding.20imports.20breaks.20class.20inference.3F]-/
-
-lemma auxNoetheriean (A : Type w₁) [CommRing A] [IsDomain A] [DiscreteValuationRing A] : IsNoetherianRing A :=
-  IsDedekindRing.toIsNoetherian
-
+-- instance instDVRtoIsNoetherian (A : Type w₁) [CommRing A] [IsDomain A] [DiscreteValuationRing A] :
+--   IsNoetherianRing A := IsDedekindRing.toIsNoetherian
 
 theorem val_le_iff_dvd (L : Type w₁) [Field L] {w : Valuation L ℤₘ₀} [IsDiscrete w]
     [DiscreteValuationRing w.valuationSubring] (x : w.valuationSubring) (n : ℕ) :
@@ -383,10 +376,7 @@ theorem val_le_iff_dvd (L : Type w₁) [Field L] {w : Valuation L ℤₘ₀} [Is
         (Valuation.integer.integers w) x (r ^ n)
     erw [← hrn, this]
     have DD : IsDedekindDomain w.valuationSubring
-    -- finding the instance `IsNotherianRing w.valuationSubring`is extremely long
-    apply ((@DiscreteValuationRing.TFAE w.valuationSubring _ ?_ _ _ <| not_isField w).out 0 2).mp
-      (by infer_instance)
-    apply auxNoetheriean
+    · apply IsPrincipalIdealRing.isDedekindDomain
     rw [← Ideal.span_singleton_generator (LocalRing.maximalIdeal w.valuationSubring), ← hr,
       Ideal.span_singleton_pow, Ideal.dvd_iff_le, Ideal.span_singleton_le_iff_mem,
       Ideal.mem_span_singleton', dvd_iff_exists_eq_mul_left]

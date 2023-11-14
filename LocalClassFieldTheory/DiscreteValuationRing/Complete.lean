@@ -40,7 +40,7 @@ the valuation on `K`, and this is of course different from the `valued` instance
 field of `R_v`, itself isomorphic (but not **equal**) to `K_v`, that instead comes from the
 `discrete_valuation_ring` instance on `R_v`. In particular, no diamond arises because the types
 `fraction_ring R_v` and `K_v` are different, although equivalent as fields.
-* The terms `max_ideal_of_completion_def` and `max_ideal_of_completion` represent the same
+* The terms `maxIdealOfCompletionDef` and `maxIdealOfCompletion` represent the same
 mathematical object but one is an ideal, the other is a term of the height-one spectrum and it is
 the second that has an adic valuation attached to it.
 -/
@@ -76,59 +76,52 @@ def maxIdealOfCompletionDef : Ideal R_v :=
 instance : DiscreteValuationRing R_v := DiscreteValuation.dvr_of_isDiscrete _
 
 theorem IsDedekindDomain.HeightOneSpectrum.valuation_completion_integers_exists_uniformizer :
-    ∃ π : R_v, Valued.v (π : K_v) = ofAdd (-1 : ℤ) :=
-  by
+    ∃ π : R_v, Valued.v (π : K_v) = ofAdd (-1 : ℤ) := by
+  letI ValI : Valued K ℤₘ₀ := adicValued v
   obtain ⟨x, hx⟩ := IsDedekindDomain.HeightOneSpectrum.int_valuation_exists_uniformizer v
-  have h : algebraMap R_v K_v (x : R_v) = ((x : K) : K_v) := rfl
-  use⟨algebraMap R_v K_v ↑x, by simp only [ValuationSubring.algebraMap_apply, SetLike.coe_mem]⟩
-  simp_rw [h]
-  have h1 : (↑x : K) = algebraMap R K x := rfl
-  have h2 : v.int_valuation_def x = v.int_valuation x := rfl
-  rw [← hx, SetLike.coe_mk, IsDedekindDomain.HeightOneSpectrum.valuedAdicCompletion_def,
-    Valued.extension_extends, h1, h2, ←
-    @IsDedekindDomain.HeightOneSpectrum.valuation_of_algebraMap R _ _ _ K _ _ _ v x]
-  rfl
+  use ⟨algebraMap R_v K_v (algebraMap _ R_v x), by simp only [ValuationSubring.algebraMap_apply,
+    SetLike.coe_mem]⟩
+  have h2 : v.intValuationDef x = v.intValuation x := rfl
+  rw [← hx,/-  SetLike.coe_mk, -/ IsDedekindDomain.HeightOneSpectrum.valuedAdicCompletion_def, h2,
+    ← @IsDedekindDomain.HeightOneSpectrum.valuation_of_algebraMap R _ _ _ K _ _ _ v x]
+  exact @Valued.extension_extends K _ ℤₘ₀ _ _ (algebraMap _ K x)
 
 theorem IsDedekindDomain.HeightOneSpectrum.valuation_completion_exists_uniformizer :
-    ∃ π : K_v, Valued.v π = ofAdd (-1 : ℤ) :=
-  by
+    ∃ π : K_v, Valued.v π = ofAdd (-1 : ℤ) := by
+  letI : Valued K ℤₘ₀ := adicValued v
   obtain ⟨x, hx⟩ := IsDedekindDomain.HeightOneSpectrum.valuation_exists_uniformizer K v
-  use↑x
+  use x
   rw [IsDedekindDomain.HeightOneSpectrum.valuedAdicCompletion_def, ← hx, Valued.extension_extends]
   rfl
 
 theorem adicCompletionIntegers_not_isField :
-    ¬IsField ↥(HeightOneSpectrum.adicCompletionIntegers K v) :=
+    ¬IsField (HeightOneSpectrum.adicCompletionIntegers K v) :=
   by
   rw [Ring.not_isField_iff_exists_ideal_bot_lt_and_lt_top]
-  use max_ideal_of_completion_def R v K
+  use maxIdealOfCompletionDef R v K
   constructor
   · rw [bot_lt_iff_ne_bot, Ne.def]
     by_contra h
     obtain ⟨π, hπ⟩ :=
-      is_dedekind_domain.height_one_spectrum.valuation_completion_integers_exists_uniformizer R v K
-    have h1 : π ∈ max_ideal_of_completion_def R v K :=
-      by
-      rw [max_ideal_of_completion_def, LocalRing.mem_maximalIdeal, mem_nonunits_iff,
-        Valuation.integer.not_isUnit_iff_valuation_lt_one, hπ]
+      IsDedekindDomain.HeightOneSpectrum.valuation_completion_integers_exists_uniformizer R v K
+    have h1 : π ∈ maxIdealOfCompletionDef R v K
+    · rw [maxIdealOfCompletionDef, LocalRing.mem_maximalIdeal, mem_nonunits_iff,
+        Valuation.Integer.not_isUnit_iff_valuation_lt_one, hπ]
       exact WithZero.ofAdd_neg_one_lt_one
     rw [h, Ideal.mem_bot] at h1
-    simp only [h1, algebraMap.coe_zero, Valuation.map_zero, WithZero.zero_ne_coe] at hπ
-    exact hπ
-  ·
-    simp only [lt_top_iff_ne_top, Ne.def, Ideal.eq_top_iff_one, max_ideal_of_completion_def,
+    simp only [h1, ZeroMemClass.coe_zero, _root_.map_zero, ofAdd_neg, WithZero.coe_inv,
+      zero_eq_inv] at hπ
+  · simp only [lt_top_iff_ne_top, Ne.def, Ideal.eq_top_iff_one, maxIdealOfCompletionDef,
       LocalRing.mem_maximalIdeal, one_not_mem_nonunits, not_false_iff]
 
 /-- The maximal ideal of `R_v`, as a term of the `height_one_spectrum` of `R_v`.
 The underlying ideal is `height_one_spectrum_def`. -/
-def maxIdealOfCompletion : HeightOneSpectrum R_v
-    where
+def maxIdealOfCompletion : HeightOneSpectrum R_v where
   asIdeal := maxIdealOfCompletionDef R v K
-  IsPrime := Ideal.IsMaximal.isPrime (LocalRing.maximalIdeal.isMaximal R_v)
-  ne_bot :=
-    by
-    rw [Ne.def, max_ideal_of_completion_def, ← LocalRing.isField_iff_maximalIdeal_eq]
-    exact adic_completion_integers_not_is_field R v K
+  isPrime := Ideal.IsMaximal.isPrime (LocalRing.maximalIdeal.isMaximal R_v)
+  ne_bot := by
+    rw [Ne.def, maxIdealOfCompletionDef, ← LocalRing.isField_iff_maximalIdeal_eq]
+    exact adicCompletionIntegers_not_isField R v K
 
 local notation "v_adic_of_compl" =>
   @IsDedekindDomain.HeightOneSpectrum.valuation R_v _ _ _ K_v _ _ _ (maxIdealOfCompletion R v K)
@@ -137,31 +130,34 @@ local notation "v_compl_of_adic" => (Valued.v : Valuation K_v ℤₘ₀)
 
 open LocalRing DiscretelyValued
 
+/-The following `instance` is needed to help in the following theorem, where it cannot be inferred
+automatically-/
+instance : IsDedekindDomain R_v := IsPrincipalIdealRing.isDedekindDomain _
+
 theorem int_adic_of_compl_eq_int_compl_of_adic (a : R_v) :
-    (maxIdealOfCompletion R v K).intValuation a = Valued.v (a : K_v) :=
-  by
+    (maxIdealOfCompletion R v K).intValuation a = Valued.v (algebraMap _ K_v a) := by
   by_cases ha : a = 0
   · simp only [ha, Valuation.map_zero, algebraMap.coe_zero]
-  · rw [int_valuation_apply]
+  · rw [intValuation_apply]
     apply le_antisymm
-    · obtain ⟨n, hn⟩ : ∃ n : ℕ, v_compl_of_adic a = of_add (-n : ℤ) :=
-        by
+    · obtain ⟨n, hn⟩ : ∃ n : ℕ, v_compl_of_adic a = ofAdd (-n : ℤ) := by
         replace ha : v_compl_of_adic a ≠ 0 := by
           rwa [Valuation.ne_zero_iff, Ne.def, Subring.coe_eq_zero_iff]
         have := (mem_integer v_compl_of_adic ↑a).mp a.2
-        obtain ⟨α, hα⟩ := with_zero.ne_zero_iff_exists.mp ha
+        obtain ⟨α, hα⟩ := WithZero.ne_zero_iff_exists.mp ha
         rw [← hα, ← WithZero.coe_one, ← ofAdd_zero, WithZero.coe_le_coe, ← ofAdd_toAdd α,
           Multiplicative.ofAdd_le] at this
         obtain ⟨n, hn⟩ := Int.exists_eq_neg_ofNat this
         use n
         rw [← hα, WithZero.coe_inj, ← ofAdd_toAdd α, hn]
-      rw [hn, int_valuation_le_pow_iff_dvd]
+      rw [ValuationSubring.algebraMap_apply, hn, int_valuation_le_pow_iff_dvd]
       apply (DiscreteValuation.val_le_iff_dvd K_v _ n).mp (le_of_eq hn)
-    · obtain ⟨m, hm⟩ : ∃ m : ℕ, v_adic_of_compl a = of_add (-m : ℤ) :=
+    · obtain ⟨m, hm⟩ : ∃ m : ℕ, v_adic_of_compl a = ofAdd (-m : ℤ) :=
         by
         replace ha : v_adic_of_compl a ≠ 0 := by
           rwa [Valuation.ne_zero_iff, Ne.def, Subring.coe_eq_zero_iff]
-        have : (max_ideal_of_completion R v K).Valuation (↑a : K_v) ≤ 1 := valuation_le_one _ _
+        sorry
+        have : (maxIdealOfCompletion R v K).Valuation (algebraMap _ K_v a) ≤ 1 := valuation_le_one _ _
         obtain ⟨α, hα⟩ := with_zero.ne_zero_iff_exists.mp ha
         rw [← hα, ← WithZero.coe_one, ← ofAdd_zero, WithZero.coe_le_coe, ← ofAdd_toAdd α,
           Multiplicative.ofAdd_le] at this
