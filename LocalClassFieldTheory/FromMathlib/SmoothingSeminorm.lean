@@ -57,7 +57,7 @@ theorem sub_mem_closure {a b : ℝ} (h : a ∈ Set.Icc (0 : ℝ) b) : b - a ∈ 
   exact ⟨sub_nonneg_of_le h.2, h.1⟩
 
 /-- If `x` is multiplicative with respect to `f`, then so is any `x^n`. -/
-theorem is_hMul_pow_of_is_hMul {R : Type _} [CommRing R] (f : R → ℝ) {x : R}
+theorem is_mul_pow_of_is_mul {R : Type _} [CommRing R] (f : R → ℝ) {x : R}
     (hx : ∀ y : R, f (x * y) = f x * f y) : ∀ (n : ℕ) (y : R), f (x ^ n * y) = f x ^ n * f y :=
   by
   intro n
@@ -400,7 +400,7 @@ theorem smoothing_seminorm_neg (f_neg : ∀ x : R, f (-x) = f x) (x : R) :
   · rw [hneg, neg_one_mul, f_neg]
 
 /-- If `f 1 ≤ 1`, then `smoothing_seminorm_def f` is submultiplicative. -/
-theorem smoothing_seminorm_hMul (hf1 : f 1 ≤ 1) (x y : R) :
+theorem smoothing_seminorm_mul (hf1 : f 1 ≤ 1) (x y : R) :
     smoothingSeminorm_def f (x * y) ≤ smoothingSeminorm_def f x * smoothingSeminorm_def f y :=
   by
   apply
@@ -722,7 +722,7 @@ def smoothingSeminorm (hf1 : f 1 ≤ 1) (hna : IsNonarchimedean f) : RingSeminor
     add_le_of_isNonarchimedean (smoothing_seminorm_nonneg f hf1)
       (smoothing_seminorm_isNonarchimedean f hf1 hna)
   neg' := smoothing_seminorm_neg f (map_neg_eq_map f)
-  mul_le' := smoothing_seminorm_hMul f hf1
+  mul_le' := smoothing_seminorm_mul f hf1
 
 /-- If `f 1 ≤ 1` and `f` is nonarchimedean, then `smoothing_seminorm f hf1 hna 1 ≤ 1`. -/
 theorem smoothingSeminorm_is_seminorm_is_norm_le_one_class (hf1 : f 1 ≤ 1)
@@ -783,12 +783,12 @@ theorem smoothing_seminorm_apply_of_is_mul' (hf1 : f 1 ≤ 1) {x : R}
     rw [hx0, hxn, zero_rpow (Nat.one_div_cast_ne_zero (Nat.one_le_iff_ne_zero.mp hn))]
   · have h1 : f 1 = 1 := by rw [← mul_right_inj' hx0, ← hx 1, mul_one, mul_one]
     have hn0 : (n : ℝ) ≠ 0 := Nat.cast_ne_zero.mpr (ne_of_gt (lt_of_lt_of_le zero_lt_one hn))
-    rw [← mul_one (x ^ n), is_hMul_pow_of_is_hMul f hx, ← rpow_nat_cast, h1, mul_one, ←
+    rw [← mul_one (x ^ n), is_mul_pow_of_is_mul f hx, ← rpow_nat_cast, h1, mul_one, ←
       rpow_mul (map_nonneg f _), mul_one_div_cancel hn0, rpow_one]
 
 /-- If `f 1 ≤ 1`, `f` is nonarchimedean, and `∀ y : R, f (x * y) = f x * f y`, then
   `smoothing_seminorm f hf1 hna x = f x`. -/
-theorem smoothingSeminorm_apply_of_is_hMul (hf1 : f 1 ≤ 1) (hna : IsNonarchimedean f) {x : R}
+theorem smoothingSeminorm_apply_of_is_mul (hf1 : f 1 ≤ 1) (hna : IsNonarchimedean f) {x : R}
     (hx : ∀ y : R, f (x * y) = f x * f y) : smoothingSeminorm f hf1 hna x = f x :=
   smoothing_seminorm_apply_of_is_mul' f hf1 hx
 
@@ -810,13 +810,13 @@ theorem smoothing_seminorm_of_mul' (hf1 : f 1 ≤ 1) {x : R} (hx : ∀ y : R, f 
   intro n hn1
   have hn0 : (n : ℝ) ≠ 0 := Nat.cast_ne_zero.mpr (ne_of_gt (lt_of_lt_of_le zero_lt_one hn1))
   simp only [smoothingSeminormSeq]
-  rw [mul_pow, is_hMul_pow_of_is_hMul f hx,
+  rw [mul_pow, is_mul_pow_of_is_mul f hx,
     mul_rpow (pow_nonneg (map_nonneg f _) _) (map_nonneg f _), ← rpow_nat_cast, ←
     rpow_mul (map_nonneg f _), mul_one_div_cancel hn0, rpow_one]
 
 /-- If `f 1 ≤ 1`, `f` is nonarchimedean, and `x` is multiplicative for `f`, then `x` is
   multiplicative for `smoothing_seminorm`. -/
-theorem smoothingSeminorm_of_hMul (hf1 : f 1 ≤ 1) (hna : IsNonarchimedean f) {x : R}
+theorem smoothingSeminorm_of_mul (hf1 : f 1 ≤ 1) (hna : IsNonarchimedean f) {x : R}
     (hx : ∀ y : R, f (x * y) = f x * f y) (y : R) :
     smoothingSeminorm f hf1 hna (x * y) =
       smoothingSeminorm f hf1 hna x * smoothingSeminorm f hf1 hna y :=
