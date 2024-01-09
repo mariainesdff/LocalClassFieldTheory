@@ -15,7 +15,7 @@ commutative ring `R` such that for some positive `c : ℝ`,and every `x y : R`, 
 `f (x * y) ≤ c * f x * f y)` is satisfied, we create a ring seminorm on `R`.
 
 In the file comments, we will use the expression `f is multiplicatively bounded` to indicate that
-`∃ (c : ℝ) (hc : 0 < c), ∀ (x y : R), f (x * y) ≤ c * f x * f y`.
+`∃ (c : ℝ) (_ : 0 < c), ∀ (x y : R), f (x * y) ≤ c * f x * f y`.
 
 
 ## Main Definitions
@@ -61,36 +61,33 @@ def normedGroupHomInvOfBijectiveBounded {V : Type _} {W : Type _} [SeminormedAdd
     where
   toFun := invFun f
   map_add' :=
-    (AddMonoidHom.inverse f.toAddMonoidHom (invFun f) (leftInverse_invFun h_bij.Injective)
-        (rightInverse_invFun h_bij.Surjective)).map_add
+    (AddMonoidHom.inverse f.toAddMonoidHom (invFun f) (leftInverse_invFun h_bij.injective)
+        (rightInverse_invFun h_bij.surjective)).map_add
   bound' := by
     obtain ⟨C, hC⟩ := h_bdd
     use C
     intro w
-    set v := inv_fun f w with hv
-    rw [← right_inverse_inv_fun h_bij.surjective w]
+    set v := invFun f w
+    rw [← rightInverse_invFun h_bij.surjective w]
     exact hC v
 
 /-- The inverse of `f : normed_add_group_hom V W` is bijective and there exists a real `C` such that
  `∀ v : W, ‖v‖ ≤ C * ‖f v‖`, then the inverse of `f` is continuous. -/
 theorem continuous_inv_of_bijective_bounded {V : Type _} {W : Type _} [SeminormedAddCommGroup V]
     [SeminormedAddCommGroup W] {f : NormedAddGroupHom V W} (h_bij : Bijective f)
-    (h_bdd : ∃ C : ℝ, ∀ v, ‖v‖ ≤ C * ‖f v‖) : Continuous (invFun f) :=
-  by
+    (h_bdd : ∃ C : ℝ, ∀ v, ‖v‖ ≤ C * ‖f v‖) : Continuous (invFun f) := by
   set g : NormedAddGroupHom W V :=
-    { toFun := inv_fun f
-      map_add' := fun x y =>
-        by
-        rw [← (Classical.choose_spec (((bijective_iff_exists_unique _).mp h_bij) x)).1, ←
-          (Classical.choose_spec (((bijective_iff_exists_unique _).mp h_bij) y)).1]
-        simp only [← (inv_fun f).comp_apply f, inv_fun_comp h_bij.injective, id.def, ← map_add]
+    { toFun := invFun f
+      map_add' := fun x y => by
+        rw [← (Classical.choose_spec (((bijective_iff_existsUnique _).mp h_bij) x)).1, ←
+          (Classical.choose_spec (((bijective_iff_existsUnique _).mp h_bij) y)).1, ← map_add]
+        simp only [← (invFun f).comp_apply, invFun_comp h_bij.injective, id.def]
       bound' := by
         use Classical.choose h_bdd
         intro w
-        rw [← (Classical.choose_spec (((bijective_iff_exists_unique _).mp h_bij) w)).1]
-        simp only [← (inv_fun f).comp_apply f, inv_fun_comp h_bij.injective, id.def]
-        exact Classical.choose_spec h_bdd _ } with
-    hg
+        rw [← (Classical.choose_spec (((bijective_iff_existsUnique _).mp h_bij) w)).1]
+        simp only [← (invFun f).comp_apply, invFun_comp h_bij.injective, id.def]
+        exact Classical.choose_spec h_bdd _ }
   change Continuous g
   apply NormedAddGroupHom.continuous
 
@@ -98,13 +95,12 @@ theorem continuous_inv_of_bijective_bounded {V : Type _} {W : Type _} [Seminorme
   `∃ (C : ℝ), ∀ v, ‖v‖ ≤ C * ‖f v‖` as a homeomorphism. -/
 def homeoOfBijectiveBounded {V : Type _} {W : Type _} [SeminormedAddCommGroup V]
     [SeminormedAddCommGroup W] {f : NormedAddGroupHom V W} (h_bij : Bijective f)
-    (h_bdd : ∃ C : ℝ, ∀ v, ‖v‖ ≤ C * ‖f v‖) : Homeomorph V W
-    where
-  toFun := f.toFun
-  invFun := invFun f.toFun
-  left_inv := leftInverse_invFun h_bij.Injective
-  right_inv := rightInverse_invFun h_bij.Surjective
-  continuous_toFun := f.Continuous
+    (h_bdd : ∃ C : ℝ, ∀ v, ‖v‖ ≤ C * ‖f v‖) : Homeomorph V W where
+  toFun             := f.toFun
+  invFun            := invFun f.toFun
+  left_inv          := leftInverse_invFun h_bij.injective
+  right_inv         := rightInverse_invFun h_bij.surjective
+  continuous_toFun  := f.continuous
   continuous_invFun := NormedGroupHom.continuous_inv_of_bijective_bounded h_bij h_bdd
 
 end NormedGroupHom
@@ -121,10 +117,10 @@ variable {f}
 
 /-- If `f : R → ℝ` is a nonzero, nonnegative, multiplicatively bounded function, then `f 1 ≠ 0`. -/
 theorem f_one_ne_zero (f_ne_zero : ∃ x : R, f x ≠ 0) (f_nonneg : ∀ x : R, 0 ≤ f x)
-    (f_mul : ∃ (c : ℝ) (hc : 0 < c), ∀ x y : R, f (x * y) ≤ c * f x * f y) : f 1 ≠ 0 :=
+    (f_mul : ∃ (c : ℝ) (_hc : 0 < c), ∀ x y : R, f (x * y) ≤ c * f x * f y) : f 1 ≠ 0 :=
   by
   intro h1
-  obtain ⟨c, hc, hxy⟩ := f_mul
+  obtain ⟨c, _hc, hxy⟩ := f_mul
   specialize hxy 1
   simp_rw [h1, one_mul, MulZeroClass.mul_zero, MulZeroClass.zero_mul] at hxy
   obtain ⟨z, hz⟩ := f_ne_zero
@@ -133,11 +129,11 @@ theorem f_one_ne_zero (f_ne_zero : ∃ x : R, f x ≠ 0) (f_nonneg : ∀ x : R, 
 /-- If `f : R → ℝ` is a nonnegative multiplicatively bounded function and `x : R` is a unit with
   `f x ≠ 0`, then for every `n : ℕ`, we have `f (x ^ n) ≠ 0`. -/
 theorem f_pow_ne_zero (f_nonneg : ∀ x : R, 0 ≤ f x) {x : R} (hx : IsUnit x) (hfx : f x ≠ 0) (n : ℕ)
-    (f_mul : ∃ (c : ℝ) (hc : 0 < c), ∀ x y : R, f (x * y) ≤ c * f x * f y) : f (x ^ n) ≠ 0 :=
+    (f_mul : ∃ (c : ℝ) (_hc : 0 < c), ∀ x y : R, f (x * y) ≤ c * f x * f y) : f (x ^ n) ≠ 0 :=
   by
   have h1 : f 1 ≠ 0 := f_one_ne_zero (Exists.intro x hfx) f_nonneg f_mul
   intro hxn
-  obtain ⟨c, hc, hxy⟩ := f_mul
+  obtain ⟨c, _hc, hxy⟩ := f_mul
   obtain ⟨u, hu⟩ := hx
   specialize hxy (x ^ n) (u.inv ^ n)
   rw [hxn, MulZeroClass.mul_zero, MulZeroClass.zero_mul, ← mul_pow, ← hu, Units.inv_eq_val_inv,
@@ -151,7 +147,7 @@ theorem seminorm_from_bounded_zero (f_zero : f 0 = 0) : seminormFromBounded' f (
 /-- If `f : R → ℝ` is a nonnegative, multiplicatively bounded function, then for every `x : R`,
   the image of `y ↦ f (x * y) / f y` is bounded above. -/
 theorem seminorm_from_bounded_bdd_range (f_nonneg : ∀ x : R, 0 ≤ f x)
-    (f_mul : ∃ (c : ℝ) (hc : 0 < c), ∀ x y : R, f (x * y) ≤ c * f x * f y) (x : R) :
+    (f_mul : ∃ (c : ℝ) (_ : 0 < c), ∀ x y : R, f (x * y) ≤ c * f x * f y) (x : R) :
     BddAbove (Set.range fun y => f (x * y) / f y) :=
   by
   obtain ⟨c, hc_pos, hxy⟩ := f_mul
@@ -166,10 +162,8 @@ theorem seminorm_from_bounded_bdd_range (f_nonneg : ∀ x : R, 0 ≤ f x)
 /-- If `f : R → ℝ` is a nonnegative, multiplicatively bounded function, then for every `x : R`,
   `seminorm_from_bounded' f x` is bounded above by some multiple of `f x`. -/
 theorem seminorm_from_bounded_le (f_nonneg : ∀ x : R, 0 ≤ f x)
-    (f_mul : ∃ (c : ℝ) (hc : 0 < c), ∀ x y : R, f (x * y) ≤ c * f x * f y) (x : R) :
-    seminormFromBounded' f x ≤ Classical.choose f_mul * f x :=
-  by
-  have h := Classical.choose_spec (Classical.choose_spec f_mul)
+    (f_mul : ∃ (c : ℝ) (_ : 0 < c), ∀ x y : R, f (x * y) ≤ c * f x * f y) (x : R) :
+    seminormFromBounded' f x ≤ Classical.choose f_mul * f x := by
   apply ciSup_le
   intro y
   by_cases hy : 0 = f y
@@ -181,11 +175,10 @@ theorem seminorm_from_bounded_le (f_nonneg : ∀ x : R, 0 ≤ f x)
 /-- If `f : R → ℝ` is a nonnegative, multiplicatively bounded function, then for every `x : R`,
   `f x ≤ f 1 * seminorm_from_bounded' f x`. -/
 theorem seminorm_from_bounded_ge (f_nonneg : ∀ x : R, 0 ≤ f x)
-    (f_mul : ∃ (c : ℝ) (hc : 0 < c), ∀ x y : R, f (x * y) ≤ c * f x * f y) (x : R) :
-    f x ≤ f 1 * seminormFromBounded' f x :=
-  by
+    (f_mul : ∃ (c : ℝ) (_ : 0 < c), ∀ x y : R, f (x * y) ≤ c * f x * f y) (x : R) :
+    f x ≤ f 1 * seminormFromBounded' f x := by
   by_cases h1 : f 1 = 0
-  · obtain ⟨c, hc_pos, hxy⟩ := f_mul
+  · obtain ⟨c, _, hxy⟩ := f_mul
     specialize hxy x 1
     rw [mul_one, h1, MulZeroClass.mul_zero] at hxy
     have hx0 : f x = 0 := le_antisymm hxy (f_nonneg _)
@@ -199,17 +192,17 @@ theorem seminorm_from_bounded_ge (f_nonneg : ∀ x : R, 0 ≤ f x)
 /-- If `f : R → ℝ` is a nonnegative, multiplicatively bounded function, then
   `seminorm_from_bounded' f` is nonnegative. -/
 theorem seminorm_from_bounded_nonneg (f_nonneg : ∀ x : R, 0 ≤ f x)
-    (f_mul : ∃ (c : ℝ) (hc : 0 < c), ∀ x y : R, f (x * y) ≤ c * f x * f y) (x : R) :
+    (f_mul : ∃ (c : ℝ) (_ : 0 < c), ∀ x y : R, f (x * y) ≤ c * f x * f y) (x : R) :
     0 ≤ seminormFromBounded' f x :=
   le_csSup_of_le (seminorm_from_bounded_bdd_range f_nonneg f_mul x) ⟨1, rfl⟩
     (div_nonneg (f_nonneg _) (f_nonneg _))
 
 /-- If `f : R → ℝ` is a nonnegative, multiplicatively bounded function, then given `x y : R` with
   `f x = 0`, we have `f (x * y) = 0`. -/
-theorem f_hMul_zero_of_f_zero (f_nonneg : ∀ x : R, 0 ≤ f x)
-    (f_mul : ∃ (c : ℝ) (hc : 0 < c), ∀ x y : R, f (x * y) ≤ c * f x * f y) {x : R} (hx : f x = 0)
+theorem f_mul_zero_of_f_zero (f_nonneg : ∀ x : R, 0 ≤ f x)
+    (f_mul : ∃ (c : ℝ) (_ : 0 < c), ∀ x y : R, f (x * y) ≤ c * f x * f y) {x : R} (hx : f x = 0)
     (y : R) : f (x * y) = 0 := by
-  obtain ⟨c, hc, hxy⟩ := f_mul
+  obtain ⟨c, _, hxy⟩ := f_mul
   specialize hxy x y
   rw [hx, MulZeroClass.mul_zero, MulZeroClass.zero_mul] at hxy
   exact le_antisymm hxy (f_nonneg _)
@@ -217,9 +210,8 @@ theorem f_hMul_zero_of_f_zero (f_nonneg : ∀ x : R, 0 ≤ f x)
 /-- If `f : R → ℝ` is a nonnegative, multiplicatively bounded function, then
   `seminorm_from_bounded' f x = 0` if and only if `f x = 0`. -/
 theorem seminorm_from_bounded_eq_zero_iff (f_nonneg : ∀ x : R, 0 ≤ f x)
-    (f_mul : ∃ (c : ℝ) (hc : 0 < c), ∀ x y : R, f (x * y) ≤ c * f x * f y) (x : R) :
-    seminormFromBounded' f x = 0 ↔ f x = 0 :=
-  by
+    (f_mul : ∃ (c : ℝ) (_ : 0 < c), ∀ x y : R, f (x * y) ≤ c * f x * f y) (x : R) :
+    seminormFromBounded' f x = 0 ↔ f x = 0 := by
   refine' ⟨fun h => _, fun h => _⟩
   · have hf := seminorm_from_bounded_ge f_nonneg f_mul x
     rw [h, MulZeroClass.mul_zero] at hf
@@ -231,23 +223,21 @@ theorem seminorm_from_bounded_eq_zero_iff (f_nonneg : ∀ x : R, 0 ≤ f x)
 
 /-- If `f` is invariant under negation of `x`, then so is `seminorm_from_bounded'`.-/
 theorem seminorm_from_bounded_neg (f_neg : ∀ x : R, f (-x) = f x) (x : R) :
-    seminormFromBounded' f (-x) = seminormFromBounded' f x :=
-  by
+    seminormFromBounded' f (-x) = seminormFromBounded' f x := by
   simp only [seminormFromBounded']
   congr; ext y
   rw [neg_mul, f_neg]
 
 /-- If `f : R → ℝ` is a nonnegative, multiplicatively bounded function, then
   `seminorm_from_bounded' f` is submultiplicative. -/
-theorem seminorm_from_bounded_hMul (f_nonneg : ∀ x : R, 0 ≤ f x)
-    (f_mul : ∃ (c : ℝ) (hc : 0 < c), ∀ x y : R, f (x * y) ≤ c * f x * f y) (x y : R) :
-    seminormFromBounded' f (x * y) ≤ seminormFromBounded' f x * seminormFromBounded' f y :=
-  by
+theorem seminorm_from_bounded_mul (f_nonneg : ∀ x : R, 0 ≤ f x)
+    (f_mul : ∃ (c : ℝ) (_ : 0 < c), ∀ x y : R, f (x * y) ≤ c * f x * f y) (x y : R) :
+    seminormFromBounded' f (x * y) ≤ seminormFromBounded' f x * seminormFromBounded' f y := by
   apply ciSup_le
   by_cases hy : seminormFromBounded' f y = 0
   · rw [seminorm_from_bounded_eq_zero_iff f_nonneg f_mul] at hy
     intro z
-    have hz : f (y * (x * z)) = 0 := f_hMul_zero_of_f_zero f_nonneg f_mul hy (x * z)
+    have hz : f (y * (x * z)) = 0 := f_mul_zero_of_f_zero f_nonneg f_mul hy (x * z)
     rw [mul_comm x y, mul_assoc, hz, zero_div]
     exact
       mul_nonneg (seminorm_from_bounded_nonneg f_nonneg f_mul x)
@@ -258,14 +248,14 @@ theorem seminorm_from_bounded_hMul (f_nonneg : ∀ x : R, 0 ≤ f x)
     rw [div_le_iff (lt_of_le_of_ne' (seminorm_from_bounded_nonneg f_nonneg f_mul _) hy),
       div_mul_eq_mul_div]
     by_cases hz : f z = 0
-    · have hxyz : f (z * (x * y)) = 0 := f_hMul_zero_of_f_zero f_nonneg f_mul hz _
+    · have hxyz : f (z * (x * y)) = 0 := f_mul_zero_of_f_zero f_nonneg f_mul hz _
       simp_rw [mul_comm, hxyz, zero_div]
       exact
         div_nonneg (mul_nonneg (seminorm_from_bounded_nonneg f_nonneg f_mul y) (f_nonneg _))
           (f_nonneg _)
     · rw [div_le_div_right (lt_of_le_of_ne' (f_nonneg _) hz), mul_comm (f (x * z))]
       by_cases hxz : f (x * z) = 0
-      · have hxyz : f (x * z * y) = 0 := f_hMul_zero_of_f_zero f_nonneg f_mul hxz y
+      · have hxyz : f (x * z * y) = 0 := f_mul_zero_of_f_zero f_nonneg f_mul hxz y
         rw [mul_comm x y, mul_assoc, mul_comm y, hxyz]
         exact mul_nonneg (seminorm_from_bounded_nonneg f_nonneg f_mul y) (f_nonneg _)
       · rw [← div_le_iff (lt_of_le_of_ne' (f_nonneg _) hxz)]
@@ -275,17 +265,15 @@ theorem seminorm_from_bounded_hMul (f_nonneg : ∀ x : R, 0 ≤ f x)
 /-- If `f : R → ℝ` is a nonzero, nonnegative, multiplicatively bounded function, then
   `seminorm_from_bounded' f 1 = 1`. -/
 theorem seminorm_from_bounded_one_eq (f_ne_zero : ∃ x : R, f x ≠ 0) (f_nonneg : ∀ x : R, 0 ≤ f x)
-    (f_mul : ∃ (c : ℝ) (hc : 0 < c), ∀ x y : R, f (x * y) ≤ c * f x * f y) :
-    seminormFromBounded' f 1 = 1 :=
-  by
+    (f_mul : ∃ (c : ℝ) (_ : 0 < c), ∀ x y : R, f (x * y) ≤ c * f x * f y) :
+    seminormFromBounded' f 1 = 1 := by
   simp_rw [seminormFromBounded', one_mul]
   have h_le : (⨆ y : R, f y / f y) ≤ 1 := by
     apply ciSup_le
     intro x; by_cases hx : f x = 0
     · rw [hx]; rw [div_zero]; exact zero_le_one
     · rw [div_self hx]
-  have h_ge : 1 ≤ ⨆ y : R, f y / f y :=
-    by
+  have h_ge : 1 ≤ ⨆ y : R, f y / f y := by
     rw [← div_self (f_one_ne_zero f_ne_zero f_nonneg f_mul)]
     have h_bdd : BddAbove (Set.range fun y => f y / f y) :=
       by
@@ -302,9 +290,8 @@ theorem seminorm_from_bounded_one_eq (f_ne_zero : ∃ x : R, f x ≠ 0) (f_nonne
 /-- If `f : R → ℝ` is a nonnegative, multiplicatively bounded function, then
   `seminorm_from_bounded' f 1 ≤ 1`. -/
 theorem seminorm_from_bounded_is_norm_le_one_class (f_nonneg : ∀ x : R, 0 ≤ f x)
-    (f_mul : ∃ (c : ℝ) (hc : 0 < c), ∀ x y : R, f (x * y) ≤ c * f x * f y) :
-    seminormFromBounded' f 1 ≤ 1 :=
-  by
+    (f_mul : ∃ (c : ℝ) (_ : 0 < c), ∀ x y : R, f (x * y) ≤ c * f x * f y) :
+    seminormFromBounded' f 1 ≤ 1 := by
   by_cases f_ne_zero : ∃ x : R, f x ≠ 0
   · exact le_of_eq (seminorm_from_bounded_one_eq f_ne_zero f_nonneg f_mul)
   · simp_rw [seminormFromBounded', one_mul]
@@ -316,19 +303,15 @@ theorem seminorm_from_bounded_is_norm_le_one_class (f_nonneg : ∀ x : R, 0 ≤ 
 /-- If `f : R → ℝ` is a nonnegative, multiplicatively bounded, subadditive function, then
   `seminorm_from_bounded' f` is subadditive. -/
 theorem seminorm_from_bounded_add (f_nonneg : ∀ x : R, 0 ≤ f x)
-    (f_mul : ∃ (c : ℝ) (hc : 0 < c), ∀ x y : R, f (x * y) ≤ c * f x * f y)
+    (f_mul : ∃ (c : ℝ) (_ : 0 < c), ∀ x y : R, f (x * y) ≤ c * f x * f y)
     (f_add : ∀ a b, f (a + b) ≤ f a + f b) (x y : R) :
-    seminormFromBounded' f (x + y) ≤ seminormFromBounded' f x + seminormFromBounded' f y :=
-  by
+    seminormFromBounded' f (x + y) ≤ seminormFromBounded' f x + seminormFromBounded' f y := by
   apply ciSup_le
   intro z
   suffices hf : f ((x + y) * z) / f z ≤ f (x * z) / f z + f (y * z) / f z
-  ·
-    exact
-      le_trans hf
-        (add_le_add
-          (le_ciSup_of_le (seminorm_from_bounded_bdd_range f_nonneg f_mul x) z (le_refl _))
-          (le_ciSup_of_le (seminorm_from_bounded_bdd_range f_nonneg f_mul y) z (le_refl _)))
+  · exact le_trans hf (add_le_add
+      (le_ciSup_of_le (seminorm_from_bounded_bdd_range f_nonneg f_mul x) z (le_refl _))
+      (le_ciSup_of_le (seminorm_from_bounded_bdd_range f_nonneg f_mul y) z (le_refl _)))
   · by_cases hz : f z = 0
     · simp only [hz, div_zero, zero_add, le_refl, or_self_iff]
     · rw [div_add_div_same, div_le_div_right (lt_of_le_of_ne' (f_nonneg _) hz), add_mul]
@@ -336,21 +319,20 @@ theorem seminorm_from_bounded_add (f_nonneg : ∀ x : R, 0 ≤ f x)
 
 /-- `seminorm_from_bounded'` is a ring seminorm on `R`. -/
 def seminormFromBounded (f_zero : f 0 = 0) (f_nonneg : ∀ x : R, 0 ≤ f x)
-    (f_mul : ∃ (c : ℝ) (hc : 0 < c), ∀ x y : R, f (x * y) ≤ c * f x * f y)
+    (f_mul : ∃ (c : ℝ) (_ : 0 < c), ∀ x y : R, f (x * y) ≤ c * f x * f y)
     (f_add : ∀ a b, f (a + b) ≤ f a + f b) (f_neg : ∀ x : R, f (-x) = f x) : RingSeminorm R
     where
   toFun := seminormFromBounded' f
   map_zero' := seminorm_from_bounded_zero f_zero
   add_le' := seminorm_from_bounded_add f_nonneg f_mul f_add
-  hMul_le' := seminorm_from_bounded_hMul f_nonneg f_mul
+  mul_le' := seminorm_from_bounded_mul f_nonneg f_mul
   neg' := seminorm_from_bounded_neg f_neg
 
 /-- If `f : R → ℝ` is a nonnegative, multiplicatively bounded, nonarchimedean function, then
   `seminorm_from_bounded' f` is nonarchimedean. -/
 theorem seminorm_from_bounded_isNonarchimedean (f_nonneg : ∀ x : R, 0 ≤ f x)
-    (f_mul : ∃ (c : ℝ) (hc : 0 < c), ∀ x y : R, f (x * y) ≤ c * f x * f y)
-    (hna : IsNonarchimedean f) : IsNonarchimedean (seminormFromBounded' f) :=
-  by
+    (f_mul : ∃ (c : ℝ) (_ : 0 < c), ∀ x y : R, f (x * y) ≤ c * f x * f y)
+    (hna : IsNonarchimedean f) : IsNonarchimedean (seminormFromBounded' f) := by
   intro x y
   apply ciSup_le
   intro z
@@ -367,19 +349,16 @@ theorem seminorm_from_bounded_isNonarchimedean (f_nonneg : ∀ x : R, 0 ≤ f x)
 
 /-- If `f : R → ℝ` is a nonnegative, multiplicatively bounded function and `x : R` is
   multiplicative for `f`, then `seminorm_from_bounded' f x = f x`. -/
-theorem seminorm_from_bounded_of_hMul_apply (f_nonneg : ∀ x : R, 0 ≤ f x)
-    (f_mul : ∃ (c : ℝ) (hc : 0 < c), ∀ x y : R, f (x * y) ≤ c * f x * f y) {x : R}
-    (hx : ∀ y : R, f (x * y) = f x * f y) : seminormFromBounded' f x = f x :=
-  by
+theorem seminorm_from_bounded_of_mul_apply (f_nonneg : ∀ x : R, 0 ≤ f x)
+    (f_mul : ∃ (c : ℝ) (_ : 0 < c), ∀ x y : R, f (x * y) ≤ c * f x * f y) {x : R}
+    (hx : ∀ y : R, f (x * y) = f x * f y) : seminormFromBounded' f x = f x := by
   simp_rw [seminormFromBounded', hx, ← mul_div_assoc']
-  have h_le : (⨆ y : R, f x * (f y / f y)) ≤ f x :=
-    by
+  have h_le : (⨆ y : R, f x * (f y / f y)) ≤ f x := by
     apply ciSup_le
     intro x; by_cases hx : f x = 0
     · rw [hx, div_zero, MulZeroClass.mul_zero]; exact f_nonneg _
     · rw [div_self hx, mul_one]
-  have h_ge : f x ≤ ⨆ y : R, f x * (f y / f y) :=
-    by
+  have h_ge : f x ≤ ⨆ y : R, f x * (f y / f y) := by
     by_cases f_ne_zero : ∃ x : R, f x ≠ 0
     · conv_lhs => rw [← mul_one (f x)]
       rw [← div_self (f_one_ne_zero f_ne_zero f_nonneg f_mul)]
@@ -394,12 +373,12 @@ theorem seminorm_from_bounded_of_hMul_apply (f_nonneg : ∀ x : R, 0 ≤ f x)
         · rw [div_self hy0, mul_one]
       exact le_ciSup h_bdd (1 : R)
     · push_neg at f_ne_zero
-      simp_rw [f_ne_zero, zero_div, MulZeroClass.zero_mul, ciSup_const]
+      simp_rw [f_ne_zero, zero_div, MulZeroClass.zero_mul, ciSup_const]; rfl
   exact le_antisymm h_le h_ge
 
 /-- If `f : R → ℝ` is a nonnegative function and `x : R` is submultiplicative for `f`, then
   `seminorm_from_bounded' f x = f x`. -/
-theorem seminorm_from_bounded_of_hMul_le (f_nonneg : ∀ x : R, 0 ≤ f x) {x : R}
+theorem seminorm_from_bounded_of_mul_le (f_nonneg : ∀ x : R, 0 ≤ f x) {x : R}
     (hx : ∀ y : R, f (x * y) ≤ f x * f y) (h_one : f 1 ≤ 1) : seminormFromBounded' f x = f x :=
   by
   simp_rw [seminormFromBounded']
@@ -431,13 +410,13 @@ theorem seminorm_from_bounded_of_hMul_le (f_nonneg : ∀ x : R, 0 ≤ f x) {x : 
         specialize hx 1
         rw [mul_one, le_mul_iff_one_le_right (lt_of_le_of_ne (f_nonneg _) (Ne.symm h0))] at hx
         exact hx
-      rw [HEq, mul_one, div_one]
+      rw [heq, mul_one, div_one]
   exact le_antisymm h_le h_ge
 
 /-- If `f : R → ℝ` is a nonzero, nonnegative, multiplicatively bounded function, then
   `seminorm_from_bounded' f` is nonzero. -/
 theorem seminorm_from_bounded_ne_zero (f_ne_zero : ∃ x : R, f x ≠ 0) (f_nonneg : ∀ x : R, 0 ≤ f x)
-    (f_mul : ∃ (c : ℝ) (hc : 0 < c), ∀ x y : R, f (x * y) ≤ c * f x * f y) :
+    (f_mul : ∃ (c : ℝ) (_ : 0 < c), ∀ x y : R, f (x * y) ≤ c * f x * f y) :
     ∃ x : R, seminormFromBounded' f x ≠ 0 :=
   by
   obtain ⟨x, hx⟩ := f_ne_zero
@@ -448,9 +427,8 @@ theorem seminorm_from_bounded_ne_zero (f_ne_zero : ∃ x : R, f x ≠ 0) (f_nonn
 /-- If `f : R → ℝ` is a nonnegative, multiplicatively bounded function, then the kernel of
   `seminorm_from_bounded' f` equals the kernel of `f`. -/
 theorem seminorm_from_bounded_ker (f_nonneg : ∀ x : R, 0 ≤ f x)
-    (f_mul : ∃ (c : ℝ) (hc : 0 < c), ∀ x y : R, f (x * y) ≤ c * f x * f y) :
-    seminormFromBounded' f ⁻¹' {0} = f ⁻¹' {0} :=
-  by
+    (f_mul : ∃ (c : ℝ) (_ : 0 < c), ∀ x y : R, f (x * y) ≤ c * f x * f y) :
+    seminormFromBounded' f ⁻¹' {0} = f ⁻¹' {0} := by
   ext x
   simp only [Set.mem_preimage, Set.mem_singleton_iff]
   exact seminorm_from_bounded_eq_zero_iff f_nonneg f_mul x
@@ -458,11 +436,10 @@ theorem seminorm_from_bounded_ker (f_nonneg : ∀ x : R, 0 ≤ f x)
 /-- If `f : R → ℝ` is a nonnegative, multiplicatively bounded, subadditive function that preserves
   zero and negation, then `seminorm_from_bounded' f` is a norm if and only if `f⁻¹' {0} = {0}`. -/
 theorem seminormFromBounded_is_norm_iff (f_zero : f 0 = 0) (f_nonneg : ∀ x : R, 0 ≤ f x)
-    (f_mul : ∃ (c : ℝ) (hc : 0 < c), ∀ x y : R, f (x * y) ≤ c * f x * f y)
+    (f_mul : ∃ (c : ℝ) (_ : 0 < c), ∀ x y : R, f (x * y) ≤ c * f x * f y)
     (f_add : ∀ a b, f (a + b) ≤ f a + f b) (f_neg : ∀ x : R, f (-x) = f x) :
     (∀ x : R, (seminormFromBounded f_zero f_nonneg f_mul f_add f_neg).toFun x = 0 → x = 0) ↔
-      f ⁻¹' {0} = {0} :=
-  by
+      f ⁻¹' {0} = {0} := by
   refine' ⟨fun h0 => _, fun h_ker => _⟩
   · rw [← seminorm_from_bounded_ker f_nonneg f_mul]
     ext x
@@ -477,7 +454,7 @@ theorem seminormFromBounded_is_norm_iff (f_zero : f 0 = 0) (f_nonneg : ∀ x : R
   multiplicatively bounded and subadditive, that it preserves `0` and negation, and that `f` has
   trivial kernel. -/
 def normFromBounded (f_zero : f 0 = 0) (f_nonneg : ∀ x : R, 0 ≤ f x)
-    (f_mul : ∃ (c : ℝ) (hc : 0 < c), ∀ x y : R, f (x * y) ≤ c * f x * f y)
+    (f_mul : ∃ (c : ℝ) (_ : 0 < c), ∀ x y : R, f (x * y) ≤ c * f x * f y)
     (f_add : ∀ a b, f (a + b) ≤ f a + f b) (f_neg : ∀ x : R, f (-x) = f x)
     (f_ker : f ⁻¹' {0} = {0}) : RingNorm R :=
   { seminormFromBounded f_zero f_nonneg f_mul f_add f_neg with
@@ -486,12 +463,11 @@ def normFromBounded (f_zero : f 0 = 0) (f_nonneg : ∀ x : R, 0 ≤ f x)
 
 /-- If `f : R → ℝ` is a nonnegative, multiplicatively bounded function and `x : R` is
   multiplicative for `f`, then `x` is multiplicative for `seminorm_from_bounded' f`. -/
-theorem seminorm_from_bounded_of_hMul_is_hMul (f_nonneg : ∀ x : R, 0 ≤ f x)
-    (f_mul : ∃ (c : ℝ) (hc : 0 < c), ∀ x y : R, f (x * y) ≤ c * f x * f y) {x : R}
+theorem seminorm_from_bounded_of_mul_is_mul (f_nonneg : ∀ x : R, 0 ≤ f x)
+    (f_mul : ∃ (c : ℝ) (_ : 0 < c), ∀ x y : R, f (x * y) ≤ c * f x * f y) {x : R}
     (hx : ∀ y : R, f (x * y) = f x * f y) (y : R) :
-    seminormFromBounded' f (x * y) = seminormFromBounded' f x * seminormFromBounded' f y :=
-  by
-  rw [seminorm_from_bounded_of_hMul_apply f_nonneg f_mul hx]
+    seminormFromBounded' f (x * y) = seminormFromBounded' f x * seminormFromBounded' f y := by
+  rw [seminorm_from_bounded_of_mul_apply f_nonneg f_mul hx]
   simp only [seminormFromBounded', mul_assoc, hx, mul_div_assoc,
     Real.mul_iSup_of_nonneg (f_nonneg _)]
 
