@@ -50,10 +50,11 @@ structure IsContinuousLinearMap (𝕜 : Type _) [NormedField 𝕜] {E : Type _} 
 theorem isContinuousLinearMap_iff_isBoundedLinearMap {K : Type _} [NontriviallyNormedField K]
     {M : Type _} [NormedAddCommGroup M] [NormedSpace K M] {N : Type _} [NormedAddCommGroup N]
     [NormedSpace K N] (f : M → N) : IsContinuousLinearMap K f ↔ IsBoundedLinearMap K f := by
-  refine' ⟨fun h_cont => _, fun h_bdd => ⟨sorry/- h_bdd.IsLinearMap -/, h_bdd.continuous⟩⟩
+  refine' ⟨fun h_cont => _, fun h_bdd => ⟨h_bdd.toIsLinearMap, h_bdd.continuous⟩⟩
   · set F : M →L[K] N := by
-      sorry --use f, IsLinearMap.map_add h_cont.1, IsLinearMap.map_smul h_cont.1, h_cont.2
-    sorry --exact ContinuousLinearMap.isBoundedLinearMap F
+      use ⟨⟨f, IsLinearMap.map_add h_cont.1⟩, IsLinearMap.map_smul h_cont.1⟩
+      exact h_cont.2
+    exact ContinuousLinearMap.isBoundedLinearMap F
 
 end Continuous
 
@@ -131,11 +132,7 @@ theorem norm_zero' {ι : Type _} [Fintype ι] [Nonempty ι] (B : Basis ι K L) :
 /-- For any `K`-basis of `L`, and any `x : L`, we have `B.norm (-x) = B.norm x`. -/
 theorem norm_neg {ι : Type _} [Fintype ι] [Nonempty ι] (B : Basis ι K L) (x : L) :
     B.norm (-x) = B.norm x := by
-  simp only [norm, map_neg]
-  sorry
-  /- convert norm_neg _
-  ext x;
-  simp only [Pi.neg_apply, norm_neg] -/
+  simp only [norm, map_neg, equivFun_apply,  Pi.neg_apply, _root_.norm_neg]
 
 /-- For any `K`-basis of `L`, `B.norm` extends the norm on `K`. -/
 theorem norm_extends {ι : Type _} [Fintype ι] [Nonempty ι] {B : Basis ι K L} {i : ι}
@@ -183,18 +180,11 @@ theorem norm_is_bdd {ι : Type _} [Fintype ι] [Nonempty ι] {B : Basis ι K L} 
   have hc := Classical.choose_spec (Finite.exists_max fun i : ι × ι => B.norm (B i.1 * B i.2))
   use B.norm (B c.1 * B c.2)
   constructor
-  -- `B c.1 * B c.2` is positive
-  · have h_pos : (0 : ℝ) < B.norm (B i * B i) :=
-      by
-      have h1 : (1 : L) = (algebraMap K L) 1 := by rw [map_one]
-      rw [hBi, mul_one, h1, Basis.norm_extends hBi]
-      simp only [norm_one, zero_lt_one]
-    sorry --exact lt_of_lt_of_le h_pos (hc (i, i))
   -- ∀ (x y : L), B.norm (x * y) ≤ B.norm (⇑B c.fst * ⇑B c.snd) * B.norm x * B.norm y
-  · sorry/- --intro x y
+  · intro x y
     -- `ixy` is an index for which `‖B.equivFun (x*y) i‖` is maximum.
-    /- set ixy := Classical.choose (Finite.exists_max fun i : ι => ‖B.equivFun (x * y) i‖) with
-      hixy_def -/
+    set ixy := Classical.choose (Finite.exists_max fun i : ι => ‖B.equivFun (x * y) i‖) with
+      hixy_def
     -- We rewrite the LHS using `ixy`.
     conv_lhs =>
       simp only [Basis.norm]
@@ -205,19 +195,22 @@ theorem norm_is_bdd {ι : Type _} [Fintype ι] [Nonempty ι] {B : Basis ι K L} 
     /- Since the norm is nonarchimidean, the norm of a finite sum is bounded by the maximum of the
           norms of the summands. -/
     have hna' : IsNonarchimedean (NormedField.toMulRingNorm K) := hna
-    have hk :
-      ∃ (k : ι) (hk : univ.nonempty → k ∈ univ),
-        ‖∑ i : ι,
-              (B.equivFun x i • ∑ i_1 : ι, B.equivFun y i_1 • B.equivFun (B i * B i_1)) ixy‖ ≤
-          ‖(B.equivFun x k • ∑ j : ι, B.equivFun y j • B.equivFun (B k * B j)) ixy‖ :=
-      isNonarchimedean_finset_image_add hna'
+    have h := @univ_nonempty ι _ _
+
+    /- have hk : ∃ (k : ι) (hk : _),
+        ‖∑ i : ι, (B.equivFun x i • ∑ i_1 : ι, B.equivFun y i_1 • B.equivFun (B i * B i_1)) ixy‖ ≤
+          ‖(B.equivFun x k • ∑ j : ι, B.equivFun y j • B.equivFun (B k * B j)) ixy‖ := by
+      sorry --apply isNonarchimedean_finset_image_add hna
+      --convert
+      /- isNonarchimedean_finset_image_add hna'
         (fun i => (B.equivFun x i • ∑ i_1 : ι, B.equivFun y i_1 • B.equivFun (B i * B i_1)) ixy)
-        (univ : Finset ι)
+        (univ : Finset ι) -/
     obtain ⟨k, -, hk⟩ := hk
-    apply le_trans hk
+    apply le_trans hk -/
     -- We use the above property again.
-    have hk' :
-      ∃ (k' : ι) (hk' : univ.nonempty → k' ∈ univ),
+    sorry
+    /- have hk' :
+      ∃ (k' : ι) (hk' : univ_nonempty → k' ∈ univ),
         ‖∑ j : ι, B.equivFun y j • B.equivFun (B k * B j) ixy‖ ≤
           ‖B.equivFun y k' • B.equivFun (B k * B k') ixy‖ :=
       isNonarchimedean_finset_image_add hna'
@@ -231,6 +224,13 @@ theorem norm_is_bdd {ι : Type _} [Fintype ι] [Nonempty ι] {B : Basis ι K L} 
       mul_le_mul (mul_le_mul (B.le_norm _ _) (B.le_norm _ _) (norm_nonneg _) (norm_nonneg _))
         (le_trans (B.le_norm _ _) (hc (k, k'))) (norm_nonneg _)
         (mul_nonneg (norm_nonneg _) (norm_nonneg _)) -/
+    -- `B c.1 * B c.2` is positive
+  · have h_pos : (0 : ℝ) < B.norm (B i * B i) :=
+      by
+      have h1 : (1 : L) = (algebraMap K L) 1 := by rw [map_one]
+      rw [hBi, mul_one, h1, Basis.norm_extends hBi]
+      simp only [norm_one, zero_lt_one]
+    exact lt_of_lt_of_le h_pos (hc (i, i))
 
 /-- For any `k : K`, `y : L`, we have
   `B.equivFun ((algebra_map K L k) * y) i = k * (B.equivFun y i) `. -/
@@ -248,7 +248,7 @@ theorem norm_smul {ι : Type _} [Fintype ι] [Nonempty ι] {B : Basis ι K L} {i
   · rw [hk, map_zero, MulZeroClass.zero_mul, B.norm_zero', MulZeroClass.zero_mul]
   · rw [norm_extends hBi]
     simp only [norm]
-    set i := Classical.choose (Finite.exists_max fun i : ι => ‖B.equivFun y i‖) with hi_def
+    set i := Classical.choose (Finite.exists_max fun i : ι => ‖B.equivFun y i‖)
     have hi := Classical.choose_spec (Finite.exists_max fun i : ι => ‖B.equivFun y i‖)
     set j :=
       Classical.choose
@@ -257,17 +257,13 @@ theorem norm_smul {ι : Type _} [Fintype ι] [Nonempty ι] {B : Basis ι K L} {i
     have hj :=
       Classical.choose_spec
         (Finite.exists_max fun i : ι => ‖B.equivFun ((algebraMap K L) k * y) i‖)
-    have hij : ‖B.equivFun y i‖ = ‖B.equivFun y j‖ :=
-      by
+    have hij : ‖B.equivFun y i‖ = ‖B.equivFun y j‖ := by
       refine' le_antisymm _ (hi j)
       · specialize hj i
-        rw [← hj_def] at hj
-        simp only [repr_smul, norm_mul] at hj
-        sorry
-        /- exact
-          (mul_le_mul_left (lt_of_le_of_ne (norm_nonneg _) (Ne.symm (norm_ne_zero_iff.mpr hk)))).mp
-            hj -/
-    sorry --rw [repr_smul, norm_mul, ← hi_def, ← hj_def, hij]
+        rw [← hj_def, repr_smul, norm_mul, repr_smul, norm_mul] at hj
+        exact (mul_le_mul_left (lt_of_le_of_ne (norm_nonneg _)
+          (Ne.symm (norm_ne_zero_iff.mpr hk)))).mp hj
+    rw [repr_smul, norm_mul, hij]
 
 end Basis
 
