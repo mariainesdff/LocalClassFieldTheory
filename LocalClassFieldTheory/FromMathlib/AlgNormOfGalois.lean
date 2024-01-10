@@ -3,9 +3,9 @@ Copyright (c) 2023 María Inés de Frutos-Fernández. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: María Inés de Frutos-Fernández
 -/
-import Mahtlib.Data.Fintype.Order
+import Mathlib.Data.Fintype.Order
 import Mathlib.FieldTheory.Fixed
-import FromMathlib.NormedSpace
+import LocalClassFieldTheory.FromMathlib.NormedSpace
 
 #align_import from_mathlib.alg_norm_of_galois
 
@@ -60,7 +60,7 @@ theorem lt_csupr_of_lt {α : Type _} {ι : Sort _} [ConditionallyCompleteLattice
   lt_of_lt_of_le h (le_ciSup H i)
 
 theorem csupr_univ {α β : Type _} [Fintype β] [ConditionallyCompleteLattice α] {f : β → α} :
-    (⨆ (x : β) (H : x ∈ (Finset.univ : Finset β)), f x) = ⨆ x : β, f x := by
+    (⨆ (x : β) (_ : x ∈ (Finset.univ : Finset β)), f x) = ⨆ x : β, f x := by
   simp only [Finset.mem_univ, ciSup_pos]
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
@@ -72,7 +72,8 @@ theorem csupr₂_le {ι : Sort _} [Nonempty ι] {κ : ι → Prop} {α : Type _}
   by_cases hx : κ x
   · haveI : Nonempty (κ x) := ⟨hx⟩
     exact ciSup_le fun hx' => h _ _
-  · simp only [(iff_false_iff _).mpr hx, ciSup_false, bot_le]
+  · rw [← iff_false_iff] at hx
+    simp only [hx, ciSup_false, bot_le]
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 theorem le_csupr₂_of_le' {ι : Sort _} [Finite ι] {κ : ι → Prop} {α : Type _}
@@ -87,21 +88,19 @@ theorem le_csupr₂_of_le' {ι : Sort _} [Finite ι] {κ : ι → Prop} {α : Ty
 theorem le_csupr₂_of_le {ι : Sort _} {κ : ι → Prop} {α : Type _}
     [ConditionallyCompleteLinearOrderBot α] {f : ∀ i, κ i → α}
     (h_fin : (Set.range fun i : ι => ⨆ j : κ i, f i j).Finite) {a : α} (i : ι) (j : κ i)
-    (h : a ≤ f i j) : a ≤ ⨆ (i) (j), f i j :=
-  by
+    (h : a ≤ f i j) : a ≤ ⨆ (i) (j), f i j := by
   apply le_ciSup_of_le _ i
   · apply le_ciSup_of_le (Set.Finite.bddAbove (Set.finite_range fun j : κ i => f i j)) j h
   · apply Set.Finite.bddAbove h_fin
 
 theorem Finset.sup_eq_csupr {α β : Type _} [Nonempty α] [ConditionallyCompleteLinearOrderBot β]
-    (s : Finset α) (f : α → β) : s.sup f = ⨆ (a : α) (H : a ∈ s), f a :=
-  by
+    (s : Finset α) (f : α → β) : s.sup f = ⨆ (a : α) (_ : a ∈ s), f a := by
   apply le_antisymm
   · apply Finset.sup_le
     intro a ha
-    apply le_csupr₂_of_le _ a ha (le_refl _)
-    have hrange : (Set.range fun a : α => ⨆ H : a ∈ s, f a) ⊆ (Set.range fun a : s => f a) ∪ {⊥} :=
-      by
+    apply le_csupr₂_of_le _ a ha (le_refl (f a))
+    have hrange : (Set.range fun a : α => ⨆ _ : a ∈ s, f a) ⊆
+      (Set.range fun a : s => f a) ∪ {⊥} := by
       rintro y ⟨x, hxy⟩
       simp only [Set.mem_range, bot_eq_zero', Set.union_singleton, Set.mem_insert_iff] at y ⊢
       by_cases hx : x ∈ s
@@ -112,8 +111,7 @@ theorem Finset.sup_eq_csupr {α β : Type _} [Nonempty α] [ConditionallyComplet
 
 /-- Given `f : ι → ℝ≥0` and `n : ℕ`, we have `(supr f)^n = supr (f^n)`. -/
 theorem NNReal.iSup_pow {ι : Type _} [Nonempty ι] [Finite ι] (f : ι → ℝ≥0) (n : ℕ) :
-    (⨆ i : ι, f i) ^ n = ⨆ i : ι, f i ^ n :=
-  by
+    (⨆ i : ι, f i) ^ n = ⨆ i : ι, f i ^ n := by
   cases nonempty_fintype ι
   induction' n with n hn
   · simp only [pow_zero, ciSup_const]
@@ -122,14 +120,18 @@ theorem NNReal.iSup_pow {ι : Type _} [Nonempty ι] [Finite ι] (f : ι → ℝ�
     · apply NNReal.iSup_mul_iSup_le
       intro i j
       by_cases hij : f i < f j
-      · have hj : f i * f j ^ n ≤ f j ^ n.succ := by rw [pow_succ];
+      · have hj : f i * f j ^ n ≤ f j ^ n.succ := by
+          rw [pow_succ]
           apply mul_le_mul' (le_of_lt hij) (le_refl _)
         exact le_trans hj (le_ciSup_of_le (Set.Finite.bddAbove (Set.finite_range _)) j (le_refl _))
-      · have hi : f i * f j ^ n ≤ f i ^ n.succ := by rw [pow_succ];
-          exact mul_le_mul' (le_refl _) (pow_le_pow_of_le_left' (not_lt.mp hij) n)
+      · have hi : f i * f j ^ n ≤ f i ^ n.succ := by
+          rw [pow_succ]
+          exact mul_le_mul' (le_refl _) (pow_le_pow_left' (not_lt.mp hij) n)
         exact le_trans hi (le_ciSup_of_le (Set.Finite.bddAbove (Set.finite_range _)) i (le_refl _))
-    · have : Nonempty (Finset.univ : Finset ι) := finset.nonempty_coe_sort.mpr Finset.univ_nonempty
-      simp only [← csupr_univ, ← Finset.sup_eq_csupr, pow_succ]
+    · have : Nonempty (Finset.univ : Finset ι) := Finset.nonempty_coe_sort.mpr Finset.univ_nonempty
+      rw [← csupr_univ, ← Finset.sup_eq_csupr, ← csupr_univ, ← Finset.sup_eq_csupr,
+        ← csupr_univ, ← Finset.sup_eq_csupr]
+      simp only [pow_succ]
       apply Finset.sup_mul_le_mul_sup_of_nonneg <;> rintro i - <;> exact zero_le _
 
 /-- If `f : ι → ℝ` and `g : ι → ℝ` are non-negative and `∀ i j, f i * g j ≤ a`, then
@@ -166,17 +168,14 @@ theorem Real.iSup_pow {ι : Type _} [Nonempty ι] [Finite ι] {f : ι → ℝ} (
     · refine' Real.iSup_hMul_iSup_le hf_nn (fun x => pow_nonneg (hf_nn x) n) _
       intro i j
       by_cases hij : f i < f j
-      · have hj : f i * f j ^ n ≤ f j ^ n.succ :=
-          by
+      · have hj : f i * f j ^ n ≤ f j ^ n.succ := by
           rw [pow_succ]
           exact mul_le_mul (le_of_lt hij) (le_refl _) (pow_nonneg (hf_nn _) _) (hf_nn _)
         exact le_trans hj (le_ciSup_of_le (Set.Finite.bddAbove (Set.finite_range _)) j (le_refl _))
-      · have hi : f i * f j ^ n ≤ f i ^ n.succ :=
-          by
+      · have hi : f i * f j ^ n ≤ f i ^ n.succ := by
           rw [pow_succ]
-          exact
-            mul_le_mul (le_refl _) (pow_le_pow_of_le_left (hf_nn _) (not_lt.mp hij) _)
-              (pow_nonneg (hf_nn _) _) (hf_nn _)
+          exact mul_le_mul (le_refl _) (pow_le_pow_left (hf_nn _) (not_lt.mp hij) _)
+            (pow_nonneg (hf_nn _) _) (hf_nn _)
         exact le_trans hi (le_ciSup_of_le (Set.Finite.bddAbove (Set.finite_range _)) i (le_refl _))
     · simp_rw [pow_succ]
       exact Real.iSup_hMul_le_hMul_iSup_of_nonneg hf_nn fun x => pow_nonneg (hf_nn x) n
@@ -193,12 +192,12 @@ section algNormOfAuto
 extending the norm on `K`, is an algebra norm on `K`. -/
 def algNormOfAuto (hna : IsNonarchimedean (norm : K → ℝ)) (σ : L ≃ₐ[K] L) : AlgebraNorm K L
     where
-  toFun x := Classical.choose (finite_extension_pow_mul_seminorm h_fin hna) (σ x)
-  map_zero' := by simp only [map_zero]
+  toFun x     := Classical.choose (finite_extension_pow_mul_seminorm h_fin hna) (σ x)
+  map_zero'   := by simp only [map_eq_zero_iff_eq_zero, AddEquivClass.map_eq_zero_iff]
   add_le' x y := by simp only [map_add σ, map_add_le_add]
-  neg' x := by simp only [map_neg σ, map_neg_eq_map]
-  hMul_le' x y := by simp only [map_mul σ, map_mul_le_mul]
-  smul' x y := by simp only [map_smul σ, map_smul_eq_mul]
+  neg' x      := by simp only [map_neg σ, map_neg_eq_map]
+  mul_le' x y := by simp only [map_mul σ, map_mul_le_mul]
+  smul' x y   := by simp only [map_smul σ, map_smul_eq_mul]
   eq_zero_of_map_eq_zero' x hx := (AddEquivClass.map_eq_zero_iff _).mp (eq_zero_of_map_eq_zero _ hx)
 
 theorem algNormOfAuto_apply (σ : L ≃ₐ[K] L) (hna : IsNonarchimedean (norm : K → ℝ)) (x : L) :
@@ -208,8 +207,7 @@ theorem algNormOfAuto_apply (σ : L ≃ₐ[K] L) (hna : IsNonarchimedean (norm :
 
 /-- The algebra norm `alg_norm_of_auto` is power-multiplicative. -/
 theorem algNormOfAuto_isPowMul (σ : L ≃ₐ[K] L) (hna : IsNonarchimedean (norm : K → ℝ)) :
-    IsPowMul (algNormOfAuto h_fin hna σ) :=
-  by
+    IsPowMul (algNormOfAuto h_fin hna σ) := by
   intro x n hn
   simp only [algNormOfAuto_apply, map_pow σ x n]
   exact (Classical.choose_spec (finite_extension_pow_mul_seminorm h_fin hna)).1 _ hn
@@ -245,9 +243,9 @@ def algNormOfGalois (hna : IsNonarchimedean (norm : K → ℝ)) : AlgebraNorm K 
         (add_le_add (le_ciSup_of_le (Set.Finite.bddAbove (Set.finite_range _)) σ (le_refl _))
           (le_ciSup_of_le (Set.Finite.bddAbove (Set.finite_range _)) σ (le_refl _)))
   neg' x := by simp only [map_neg_eq_map]
-  hMul_le' x y :=
+  mul_le' x y :=
     ciSup_le fun σ =>
-      le_trans (map_hMul_le_hMul (algNormOfAuto h_fin hna σ) x y)
+      le_trans (map_mul_le_mul (algNormOfAuto h_fin hna σ) x y)
         (mul_le_mul (le_ciSup_of_le (Set.Finite.bddAbove (Set.finite_range _)) σ (le_refl _))
           (le_ciSup_of_le (Set.Finite.bddAbove (Set.finite_range _)) σ (le_refl _)) (map_nonneg _ _)
           (le_ciSup_of_le (Set.Finite.bddAbove (Set.finite_range _)) σ (map_nonneg _ _)))
@@ -260,7 +258,7 @@ def algNormOfGalois (hna : IsNonarchimedean (norm : K → ℝ)) : AlgebraNorm K 
             (Set.range fun σ : L ≃ₐ[K] L => algNormOfAuto h_fin hna σ x).toFinite)
           AlgEquiv.refl (map_pos_of_ne_zero _ hx))
   smul' r x := by
-    simp only [AlgebraNormClass.map_smul_eq_hMul, NormedRing.toRingNorm_apply,
+    simp only [AlgebraNormClass.map_smul_eq_mul, NormedRing.toRingNorm_apply,
       Real.mul_iSup_of_nonneg (norm_nonneg _)]
 
 @[simp]
@@ -270,8 +268,7 @@ theorem algNormOfGalois_apply (hna : IsNonarchimedean (norm : K → ℝ)) (x : L
 
 /-- The algebra norm `alg_norm_of_galois` is power-multiplicative. -/
 theorem algNormOfGalois_isPowMul (hna : IsNonarchimedean (norm : K → ℝ)) :
-    IsPowMul (algNormOfGalois h_fin hna) :=
-  by
+    IsPowMul (algNormOfGalois h_fin hna) := by
   intro x n hn
   simp only [algNormOfGalois_apply]
   rw [Real.iSup_pow]
@@ -288,8 +285,7 @@ theorem algNormOfGalois_isNonarchimedean (hna : IsNonarchimedean (norm : K → �
 
 /-- The algebra norm `alg_norm_of_galois` extends the norm on `K`. -/
 theorem algNormOfGalois_extends (hna : IsNonarchimedean (norm : K → ℝ)) :
-    FunctionExtends (norm : K → ℝ) (algNormOfGalois h_fin hna) := fun r =>
-  by
+    FunctionExtends (norm : K → ℝ) (algNormOfGalois h_fin hna) := fun r => by
   rw [algNormOfGalois, ← AlgebraNorm.toFun_eq_coe]
   simp only [AlgebraNorm.toFun_eq_coe, algNormOfAuto_extends h_fin _ hna r, ciSup_const]
 
