@@ -42,100 +42,92 @@ spectral, spectral norm, unique, seminorm, norm, nonarchimedean
 
 noncomputable section
 
-open scoped NNReal
+open scoped NNReal IntermediateField
 
 variable {K : Type _} [NontriviallyNormedField K] {L : Type _} [Field L] [Algebra K L]
   (h_alg : Algebra.IsAlgebraic K L)
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:192:11: unsupported (impossible) -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:192:11: unsupported (impossible) -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:192:11: unsupported (impossible) -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:192:11: unsupported (impossible) -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:192:11: unsupported (impossible) -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:192:11: unsupported (impossible) -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:192:11: unsupported (impossible) -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:192:11: unsupported (impossible) -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:192:11: unsupported (impossible) -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:192:11: unsupported (impossible) -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:192:11: unsupported (impossible) -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:192:11: unsupported (impossible) -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:192:11: unsupported (impossible) -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:192:11: unsupported (impossible) -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:192:11: unsupported (impossible) -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:192:11: unsupported (impossible) -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:192:11: unsupported (impossible) -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:192:11: unsupported (impossible) -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:192:11: unsupported (impossible) -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:192:11: unsupported (impossible) -/
 /-- If `K` is a field complete with respect to a nontrivial nonarchimedean multiplicative norm and
   `L/K` is an algebraic extension, then any power-multiplicative `K`-algebra norm on `L` coincides
   with the spectral norm. -/
 theorem spectral_norm_unique' [CompleteSpace K] {f : AlgebraNorm K L} (hf_pm : IsPowMul f)
-    (hna : IsNonarchimedean (norm : K → ℝ)) : f = spectralAlgNorm h_alg hna :=
-  by
+    (hna : IsNonarchimedean (norm : K → ℝ)) : f = spectralAlgNorm h_alg hna := by
   apply eq_of_pow_mult_faithful f hf_pm _ (spectralAlgNorm_isPowMul h_alg hna)
   intro x
-  set E : Type _ := id K⟮⟯ with hEdef
+  set E : Type _ := id K⟮x⟯ with hEdef
   letI hE : Field E := by rw [hEdef, id.def] <;> infer_instance
-  letI : Algebra K E := K⟮⟯.Algebra
-  set id1 : K⟮⟯ →ₗ[K] E :=
+  letI : Algebra K E := K⟮x⟯.algebra
+  set id1 : K⟮x⟯ →ₗ[K] E :=
     { toFun := id
       map_add' := fun x y => rfl
       map_smul' := fun r x => rfl }
-  set id2 : E →ₗ[K] K⟮⟯ :=
+  set id2 : E →ₗ[K] K⟮x⟯ :=
     { toFun := id
       map_add' := fun x y => rfl
       map_smul' := fun r x => rfl }
   set hs_norm : RingNorm E :=
     { toFun := fun y : E => spectralNorm K L (id2 y : L)
-      map_zero' := by rw [map_zero, Subfield.coe_zero, spectralNorm_zero]
+      map_zero' := by
+        sorry
+        --rw [map_zero, Subfield.coe_zero, spectralNorm_zero]
       add_le' := fun a b => by
         simp only [← spectralAlgNorm_def h_alg hna, Subfield.coe_add] <;> exact map_add_le_add _ _ _
       neg' := fun a => by
-        simp only [← spectralAlgNorm_def h_alg hna, Subfield.coe_neg, map_neg, map_neg_eq_map]
-      hMul_le' := fun a b => by
+        sorry --simp only [← spectralAlgNorm_def h_alg hna, Subfield.coe_neg, map_neg, map_neg_eq_map]
+      mul_le' := fun a b => by
         simp only [← spectralAlgNorm_def h_alg hna, Subfield.coe_mul] <;> exact map_mul_le_mul _ _ _
-      eq_zero_of_map_eq_zero' := fun a ha =>
-        by
+      eq_zero_of_map_eq_zero' := fun a ha => by
         simp only [← spectralAlgNorm_def h_alg hna, LinearMap.coe_mk, id.def,
           map_eq_zero_iff_eq_zero, algebraMap.lift_map_eq_zero_iff] at ha
-        exact ha }
+        --exact ha
+        sorry }
   letI n1 : NormedRing E := normToNormedRing hs_norm
   letI N1 : NormedSpace K E :=
-    { K⟮⟯.Algebra with
-      norm_smul_le := fun k y =>
-        by
+    { K⟮x⟯.algebra with --TODO: Fix
+      one_smul := sorry
+      mul_smul := sorry
+      smul_zero := sorry
+      smul_add := sorry
+      add_smul := sorry
+      zero_smul := sorry
+      norm_smul_le := fun k y => by
         change
           (spectralAlgNorm h_alg hna (id2 (k • y) : L) : ℝ) ≤
             ‖k‖ * spectralAlgNorm h_alg hna (id2 y : L)
-        simp only [LinearMap.coe_mk, id.def, IntermediateField.coe_smul, map_smul_eq_mul] }
-  set hf_norm : RingNorm K⟮⟯ :=
-    { toFun := fun y => f ((algebraMap K⟮⟯ L) y)
+        simp only [LinearMap.coe_mk, id.def, IntermediateField.coe_smul, map_smul_eq_mul]
+        sorry }
+  set hf_norm : RingNorm K⟮x⟯ :=
+    { toFun := fun y => f ((algebraMap K⟮x⟯ L) y)
       map_zero' := map_zero _
       add_le' := fun a b => map_add_le_add _ _ _
       neg' := fun y => by simp only [map_neg, map_neg_eq_map]
-      hMul_le' := fun a b => map_mul_le_mul _ _ _
+      mul_le' := fun a b => map_mul_le_mul _ _ _
       eq_zero_of_map_eq_zero' := fun a ha =>
         by
         simp only [map_eq_zero_iff_eq_zero, map_eq_zero] at ha
         exact ha }
-  letI n2 : NormedRing K⟮⟯ := normToNormedRing hf_norm
-  letI N2 : NormedSpace K K⟮⟯ :=
-    { K⟮⟯.Algebra with
-      norm_smul_le := fun k y =>
-        by
+  letI n2 : NormedRing K⟮x⟯ := normToNormedRing hf_norm
+  letI N2 : NormedSpace K K⟮x⟯ :=
+    { K⟮x⟯.algebra with --TODO: Fix
+      one_smul := sorry
+      mul_smul := sorry
+      smul_zero := sorry
+      smul_add := sorry
+      add_smul := sorry
+      zero_smul := sorry
+      norm_smul_le := sorry/- fun k y => by
         change (f ((algebraMap K⟮⟯ L) (k • y)) : ℝ) ≤ ‖k‖ * f (algebraMap K⟮⟯ L y)
         have : (algebraMap (↥K⟮⟯) L) (k • y) = k • algebraMap (↥K⟮⟯) L y := by
           rw [← IsScalarTower.algebraMap_smul K⟮⟯ k y, smul_eq_mul, map_mul, ←
             IsScalarTower.algebraMap_apply K (↥K⟮⟯) L, Algebra.smul_def]
-        rw [this, map_smul_eq_mul] }
-  haveI hKx_fin : FiniteDimensional K ↥K⟮⟯ :=
-    IntermediateField.adjoin.finiteDimensional (is_algebraic_iff_is_integral.mp (h_alg x))
+        rw [this, map_smul_eq_mul] -/ }
+  haveI hKx_fin : FiniteDimensional K ↥K⟮x⟯ :=
+    IntermediateField.adjoin.finiteDimensional (isAlgebraic_iff_isIntegral.mp (h_alg x))
   haveI : FiniteDimensional K E := hKx_fin
-  set Id1 : K⟮⟯ →L[K] E := ⟨id1, id1.continuous_of_finite_dimensional⟩ with hId1
-  set Id2 : E →L[K] K⟮⟯ := ⟨id2, id2.continuous_of_finite_dimensional⟩ with hId2
-  have hC1 : ∃ C1 : ℝ, 0 < C1 ∧ ∀ y : K⟮⟯, ‖id1 y‖ ≤ C1 * ‖y‖ := Id1.is_bounded_linear_map.bound
-  have hC2 : ∃ C2 : ℝ, 0 < C2 ∧ ∀ y : E, ‖id2 y‖ ≤ C2 * ‖y‖ := Id2.is_bounded_linear_map.bound
+  set Id1 : K⟮x⟯ →L[K] E := ⟨id1, id1.continuous_of_finiteDimensional⟩ with hId1
+  set Id2 : E →L[K] K⟮x⟯ := ⟨id2, id2.continuous_of_finiteDimensional⟩ with hId2
+  have hC1 : ∃ C1 : ℝ, 0 < C1 ∧ ∀ y : K⟮x⟯, ‖id1 y‖ ≤ C1 * ‖y‖ := Id1.isBoundedLinearMap.bound
+  have hC2 : ∃ C2 : ℝ, 0 < C2 ∧ ∀ y : E, ‖id2 y‖ ≤ C2 * ‖y‖ := Id2.isBoundedLinearMap.bound
   obtain ⟨C1, hC1_pos, hC1⟩ := hC1
   obtain ⟨C2, hC2_pos, hC2⟩ := hC2
   use C2, C1, hC2_pos, hC1_pos
@@ -149,14 +141,13 @@ theorem spectral_norm_unique' [CompleteSpace K] {f : AlgebraNorm K L} (hf_pm : I
   `K` coincides with the spectral norm. -/
 theorem spectralNorm_unique_field_norm_ext [CompleteSpace K] (h_alg : Algebra.IsAlgebraic K L)
     {f : MulRingNorm L} (hf_ext : FunctionExtends (norm : K → ℝ) f)
-    (hna : IsNonarchimedean (norm : K → ℝ)) (x : L) : f x = spectralNorm K L x :=
-  by
+    (hna : IsNonarchimedean (norm : K → ℝ)) (x : L) : f x = spectralNorm K L x := by
   set g : AlgebraNorm K L :=
-    {
-      f with
+    { f with
       smul' := fun k x => by
-        simp only [MulRingNorm.toFun_eq_coe, Algebra.smul_def, map_mul, hf_ext k]
-      hMul_le' := fun x y => by simp only [MulRingNorm.toFun_eq_coe, map_mul_le_mul] }
+        sorry --simp only [MulRingNorm.toFun_eq_coe, Algebra.smul_def, map_mul, hf_ext k]
+      mul_le' := fun x y => by sorry --simp only [MulRingNorm.toFun_eq_coe, map_mul_le_mul]
+      }
   have hg_pow : IsPowMul g := MulRingNorm.isPowMul _
   have hgx : f x = g x := rfl
   rw [hgx, spectral_norm_unique' h_alg hg_pow hna]; rfl
@@ -168,13 +159,11 @@ def algNormFromConst (hna : IsNonarchimedean (norm : K → ℝ))
     (h1 : (spectralAlgNorm h_alg hna).toRingSeminorm 1 ≤ 1) {x : L}
     (hx : 0 ≠ spectralAlgNorm h_alg hna x) : AlgebraNorm K L :=
   { seminormFromConstRingNormOfField h1 hx.symm (spectralAlgNorm_isPowMul h_alg hna) with
-    smul' := fun k y =>
-      by
+    smul' := fun k y => by
       have h_mul :
         ∀ y : L,
           spectralNorm K L (algebraMap K L k * y) =
-            spectralNorm K L (algebraMap K L k) * spectralNorm K L y :=
-        by
+            spectralNorm K L (algebraMap K L k) * spectralNorm K L y := by
         intro y
         rw [spectralNorm_extends, ← Algebra.smul_def, ← spectralAlgNorm_def h_alg hna,
           map_smul_eq_mul _ _ _]
@@ -183,9 +172,9 @@ def algNormFromConst (hna : IsNonarchimedean (norm : K → ℝ))
         spectralNorm K L (algebraMap K L k) =
           seminormFromConst' h1 hx (spectralNorm_isPowMul h_alg hna) (algebraMap K L k) :=
         by rw [seminorm_from_const_apply_of_is_hMul h1 hx _ h_mul]; rfl
-      simp only [RingNorm.toFun_eq_coe, seminormFromConstRingNormOfField_def]
+      sorry /- simp only [RingNorm.toFun_eq_coe, seminormFromConstRingNormOfField_def]
       rw [← spectralNorm_extends k, Algebra.smul_def, h]
-      exact seminorm_from_const_is_hMul_of_is_hMul _ _ _ h_mul _ }
+      exact seminorm_from_const_is_hMul_of_is_hMul _ _ _ h_mul _  -/}
 
 theorem algNormFromConst_def (hna : IsNonarchimedean (norm : K → ℝ))
     (h1 : (spectralAlgNorm h_alg hna).toRingSeminorm 1 ≤ 1) {x y : L}
