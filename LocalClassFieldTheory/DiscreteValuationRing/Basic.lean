@@ -132,12 +132,12 @@ variable {R : Type w₁} [CommRing R] (vR : Valuation R ℤₘ₀)
 
 /-- An element `π : R` is a uniformizer if `v π = multiplicative.of_add (- 1 : ℤ) : ℤₘ₀`.-/
 def IsUniformizer (π : R) : Prop :=
-  vR π = (Multiplicative.ofAdd (-1 : ℤ) : ℤₘ₀)
+  vR π = (↑(Multiplicative.ofAdd (-1 : ℤ)) : ℤₘ₀)
 
 variable {vR}
 
 theorem IsUniformizer_iff {π : R} :
-    IsUniformizer vR π ↔ vR π = (Multiplicative.ofAdd (-1 : ℤ) : ℤₘ₀) :=
+    IsUniformizer vR π ↔ vR π = (↑(Multiplicative.ofAdd (-1 : ℤ)) : ℤₘ₀) :=
   refl _
 
 variable (vR)
@@ -319,9 +319,9 @@ variable [IsDiscrete v]
 theorem exists_Uniformizer_ofDiscrete : ∃ π : K₀, IsUniformizer v (π : K) := by
   let surj_v : IsDiscrete v; infer_instance
   refine'
-    ⟨⟨(surj_v.surj (Multiplicative.ofAdd (-1 : ℤ) : ℤₘ₀)).choose, _⟩,
-      (surj_v.surj (Multiplicative.ofAdd (-1 : ℤ) : ℤₘ₀)).choose_spec⟩
-  rw [mem_valuationSubring_iff, (surj_v.surj (Multiplicative.ofAdd (-1 : ℤ) : ℤₘ₀)).choose_spec]
+    ⟨⟨(surj_v.surj (↑(Multiplicative.ofAdd (-1 : ℤ)) : ℤₘ₀)).choose, _⟩,
+      (surj_v.surj (↑(Multiplicative.ofAdd (-1 : ℤ)) : ℤₘ₀)).choose_spec⟩
+  rw [mem_valuationSubring_iff, (surj_v.surj (↑(Multiplicative.ofAdd (-1 : ℤ)) : ℤₘ₀)).choose_spec]
   exact le_of_lt ofAdd_neg_one_lt_one
 
 instance : Nonempty (Uniformizer v) :=
@@ -366,9 +366,8 @@ theorem val_le_iff_dvd (L : Type w₁) [Field L] {w : Valuation L ℤₘ₀} [Is
   · set r := Submodule.IsPrincipal.generator (LocalRing.maximalIdeal w.valuationSubring) with hr
     have hrn : w (r ^ n) = ofAdd (-(n : ℤ))
     · replace hr : IsUniformizer w r := DiscreteValuation.IsUniformizerOfGenerator w ?_
-      rw [WithZero.ofAdd_zpow, zpow_neg, ← Nat.cast_one, WithZero.coe_inv,
-        ← WithZero.ofAdd_neg_one_pow_comm ↑n 1, pow_one, zpow_neg, inv_inv, zpow_ofNat,
-          Subring.coe_pow, Valuation.map_pow]
+      rw [WithZero.ofAdd_zpow, zpow_neg, ← Nat.cast_one, ← WithZero.ofAdd_neg_one_pow_comm ↑n 1,
+          pow_one, zpow_neg, inv_inv, zpow_ofNat, Valuation.map_pow]
       congr
       rw [span_singleton_generator]
     have :=
