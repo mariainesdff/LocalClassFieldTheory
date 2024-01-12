@@ -511,9 +511,8 @@ theorem alg_map_eq_integers :
   its field of fractions endowed with the adic valuation of the maximal ideal.-/
 noncomputable def dvrEquivUnitBall :
     A ≃+* (@Valued.v (FractionRing A) _ ℤₘ₀ _ _).valuationSubring :=
-  topEquiv.symm.trans
-    ((equivMapOfInjective _ (algebraMap A (FractionRing A)) (IsFractionRing.injective A _)).trans
-      (RingEquiv.subringCongr alg_map_eq_integers))
+  (topEquiv.symm.trans (equivMapOfInjective ⊤ (algebraMap A (FractionRing A))
+    (IsFractionRing.injective A _))).trans (RingEquiv.subringCongr alg_map_eq_integers)
 
 end DiscreteValuation
 
