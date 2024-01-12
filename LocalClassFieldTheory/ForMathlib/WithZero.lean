@@ -46,20 +46,18 @@ end Multiplicative
 
 namespace WithZero
 
-theorem ofAdd_zpow (n : ℤ) : (ofAdd n : ℤₘ₀) = ofAdd (1 : ℤ) ^ n := by
-  rw [WithZero.coe_inj, ← Int.ofAdd_mul, one_mul]
+theorem ofAdd_zpow (n : ℤ) : (↑(ofAdd n) : ℤₘ₀) = ofAdd (1 : ℤ) ^ n := by
+  rw [← WithZero.coe_zpow, WithZero.coe_inj, ← Int.ofAdd_mul, one_mul]
 
-theorem ofAdd_pow_pow_comm (a b c : ℤ) :
-    ((ofAdd (a : ℤ) : ℤₘ₀) ^ b) ^ c = (ofAdd (a : ℤ) ^ c) ^ b :=
-  by
+theorem ofAdd_pow_pow_comm (a b c : ℤ) : ((↑(ofAdd a) : ℤₘ₀) ^ b) ^ c = (ofAdd (a : ℤ) ^ c) ^ b := by
   simp only [← WithZero.coe_zpow]
   rw [← zpow_mul, mul_comm, zpow_mul]
 
 theorem ofAdd_neg_one_pow_comm (a : ℤ) (n : ℕ) :
-    ((ofAdd (-1 : ℤ) : ℤₘ₀) ^ (-a)) ^ n = ofAdd (n : ℤ) ^ a := by
-  rw [ofAdd_zpow (-1), coe_zpow]
+    ((↑(ofAdd (-1 : ℤ)) : ℤₘ₀) ^ (-a)) ^ n = ofAdd (n : ℤ) ^ a := by
+  rw [ofAdd_zpow (-1)]
   simp only [zpow_neg, zpow_one, inv_zpow', inv_inv, coe_zpow]
-  rw [← zpow_ofNat, ofAdd_pow_pow_comm, coe_zpow, ← ofAdd_zpow]
+  rw [← zpow_ofNat, ofAdd_pow_pow_comm, ← ofAdd_zpow]
 
 
 instance : Nontrivial ℤₘ₀ˣ := (unitsWithZeroEquiv).toEquiv.nontrivial
@@ -111,16 +109,16 @@ theorem zpow_left_inj {n : ℤ} {a b : ℤₘ₀} (ha : a ≠ 0) (hb : b ≠ 0) 
   Set.InjOn.eq_iff (zpow_left_injOn hn) (Set.mem_Ioi.mpr (zero_lt_iff.mpr ha))
     (Set.mem_Ioi.mpr (zero_lt_iff.mpr hb))
 
-theorem ofAdd_neg_nat (n : ℕ) : (ofAdd (-n : ℤ) : ℤₘ₀) = ofAdd (-1 : ℤ) ^ n := by
+theorem ofAdd_neg_nat (n : ℕ) : (↑(ofAdd (-n : ℤ)) : ℤₘ₀) = ofAdd (-1 : ℤ) ^ n := by
   simp only [ofAdd_neg, coe_inv, inv_pow, coe_pow, inv_inj]
   rw [← @WithZero.coe_pow, WithZero.coe_inj, ← one_mul (n : ℤ), Int.ofAdd_mul, zpow_ofNat]
 
-theorem ofAdd_neg_one_lt_one : (Multiplicative.ofAdd (-1 : ℤ) : ℤₘ₀) < (1 : ℤₘ₀) :=
+theorem ofAdd_neg_one_lt_one : (↑(Multiplicative.ofAdd (-1 : ℤ)) : ℤₘ₀) < (1 : ℤₘ₀) :=
   by
   rw [← WithZero.coe_one, WithZero.coe_lt_coe, ← ofAdd_zero, ofAdd_lt]
   exact neg_one_lt_zero
 
-theorem lt_succ_iff_le (x : ℤₘ₀) (m : ℤ) : x < (ofAdd (m + 1) : ℤₘ₀) ↔ x ≤ (ofAdd m : ℤₘ₀) :=
+theorem lt_succ_iff_le (x : ℤₘ₀) (m : ℤ) : x < (↑(ofAdd (m + 1)) : ℤₘ₀) ↔ x ≤ (↑(ofAdd m) : ℤₘ₀) :=
   by
   by_cases hx : x = 0
   · simpa only [hx, zero_le', iff_true_iff, zero_lt_iff] using WithZero.coe_ne_zero
@@ -146,9 +144,8 @@ def withZeroMultIntToNnreal {e : NNReal} (he : e ≠ 0) : ℤₘ₀ →*₀ ℝ�
   map_zero' := rfl
   map_one' := by
     simp only [withZeroMultIntToNnrealDef]; rw [dif_neg]
-    · simp only [unzero_coe]
-      erw [toAdd_one, zpow_zero]
-    · simp only
+    · erw [toAdd_one, zpow_zero]
+      exact one_ne_zero
   map_mul' x y := by
     simp only [withZeroMultIntToNnrealDef]
     by_cases hxy : x * y = 0
@@ -167,7 +164,7 @@ def withZeroMultIntToNnreal {e : NNReal} (he : e ≠ 0) : ℤₘ₀ →*₀ ℝ�
 /-- `with_zero_mult_int_to_nnreal` sends nonzero elements to nonzero elements. -/
 theorem withZeroMultIntToNnreal_ne_zero {e : NNReal} {m : ℤₘ₀} (he : e ≠ 0) (hm : m ≠ 0) :
     withZeroMultIntToNnreal he m ≠ 0 := by
-    simp only [ne_eq, map_eq_zero, hm]
+    simp only [ne_eq, map_eq_zero, hm, not_false_eq_true]
 
 /-- `with_zero_mult_int_to_nnreal` sends nonzero elements to positive elements. -/
 theorem withZeroMultIntToNnreal_pos {e : NNReal} {m : ℤₘ₀} (he : e ≠ 0) (hm : m ≠ 0) :
