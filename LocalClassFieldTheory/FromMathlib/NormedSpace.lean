@@ -31,6 +31,8 @@ power-multiplicative `K`-algebra norm on `L` extending the norm on `K`.
 basis.norm, nonarchimedean
 -/
 
+set_option autoImplicit false
+
 
 noncomputable section
 
@@ -173,10 +175,10 @@ theorem norm_isNonarchimedean {ι : Type _} [Fintype ι] [Nonempty ι] {B : Basi
   `∃ (c : ℝ), c > 0` such that ` ∀ (x y : L), B.norm (x * y) ≤ c * B.norm x * B.norm y`. -/
 theorem norm_is_bdd {ι : Type _} [Fintype ι] [Nonempty ι] {B : Basis ι K L} {i : ι}
     (hBi : B i = (1 : L)) (hna : IsNonarchimedean (Norm.norm : K → ℝ)) :
-    ∃ (c : ℝ) (hc : 0 < c), ∀ x y : L, B.norm (x * y) ≤ c * B.norm x * B.norm y := by
+    ∃ (c : ℝ) (_ : 0 < c), ∀ x y : L, B.norm (x * y) ≤ c * B.norm x * B.norm y := by
   classical
   -- The bounding constant `c` will be the maximum of the products `B.norm (B i * B j)`.
-  set c := Classical.choose (Finite.exists_max fun i : ι × ι => B.norm (B i.1 * B i.2)) with hc_def
+  set c := Classical.choose (Finite.exists_max fun i : ι × ι => B.norm (B i.1 * B i.2))
   have hc := Classical.choose_spec (Finite.exists_max fun i : ι × ι => B.norm (B i.1 * B i.2))
   use B.norm (B c.1 * B c.2)
   constructor
@@ -192,25 +194,20 @@ theorem norm_is_bdd {ι : Type _} [Fintype ι] [Nonempty ι] {B : Basis ι K L} 
     rw [sum_mul, LinearEquiv.map_finset_sum, sum_apply]
     simp_rw [smul_mul_assoc, LinearEquiv.map_smul, mul_sum, LinearEquiv.map_finset_sum,
       mul_smul_comm, LinearEquiv.map_smul]
+    have hna' : IsNonarchimedean (NormedField.toMulRingNorm K) := hna
+    rw [AddGroupSeminorm.toFun_eq_coe] at hna'
     /- Since the norm is nonarchimidean, the norm of a finite sum is bounded by the maximum of the
           norms of the summands. -/
-    have hna' : IsNonarchimedean (NormedField.toMulRingNorm K) := hna
-    have h := @univ_nonempty ι _ _
-
-    /- have hk : ∃ (k : ι) (hk : _),
+    have hk : ∃ (k : ι) (_ : (univ : Finset ι).Nonempty → k ∈ univ ),
         ‖∑ i : ι, (B.equivFun x i • ∑ i_1 : ι, B.equivFun y i_1 • B.equivFun (B i * B i_1)) ixy‖ ≤
-          ‖(B.equivFun x k • ∑ j : ι, B.equivFun y j • B.equivFun (B k * B j)) ixy‖ := by
-      sorry --apply isNonarchimedean_finset_image_add hna
-      --convert
-      /- isNonarchimedean_finset_image_add hna'
+          ‖(B.equivFun x k • ∑ j : ι, B.equivFun y j • B.equivFun (B k * B j)) ixy‖ :=
+      isNonarchimedean_finset_image_add hna'
         (fun i => (B.equivFun x i • ∑ i_1 : ι, B.equivFun y i_1 • B.equivFun (B i * B i_1)) ixy)
-        (univ : Finset ι) -/
+        (univ : Finset ι)
     obtain ⟨k, -, hk⟩ := hk
-    apply le_trans hk -/
+    apply le_trans hk
     -- We use the above property again.
-    sorry
-    /- have hk' :
-      ∃ (k' : ι) (hk' : univ_nonempty → k' ∈ univ),
+    have hk' : ∃ (k' : ι) (_ : (univ : Finset ι).Nonempty → k' ∈ univ),
         ‖∑ j : ι, B.equivFun y j • B.equivFun (B k * B j) ixy‖ ≤
           ‖B.equivFun y k' • B.equivFun (B k * B k') ixy‖ :=
       isNonarchimedean_finset_image_add hna'
@@ -223,7 +220,7 @@ theorem norm_is_bdd {ι : Type _} [Fintype ι] [Nonempty ι] {B : Basis ι K L} 
     exact
       mul_le_mul (mul_le_mul (B.le_norm _ _) (B.le_norm _ _) (norm_nonneg _) (norm_nonneg _))
         (le_trans (B.le_norm _ _) (hc (k, k'))) (norm_nonneg _)
-        (mul_nonneg (norm_nonneg _) (norm_nonneg _)) -/
+        (mul_nonneg (norm_nonneg _) (norm_nonneg _))
     -- `B c.1 * B c.2` is positive
   · have h_pos : (0 : ℝ) < B.norm (B i * B i) :=
       by
