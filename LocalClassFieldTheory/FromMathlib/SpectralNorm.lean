@@ -1216,11 +1216,15 @@ def normToNormedRing {A : Type _} [Ring A] (f : RingNorm A) : NormedRing A where
   dist_triangle x y z := by
     have hxyz : x - z = x - y + (y - z) := by abel
     simp only [AddGroupSeminorm.toFun_eq_coe, hxyz, map_add_le_add]
-  --eq_of_dist_eq_zero x y hxy := sorry --eq_of_sub_eq_zero (RingNorm.eq_zero_of_map_eq_zero' _ _ hxy)
   dist_eq x y := rfl
-  norm_mul x y := sorry --by simp only [map_mul_le_mul]
-  edist_dist := sorry
-  eq_of_dist_eq_zero := sorry
+  norm_mul x y := by
+    simp only [AddGroupSeminorm.toFun_eq_coe, RingSeminorm.toFun_eq_coe, map_mul_le_mul]
+  edist_dist x y := by
+    simp only [AddGroupSeminorm.toFun_eq_coe, RingSeminorm.toFun_eq_coe]
+    rw [eq_comm, ENNReal.ofReal_eq_coe_nnreal]
+  eq_of_dist_eq_zero hxy := by
+    simp only [dist, AddGroupSeminorm.toFun_eq_coe] at hxy
+    exact eq_of_sub_eq_zero (RingNorm.eq_zero_of_map_eq_zero' _ _ hxy)
 
 end
 
@@ -1229,15 +1233,21 @@ def mulNormToNormedField (f : MulRingNorm L) : NormedField L where
   norm x := f x
   dist x y := f (x - y)
   dist_self x := by simp only [sub_self, AddGroupSeminorm.toFun_eq_coe, _root_.map_zero]
-  dist_comm x y := sorry --by simp? [← neg_sub x y, map_neg_eq_map]
+  dist_comm x y := by
+    simp only [dist, AddGroupSeminorm.toFun_eq_coe]
+    rw [← neg_sub x y, map_neg_eq_map]
   dist_triangle x y z := by
     have hxyz : x - z = x - y + (y - z) := by ring
-    simp only [hxyz, map_add_le_add]
-    sorry
-  eq_of_dist_eq_zero /- x y hxy -/ := sorry --eq_of_sub_eq_zero (MulRingNorm.eq_zero_of_map_eq_zero' _ _ hxy)
+    simp only [AddGroupSeminorm.toFun_eq_coe, hxyz, map_add_le_add]
+  eq_of_dist_eq_zero hxy  := by
+    simp only [dist, AddGroupSeminorm.toFun_eq_coe] at hxy
+    exact eq_of_sub_eq_zero (MulRingNorm.eq_zero_of_map_eq_zero' _ _ hxy)
   dist_eq x y := rfl
-  norm_mul' x y := sorry --by simp only [map_mul]
-  edist_dist := sorry
+  norm_mul' x y := by simp only [AddGroupSeminorm.toFun_eq_coe, MulRingSeminorm.toFun_eq_coe,
+    map_mul]
+  edist_dist x y := by
+    simp only [AddGroupSeminorm.toFun_eq_coe, RingSeminorm.toFun_eq_coe]
+    rw [eq_comm, ENNReal.ofReal_eq_coe_nnreal]
 
 theorem mulNormToNormedField.norm (f : MulRingNorm L) :
     (mulNormToNormedField f).norm = fun x => (f x : ℝ) :=

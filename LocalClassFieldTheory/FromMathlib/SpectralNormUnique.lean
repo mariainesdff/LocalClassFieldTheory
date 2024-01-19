@@ -55,7 +55,7 @@ theorem spectral_norm_unique' [CompleteSpace K] {f : AlgebraNorm K L} (hf_pm : I
   apply eq_of_pow_mult_faithful f hf_pm _ (spectralAlgNorm_isPowMul h_alg hna)
   intro x
   set E : Type _ := id K⟮x⟯ with hEdef
-  letI hE : Field E := by rw [hEdef, id.def] <;> infer_instance
+  letI hE : Field E := by rw [hEdef, id.def]; infer_instance
   letI : Algebra K E := K⟮x⟯.algebra
   set id1 : K⟮x⟯ →ₗ[K] E :=
     { toFun := id
@@ -71,11 +71,11 @@ theorem spectral_norm_unique' [CompleteSpace K] {f : AlgebraNorm K L} (hf_pm : I
         sorry
         --rw [map_zero, Subfield.coe_zero, spectralNorm_zero]
       add_le' := fun a b => by
-        simp only [← spectralAlgNorm_def h_alg hna, Subfield.coe_add] <;> exact map_add_le_add _ _ _
+        simp only [← spectralAlgNorm_def h_alg hna, Subfield.coe_add]; exact map_add_le_add _ _ _
       neg' := fun a => by
         sorry --simp only [← spectralAlgNorm_def h_alg hna, Subfield.coe_neg, map_neg, map_neg_eq_map]
       mul_le' := fun a b => by
-        simp only [← spectralAlgNorm_def h_alg hna, Subfield.coe_mul] <;> exact map_mul_le_mul _ _ _
+        simp only [← spectralAlgNorm_def h_alg hna, Subfield.coe_mul]; exact map_mul_le_mul _ _ _
       eq_zero_of_map_eq_zero' := fun a ha => by
         simp only [← spectralAlgNorm_def h_alg hna, LinearMap.coe_mk, id.def,
           map_eq_zero_iff_eq_zero, algebraMap.lift_map_eq_zero_iff] at ha
@@ -145,9 +145,13 @@ theorem spectralNorm_unique_field_norm_ext [CompleteSpace K] (h_alg : Algebra.Is
   set g : AlgebraNorm K L :=
     { f with
       smul' := fun k x => by
-        sorry --simp only [MulRingNorm.toFun_eq_coe, Algebra.smul_def, map_mul, hf_ext k]
-      mul_le' := fun x y => by sorry --simp only [MulRingNorm.toFun_eq_coe, map_mul_le_mul]
-      }
+        simp only [AddGroupSeminorm.toFun_eq_coe, MulRingSeminorm.toFun_eq_coe]
+        rw [Algebra.smul_def, map_mul]
+        congr
+        rw [← hf_ext k]
+        simp only [AddGroupSeminorm.toFun_eq_coe, MulRingSeminorm.toFun_eq_coe]
+      mul_le' := fun x y => by
+        simp only [AddGroupSeminorm.toFun_eq_coe, MulRingSeminorm.toFun_eq_coe, map_mul_le_mul] }
   have hg_pow : IsPowMul g := MulRingNorm.isPowMul _
   have hgx : f x = g x := rfl
   rw [hgx, spectral_norm_unique' h_alg hg_pow hna]; rfl
@@ -168,13 +172,12 @@ def algNormFromConst (hna : IsNonarchimedean (norm : K → ℝ))
         rw [spectralNorm_extends, ← Algebra.smul_def, ← spectralAlgNorm_def h_alg hna,
           map_smul_eq_mul _ _ _]
         rfl
-      have h :
-        spectralNorm K L (algebraMap K L k) =
+      have h : spectralNorm K L (algebraMap K L k) =
           seminormFromConst' h1 hx (spectralNorm_isPowMul h_alg hna) (algebraMap K L k) :=
         by rw [seminorm_from_const_apply_of_is_hMul h1 hx _ h_mul]; rfl
-      sorry /- simp only [RingNorm.toFun_eq_coe, seminormFromConstRingNormOfField_def]
-      rw [← spectralNorm_extends k, Algebra.smul_def, h]
-      exact seminorm_from_const_is_hMul_of_is_hMul _ _ _ h_mul _  -/}
+      simp only [RingSeminorm.toFun_eq_coe, seminormFromConstRingNormOfField_def]
+      rw [← @spectralNorm_extends K _ L _ _ k, Algebra.smul_def, h]
+      exact seminorm_from_const_is_hMul_of_is_hMul _ _ _ h_mul _ }
 
 theorem algNormFromConst_def (hna : IsNonarchimedean (norm : K → ℝ))
     (h1 : (spectralAlgNorm h_alg hna).toRingSeminorm 1 ≤ 1) {x y : L}
@@ -185,9 +188,9 @@ theorem algNormFromConst_def (hna : IsNonarchimedean (norm : K → ℝ))
 
 /-- If `K` is a field complete with respect to a nontrivial nonarchimedean multiplicative norm and
   `L/K` is an algebraic extension, then the spectral norm on `L` is multiplicative. -/
-theorem spectral_norm_is_hMul [CompleteSpace K] (hna : IsNonarchimedean (norm : K → ℝ)) (x y : L) :
-    spectralAlgNorm h_alg hna (x * y) = spectralAlgNorm h_alg hna x * spectralAlgNorm h_alg hna y :=
-  by
+theorem spectral_norm_is_mul [CompleteSpace K] (hna : IsNonarchimedean (norm : K → ℝ)) (x y : L) :
+    spectralAlgNorm h_alg hna (x * y) =
+      spectralAlgNorm h_alg hna x * spectralAlgNorm h_alg hna y := by
   by_cases hx : spectralAlgNorm h_alg hna x = 0
   · rw [hx, MulZeroClass.zero_mul]
     rw [map_eq_zero_iff_eq_zero] at hx ⊢
@@ -197,20 +200,16 @@ theorem spectral_norm_is_hMul [CompleteSpace K] (hna : IsNonarchimedean (norm : 
     set f : AlgebraNorm K L := algNormFromConst h_alg hna hf1 (Ne.symm hx) with hf
     have hf_pow : IsPowMul f :=
       seminorm_from_const_isPowMul hf1 (Ne.symm hx) (spectralNorm_isPowMul h_alg hna)
-    have hf_na : IsNonarchimedean f :=
-      seminorm_from_const_isNonarchimedean _ _ _ (spectralNorm_isNonarchimedean h_alg hna)
     rw [← spectral_norm_unique' h_alg hf_pow, hf]
     simp only [algNormFromConst_def]
-    exact seminorm_from_const_c_is_hMul _ _ _ _
+    exact seminorm_from_const_c_is_mul hf1 (Ne.symm hx) (spectralNorm_isPowMul h_alg hna) _
 
 /-- The spectral norm is a multiplicative `K`-algebra norm on `L`.-/
 def spectralMulAlgNorm [CompleteSpace K] (hna : IsNonarchimedean (norm : K → ℝ)) :
     MulAlgebraNorm K L :=
-  {
-    spectralAlgNorm h_alg
-      hna with
+  { spectralAlgNorm h_alg hna with
     map_one' := spectralAlgNorm_is_norm_one_class h_alg hna
-    map_mul' := spectral_norm_is_hMul h_alg hna }
+    map_mul' := spectral_norm_is_mul h_alg hna }
 
 theorem spectral_mul_ring_norm_def [CompleteSpace K] (hna : IsNonarchimedean (norm : K → ℝ))
     (x : L) : spectralMulAlgNorm h_alg hna x = spectralNorm K L x :=
@@ -219,9 +218,7 @@ theorem spectral_mul_ring_norm_def [CompleteSpace K] (hna : IsNonarchimedean (no
 /-- `L` with the spectral norm is a `normed_field`. -/
 def spectralNormToNormedField [CompleteSpace K] (h_alg : Algebra.IsAlgebraic K L)
     (h : IsNonarchimedean (norm : K → ℝ)) : NormedField L :=
-  {
-    (inferInstance : Field
-        L) with
+  { (inferInstance : Field L) with
     norm := fun x : L => (spectralNorm K L x : ℝ)
     dist := fun x y : L => (spectralNorm K L (x - y) : ℝ)
     dist_self := fun x => by simp only [sub_self, spectralNorm_zero]
@@ -229,16 +226,18 @@ def spectralNormToNormedField [CompleteSpace K] (h_alg : Algebra.IsAlgebraic K L
     dist_triangle := fun x y z => by
       simp only [dist_eq_norm]
       rw [← sub_add_sub_cancel x y z]
-      exact
-        add_le_of_isNonarchimedean spectralNorm_nonneg (spectralNorm_isNonarchimedean h_alg h) _ _
-    eq_of_dist_eq_zero := fun x y hxy =>
-      by
+      apply add_le_of_isNonarchimedean spectralNorm_nonneg
+      exact spectralNorm_isNonarchimedean h_alg h
+    eq_of_dist_eq_zero := fun hxy => by
       simp only [← spectral_mul_ring_norm_def h_alg h] at hxy
       rw [← sub_eq_zero]
-      exact MulAlgebraNorm.eq_zero_of_map_eq_zero' _ _ hxy
+      exact (map_eq_zero_iff_eq_zero (spectralMulAlgNorm h_alg h)).mp hxy
     dist_eq := fun x y => by rfl
     norm_mul' := fun x y => by
-      simp only [← spectral_mul_ring_norm_def h_alg h] <;> exact map_mul _ _ _ }
+      simp only [← spectral_mul_ring_norm_def h_alg h]; exact map_mul _ _ _
+    edist_dist := fun x y => by
+      simp only [AddGroupSeminorm.toFun_eq_coe, RingSeminorm.toFun_eq_coe]
+      rw [ENNReal.ofReal_eq_coe_nnreal] }
 
 /-- `L` with the spectral norm is a `normed_add_comm_group`. -/
 def spectralNormToNormedAddCommGroup [CompleteSpace K] (h_alg : Algebra.IsAlgebraic K L)
