@@ -26,3 +26,4 @@ import LocalClassFieldTheory.FromMathlib.SeminormFromBounded
 import LocalClassFieldTheory.FromMathlib.SeminormFromConst
 import LocalClassFieldTheory.FromMathlib.SmoothingSeminorm
 import LocalClassFieldTheory.FromMathlib.SpecificLimits
+import LocalClassFieldTheory.FromMathlib.SpectralNormUnique
