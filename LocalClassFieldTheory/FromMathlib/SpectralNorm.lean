@@ -569,41 +569,36 @@ theorem root_norm_le_spectralValue {f : AlgebraNorm K L} (hf_pm : IsPowMul f)
     (hx : aeval x p = 0) : f x ≤ spectralValue p := by
   by_cases hx0 : f x = 0
   · rw [hx0]; exact spectralValue_nonneg p
-  · sorry /- by_contra' h_ge
-    have hn_lt : ∀ (n : ℕ) (hn : n < p.natDegree), ‖p.coeff n‖ < f x ^ (p.natDegree - n) := by
+  · by_contra h_ge
+    have hn_lt : ∀ (n : ℕ) (_ : n < p.natDegree), ‖p.coeff n‖ < f x ^ (p.natDegree - n) := by
       intro n hn
-      have hexp : (‖p.coeff n‖ ^ (1 / (p.natDegree - n : ℝ))) ^ (p.natDegree - n) = ‖p.coeff n‖ :=
-        by
+      have hexp : (‖p.coeff n‖ ^ (1 / (p.natDegree - n : ℝ))) ^ (p.natDegree - n) =
+        ‖p.coeff n‖ := by
         rw [← Real.rpow_nat_cast, ← Real.rpow_mul (norm_nonneg _), mul_comm,
           Real.rpow_mul (norm_nonneg _), Real.rpow_nat_cast, ← Nat.cast_sub (le_of_lt hn), one_div,
-          Real.pow_nat_rpow_nat_inv (norm_nonneg _) (ne_of_gt (tsub_pos_of_lt hn))]
-      have h_base : ‖p.coeff n‖ ^ (1 / (p.natDegree - n : ℝ)) < f x :=
-        by
-        rw [spectralValue, iSup,
-          Set.Finite.cSup_lt_iff (spectralValueTerms_finite_range p)
+          Real.pow_rpow_inv_natCast (norm_nonneg _) (ne_of_gt (tsub_pos_of_lt hn))]
+      have h_base : ‖p.coeff n‖ ^ (1 / (p.natDegree - n : ℝ)) < f x := by
+        rw [spectralValue, iSup, not_le, Set.Finite.cSup_lt_iff (spectralValueTerms_finite_range p)
             (Set.range_nonempty (spectralValueTerms p))] at h_ge
         have h_rg : ‖p.coeff n‖ ^ (1 / (p.natDegree - n : ℝ)) ∈ Set.range (spectralValueTerms p) :=
           by use n; simp only [spectralValueTerms, if_pos hn]
-        exact h_ge (‖p.coeff n‖₊ ^ (1 / (↑p.natDegree - ↑n))) h_rg
+        exact h_ge (‖p.coeff n‖₊ ^ (1 / (p.natDegree - n : ℝ))) h_rg
       rw [← hexp, ← Real.rpow_nat_cast, ← Real.rpow_nat_cast]
-      exact
-        Real.rpow_lt_rpow (Real.rpow_nonneg_of_nonneg (norm_nonneg _) _) h_base
-          (nat.cast_pos.mpr (tsub_pos_of_lt hn))
+      exact Real.rpow_lt_rpow (Real.rpow_nonneg_of_nonneg (norm_nonneg _) _) h_base
+        (Nat.cast_pos.mpr (tsub_pos_of_lt hn))
     have h_deg : 0 < p.natDegree := Polynomial.natDegree_pos_of_monic_of_root hp hx
     have : ‖(1 : K)‖ = 1 := norm_one
     have h_lt :
-      f ((Finset.range p.natDegree).Sum fun i : ℕ => p.coeff i • x ^ i) < f (x ^ p.natDegree) :=
-      by
-      have hn' : ∀ (n : ℕ) (hn : n < p.natDegree), f (p.coeff n • x ^ n) < f (x ^ p.natDegree) :=
-        by
+      f ((Finset.range p.natDegree).sum fun i : ℕ => p.coeff i • x ^ i) < f (x ^ p.natDegree) := by
+      have hn' : ∀ (n : ℕ) (_ : n < p.natDegree), f (p.coeff n • x ^ n) < f (x ^ p.natDegree) := by
         intro n hn
         by_cases hn0 : n = 0
-        · rw [hn0, pow_zero, map_smul_eq_mul, hf_pm _ (nat.succ_le_iff.mpr h_deg), ←
+        · rw [hn0, pow_zero, map_smul_eq_mul, hf_pm _ (Nat.succ_le_iff.mpr h_deg), ←
             Nat.sub_zero p.natDegree, ← hn0]
           exact mul_lt_of_lt_of_le_one_of_nonneg (hn_lt n hn) hf1 (norm_nonneg _)
         · have : p.natDegree = p.natDegree - n + n := by rw [Nat.sub_add_cancel (le_of_lt hn)]
-          rw [map_smul_eq_mul, hf_pm _ (nat.succ_le_iff.mp (pos_iff_ne_zero.mpr hn0)),
-            hf_pm _ (nat.succ_le_iff.mpr h_deg), this, pow_add]
+          rw [map_smul_eq_mul, hf_pm _ (Nat.succ_le_iff.mp (pos_iff_ne_zero.mpr hn0)),
+            hf_pm _ (Nat.succ_le_iff.mpr h_deg), this, pow_add]
           exact
             (mul_lt_mul_right (pow_pos (lt_of_le_of_ne (map_nonneg _ _) (Ne.symm hx0)) _)).mpr
               (hn_lt n hn)
@@ -619,7 +614,7 @@ theorem root_norm_le_spectralValue {f : AlgebraNorm K L} (hf_pm : IsPowMul f)
         exact isNonarchimedean_add_eq_max_of_ne hf_na (ne_of_lt h_lt)
       rw [h_eq]
       exact ne_of_gt (lt_of_le_of_lt (map_nonneg _ _) h_lt)
-    exact h0 (map_zero _) -/
+    exact h0 (map_zero _)
 
 open scoped Classical
 
@@ -661,38 +656,39 @@ theorem max_root_norm_eq_spectralValue {f : AlgebraNorm K L} (hf_pm : IsPowMul f
       have hc : ‖p.coeff m‖ = f (((mapAlg K L) p).coeff m) := by
         rw [← AlgebraNorm.extends_norm hf1, mapAlg_eq_map, coeff_map]
       rw [hc, hp, finprod_eq_prod_of_fintype]
-      sorry
-      /- simp_rw [sub_eq_add_neg, ← C_neg, Finset.prod_eq_multiset_prod, ← Pi.neg_apply, ←
-        Multiset.map_map (fun x : L => X + C x) (-b)]
-      have hm_le' : m ≤ card (map (-b) finset.univ.val) := by
-        have : card finset.univ.val = Finset.card Finset.univ := rfl
+      simp_rw [sub_eq_add_neg, ← C_neg, Finset.prod_eq_multiset_prod, ← Pi.neg_apply]
+      have : (fun x => X + C ((-b) x)) = (fun y => ((fun x : L => X + C x) ∘ (-b)) y) := rfl
+      rw [this, ← Multiset.map_map (fun x : L => X + C x) (-b)]
+      have hm_le' : m ≤ card (Multiset.map (-b) Finset.univ.val) := by
+        have : card Finset.univ.val = Finset.card (Finset.univ : Finset (Fin n)) := rfl
         rw [card_map, this, Finset.card_fin n, hpn]
         exact le_of_lt hm
       rw [prod_X_add_C_coeff _ hm_le']
       have : m < n := by rw [hpn]; exact hm
       obtain ⟨s, hs⟩ := isNonarchimedean_finset_powerset_image_add hf_na b m
       rw [Finset.esymm_map_val]
-      have h_card : card (map (-b) finset.univ.val) = Fintype.card (Fin n) := by rw [card_map]; rfl
+      have h_card : card (Multiset.map (-b) Finset.univ.val) = Fintype.card (Fin n) := by
+        rw [card_map]; rfl
       rw [h_card]
       apply le_trans hs
       have h_pr : f (s.val.prod fun i : Fin n => -b i) ≤ s.val.prod fun i : Fin n => f (-b i) :=
         Finset.le_prod_of_submultiplicative' f (map_nonneg _) hf1 (map_mul_le_mul _) _ _
       apply le_trans h_pr
-      have : (s.val.prod fun i : Fin n => f (-b i)) ≤ s.val.prod fun i : Fin n => iSup (f ∘ b) :=
+      have : (s.val.prod fun i : Fin n => f (-b i)) ≤ s.val.prod fun _ : Fin n => iSup (f ∘ b) :=
         by
         apply Finset.prod_le_prod
-        · intro i hi; exact map_nonneg _ _
-        · intro i hi
+        · intro i _; exact map_nonneg _ _
+        · intro i _
           rw [map_neg_eq_map]
           exact le_ciSup (Set.Finite.bddAbove (Set.range (f ∘ b)).toFinite) _
       apply le_trans this
       apply le_of_eq
-      simp only [Subtype.val_eq_coe, Finset.prod_const]
+      simp only [Finset.prod_const]
       suffices h_card : (s : Finset (Fin n)).card = p.natDegree - m
       · rw [h_card]
       have hs' := s.property
-      simp only [Subtype.val_eq_coe, Fintype.card_fin, Finset.mem_powersetCard] at hs'
-      rw [hs'.right, hpn] -/
+      simp only [Fintype.card_fin, Finset.mem_powersetCard] at hs'
+      rw [hs'.right, hpn]
     rw [spectralValueTerms_of_natDegree_le _ (le_of_not_lt hm)]
     exact h_supr
 
