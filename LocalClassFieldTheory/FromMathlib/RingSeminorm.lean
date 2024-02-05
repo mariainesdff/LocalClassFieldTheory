@@ -279,7 +279,7 @@ instance algebraNormClass : AlgebraNormClass (AlgebraNorm R S) R S
     where
   coe f := f.toFun
   coe_injective' f f' h := by
-    simp only [AddGroupSeminorm.toFun_eq_coe, RingSeminorm.toFun_eq_coe, FunLike.coe_fn_eq] at h
+    simp only [AddGroupSeminorm.toFun_eq_coe, RingSeminorm.toFun_eq_coe] at h
     cases f; cases f'; congr;
     simp only at h
     ext s
@@ -294,13 +294,13 @@ instance algebraNormClass : AlgebraNormClass (AlgebraNorm R S) R S
 
 /-- Helper instance for when there's too many metavariables to apply `fun_like.has_coe_to_fun`. -/
 instance : CoeFun (AlgebraNorm R S) fun _ => S → ℝ :=
-  FunLike.hasCoeToFun
+  DFunLike.hasCoeToFun
 
 theorem toFun_eq_coe (p : AlgebraNorm R S) : p.toFun = p := rfl
 
 @[ext]
 theorem ext {p q : AlgebraNorm R S} : (∀ x, p x = q x) → p = q :=
-  FunLike.ext p q
+  DFunLike.ext p q
 
 /-- An `R`-algebra norm such that `f 1 = 1` extends the norm on `R`. -/
 theorem extends_norm' {f : AlgebraNorm R S} (hf1 : f 1 = 1) (a : R) : f (a • (1 : S)) = ‖a‖ := by
@@ -347,7 +347,7 @@ variable {R S : outParam <| Type _} [SeminormedCommRing R] [Ring S] [Algebra R S
 instance mulAlgebraNormClass : MulAlgebraNormClass (MulAlgebraNorm R S) R S where
   coe f := f.toFun
   coe_injective' f f' h:= by
-    simp only [AddGroupSeminorm.toFun_eq_coe, MulRingSeminorm.toFun_eq_coe, FunLike.coe_fn_eq] at h
+    simp only [AddGroupSeminorm.toFun_eq_coe, MulRingSeminorm.toFun_eq_coe, DFunLike.coe_fn_eq] at h
     obtain ⟨⟨_, _⟩, _⟩ := f; obtain ⟨⟨_, _⟩, _⟩ := f'; congr;
   map_zero f        := f.map_zero'
   map_add_le_add f  := f.add_le'
@@ -359,13 +359,13 @@ instance mulAlgebraNormClass : MulAlgebraNormClass (MulAlgebraNorm R S) R S wher
 
 /-- Helper instance for when there's too many metavariables to apply `fun_like.has_coe_to_fun`. -/
 instance : CoeFun (MulAlgebraNorm R S) fun _ => S → ℝ :=
-  FunLike.hasCoeToFun
+  DFunLike.hasCoeToFun
 
 theorem toFun_eq_coe (p : MulAlgebraNorm R S) : p.toFun = p := rfl
 
 @[ext]
 theorem ext {p q : MulAlgebraNorm R S} : (∀ x, p x = q x) → p = q :=
-  FunLike.ext p q
+  DFunLike.ext p q
 
 /-- A multiplicative `R`-algebra norm extends the norm on `R`. -/
 theorem extends_norm' (f : MulAlgebraNorm R S) (a : R) : f (a • (1 : S)) = ‖a‖ := by
