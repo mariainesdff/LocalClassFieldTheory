@@ -61,7 +61,7 @@ theorem contraction_of_is_pm_wrt {F : Type _} {α : outParam (Type _)} [Ring α]
     have : 𝓝 (nα x) = 𝓝 (1 * nα x) := by rw [one_mul]
     rw [this]
     apply Filter.Tendsto.mul
-    · apply Filter.Tendsto.comp _ (tendsto_const_div_atTop_nhds_0_nat 1)
+    · apply Filter.Tendsto.comp _ (tendsto_const_div_atTop_nhds_zero_nat 1)
       rw [← Real.rpow_zero C]
       apply ContinuousAt.tendsto (Real.continuousAt_const_rpow (ne_of_gt hC0))
     exact tendsto_const_nhds
@@ -74,7 +74,7 @@ theorem contraction_of_is_pm_wrt {F : Type _} {α : outParam (Type _)} [Ring α]
     rw [← Real.rpow_nat_cast, ← Real.rpow_mul (le_of_lt hC0), one_div, inv_mul_cancel hn0,
       Real.rpow_one]
   apply le_of_pow_le_pow_left (ne_of_gt hn)
-    (mul_nonneg (Real.rpow_nonneg_of_nonneg (le_of_lt hC0) _) (map_nonneg _ _))
+    (mul_nonneg (Real.rpow_nonneg (le_of_lt hC0) _) (map_nonneg _ _))
   · rw [mul_pow, h, ← hβ _ hn, ← RingHom.map_pow]
     apply le_trans (hC (x ^ n))
     rw [mul_le_mul_left hC0]
@@ -96,7 +96,7 @@ theorem eq_seminorms {F : Type _} {α : outParam (Type _)} [Ring α] [RingSemino
   obtain ⟨s, hs0, hs⟩ := hgf
   have hle : RingHom.IsBoundedWrt f g (RingHom.id _) := ⟨s, hs0, hs⟩
   have hge : RingHom.IsBoundedWrt g f (RingHom.id _) := ⟨r, hr0, hr⟩
-  rw [← Function.Injective.eq_iff FunLike.coe_injective']
+  rw [← Function.Injective.eq_iff DFunLike.coe_injective']
   ext x
   exact le_antisymm (contraction_of_is_pm_wrt g hfpm hge x) (contraction_of_is_pm_wrt f hgpm hle x)
 
