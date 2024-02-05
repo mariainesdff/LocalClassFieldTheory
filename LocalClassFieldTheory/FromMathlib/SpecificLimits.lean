@@ -14,7 +14,7 @@ open scoped NNReal Topology
 theorem NNReal.lt_one_of_tendsto_pow_0 (a : ℝ≥0) (h : Tendsto (fun n : ℕ => a ^ n) atTop (𝓝 0)) :
     a < 1 := by
     rw [← tendsto_coe] at h
-    have bla := (tendsto_pow_atTop_nhds_0_iff).1 h
+    have bla := (tendsto_pow_atTop_nhds_zero_iff).1 h
     have foo := NNReal.abs_eq a
     rw [← val_eq_coe] at foo
     rw [foo] at bla
