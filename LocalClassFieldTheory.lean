@@ -4,6 +4,7 @@ import LocalClassFieldTheory.DiscreteValuationRing.Basic
 import LocalClassFieldTheory.ForMathlib.Data.Set.Lattice
 import LocalClassFieldTheory.ForMathlib.DiscreteUniformity
 import LocalClassFieldTheory.ForMathlib.DiscreteValuationRing
+import LocalClassFieldTheory.ForMathlib.FieldTheory.Minpoly.IsIntegrallyClosed
 import LocalClassFieldTheory.ForMathlib.NumberTheory.Padics.PadicIntegers
 import LocalClassFieldTheory.ForMathlib.RankOneValuation
 import LocalClassFieldTheory.ForMathlib.RingTheory.DedekindDomain.Ideal
