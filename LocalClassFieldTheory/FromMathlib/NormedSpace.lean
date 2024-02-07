@@ -195,7 +195,6 @@ theorem norm_is_bdd {ι : Type _} [Fintype ι] [Nonempty ι] {B : Basis ι K L} 
     simp_rw [smul_mul_assoc, LinearEquiv.map_smul, mul_sum, LinearEquiv.map_finset_sum,
       mul_smul_comm, LinearEquiv.map_smul]
     have hna' : IsNonarchimedean (NormedField.toMulRingNorm K) := hna
-    rw [AddGroupSeminorm.toFun_eq_coe] at hna'
     /- Since the norm is nonarchimidean, the norm of a finite sum is bounded by the maximum of the
           norms of the summands. -/
     have hk : ∃ (k : ι) (_ : (univ : Finset ι).Nonempty → k ∈ univ ),
