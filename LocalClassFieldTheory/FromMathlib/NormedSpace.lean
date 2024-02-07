@@ -322,7 +322,7 @@ theorem finite_extension_pow_mul_seminorm (hfd : FiniteDimensional K L)
   have hF'_1 : F' 1 = 1 := by
     have h1 : (1 : L) = (algebraMap K L) 1 := by rw [map_one]
     simp only [h1, hF'_ext (1 : K), norm_one]
-  have hF'_0 : F' ≠ 0 := FunLike.ne_iff.mpr ⟨(1 : L), by rw [hF'_1]; exact one_ne_zero⟩
+  have hF'_0 : F' ≠ 0 := DFunLike.ne_iff.mpr ⟨(1 : L), by rw [hF'_1]; exact one_ne_zero⟩
   set F : AlgebraNorm K L :=
     { RingSeminorm.toRingNorm F' hF'_0 with
       smul' := fun k y => by
