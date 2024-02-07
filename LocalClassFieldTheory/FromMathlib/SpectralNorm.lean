@@ -307,11 +307,29 @@ attribute [-instance]
 set_option synthInstance.maxHeartbeats 400000
 instance : Algebra E ↥(normalClosure K E (AlgebraicClosure E)) :=
   inferInstance
+
 instance :  SMul ↥E ↥(normalClosure K (↥E) (AlgebraicClosure ↥E)) :=
+  inferInstance
+
+instance : AddGroup ↥(normalClosure K E (AlgebraicClosure E)) :=
   inferInstance
 
 instance : IsScalarTower K E (normalClosure K (↥E) (AlgebraicClosure ↥E)) :=
   inferInstance
+
+instance : MonoidHomClass (E →+* ↥(normalClosure K E (AlgebraicClosure E))) E
+  ↥(normalClosure K E (AlgebraicClosure E)) :=
+  inferInstance /- by exact MonoidHomClass.mk -/
+
+instance : AddHomClass (E →+* ↥(normalClosure K E (AlgebraicClosure E))) E
+  ↥(normalClosure K E (AlgebraicClosure E)) := AddMonoidHomClass.toAddHomClass
+
+instance : MulHomClass (E →+* ↥(normalClosure K E (AlgebraicClosure E))) E
+  ↥(normalClosure K E (AlgebraicClosure E)) := inferInstance
+
+instance : AddHomClass (E →+* L) E L := inferInstance
+
+-- End of auxiliary instances
 
 instance : Normal K (AlgebraicClosure K) :=
   normal_iff.mpr fun x =>
@@ -1030,6 +1048,9 @@ theorem spectralNorm_isPowMul (h_alg : Algebra.IsAlgebraic K L)
     ← spectralValue.eq_normal' (g ^ n) h_map, map_pow]
   exact spectralNorm_isPowMul_of_fd_normal (normalClosure.isAlgebraic K E h_alg_E)
     (normalClosure.is_finiteDimensional K E _) (normalClosure.normal K E _) hna _ hn
+
+instance : SeminormClass (AlgebraNorm K ↥(normalClosure K (↥E) (AlgebraicClosure ↥E))) K
+  ↥(normalClosure K (↥E) (AlgebraicClosure ↥E)) := AlgebraNormClass.toSeminormClass
 
 /-- The spectral norm is compatible with the action of `K`. -/
 theorem spectralNorm_smul (h_alg : Algebra.IsAlgebraic K L) (hna : IsNonarchimedean (norm : K → ℝ))
