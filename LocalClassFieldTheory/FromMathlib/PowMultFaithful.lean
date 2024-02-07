@@ -51,7 +51,7 @@ def RingHom.IsBoundedWrt {α : Type _} [Ring α] {β : Type _} [Ring β] (nα : 
 
 /-- If `f : α →+* β` is bounded with respect to a ring seminorm `nα` on `α` and a
   power-multiplicative function `nβ : β → ℝ`, then `∀ x : α, nβ (f x) ≤ nα x`. -/
-theorem contraction_of_is_pm_wrt {F : Type _} {α : outParam (Type _)} [Ring α]
+theorem contraction_of_is_pm_wrt {F : Type _} {α : outParam (Type _)} [Ring α] [FunLike F α ℝ]
     [RingSeminormClass F α ℝ] {β : Type _} [Ring β] (nα : F) {nβ : β → ℝ} (hβ : IsPowMul nβ)
     {f : α →+* β} (hf : f.IsBoundedWrt nα nβ) (x : α) : nβ (f x) ≤ nα x :=
   by
@@ -88,7 +88,8 @@ theorem contraction_of_is_pm {α : Type _} [SeminormedRing α] {β : Type _} [Se
 
 /-- Given two power-multiplicative ring seminorms `f, g` on `α`, if `f` is bounded by a positive
   multiple of `g` and viceversa, then `f = g`. -/
-theorem eq_seminorms {F : Type _} {α : outParam (Type _)} [Ring α] [RingSeminormClass F α ℝ]
+theorem eq_seminorms {F : Type _} {α : outParam (Type _)} [Ring α] [FunLike F α ℝ]
+  [RingSeminormClass F α ℝ]
     (f g : F) (hfpm : IsPowMul f) (hgpm : IsPowMul g)
     (hfg : ∃ (r : ℝ) (_ : 0 < r), ∀ a : α, f a ≤ r * g a)
     (hgf : ∃ (r : ℝ) (_ : 0 < r), ∀ a : α, g a ≤ r * f a) : f = g := by
