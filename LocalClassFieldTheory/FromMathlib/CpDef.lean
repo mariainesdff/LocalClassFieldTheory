@@ -61,8 +61,9 @@ theorem QPAlg.isAlgebraic : Algebra.IsAlgebraic ℚ_[p] (QPAlg p) :=
 
 instance : Coe ℚ_[p] (QPAlg p) := ⟨algebraMap ℚ_[p] (QPAlg p)⟩
 
-theorem coe_eq : (coe : ℚ_[p] → QPAlg p) = algebraMap ℚ_[p] (QPAlg p) := by
-  sorry
+theorem coe_eql : (Coe.coe : ℚ_[p] → QPAlg p) = algebraMap ℚ_[p] (QPAlg p) := by
+  rfl
+
 
 namespace QPAlg
 
@@ -140,8 +141,8 @@ theorem valuation_extends (x : QPAlg p) : Valued.v (x : ℂ_[p]) = Valued.v x :=
 instance : Algebra (QPAlg p) ℂ_[p] :=
   UniformSpace.Completion.algebra' _
 
-theorem coe_eq : (coe : QPAlg p → ℂ_[p]) = algebraMap (QPAlg p) ℂ_[p] :=
-  sorry --rfl
+theorem coe_eq : (Coe.coe : QPAlg p → ℂ_[p]) = algebraMap (QPAlg p) ℂ_[p] :=
+  rfl
 
 theorem coe_zero : ((0 : QPAlg p) : ℂ_[p]) = 0 :=
   rfl
