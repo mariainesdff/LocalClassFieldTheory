@@ -57,10 +57,12 @@ theorem spectral_norm_unique' [CompleteSpace K] {f : AlgebraNorm K L} (hf_pm : I
   set E : Type _ := id K⟮x⟯ with hEdef
   letI hE : Field E := by rw [hEdef, id.def]; infer_instance
   letI : Algebra K E := K⟮x⟯.algebra
+  letI hidE : ZeroHomClass (id ↥K⟮x⟯ →ₗ[K] ↥K⟮x⟯) _ _ := AddMonoidHomClass.toZeroHomClass
   set id1 : K⟮x⟯ →ₗ[K] E :=
     { toFun := id
       map_add' := fun x y => rfl
       map_smul' := fun r x => rfl }
+
   set id2 : E →ₗ[K] K⟮x⟯ :=
     { toFun := id
       map_add' := fun x y => rfl
@@ -152,7 +154,7 @@ theorem spectralNorm_unique_field_norm_ext [CompleteSpace K] (h_alg : Algebra.Is
         rw [Algebra.smul_def, map_mul]
         congr
         rw [← hf_ext k]
-        simp only [AddGroupSeminorm.toFun_eq_coe, MulRingSeminorm.toFun_eq_coe]
+        rfl
       mul_le' := fun x y => by
         simp only [AddGroupSeminorm.toFun_eq_coe, MulRingSeminorm.toFun_eq_coe, map_mul_le_mul] }
   have hg_pow : IsPowMul g := MulRingNorm.isPowMul _
