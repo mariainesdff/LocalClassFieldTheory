@@ -149,7 +149,7 @@ theorem coe_zero : ((0 : QPAlg p) : ℂ_[p]) = 0 :=
 
 /-- The valuation of `p : ℂ_[p]` is `1/p`. -/
 theorem valuation_p (p : ℕ) [Fact p.Prime] : Valued.v (p : ℂ_[p]) = 1 / (p : ℝ≥0) := by
-  sorry --rw [← map_natCast (algebraMap (QPAlg p) ℂ_[p]), ← coe_eq, valuation_extends, QPAlg.valuation_p]
+  erw [← map_natCast (algebraMap (QPAlg p) ℂ_[p]), ← coe_eq, valuation_extends, QPAlg.valuation_p]
 
 /-- The valuation on `ℂ_[p]` has rank one. -/
 instance : IsRankOne (PadicComplex.valuedField p).v
@@ -178,11 +178,8 @@ theorem normDef : (norm : ℂ_[p] → ℝ) = RankOneValuation.normDef :=
 theorem norm_extends (x : QPAlg p) : ‖(x : ℂ_[p])‖ = ‖x‖ := by
   by_cases hx : x = 0
   · rw [hx, coe_zero, norm_zero, norm_zero]
-  · rw [normDef, RankOneValuation.normDef, MonoidWithZeroHom.coe_mk,
-      MonoidWithZeroHom.toZeroHom_coe]
-    --simp_rw [valuation_extends p x]
-    sorry/- simp only [norm_def, RankOneValuation.normDef, valuation_extends, MonoidWithZeroHom.coe_mk]
-    rfl -/
+  · erw [normDef, RankOneValuation.normDef, valuation_extends, MonoidWithZeroHom.coe_mk]
+    rfl
 
 /-- The `ℝ≥0`-valued norm on `ℂ_[p]` extends that on `Q_p_alg p`. -/
 theorem nnnorm_extends (x : QPAlg p) : ‖(x : ℂ_[p])‖₊ = ‖x‖₊ := by ext; exact norm_extends p x
