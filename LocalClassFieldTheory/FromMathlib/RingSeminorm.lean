@@ -85,7 +85,8 @@ theorem add_le_of_isNonarchimedean {α : Type _} [AddCommGroup α] {f : α → �
 
 /-- If `f` is a nonarchimedean additive group seminorm on `α`, then for every `n : ℕ` and `a : α`,
   we have `f (n • a) ≤ (f a)`. -/
-theorem isNonarchimedean_nsmul {F α : Type _} [AddCommGroup α] [AddGroupSeminormClass F α ℝ] {f : F}
+theorem isNonarchimedean_nsmul {F α : Type _} [AddCommGroup α] [FunLike F α ℝ]
+  [AddGroupSeminormClass F α ℝ] {f : F}
     (hna : IsNonarchimedean f) (n : ℕ) (a : α) : f (n • a) ≤ f a := by
   induction' n with n hn
   · rw [zero_nsmul, map_zero _]; exact map_nonneg _ _
@@ -95,15 +96,15 @@ theorem isNonarchimedean_nsmul {F α : Type _} [AddCommGroup α] [AddGroupSemino
 
 /-- If `f` is a nonarchimedean additive group seminorm on `α`, then for every `n : ℕ` and `a : α`,
   we have `f (n * a) ≤ (f a)`. -/
-theorem isNonarchimedean_nmul {F α : Type _} [Ring α] [AddGroupSeminormClass F α ℝ] {f : F}
-    (hna : IsNonarchimedean f) (n : ℕ) (a : α) : f (n * a) ≤ f a := by
+theorem isNonarchimedean_nmul {F α : Type _} [Ring α] [FunLike F α ℝ] [AddGroupSeminormClass F α ℝ]
+  {f : F} (hna : IsNonarchimedean f) (n : ℕ) (a : α) : f (n * a) ≤ f a := by
   rw [← nsmul_eq_mul]
   exact isNonarchimedean_nsmul hna _ _
 
 /-- If `f` is a nonarchimedean additive group seminorm on `α` and `x y : α` are such that
   `f y ≠ f x`, then `f (x + y) = max (f x) (f y)`. -/
-theorem isNonarchimedean_add_eq_max_of_ne {F α : Type _} [Ring α] [AddGroupSeminormClass F α ℝ]
-    {f : F} (hna : IsNonarchimedean f) {x y : α} (hne : f y ≠ f x) :
+theorem isNonarchimedean_add_eq_max_of_ne {F α : Type _} [Ring α] [FunLike F α ℝ]
+    [AddGroupSeminormClass F α ℝ] {f : F} (hna : IsNonarchimedean f) {x y : α} (hne : f y ≠ f x) :
     f (x + y) = max (f x) (f y) := by
   wlog hle : f y ≤ f x generalizing y x with H
   · rw [add_comm, max_comm]
@@ -131,8 +132,9 @@ open scoped Classical
 /-- Given a nonarchimedean additive group seminorm `f` on `α`, a function `g : β → α` and a finset
   `t : finset β`, we can always find `b : β`, belonging to `t` if `t` is nonempty, such that
   `f (t.sum g) ≤ f (g b)` . -/
-theorem isNonarchimedean_finset_image_add {F α : Type _} [Ring α] [AddGroupSeminormClass F α ℝ]
-    {f : F} (hna : IsNonarchimedean f) {β : Type _} [hβ : Nonempty β] (g : β → α) (t : Finset β) :
+theorem isNonarchimedean_finset_image_add {F α : Type _} [Ring α] [FunLike F α ℝ]
+    [AddGroupSeminormClass F α ℝ] {f : F} (hna : IsNonarchimedean f) {β : Type _} [hβ : Nonempty β]
+    (g : β → α) (t : Finset β) :
     ∃ (b : β) (_ : t.Nonempty → b ∈ t), f (t.sum g) ≤ f (g b) := by
   induction t using Finset.induction_on with
   | empty =>
@@ -164,8 +166,9 @@ theorem isNonarchimedean_finset_image_add {F α : Type _} [Ring α] [AddGroupSem
 /-- Given a nonarchimedean additive group seminorm `f` on `α`, a function `g : β → α` and a
   multiset `s : multiset β`, we can always find `b : β`, belonging to `s` if `s` is nonempty,
   such that `f (t.sum g) ≤ f (g b)` . -/
-theorem isNonarchimedean_multiset_image_add {F α : Type _} [Ring α] [AddGroupSeminormClass F α ℝ]
-    {f : F} (hna : IsNonarchimedean f) {β : Type _} [hβ : Nonempty β] (g : β → α) (s : Multiset β) :
+theorem isNonarchimedean_multiset_image_add {F α : Type _} [Ring α] [FunLike F α ℝ]
+    [AddGroupSeminormClass F α ℝ] {f : F} (hna : IsNonarchimedean f) {β : Type _} [hβ : Nonempty β]
+    (g : β → α) (s : Multiset β) :
     ∃ (b : β) (_ : 0 < Multiset.card s → b ∈ s), f (Multiset.map g s).sum ≤ f (g b) := by
   induction s using Multiset.induction_on with
   | empty =>
@@ -199,8 +202,8 @@ theorem isNonarchimedean_multiset_image_add {F α : Type _} [Ring α] [AddGroupS
 /-- Given a nonarchimedean additive group seminorm `f` on `α`, a number `n : ℕ` and a function
   `g : ℕ → α`, there exists `m : ℕ` such that `f ((finset.range n).sum g) ≤ f (g m)`.
   If `0 < n`, this `m` satisfies `m < n`. -/
-theorem isNonarchimedean_finset_range_add_le {F α : Type _} [Ring α] [AddGroupSeminormClass F α ℝ]
-    {f : F} (hna : IsNonarchimedean f) (n : ℕ) (g : ℕ → α) :
+theorem isNonarchimedean_finset_range_add_le {F α : Type _} [Ring α] [FunLike F α ℝ]
+    [AddGroupSeminormClass F α ℝ] {f : F} (hna : IsNonarchimedean f) (n : ℕ) (g : ℕ → α) :
     ∃ (m : ℕ) (_ : 0 < n → m < n), f ((Finset.range n).sum g) ≤ f (g m) := by
   obtain ⟨m, hm, h⟩ := isNonarchimedean_finset_image_add hna g (Finset.range n)
   rw [Finset.nonempty_range_iff, ← zero_lt_iff, Finset.mem_range] at hm
@@ -209,8 +212,8 @@ theorem isNonarchimedean_finset_range_add_le {F α : Type _} [Ring α] [AddGroup
 /-- If `f` is a nonarchimedean additive group seminorm on a commutative ring `α`, `n : ℕ`, and
   `a b : α`, then we can find `m : ℕ` such that `m ≤ n` and
   `f ((a + b) ^ n) ≤ (f (a ^ m)) * (f (b ^ (n - m)))`. -/
-theorem isNonarchimedean_add_pow {F α : Type _} [CommRing α] [RingSeminormClass F α ℝ] {f : F}
-    (hna : IsNonarchimedean f) (n : ℕ) (a b : α) :
+theorem isNonarchimedean_add_pow {F α : Type _} [CommRing α] [FunLike F α ℝ]
+    [RingSeminormClass F α ℝ] {f : F} (hna : IsNonarchimedean f) (n : ℕ) (a b : α) :
     ∃ (m : ℕ) (_ : m ∈ List.range (n + 1)), f ((a + b) ^ n) ≤ f (a ^ m) * f (b ^ (n - m)) := by
   obtain ⟨m, hm_lt, hM⟩ :=
     isNonarchimedean_finset_image_add hna (fun m : ℕ => a ^ m * b ^ (n - m) * ↑(n.choose m))
@@ -223,8 +226,8 @@ theorem isNonarchimedean_add_pow {F α : Type _} [CommRing α] [RingSeminormClas
   exact le_trans hM (le_trans (isNonarchimedean_nmul hna _ _) (map_mul_le_mul _ _ _))
 
 /-- If `f` is a ring seminorm on `a`, then `∀ {n : ℕ}, n ≠ 0 → f (a ^ n) ≤ f a ^ n`. -/
-theorem map_pow_le_pow {F α : Type _} [Ring α] [RingSeminormClass F α ℝ] (f : F) (a : α) :
-    ∀ {n : ℕ}, n ≠ 0 → f (a ^ n) ≤ f a ^ n
+theorem map_pow_le_pow {F α : Type _} [Ring α] [FunLike F α ℝ] [RingSeminormClass F α ℝ] (f : F)
+    (a : α) : ∀ {n : ℕ}, n ≠ 0 → f (a ^ n) ≤ f a ^ n
   | 0, h => absurd rfl h
   | 1, _ => by simp only [pow_one, le_refl]
   | n + 2, _ => by
@@ -234,8 +237,8 @@ theorem map_pow_le_pow {F α : Type _} [Ring α] [RingSeminormClass F α ℝ] (f
           (mul_le_mul_of_nonneg_left (map_pow_le_pow _ _ n.succ_ne_zero) (map_nonneg f a))
 
 /-- If `f` is a ring seminorm on `a` with `f 1 ≤ `, then `∀ (n : ℕ), f (a ^ n) ≤ f a ^ n`. -/
-theorem map_pow_le_pow' {F α : Type _} [Ring α] [RingSeminormClass F α ℝ] {f : F} (hf1 : f 1 ≤ 1)
-    (a : α) : ∀ n : ℕ, f (a ^ n) ≤ f a ^ n
+theorem map_pow_le_pow' {F α : Type _} [Ring α] [FunLike F α ℝ] [RingSeminormClass F α ℝ] {f : F}
+  (hf1 : f 1 ≤ 1) (a : α) : ∀ n : ℕ, f (a ^ n) ≤ f a ^ n
   | 0 => by simp only [pow_zero, hf1]
   | n + 1 => by
     simp only [pow_succ _ n];
@@ -261,7 +264,8 @@ instance (K : Type _) [NormedField K] : Inhabited (AlgebraNorm K K) :=
 /-- `algebra_norm_class F α` states that `F` is a type of algebra norms on the ring `β`.
 You should extend this class when you extend `algebra_norm`. -/
 class AlgebraNormClass (F : Type _) (R : outParam <| Type _) [SeminormedCommRing R]
-    (S : outParam <| Type _) [Ring S] [Algebra R S] extends RingNormClass F S ℝ, SeminormClass F R S
+    (S : outParam <| Type _) [Ring S] [Algebra R S] [FunLike F S ℝ] extends RingNormClass F S ℝ,
+    SeminormClass F R S
 
 -- `R` is an `out_param`, so this is a false positive.
 --attribute [nolint DangerousInstance] AlgebraNormClass.toRingNormClass
@@ -275,16 +279,17 @@ variable {R : Type _} [SeminormedCommRing R] {S : Type _} [Ring S] [Algebra R S]
 def toRingSeminorm' (f : AlgebraNorm R S) : RingSeminorm S :=
   f.toRingNorm.toRingSeminorm
 
-instance algebraNormClass : AlgebraNormClass (AlgebraNorm R S) R S
-    where
+instance : FunLike (AlgebraNorm R S) S ℝ where
   coe f := f.toFun
   coe_injective' f f' h := by
     simp only [AddGroupSeminorm.toFun_eq_coe, RingSeminorm.toFun_eq_coe] at h
     cases f; cases f'; congr;
     simp only at h
     ext s
-    simp only [AddGroupSeminorm.toFun_eq_coe, RingSeminorm.toFun_eq_coe]
-    rw [h]
+    erw [h]
+    rfl
+
+instance algebraNormClass : AlgebraNormClass (AlgebraNorm R S) R S where
   map_zero f        := f.map_zero'
   map_add_le_add f  := f.add_le'
   map_mul_le_mul f  := f.mul_le'
@@ -332,7 +337,7 @@ instance (K : Type _) [NormedField K] : Inhabited (MulAlgebraNorm K K) :=
 /-- `algebra_norm_class F α` states that `F` is a type of algebra norms on the ring `β`.
 You should extend this class when you extend `algebra_norm`. -/
 class MulAlgebraNormClass (F : Type _) (R : outParam <| Type _) [SeminormedCommRing R]
-    (S : outParam <| Type _) [Ring S] [Algebra R S] extends MulRingNormClass F S ℝ,
+    (S : outParam <| Type _) [Ring S] [Algebra R S] [FunLike F S ℝ] extends MulRingNormClass F S ℝ,
     SeminormClass F R S
 
 
@@ -344,11 +349,13 @@ namespace MulAlgebraNorm
 variable {R S : outParam <| Type _} [SeminormedCommRing R] [Ring S] [Algebra R S]
   {f : AlgebraNorm R S}
 
-instance mulAlgebraNormClass : MulAlgebraNormClass (MulAlgebraNorm R S) R S where
+instance : FunLike (MulAlgebraNorm R S) S ℝ where
   coe f := f.toFun
   coe_injective' f f' h:= by
     simp only [AddGroupSeminorm.toFun_eq_coe, MulRingSeminorm.toFun_eq_coe, DFunLike.coe_fn_eq] at h
     obtain ⟨⟨_, _⟩, _⟩ := f; obtain ⟨⟨_, _⟩, _⟩ := f'; congr;
+
+instance mulAlgebraNormClass : MulAlgebraNormClass (MulAlgebraNorm R S) R S where
   map_zero f        := f.map_zero'
   map_add_le_add f  := f.add_le'
   map_one f         := f.map_one'
@@ -394,14 +401,7 @@ def toRingNorm (f : MulRingNorm R) : RingNorm R where
 theorem isPowMul {A : Type _} [Ring A] (f : MulRingNorm A) : IsPowMul f := fun x n hn => by
   cases n
   · exfalso; linarith
-  · rw [AddGroupSeminorm.toFun_eq_coe, MulRingSeminorm.toFun_eq_coe, map_pow]
-  /- induction' n with n _
-  · exfalso; linarith
-  · by_cases hn1 : 1 ≤ n
-    · rw [AddGroupSeminorm.toFun_eq_coe, MulRingSeminorm.toFun_eq_coe, map_pow]
-      --rw [pow_succ, pow_succ, map_mul, ih hn1]
-    · rw [not_le, Nat.lt_one_iff] at hn1
-      rw [hn1, pow_one, pow_one] -/
+  · rw [map_pow]
 
 end MulRingNorm
 
