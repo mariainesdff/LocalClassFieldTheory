@@ -73,7 +73,7 @@ theorem spectral_norm_unique' [CompleteSpace K] {f : AlgebraNorm K L} (hf_pm : I
         simp only [← spectralAlgNorm_def h_alg hna, Subfield.coe_add]; exact map_add_le_add _ _ _
       neg' := fun a => by
         simp only [id_eq, eq_mpr_eq_cast, cast_eq, map_neg, LinearMap.coe_mk,
-          AddSubgroupClass.coe_neg, ← spectralAlgNorm_def h_alg hna, map_neg_eq_map]
+          NegMemClass.coe_neg, ← spectralAlgNorm_def h_alg hna, map_neg_eq_map]
       mul_le' := fun a b => by
         simp only [← spectralAlgNorm_def h_alg hna, Subfield.coe_mul]; exact map_mul_le_mul _ _ _
       eq_zero_of_map_eq_zero' := fun a ha => by
