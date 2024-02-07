@@ -202,7 +202,7 @@ theorem coe_limsup {u : ℕ → ℝ≥0} (hu : BddAbove (Set.range u)) :
 theorem coe_limsup' {u : ℕ → ℝ} (hu : BddAbove (Set.range u)) (hu0 : 0 ≤ u) :
     limsup (fun n => ((↑⟨u n, hu0 n⟩ : ℝ≥0) : ℝ≥0∞)) atTop =
       ((↑⟨limsup u atTop, limsup_nonneg_of_nonneg hu.isBoundedUnder hu0⟩ : ℝ≥0) : ℝ≥0∞) := by
-  rw [← ENNReal.coe_limsup (NNReal.bdd_above' hu0 hu), ENNReal.coe_eq_coe, ← NNReal.coe_eq,
+  rw [← ENNReal.coe_limsup (NNReal.bdd_above' hu0 hu), ENNReal.coe_inj, ← NNReal.coe_eq,
     NNReal.coe_mk, NNReal.coe_limsup]
 
 end ENNReal
