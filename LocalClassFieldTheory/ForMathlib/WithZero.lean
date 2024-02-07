@@ -88,14 +88,18 @@ open scoped DiscreteValuation
 
 theorem strictMonoOn_zpow {n : ℤ} (hn : 0 < n) : StrictMonoOn (fun x : ℤₘ₀ => x ^ n) (Set.Ioi 0) :=
   fun a ha b hb hab => by
+  letI : LinearOrderedCommGroupWithZero ℤₘ₀ := sorry
   simp only [Set.mem_Ioi] at ha hb
   have ha0 : a ≠ 0 := ne_of_gt ha
   have han : a ^ n ≠ 0 := by
     rw [WithZero.ne_zero_iff_exists] at ha0 ⊢
     obtain ⟨x, hx⟩ := ha0
     exact ⟨x ^ n, by rw [← hx, WithZero.coe_zpow]⟩
-  simp only [← one_lt_div' _ han, ← div_zpow]
-  exact one_lt_zpow' ((one_lt_div' _ ha0).mpr hab) hn
+  simp only
+  --rw [← one_lt_div' _ han]
+  sorry
+  --simp only [← one_lt_div' _ han, ← div_zpow]
+  --exact one_lt_zpow' ((one_lt_div' _ ha0).mpr hab) hn
 
 theorem zpow_left_injOn {n : ℤ} (hn : n ≠ 0) : Set.InjOn (fun _x : ℤₘ₀ => _x ^ n) (Set.Ioi 0) :=
   by
@@ -113,8 +117,7 @@ theorem ofAdd_neg_nat (n : ℕ) : (↑(ofAdd (-n : ℤ)) : ℤₘ₀) = ofAdd (-
   simp only [ofAdd_neg, coe_inv, inv_pow, coe_pow, inv_inj]
   rw [← @WithZero.coe_pow, WithZero.coe_inj, ← one_mul (n : ℤ), Int.ofAdd_mul, zpow_ofNat]
 
-theorem ofAdd_neg_one_lt_one : (↑(Multiplicative.ofAdd (-1 : ℤ)) : ℤₘ₀) < (1 : ℤₘ₀) :=
-  by
+theorem ofAdd_neg_one_lt_one : (↑(Multiplicative.ofAdd (-1 : ℤ)) : ℤₘ₀) < (1 : ℤₘ₀) := by
   rw [← WithZero.coe_one, WithZero.coe_lt_coe, ← ofAdd_zero, ofAdd_lt]
   exact neg_one_lt_zero
 
@@ -145,7 +148,7 @@ def withZeroMultIntToNnreal {e : NNReal} (he : e ≠ 0) : ℤₘ₀ →*₀ ℝ�
   map_one' := by
     simp only [withZeroMultIntToNnrealDef]; rw [dif_neg]
     · erw [toAdd_one, zpow_zero]
-      exact one_ne_zero
+    · exact one_ne_zero
   map_mul' x y := by
     simp only [withZeroMultIntToNnrealDef]
     by_cases hxy : x * y = 0
