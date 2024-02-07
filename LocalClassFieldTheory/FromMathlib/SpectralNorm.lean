@@ -291,39 +291,27 @@ namespace IntermediateField
 
 variable {K L : Type _} [Field K] [Field L] [Algebra K L] (E : IntermediateField K L)
 
--- Porting note: Lean 4 does not find this
-instance : Algebra E E := Algebra.id E
+attribute [local instance 1001] Algebra.id
 
--- Porting note: Lean 4 does not find this
-instance : SMul E E := Mul.toSMul E
+attribute [-instance]
+  Subalgebra.instSMulSubtypeMemSubalgebraInstMembershipInstSetLikeSubalgebra
+  Subsemiring.smul
+  Submonoid.smul
+  IntermediateField.module'
+  Subalgebra.isScalarTower_left
+  Subsemiring.isScalarTower
+  Submonoid.isScalarTower
 
-instance aux : IsScalarTower K E E := IsScalarTower.right
 
--- Porting note: Lean 4 does not find this
-instance : Module E E := Algebra.toModule
-
---ERROR: failed to synthesize SMul L ↥E (?)
-instance : SMul E (AlgebraicClosure E) := sorry
--- @AlgebraicClosure.instSMulAlgebraicClosure E _ E _ _
-
-instance aux' : IsScalarTower K L (AlgebraicClosure L) :=  inferInstance
-  --@AlgebraicClosure.isScalarTower E _ K E _ _ _ _ _ (IntermediateField.aux E)
-
--- Porting note: Lean 4 does not find this
+-- Auxiliary instances to avoid timeouts
+set_option synthInstance.maxHeartbeats 400000
 instance : Algebra E ↥(normalClosure K E (AlgebraicClosure E)) :=
-  normalClosure.algebra K E (AlgebraicClosure E)
+  inferInstance
+instance :  SMul ↥E ↥(normalClosure K (↥E) (AlgebraicClosure ↥E)) :=
+  inferInstance
 
--- Porting note: Lean 4 does not find this
-instance :  SMul ↥E ↥(normalClosure K (↥E) (AlgebraicClosure ↥E)) := Algebra.toSMul
-
--- Porting note: Lean 4 does not find this
-instance : Field ↥(normalClosure K E (AlgebraicClosure E)) :=
-  SubfieldClass.toField (IntermediateField K (AlgebraicClosure E))
-    (normalClosure K E (AlgebraicClosure E))
-
--- Porting note: Lean 4 does not find this
 instance : IsScalarTower K E (normalClosure K (↥E) (AlgebraicClosure ↥E)) :=
-  sorry --inferInstance
+  inferInstance
 
 instance : Normal K (AlgebraicClosure K) :=
   normal_iff.mpr fun x =>
@@ -453,7 +441,7 @@ theorem spectralValueTerms_bddAbove (p : R[X]) : BddAbove (Set.range (spectralVa
           simp only [List.mem_map, List.mem_range]
           exact ⟨0, Nat.pos_of_ne_zero hd0, by rw [Nat.cast_zero]⟩
         refine' List.le_max_of_exists_le 0 h _
-        exact Real.rpow_nonneg_of_nonneg (norm_nonneg _) _
+        exact Real.rpow_nonneg (norm_nonneg _) _
 
 /-- The range of `spectral_value_terms p` is a finite set. -/
 theorem spectralValueTerms_finite_range (p : R[X]) : (Set.range (spectralValueTerms p)).Finite :=
@@ -476,7 +464,7 @@ theorem spectralValueTerms_finite_range (p : R[X]) : (Set.range (spectralValueTe
 theorem spectralValueTerms_nonneg (p : R[X]) (n : ℕ) : 0 ≤ spectralValueTerms p n := by
   simp only [spectralValueTerms]
   split_ifs with h
-  · exact Real.rpow_nonneg_of_nonneg (norm_nonneg _) _
+  · exact Real.rpow_nonneg (norm_nonneg _) _
   · exact le_refl _
 
 /-- The spectral value of a polyomial is nonnegative. -/
@@ -584,7 +572,7 @@ theorem root_norm_le_spectralValue {f : AlgebraNorm K L} (hf_pm : IsPowMul f)
           by use n; simp only [spectralValueTerms, if_pos hn]
         exact h_ge (‖p.coeff n‖₊ ^ (1 / (p.natDegree - n : ℝ))) h_rg
       rw [← hexp, ← Real.rpow_nat_cast, ← Real.rpow_nat_cast]
-      exact Real.rpow_lt_rpow (Real.rpow_nonneg_of_nonneg (norm_nonneg _) _) h_base
+      exact Real.rpow_lt_rpow (Real.rpow_nonneg (norm_nonneg _) _) h_base
         (Nat.cast_pos.mpr (tsub_pos_of_lt hn))
     have h_deg : 0 < p.natDegree := Polynomial.natDegree_pos_of_monic_of_root hp hx
     have : ‖(1 : K)‖ = 1 := norm_one
@@ -647,7 +635,7 @@ theorem max_root_norm_eq_spectralValue {f : AlgebraNorm K L} (hf_pm : IsPowMul f
     by_cases hm : m < p.natDegree
     · rw [spectralValueTerms_of_lt_natDegree _ hm]
       have h : 0 < (p.natDegree - m : ℝ) := by rw [sub_pos, Nat.cast_lt]; exact hm
-      rw [← Real.rpow_le_rpow_iff (Real.rpow_nonneg_of_nonneg (norm_nonneg _) _) h_supr h, ←
+      rw [← Real.rpow_le_rpow_iff (Real.rpow_nonneg (norm_nonneg _) _) h_supr h, ←
         Real.rpow_mul (norm_nonneg _), one_div_mul_cancel (ne_of_gt h), Real.rpow_one, ←
         Nat.cast_sub (le_of_lt hm), Real.rpow_nat_cast]
       have hpn : n = p.natDegree := by
@@ -718,7 +706,7 @@ theorem max_root_norm_eq_spectral_value' {f : AlgebraNorm K L} (hf_pm : IsPowMul
     by_cases hm : m < p.natDegree
     · rw [spectralValueTerms_of_lt_natDegree _ hm]
       have h : 0 < (p.natDegree - m : ℝ) := by rw [sub_pos, Nat.cast_lt]; exact hm
-      rw [← Real.rpow_le_rpow_iff (Real.rpow_nonneg_of_nonneg (norm_nonneg _) _) h_le h, ←
+      rw [← Real.rpow_le_rpow_iff (Real.rpow_nonneg (norm_nonneg _) _) h_le h, ←
         Real.rpow_mul (norm_nonneg _), one_div_mul_cancel (ne_of_gt h), Real.rpow_one, ←
         Nat.cast_sub (le_of_lt hm), Real.rpow_nat_cast]
       have hps : card s = p.natDegree := by
@@ -933,9 +921,9 @@ theorem spectralNorm_max_of_fd_normal (h_alg : Algebra.IsAlgebraic K L)
         minpoly.conj_of_root' h_alg hn (Polynomial.aeval_root s h hs)
       obtain ⟨σ, hσ⟩ := hy
       rw [← hσ]
-      convert le_ciSup (Fintype.bddAbove_range _) σ using 1
+      convert le_ciSup (Finite.bddAbove_range _) σ using 1
       · rfl
-      · exact One.nonempty
+      · exact instNonempty
       · exact SemilatticeSup.to_isDirected_le
       --exact le_ciSup (Fintype.bddAbove_range _) σ
     · exact Real.iSup_nonneg fun σ => map_nonneg _ _
