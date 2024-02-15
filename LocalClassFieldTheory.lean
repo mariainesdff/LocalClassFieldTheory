@@ -15,6 +15,7 @@ import LocalClassFieldTheory.ForMathlib.Topology.UniformSpace.AbstractCompletion
 import LocalClassFieldTheory.ForMathlib.WithZero
 -- FromMathlib folder
 import LocalClassFieldTheory.FromMathlib.AlgNormOfGalois
+import LocalClassFieldTheory.FromMathlib.CpDef
 import LocalClassFieldTheory.FromMathlib.Filter
 import LocalClassFieldTheory.FromMathlib.Limsup
 import LocalClassFieldTheory.FromMathlib.Minpoly
