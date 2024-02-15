@@ -1,5 +1,7 @@
+import LocalClassFieldTheory.SpectralNorm
 -- DiscreteValuationRing folder
 import LocalClassFieldTheory.DiscreteValuationRing.Basic
+import LocalClassFieldTheory.DiscreteValuationRing.Complete
 -- ForMathlib folder
 import LocalClassFieldTheory.ForMathlib.Data.Set.Lattice
 import LocalClassFieldTheory.ForMathlib.DiscreteUniformity
