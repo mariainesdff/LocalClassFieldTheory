@@ -144,7 +144,7 @@ namespace Real
 theorem multiset_prod_le_pow_card {K L : Type _} [SeminormedCommRing K] [Ring L] [Algebra K L]
     {t : Multiset L} {f : AlgebraNorm K L} {y : L} (hf : ∀ x : ℝ, x ∈ Multiset.map f t → x ≤ f y) :
     (Multiset.map f t).prod ≤ f y ^ card (map f t) := by
-  set g : L → NNReal := fun x : L => ⟨f x, map_nonneg _ _⟩
+  set g : L → NNReal := fun x : L => ⟨f x, apply_nonneg _ _⟩
   have hg_le : (Multiset.map g t).prod ≤ g y ^ card (map g t) := by
     apply prod_le_pow_card
     intro x hx
@@ -606,7 +606,7 @@ theorem root_norm_le_spectralValue {f : AlgebraNorm K L} (hf_pm : IsPowMul f)
           rw [map_smul_eq_mul, hf_pm _ (Nat.succ_le_iff.mp (pos_iff_ne_zero.mpr hn0)),
             hf_pm _ (Nat.succ_le_iff.mpr h_deg), this, pow_add]
           exact
-            (mul_lt_mul_right (pow_pos (lt_of_le_of_ne (map_nonneg _ _) (Ne.symm hx0)) _)).mpr
+            (mul_lt_mul_right (pow_pos (lt_of_le_of_ne (apply_nonneg _ _) (Ne.symm hx0)) _)).mpr
               (hn_lt n hn)
       obtain ⟨m, hm_in, hm⟩ :=
         isNonarchimedean_finset_range_add_le hf_na p.natDegree fun i : ℕ => p.coeff i • x ^ i
@@ -619,7 +619,7 @@ theorem root_norm_le_spectralValue {f : AlgebraNorm K L} (hf_pm : IsPowMul f)
           one_smul, ← max_eq_left_of_lt h_lt]
         exact isNonarchimedean_add_eq_max_of_ne hf_na (ne_of_lt h_lt)
       rw [h_eq]
-      exact ne_of_gt (lt_of_le_of_lt (map_nonneg _ _) h_lt)
+      exact ne_of_gt (lt_of_le_of_lt (apply_nonneg _ _) h_lt)
     exact h0 (map_zero _)
 
 open scoped Classical
@@ -647,7 +647,7 @@ theorem max_root_norm_eq_spectralValue {f : AlgebraNorm K L} (hf_pm : IsPowMul f
     rw [Function.comp_apply]
     exact root_norm_le_spectralValue hf_pm hf_na (le_of_eq hf1) (p.monic_of_prod b hp) hm
   · haveI : Nonempty (Fin n) := Fin.pos_iff_nonempty.mp hn
-    have h_supr : 0 ≤ iSup (f ∘ b) := Real.iSup_nonneg fun x => map_nonneg f (b x)
+    have h_supr : 0 ≤ iSup (f ∘ b) := Real.iSup_nonneg fun x => apply_nonneg f (b x)
     apply ciSup_le
     intro m
     by_cases hm : m < p.natDegree
@@ -678,12 +678,12 @@ theorem max_root_norm_eq_spectralValue {f : AlgebraNorm K L} (hf_pm : IsPowMul f
       rw [h_card]
       apply le_trans hs
       have h_pr : f (s.val.prod fun i : Fin n => -b i) ≤ s.val.prod fun i : Fin n => f (-b i) :=
-        Finset.le_prod_of_submultiplicative' f (map_nonneg _) hf1 (map_mul_le_mul _) _ _
+        Finset.le_prod_of_submultiplicative' f (apply_nonneg _) hf1 (map_mul_le_mul _) _ _
       apply le_trans h_pr
       have : (s.val.prod fun i : Fin n => f (-b i)) ≤ s.val.prod fun _ : Fin n => iSup (f ∘ b) :=
         by
         apply Finset.prod_le_prod
-        · intro i _; exact map_nonneg _ _
+        · intro i _; exact apply_nonneg _ _
         · intro i _
           rw [map_neg_eq_map]
           exact le_ciSup (Set.Finite.bddAbove (Set.range (f ∘ b)).toFinite) _
@@ -709,7 +709,7 @@ theorem max_root_norm_eq_spectral_value' {f : AlgebraNorm K L} (hf_pm : IsPowMul
     apply Real.iSup_nonneg
     intro x
     split_ifs
-    exacts [map_nonneg _ _, le_refl _]
+    exacts [apply_nonneg _ _, le_refl _]
   apply le_antisymm
   · apply ciSup_le
     rintro x
@@ -750,7 +750,7 @@ theorem max_root_norm_eq_spectral_value' {f : AlgebraNorm K L} (hf_pm : IsPowMul
       obtain ⟨t, ht_card, hts, ht_ge⟩ := ht
       apply le_trans ht_ge
       have h_pr : f t.prod ≤ (t.map f).prod :=
-        Real.multiset_le_prod_of_submultiplicative (map_nonneg _) hf1 (map_mul_le_mul _) _
+        Real.multiset_le_prod_of_submultiplicative (apply_nonneg _) hf1 (map_mul_le_mul _) _
       apply le_trans h_pr
       have hs_ne : s.toFinset.Nonempty := by
         rw [← Finset.card_pos]
@@ -777,9 +777,9 @@ theorem max_root_norm_eq_spectral_value' {f : AlgebraNorm K L} (hf_pm : IsPowMul
         rw [← hz]
         split_ifs with h
         · exact hy_max _ h
-        · exact map_nonneg _ _
+        · exact apply_nonneg _ _
       apply le_trans this
-      apply pow_le_pow_left (map_nonneg _ _)
+      apply pow_le_pow_left (apply_nonneg _ _)
       apply le_trans _ (le_ciSup h_bdd y)
       rw [if_pos hyx]
     · simp only [spectralValueTerms]
@@ -944,7 +944,7 @@ theorem spectralNorm_max_of_fd_normal (h_alg : Algebra.IsAlgebraic K L)
       · exact instNonempty
       · exact SemilatticeSup.to_isDirected_le
       --exact le_ciSup (Fintype.bddAbove_range _) σ
-    · exact Real.iSup_nonneg fun σ => map_nonneg _ _
+    · exact Real.iSup_nonneg fun σ => apply_nonneg _ _
 
 /-- If `L/K` is finite and normal, then `spectral_norm K L = alg_norm_of_galois h_fin hna`. -/
 theorem spectralNorm_eq_algNormOfGalois (h_alg : Algebra.IsAlgebraic K L)

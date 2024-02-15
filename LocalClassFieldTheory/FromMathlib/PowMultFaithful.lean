@@ -74,7 +74,7 @@ theorem contraction_of_is_pm_wrt {F : Type _} {α : outParam (Type _)} [Ring α]
     rw [← Real.rpow_nat_cast, ← Real.rpow_mul (le_of_lt hC0), one_div, inv_mul_cancel hn0,
       Real.rpow_one]
   apply le_of_pow_le_pow_left (ne_of_gt hn)
-    (mul_nonneg (Real.rpow_nonneg (le_of_lt hC0) _) (map_nonneg _ _))
+    (mul_nonneg (Real.rpow_nonneg (le_of_lt hC0) _) (apply_nonneg _ _))
   · rw [mul_pow, h, ← hβ _ hn, ← RingHom.map_pow]
     apply le_trans (hC (x ^ n))
     rw [mul_le_mul_left hC0]

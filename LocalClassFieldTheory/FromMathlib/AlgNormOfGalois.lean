@@ -247,8 +247,8 @@ def algNormOfGalois (hna : IsNonarchimedean (norm : K → ℝ)) : AlgebraNorm K 
     ciSup_le fun σ =>
       le_trans (map_mul_le_mul (algNormOfAuto h_fin hna σ) x y)
         (mul_le_mul (le_ciSup_of_le (Set.Finite.bddAbove (Set.finite_range _)) σ (le_refl _))
-          (le_ciSup_of_le (Set.Finite.bddAbove (Set.finite_range _)) σ (le_refl _)) (map_nonneg _ _)
-          (le_ciSup_of_le (Set.Finite.bddAbove (Set.finite_range _)) σ (map_nonneg _ _)))
+          (le_ciSup_of_le (Set.Finite.bddAbove (Set.finite_range _)) σ (le_refl _)) (apply_nonneg _ _)
+          (le_ciSup_of_le (Set.Finite.bddAbove (Set.finite_range _)) σ (apply_nonneg _ _)))
   eq_zero_of_map_eq_zero' x := by
     contrapose!
     exact fun hx =>
@@ -273,7 +273,7 @@ theorem algNormOfGalois_isPowMul (hna : IsNonarchimedean (norm : K → ℝ)) :
   simp only [algNormOfGalois_apply]
   rw [Real.iSup_pow]
   exact iSup_congr fun σ => algNormOfAuto_isPowMul h_fin σ hna _ hn
-  · exact fun σ => map_nonneg (algNormOfAuto h_fin hna σ) x
+  · exact fun σ => apply_nonneg (algNormOfAuto h_fin hna σ) x
 
 /-- The algebra norm `alg_norm_of_galois` is nonarchimedean. -/
 theorem algNormOfGalois_isNonarchimedean (hna : IsNonarchimedean (norm : K → ℝ)) :

@@ -57,7 +57,7 @@ lemma seminormFromConst_seq_def (x : R) :
 
 /-- The terms in the sequence `seminorm_from_const_seq c f x` are nonnegative. -/
 theorem seminormFromConst_seq_nonneg (x : R) (n : ℕ) : 0 ≤ seminormFromConst_seq c f x n :=
-  div_nonneg (map_nonneg f (x * c ^ n)) (pow_nonneg (map_nonneg f c) n)
+  div_nonneg (apply_nonneg f (x * c ^ n)) (pow_nonneg (apply_nonneg f c) n)
 
 /-- The image of `seminorm_from_const_seq c f x` is bounded below by zero. -/
 theorem seminorm_from_const_is_bounded (x : R) :
@@ -92,13 +92,13 @@ theorem seminormFromConst_seq_antitone (x : R) : Antitone (seminormFromConst_seq
   simp only [seminormFromConst_seq]
   nth_rw 1 [← Nat.add_sub_of_le hmn]
   rw [pow_add, ← mul_assoc]
-  have hc_pos : 0 < f c := lt_of_le_of_ne (map_nonneg f _) hc
+  have hc_pos : 0 < f c := lt_of_le_of_ne (apply_nonneg f _) hc
   apply le_trans ((div_le_div_right (pow_pos hc_pos _)).mpr (map_mul_le_mul f _ _))
   by_cases heq : m = n
   · have : n - m = 0 := by rw [heq]; exact Nat.sub_self n
     rw [this, heq, div_le_div_right (pow_pos hc_pos _), pow_zero]
     conv_rhs => rw [← mul_one (f (x * c ^ n))]
-    exact mul_le_mul_of_nonneg_left hf1 (map_nonneg f _)
+    exact mul_le_mul_of_nonneg_left hf1 (apply_nonneg f _)
   · have h1 : 1 ≤ n - m :=
       by
       rw [Nat.one_le_iff_ne_zero, Ne.def, Nat.sub_eq_zero_iff_le, not_le]
@@ -149,7 +149,7 @@ theorem seminorm_from_const_hMul (x y : R) :
   intro n
   simp only [seminormFromConst_seq]
   rw [div_mul_div_comm, ← pow_add, two_mul,
-    div_le_div_right (pow_pos (lt_of_le_of_ne (map_nonneg f _) hc) _), pow_add, ← mul_assoc,
+    div_le_div_right (pow_pos (lt_of_le_of_ne (apply_nonneg f _) hc) _), pow_add, ← mul_assoc,
     mul_comm (x * y), ← mul_assoc, mul_assoc, mul_comm (c ^ n)]
   exact map_mul_le_mul f (x * c ^ n) (y * c ^ n)
 
@@ -177,7 +177,7 @@ theorem seminorm_from_const_add (x y : R) :
     exact map_add_le_add f _ _
   simp only [seminormFromConst_seq]
   rw [div_add_div_same]
-  exact (div_le_div_right (pow_pos (lt_of_le_of_ne (map_nonneg f _) hc) _)).mpr h_add
+  exact (div_le_div_right (pow_pos (lt_of_le_of_ne (apply_nonneg f _) hc) _)).mpr h_add
 
 /-- The function `seminorm_from_const` is a `ring_seminorm` on `R`. -/
 def seminormFromConst : RingSeminorm R where
@@ -208,7 +208,7 @@ theorem seminorm_from_const_isNonarchimedean (hna : IsNonarchimedean f) :
     exact hna _ _
   rw [le_max_iff] at hmax ⊢
   cases' hmax with hmax hmax <;> [left; right] <;>
-    exact (div_le_div_right (pow_pos (lt_of_le_of_ne (map_nonneg f c) hc) _)).mpr hmax
+    exact (div_le_div_right (pow_pos (lt_of_le_of_ne (apply_nonneg f c) hc) _)).mpr hmax
 
 /-- The function `seminorm_from_const' hf1 hc hpm` is power-multiplicative. -/
 theorem seminorm_from_const_isPowMul : IsPowMul (seminormFromConst' hf1 hc hpm) := by
@@ -233,7 +233,7 @@ theorem seminorm_from_const_le_seminorm (x : R) : seminormFromConst' hf1 hc hpm 
   simp only [Filter.eventually_atTop, ge_iff_le]
   use 1
   rintro n hn
-  apply le_trans ((div_le_div_right (pow_pos (lt_of_le_of_ne (map_nonneg f c) hc) _)).mpr
+  apply le_trans ((div_le_div_right (pow_pos (lt_of_le_of_ne (apply_nonneg f c) hc) _)).mpr
     (map_mul_le_mul _ _ _))
   rw [hpm c hn, mul_div_assoc, div_self (pow_ne_zero n hc.symm), mul_one]
 

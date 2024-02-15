@@ -147,16 +147,16 @@ theorem is_bdd_under {R : Type _} [CommRing R] (f : RingSeminorm R) (hf1 : f 1 �
   have h_le : ∀ m : ℕ, f (x ^ s (φ m)) ^ (1 / (φ m : ℝ)) ≤ f x ^ ((s (φ m) : ℝ) / (φ m : ℝ)) :=
     by
     intro m
-    rw [← mul_one_div (s (φ m) : ℝ), rpow_mul (map_nonneg f x), rpow_nat_cast]
+    rw [← mul_one_div (s (φ m) : ℝ), rpow_mul (apply_nonneg f x), rpow_nat_cast]
     exact
-      rpow_le_rpow (map_nonneg _ _) (map_pow_le_pow' hf1 x _)
+      rpow_le_rpow (apply_nonneg _ _) (map_pow_le_pow' hf1 x _)
         (one_div_nonneg.mpr (Nat.cast_nonneg _))
   apply isBoundedUnder_of
   by_cases hfx : f x ≤ 1
   ·
     use 1, fun m =>
       le_trans (h_le m)
-        (Real.rpow_le_one (map_nonneg _ _) hfx (div_nonneg (Nat.cast_nonneg _) (Nat.cast_nonneg _)))
+        (Real.rpow_le_one (apply_nonneg _ _) hfx (div_nonneg (Nat.cast_nonneg _) (Nat.cast_nonneg _)))
   · use f x
     intro m
     apply le_trans (h_le m)
@@ -202,7 +202,7 @@ theorem smoothing_seminorm_seq_has_limit_aux {L : ℝ} (hL : 0 ≤ L) {ε : ℝ}
     apply Tendsto.rpow tendsto_const_nhds h0
     rw [Ne.def, add_eq_zero_iff' hL (le_of_lt hε)]
     exact Or.inl (not_and_of_not_right _ (ne_of_gt hε))
-  · simp_rw [mul_one, ← rpow_nat_cast, ← rpow_mul (map_nonneg f x), ← mul_div_assoc, mul_one, ←
+  · simp_rw [mul_one, ← rpow_nat_cast, ← rpow_mul (apply_nonneg f x), ← mul_div_assoc, mul_one, ←
       rpow_zero (f x)]
     exact Tendsto.rpow tendsto_const_nhds h_exp (Or.inl hx)
 
@@ -212,7 +212,7 @@ theorem smoothing_seminorm_seq_bdd (x : R) :
   by
   use 0
   rintro y ⟨n, rfl⟩
-  exact rpow_nonneg (map_nonneg f _) _
+  exact rpow_nonneg (apply_nonneg f _) _
 
 /-- The infi of the sequence `f(x^(n : ℕ)))^(1/(n : ℝ)`. -/
 def smoothingSeminorm_def (x : R) : ℝ :=
@@ -225,14 +225,14 @@ theorem smoothingSeminorm_def_is_limit_zero {x : R} (hx : f x = 0) :
   have h0 : ∀ (n : ℕ) (_hn : 1 ≤ n), f (x ^ n) ^ (1 / (n : ℝ)) = 0 := by
     intro n hn
     have hfn : f (x ^ n) = 0 := by
-      apply le_antisymm _ (map_nonneg f _)
+      apply le_antisymm _ (apply_nonneg f _)
       rw [← zero_pow (Nat.pos_iff_ne_zero.mp hn), ← hx]
       exact map_pow_le_pow _ x (Nat.one_le_iff_ne_zero.mp hn)
     rw [hfn, zero_rpow (Nat.one_div_cast_ne_zero (Nat.one_le_iff_ne_zero.mp hn))]
   have hL0 : (iInf fun n : PNat => f (x ^ (n : ℕ)) ^ (1 / (n : ℝ))) = 0 :=
     le_antisymm
       (ciInf_le_of_le (smoothing_seminorm_seq_bdd f x) (1 : PNat) (le_of_eq (h0 1 (le_refl _))))
-      (le_ciInf fun n => rpow_nonneg (map_nonneg f _) _)
+      (le_ciInf fun n => rpow_nonneg (apply_nonneg f _) _)
   simp only [hL0, smoothingSeminormSeq, smoothingSeminorm_def]
   exact tendsto_atTop_of_eventually_const h0
 
@@ -242,7 +242,7 @@ theorem smoothingSeminorm_def_is_limit_ne_zero (hf1 : f 1 ≤ 1) {x : R} (hx : f
     Tendsto (smoothingSeminormSeq f x) atTop (𝓝 (smoothingSeminorm_def f x)) := by
   simp only [smoothingSeminorm_def]
   set L := iInf fun n : PNat => f (x ^ (n : ℕ)) ^ (1 / (n : ℝ))
-  have hL0 : 0 ≤ L := le_ciInf fun x => rpow_nonneg (map_nonneg _ _) _
+  have hL0 : 0 ≤ L := le_ciInf fun x => rpow_nonneg (apply_nonneg _ _) _
   rw [Metric.tendsto_atTop]
   intro ε hε
   obtain ⟨m1, hm1⟩ := smoothing_seminorm_seq_has_limit_m f x hε
@@ -281,14 +281,14 @@ theorem smoothingSeminorm_def_is_limit_ne_zero (hf1 : f 1 ≤ 1) {x : R} (hx : f
       apply lt_of_le_of_lt _ hLε
       rw [pow_add, ← MulZeroClass.mul_zero (f (x ^ ((m1 : ℕ) * (n / (m1 : ℕ)))) ^ (1 / (n : ℝ))), ←
         zero_rpow (Nat.one_div_cast_ne_zero (pos_iff_ne_zero.mp hn0)), ← hxn, ←
-        mul_rpow (map_nonneg f _) (map_nonneg f _)]
-      exact rpow_le_rpow (map_nonneg f _) (map_mul_le_mul f _ _) (Nat.one_div_cast_nonneg _)
-    · have hxn' : 0 < f (x ^ (n % ↑m1)) := lt_of_le_of_ne (map_nonneg _ _) (Ne.symm hxn)
+        mul_rpow (apply_nonneg f _) (apply_nonneg f _)]
+      exact rpow_le_rpow (apply_nonneg f _) (map_mul_le_mul f _ _) (Nat.one_div_cast_nonneg _)
+    · have hxn' : 0 < f (x ^ (n % ↑m1)) := lt_of_le_of_ne (apply_nonneg _ _) (Ne.symm hxn)
       simp only [smoothingSeminormSeq]
       nth_rw 1 [← Nat.div_add_mod n m1]
       have h : f (x ^ ((m1 : ℕ) * (n / (m1 : ℕ)))) ^ (1 / (n : ℝ)) ≤
           (f (x ^ (m1 : ℕ)) ^ (n / (m1 : ℕ))) ^ (1 / (n : ℝ)) := by
-        apply rpow_le_rpow (map_nonneg f _) _ (Nat.one_div_cast_nonneg _)
+        apply rpow_le_rpow (apply_nonneg f _) _ (Nat.one_div_cast_nonneg _)
         rw [pow_mul]
         exact  map_pow_le_pow f (x^(m1 : ℕ))
           (pos_iff_ne_zero.mp (Nat.div_pos (le_trans (le_max_left (m1 : ℕ) m2) hn) (PNat.pos m1)))
@@ -299,9 +299,9 @@ theorem smoothingSeminorm_def_is_limit_ne_zero (hf1 : f 1 ≤ 1) {x : R} (hx : f
         by
         have hm10 : (m1 : ℝ) ≠ 0 := Nat.cast_ne_zero.mpr (ne_of_gt (PNat.pos m1))
         rw [←
-          rpow_lt_rpow_iff (Real.rpow_nonneg (map_nonneg f _) _) (le_of_lt hL0')
+          rpow_lt_rpow_iff (Real.rpow_nonneg (apply_nonneg f _) _) (le_of_lt hL0')
             (Nat.cast_pos.mpr (PNat.pos m1)),
-          ← rpow_mul (map_nonneg f _), one_div_mul_cancel hm10, rpow_one] at hm1
+          ← rpow_mul (apply_nonneg f _), one_div_mul_cancel hm10, rpow_one] at hm1
         nth_rw 1 [← rpow_one (L + ε / 2)]
         have : (n : ℝ) / n = (1 : ℝ) := div_self (Nat.cast_ne_zero.mpr (ne_of_gt hn0))
         nth_rw 2 [← this]; clear this
@@ -311,13 +311,13 @@ theorem smoothingSeminorm_def_is_limit_ne_zero (hf1 : f 1 ≤ 1) {x : R} (hx : f
           · exact Nat.cast_pos.mpr (Nat.div_pos (le_trans (le_max_left _ _) hn) (PNat.pos m1))
           · exact Nat.cast_pos.mpr hn0
         rw [← rpow_nat_cast, ← rpow_add hL0', ← neg_div, div_add_div_same, Nat.cast_add,
-          add_neg_cancel_right, Nat.cast_mul, ← rpow_mul (map_nonneg f _), mul_one_div,
+          add_neg_cancel_right, Nat.cast_mul, ← rpow_mul (apply_nonneg f _), mul_one_div,
           mul_div_assoc, rpow_mul (le_of_lt hL0')]
-        exact rpow_lt_rpow (map_nonneg f _) hm1 h_lt
+        exact rpow_lt_rpow (apply_nonneg f _) hm1 h_lt
       have h2 : f (x ^ (n % m1)) ^ (1 / (n : ℝ)) ≤ (f x ^ (n % m1)) ^ (1 / (n : ℝ)) := by
         by_cases hnm1 : n % m1 = 0
-        · simpa [hnm1, pow_zero] using rpow_le_rpow (map_nonneg f _) hf1 (Nat.one_div_cast_nonneg _)
-        · exact rpow_le_rpow (map_nonneg f _) (map_pow_le_pow f _ hnm1) (Nat.one_div_cast_nonneg _)
+        · simpa [hnm1, pow_zero] using rpow_le_rpow (apply_nonneg f _) hf1 (Nat.one_div_cast_nonneg _)
+        · exact rpow_le_rpow (apply_nonneg f _) (map_pow_le_pow f _ hnm1) (Nat.one_div_cast_nonneg _)
       have h3 :
         (L + ε / 2) * (L + ε / 2) ^ (-(((n % m1 : ℕ) : ℝ) / (n : ℝ))) *
             (f x ^ (n % m1)) ^ (1 / (n : ℝ)) ≤
@@ -337,11 +337,11 @@ theorem smoothingSeminorm_def_is_limit_ne_zero (hf1 : f 1 ≤ 1) {x : R} (hx : f
             f (x ^ ((m1 : ℕ) * (n / (m1 : ℕ))) * x ^ (n % m1)) ^ (1 / (n : ℝ)) :=
           by rw [pow_add]
         _ ≤ (f (x ^ ((m1 : ℕ) * (n / (m1 : ℕ)))) * f (x ^ (n % m1))) ^ (1 / (n : ℝ)) :=
-          (rpow_le_rpow (map_nonneg f _) (map_mul_le_mul f _ _) (Nat.one_div_cast_nonneg _))
+          (rpow_le_rpow (apply_nonneg f _) (map_mul_le_mul f _ _) (Nat.one_div_cast_nonneg _))
         _ =
             f (x ^ ((m1 : ℕ) * (n / (m1 : ℕ)))) ^ (1 / (n : ℝ)) *
               f (x ^ (n % m1)) ^ (1 / (n : ℝ)) :=
-          (mul_rpow (map_nonneg f _) (map_nonneg f _))
+          (mul_rpow (apply_nonneg f _) (apply_nonneg f _))
         _ ≤
             (f (x ^ (m1 : ℕ)) ^ (n / (m1 : ℕ))) ^ (1 / (n : ℝ)) *
               f (x ^ (n % m1)) ^ (1 / (n : ℝ)) :=
@@ -372,7 +372,7 @@ theorem smoothing_seminorm_nonneg (hf1 : f 1 ≤ 1) (x : R) : 0 ≤ smoothingSem
   use 1
   rintro n _hn
   simp only [smoothingSeminormSeq]
-  exact rpow_nonneg (map_nonneg f _) _
+  exact rpow_nonneg (apply_nonneg f _) _
 
 /-- If `f 1 ≤ 1`, then `smoothing_seminorm_def f 0 = 0`. -/
 theorem smoothing_seminorm_zero (hf1 : f 1 ≤ 1) : smoothingSeminorm_def f 0 = 0 := by
@@ -407,8 +407,8 @@ theorem smoothing_seminorm_mul (hf1 : f 1 ≤ 1) (x y : R) :
   intro n
   have hn : 0 ≤ 1 / (n : ℝ) := by simp only [one_div, inv_nonneg, Nat.cast_nonneg]
   simp only [smoothingSeminormSeq]
-  rw [← mul_rpow (map_nonneg f _) (map_nonneg f _), mul_pow]
-  exact rpow_le_rpow (map_nonneg f _) (map_mul_le_mul f _ _) hn
+  rw [← mul_rpow (apply_nonneg f _) (apply_nonneg f _), mul_pow]
+  exact rpow_le_rpow (apply_nonneg f _) (map_mul_le_mul f _ _) hn
 
 /-- If `f 1 ≤ 1`, then `smoothing_seminorm_def f 1 ≤ 1`. -/
 theorem smoothing_seminorm_one (hf1 : f 1 ≤ 1) : smoothingSeminorm_def f 1 ≤ 1 :=
@@ -425,7 +425,7 @@ theorem smoothing_seminorm_one (hf1 : f 1 ≤ 1) : smoothingSeminorm_def f 1 ≤
     apply div_pos h01
     rw [← Nat.cast_zero, Nat.cast_lt]
     exact Nat.succ_le_iff.mp hn
-  exact (Real.rpow_le_rpow_iff (map_nonneg f _) zero_le_one hn1).mpr hf1
+  exact (Real.rpow_le_rpow_iff (apply_nonneg f _) zero_le_one hn1).mpr hf1
 
 /-- For any `x` and any positive `n`, `smoothing_seminorm_def f x  ≤ f (x^(n : ℕ))^(1/n : ℝ)`. -/
 theorem smoothing_seminorm_le_term (x : R) (n : PNat) :
@@ -446,7 +446,7 @@ theorem exists_index_le (hna : IsNonarchimedean f) (x y : R) (n : ℕ) :
     ∃ (m : ℕ) (_ : m ∈ Finset.range (n + 1)), f ((x + y) ^ (n : ℕ)) ^ (1 / (n : ℝ)) ≤
       (f (x ^ m) * f (y ^ (n - m : ℕ))) ^ (1 / (n : ℝ)) := by
   obtain ⟨m, hm_lt, hm⟩ := isNonarchimedean_add_pow hna n x y
-  exact ⟨m, hm_lt, rpow_le_rpow (map_nonneg f _) hm (Nat.one_div_cast_nonneg (n : ℕ))⟩
+  exact ⟨m, hm_lt, rpow_le_rpow (apply_nonneg f _) hm (Nat.one_div_cast_nonneg (n : ℕ))⟩
 
 /-- Auxiliary sequence for the proof that `smoothing_seminorm_def` is nonarchimedean. -/
 def mu {x y : R} (hn : ∀ n : ℕ, ∃ (m : ℕ) (_ : m ∈ Finset.range (n + 1)),
@@ -489,7 +489,7 @@ private theorem f_bdd_below (s : ℕ → ℕ) {x y : R} (_hn : ∀ n : ℕ,
   simp only [mem_lowerBounds, eventually_map, eventually_atTop, ge_iff_le, Set.mem_setOf_eq,
     forall_exists_index]
   intro r m hm
-  exact le_trans (Real.rpow_nonneg (map_nonneg f _) _) (hm m (le_refl _))
+  exact le_trans (Real.rpow_nonneg (apply_nonneg f _) _) (hm m (le_refl _))
 
 private theorem f_bdd_above (hf1 : f 1 ≤ 1) {s : ℕ → ℕ} (hs : ∀ n : ℕ, s n ≤ n) (x : R)
     (φ : ℕ → ℕ) : BddAbove (Set.range fun n : ℕ => f (x ^ s (φ n)) ^ (1 / (φ n : ℝ))) := by
@@ -500,14 +500,14 @@ private theorem f_bdd_above (hf1 : f 1 ≤ 1) {s : ℕ → ℕ} (hs : ∀ n : �
   · use 1
     simp only [mem_upperBounds, Set.mem_range, forall_exists_index, forall_apply_eq_imp_iff']
     rintro _ n rfl
-    apply le_trans (Real.rpow_le_rpow (map_nonneg _ _) (map_pow_le_pow' hf1 _ _) (hφ n))
-    rw [← rpow_nat_cast, ← rpow_mul (map_nonneg _ _), mul_one_div]
-    exact rpow_le_one (map_nonneg _ _) hx (div_nonneg (Nat.cast_nonneg _) (Nat.cast_nonneg _))
+    apply le_trans (Real.rpow_le_rpow (apply_nonneg _ _) (map_pow_le_pow' hf1 _ _) (hφ n))
+    rw [← rpow_nat_cast, ← rpow_mul (apply_nonneg _ _), mul_one_div]
+    exact rpow_le_one (apply_nonneg _ _) hx (div_nonneg (Nat.cast_nonneg _) (Nat.cast_nonneg _))
   · use f x
     simp only [mem_upperBounds, Set.mem_range, forall_exists_index, forall_apply_eq_imp_iff']
     rintro _ n rfl
-    apply le_trans (Real.rpow_le_rpow (map_nonneg _ _) (map_pow_le_pow' hf1 _ _) (hφ n))
-    rw [← rpow_nat_cast, ← rpow_mul (map_nonneg _ _), mul_one_div]
+    apply le_trans (Real.rpow_le_rpow (apply_nonneg _ _) (map_pow_le_pow' hf1 _ _) (hφ n))
+    rw [← rpow_nat_cast, ← rpow_mul (apply_nonneg _ _), mul_one_div]
     conv_rhs => rw [← rpow_one (f x)]
     rw [rpow_le_rpow_left_iff (not_le.mp hx)]
     exact div_le_one_of_le (Nat.cast_le.mpr (hs (φ n))) (Nat.cast_nonneg _)
@@ -524,7 +524,7 @@ private theorem f_nonempty {s : ℕ → ℕ} (hs_le : ∀ n : ℕ, s n ≤ n) {x
     use 0
     intro b _hb
     exact
-      rpow_le_one (map_nonneg _ _) (le_of_lt hfx)
+      rpow_le_one (apply_nonneg _ _) (le_of_lt hfx)
         (mul_nonneg (Nat.cast_nonneg _) (one_div_nonneg.mpr (Nat.cast_nonneg _)))
   · use f x
     simp only [eventually_map, eventually_atTop, ge_iff_le, Set.mem_setOf_eq]
@@ -549,7 +549,7 @@ private theorem f_limsup_le_one {s : ℕ → ℕ} (hs_le : ∀ n : ℕ, s n ≤ 
     · apply hc_bd (1 : ℝ) 0
       rintro b -
       exact
-        rpow_le_one (map_nonneg _ _) (le_of_lt hfx)
+        rpow_le_one (apply_nonneg _ _) (le_of_lt hfx)
           (mul_nonneg (Nat.cast_nonneg _) (one_div_nonneg.mpr (Nat.cast_nonneg _)))
     · have hf_lim : Tendsto (fun n : ℕ => f x ^ (↑(s (φ n)) * (1 / (φ n : ℝ)))) atTop (𝓝 1) := by
         nth_rw 1 [← rpow_zero (f x)]
@@ -590,7 +590,7 @@ theorem limsup_mu_le (hf1 : f 1 ≤ 1) {s : ℕ → ℕ} (hs_le : ∀ n : ℕ, s
           simp only [mem_lowerBounds, eventually_map, eventually_atTop, ge_iff_le,
             Set.mem_setOf_eq, forall_exists_index]
           intro r m hm
-          exact le_trans (Real.rpow_nonneg (map_nonneg f _) _) (hm m (le_refl _))
+          exact le_trans (Real.rpow_nonneg (apply_nonneg f _) _) (hm m (le_refl _))
         · exact f_nonempty f hs_le hn φ
         · intro b hb
           simp only [eventually_map, eventually_atTop, ge_iff_le, Set.mem_setOf_eq] at hb ⊢
@@ -598,9 +598,9 @@ theorem limsup_mu_le (hf1 : f 1 ≤ 1) {s : ℕ → ℕ} (hs_le : ∀ n : ℕ, s
           use m
           intro k hkm
           apply le_trans _ (hm k hkm)
-          rw [Real.rpow_mul (map_nonneg f x), rpow_nat_cast]
+          rw [Real.rpow_mul (apply_nonneg f x), rpow_nat_cast]
           exact
-            rpow_le_rpow (map_nonneg f _) (map_pow_le_pow' hf1 x _)
+            rpow_le_rpow (apply_nonneg f _) (map_pow_le_pow' hf1 x _)
               (one_div_nonneg.mpr (Nat.cast_nonneg _))
       _ ≤ 1 := (f_limsup_le_one f hs_le hn hφ_lim)
       _ = smoothingSeminorm_def f x ^ a := by rw [ha, rpow_zero]
@@ -613,7 +613,7 @@ theorem limsup_mu_le (hf1 : f 1 ≤ 1) {s : ℕ → ℕ} (hs_le : ∀ n : ℕ, s
           using 1
         · simp only [Pi.one_apply, Nat.cast_one]
         · simp only [Pi.one_apply, Nat.cast_one]; rfl
-      simp_rw [← rpow_mul (map_nonneg f _), mul_div]
+      simp_rw [← rpow_mul (apply_nonneg f _), mul_div]
       exact EventuallyEq.comp₂ EventuallyEq.rfl HPow.hPow (h.div EventuallyEq.rfl)
     exact
       le_of_eq
@@ -669,12 +669,12 @@ theorem smoothing_seminorm_isNonarchimedean (hf1 : f 1 ≤ 1) (hna : IsNonarchim
         limsup (fun n : ℕ => f (x ^ mu (φ n)) ^ (1 / (φ n : ℝ))) atTop *
           limsup (fun n : ℕ => f (y ^ nu (φ n)) ^ (1 / (φ n : ℝ))) atTop :=
       limsup_mul_le (f_bdd_above f hf1 hmu_le x φ)
-        (fun n => rpow_nonneg (map_nonneg _ _) _) (f_bdd_above f hf1 hnu_le y φ) fun n =>
-        rpow_nonneg (map_nonneg _ _) _
+        (fun n => rpow_nonneg (apply_nonneg _ _) _) (f_bdd_above f hf1 hnu_le y φ) fun n =>
+        rpow_nonneg (apply_nonneg _ _) _
     have h_bdd : IsBoundedUnder LE.le atTop fun n : ℕ => f (y ^ nu (φ n)) ^ (1 / (φ n : ℝ)) :=
       is_bdd_under f hf1 hnu_le φ
     exact le_trans hxy' (mul_le_mul hx hy
-      (limsup_nonneg_of_nonneg h_bdd fun m => rpow_nonneg (map_nonneg _ _) _)
+      (limsup_nonneg_of_nonneg h_bdd fun m => rpow_nonneg (apply_nonneg _ _) _)
       (Real.rpow_nonneg (smoothing_seminorm_nonneg f hf1 x) _))
   conv_lhs => simp only [smoothingSeminorm_def]
   apply le_of_forall_sub_le
@@ -700,13 +700,13 @@ theorem smoothing_seminorm_isNonarchimedean (hf1 : f 1 ≤ 1) (hna : IsNonarchim
   have hex : ∃ n : PNat, f (x ^ mu (φ n)) ^ (1 / (φ n : ℝ)) * f (y ^ nu (φ n)) ^ (1 / (φ n : ℝ)) <
       smoothingSeminorm_def f x ^ a * smoothingSeminorm_def f y ^ b + ε :=
     exists_lt_of_limsup_le (Real.range_bddAbove_mul (f_bdd_above f hf1 hmu_le _ _)
-        (fun n => rpow_nonneg (map_nonneg _ _) _) (f_bdd_above f hf1 hnu_le _ _)
-        fun n => rpow_nonneg (map_nonneg _ _) _).isBoundedUnder hxy hε
+        (fun n => rpow_nonneg (apply_nonneg _ _) _) (f_bdd_above f hf1 hnu_le _ _)
+        fun n => rpow_nonneg (apply_nonneg _ _) _).isBoundedUnder hxy hε
   obtain ⟨N, hN⟩ := hex
   apply le_trans (ciInf_le (smoothing_seminorm_seq_bdd f _)
     ⟨φ N, lt_of_le_of_lt (zero_le (φ 0)) (hφ_mono.lt_iff_lt.mpr N.pos)⟩)
   apply le_trans _ hN.le
-  simp only [PNat.mk_coe, hnu, ← mul_rpow (map_nonneg f _) (map_nonneg f _)]
+  simp only [PNat.mk_coe, hnu, ← mul_rpow (apply_nonneg f _) (apply_nonneg f _)]
   exact mu_property f hn (φ N)
 
 end IsNonarchimedean
@@ -746,7 +746,7 @@ theorem smoothing_seminorm_isPowMul (hf1 : f 1 ≤ 1) : IsPowMul (smoothingSemin
     have hm' : (m : ℝ) ≠ 0 := Nat.cast_ne_zero.mpr (ne_of_gt (lt_of_lt_of_le zero_lt_one hm))
     intro n
     simp only [smoothingSeminormSeq]
-    rw [pow_mul, ← rpow_nat_cast, ← rpow_mul (map_nonneg f _), Nat.cast_mul, ← one_div_mul_one_div,
+    rw [pow_mul, ← rpow_nat_cast, ← rpow_mul (apply_nonneg f _), Nat.cast_mul, ← one_div_mul_one_div,
       mul_comm (1 / (m : ℝ)), mul_assoc, one_div_mul_cancel hm', mul_one]
   simp_rw [h_eq]
   exact smoothingSeminorm_def_is_limit f hf1 _
@@ -761,7 +761,7 @@ theorem smoothing_seminorm_of_pow_mult (hf1 : f 1 ≤ 1) {x : R}
   intro n hn
   simp only [smoothingSeminormSeq]
   have hn0 : (n : ℝ) ≠ 0 := Nat.cast_ne_zero.mpr (Nat.one_le_iff_ne_zero.mp hn)
-  rw [hx n hn, ← rpow_nat_cast, ← rpow_mul (map_nonneg f _), mul_one_div_cancel hn0, rpow_one]
+  rw [hx n hn, ← rpow_nat_cast, ← rpow_mul (apply_nonneg f _), mul_one_div_cancel hn0, rpow_one]
 
 /-- If `f 1 ≤ 1` and `∀ y : R, f (x * y) = f x * f y`, then `smoothing_seminorm_def f x = f x`. -/
 theorem smoothing_seminorm_apply_of_is_mul' (hf1 : f 1 ≤ 1) {x : R}
@@ -775,14 +775,14 @@ theorem smoothing_seminorm_apply_of_is_mul' (hf1 : f 1 ≤ 1) {x : R}
   simp only [smoothingSeminormSeq]
   by_cases hx0 : f x = 0
   · have hxn : f (x ^ n) = 0 := by
-      apply le_antisymm _ (map_nonneg f _)
+      apply le_antisymm _ (apply_nonneg f _)
       apply le_trans (map_pow_le_pow f x (Nat.one_le_iff_ne_zero.mp hn))
       rw [hx0, zero_pow (Nat.pos_iff_ne_zero.mp hn)]
     rw [hx0, hxn, zero_rpow (Nat.one_div_cast_ne_zero (Nat.one_le_iff_ne_zero.mp hn))]
   · have h1 : f 1 = 1 := by rw [← mul_right_inj' hx0, ← hx 1, mul_one, mul_one]
     have hn0 : (n : ℝ) ≠ 0 := Nat.cast_ne_zero.mpr (ne_of_gt (lt_of_lt_of_le zero_lt_one hn))
     rw [← mul_one (x ^ n), is_mul_pow_of_is_mul f hx, ← rpow_nat_cast, h1, mul_one, ←
-      rpow_mul (map_nonneg f _), mul_one_div_cancel hn0, rpow_one]
+      rpow_mul (apply_nonneg f _), mul_one_div_cancel hn0, rpow_one]
 
 /-- If `f 1 ≤ 1`, `f` is nonarchimedean, and `∀ y : R, f (x * y) = f x * f y`, then
   `smoothing_seminorm f hf1 hna x = f x`. -/
@@ -809,8 +809,8 @@ theorem smoothing_seminorm_of_mul' (hf1 : f 1 ≤ 1) {x : R} (hx : ∀ y : R, f 
   have hn0 : (n : ℝ) ≠ 0 := Nat.cast_ne_zero.mpr (ne_of_gt (lt_of_lt_of_le zero_lt_one hn1))
   simp only [smoothingSeminormSeq]
   rw [mul_pow, is_mul_pow_of_is_mul f hx,
-    mul_rpow (pow_nonneg (map_nonneg f _) _) (map_nonneg f _), ← rpow_nat_cast, ←
-    rpow_mul (map_nonneg f _), mul_one_div_cancel hn0, rpow_one]
+    mul_rpow (pow_nonneg (apply_nonneg f _) _) (apply_nonneg f _), ← rpow_nat_cast, ←
+    rpow_mul (apply_nonneg f _), mul_one_div_cancel hn0, rpow_one]
 
 /-- If `f 1 ≤ 1`, `f` is nonarchimedean, and `x` is multiplicative for `f`, then `x` is
   multiplicative for `smoothing_seminorm`. -/

@@ -89,7 +89,7 @@ theorem isNonarchimedean_nsmul {F α : Type _} [AddCommGroup α] [FunLike F α �
   [AddGroupSeminormClass F α ℝ] {f : F}
     (hna : IsNonarchimedean f) (n : ℕ) (a : α) : f (n • a) ≤ f a := by
   induction' n with n hn
-  · rw [zero_nsmul, map_zero _]; exact map_nonneg _ _
+  · rw [zero_nsmul, map_zero _]; exact apply_nonneg _ _
   · have : n.succ • a = (n + 1) • a := rfl
     rw [this, add_smul, one_smul]
     exact le_trans (hna _ _) (max_le_iff.mpr ⟨hn, le_refl _⟩)
@@ -140,7 +140,7 @@ theorem isNonarchimedean_finset_image_add {F α : Type _} [Ring α] [FunLike F �
   | empty =>
       rw [Finset.sum_empty]
       refine' ⟨hβ.some, by simp only [Finset.not_nonempty_empty, IsEmpty.forall_iff], _⟩
-      rw [map_zero f]; exact map_nonneg f _
+      rw [map_zero f]; exact apply_nonneg f _
   | @insert a s has hM =>
       obtain ⟨M, hMs, hM⟩ := hM
       rw [Finset.sum_insert has]
@@ -160,7 +160,7 @@ theorem isNonarchimedean_finset_image_add {F α : Type _} [Ring α] [FunLike F �
               rw [Finset.not_nonempty_iff_eq_empty.mp hs, Finset.sum_empty, map_zero]
             apply le_trans (hna _ _)
             rw [h0]
-            exact max_le_iff.mpr ⟨le_refl _, map_nonneg _ _⟩
+            exact max_le_iff.mpr ⟨le_refl _, apply_nonneg _ _⟩
           · simp only [Finset.insert_nonempty, Finset.mem_insert, true_or, forall_true_left]
 
 /-- Given a nonarchimedean additive group seminorm `f` on `α`, a function `g : β → α` and a
@@ -173,7 +173,7 @@ theorem isNonarchimedean_multiset_image_add {F α : Type _} [Ring α] [FunLike F
   induction s using Multiset.induction_on with
   | empty =>
       rw [Multiset.map_zero, Multiset.sum_zero, Multiset.card_zero, map_zero f]
-      refine' ⟨hβ.some, by simp only [not_lt_zero', IsEmpty.forall_iff], map_nonneg _ _⟩
+      refine' ⟨hβ.some, by simp only [not_lt_zero', IsEmpty.forall_iff], apply_nonneg _ _⟩
   | @cons a t hM =>
       obtain ⟨M, hMs, hM⟩ := hM
       by_cases hMa : f (g M) ≤ f (g a)
@@ -197,7 +197,7 @@ theorem isNonarchimedean_multiset_image_add {F α : Type _} [Ring α] [FunLike F
             rw [Multiset.map_cons, Multiset.sum_cons]
             apply le_trans (hna _ _)
             rw [h0]
-            exact max_le_iff.mpr ⟨le_refl _, map_nonneg _ _⟩
+            exact max_le_iff.mpr ⟨le_refl _, apply_nonneg _ _⟩
 
 /-- Given a nonarchimedean additive group seminorm `f` on `α`, a number `n : ℕ` and a function
   `g : ℕ → α`, there exists `m : ℕ` such that `f ((finset.range n).sum g) ≤ f (g m)`.
@@ -234,7 +234,7 @@ theorem map_pow_le_pow {F α : Type _} [Ring α] [FunLike F α ℝ] [RingSeminor
     simp only [pow_succ _ (n + 1)];
       exact
         le_trans (map_mul_le_mul f a _)
-          (mul_le_mul_of_nonneg_left (map_pow_le_pow _ _ n.succ_ne_zero) (map_nonneg f a))
+          (mul_le_mul_of_nonneg_left (map_pow_le_pow _ _ n.succ_ne_zero) (apply_nonneg f a))
 
 /-- If `f` is a ring seminorm on `a` with `f 1 ≤ `, then `∀ (n : ℕ), f (a ^ n) ≤ f a ^ n`. -/
 theorem map_pow_le_pow' {F α : Type _} [Ring α] [FunLike F α ℝ] [RingSeminormClass F α ℝ] {f : F}
@@ -243,7 +243,7 @@ theorem map_pow_le_pow' {F α : Type _} [Ring α] [FunLike F α ℝ] [RingSemino
   | n + 1 => by
     simp only [pow_succ _ n];
       exact le_trans (map_mul_le_mul f a _)
-        (mul_le_mul_of_nonneg_left (map_pow_le_pow' hf1 _ n) (map_nonneg f a))
+        (mul_le_mul_of_nonneg_left (map_pow_le_pow' hf1 _ n) (apply_nonneg f a))
 
 /-- An algebra norm on an `R`-algebra norm `S` is a ring norm on `S` compatible with the
   action of `R`. -/
