@@ -86,11 +86,11 @@ def valuationSubringAlgebra :
 protected noncomputable def equiv (R : Type _) [CommRing R] [Algebra v.valuationSubring R]
   [Algebra R L] [IsScalarTower v.valuationSubring R L]
   [IsIntegralClosure R v.valuationSubring L] : integralClosure v.valuationSubring L ≃+* R := by
-  use (@IsIntegralClosure.equiv v.valuationSubring R L _ _ _ _ _ _
-    (integralClosure v.valuationSubring L) _ _ _ _ _ _ ?_).symm
-  sorry
-  sorry
-  sorry
+  haveI := IsScalarTower.subalgebra' (↥(valuationSubring v)) L L
+      (integralClosure (↥(valuationSubring v)) L)
+  let e := (IsIntegralClosure.equiv v.valuationSubring R L
+    (integralClosure v.valuationSubring L)).symm
+  exact ⟨e, fun x y => e.map_mul _ _, fun x y => e.map_add _ _⟩
 
 theorem integralClosure_algebraMap_injective :
     Injective (algebraMap v.valuationSubring (integralClosure v.valuationSubring L)) :=
