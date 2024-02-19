@@ -37,7 +37,7 @@ structure on the unit ball of a `valued` field whose valuation is discrete.
 * `IsUniformizer_is_generator` A generator of the maximal ideal is a uniformizer if the valuation
   is discrete.
 * `is_discrete_of_exists_uniformizer` If there exists a uniformizer, the valuation is discrete.
-* `exists_uniformizer_of_discrete` Conversely, if the valuation is discrete there exists a
+* `exists_Uniformizer_ofDiscrete` Conversely, if the valuation is discrete there exists a
   uniformizer.
 * `IsUniformizer_of_generator` A uniformizer generates the maximal ideal.
 * `discrete_valuation.is_discrete` Given a DVR, the valuation induced on its ring of fractions is
