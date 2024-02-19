@@ -28,23 +28,30 @@ variable {K : Type _} [Field K] (v : Valuation K ℤₘ₀) (L : Type _) [Field 
 
 namespace ValuationSubring
 
-instance algebra' : Algebra v.ValuationSubring L :=
-  Algebra.ofSubring v.ValuationSubring.toSubring
+instance algebra' : Algebra v.valuationSubring L :=
+  Algebra.ofSubring v.valuationSubring.toSubring
+
+--Porting note: In Lean3 the following was already found as an instance, now it has to be specified
+instance : Algebra (v.valuationSubring) (integralClosure v.valuationSubring L) :=
+    Subalgebra.algebra (integralClosure (↥(valuationSubring v)) L)
+
+-- Porting note : this instance was automatic in Lean3
+instance : SMul v.valuationSubring (integralClosure v.valuationSubring L) := Algebra.toSMul
+
 
 @[simp]
 theorem algebraMap_def :
-    algebraMap v.ValuationSubring L = (ValuationSubring.algebra' v L).toRingHom :=
-  rfl
+    algebraMap v.valuationSubring L = (ValuationSubring.algebra' v L).toRingHom := rfl
 
-instance : IsScalarTower v.ValuationSubring K L :=
-  IsScalarTower.subsemiring v.ValuationSubring.toSubsemiring
+instance : IsScalarTower v.valuationSubring K L :=
+  IsScalarTower.subsemiring v.valuationSubring.toSubsemiring
 
-theorem algebraMap_injective : Injective (algebraMap v.ValuationSubring L) :=
-  Injective.comp (algebraMap K L).Injective (IsFractionRing.injective v.ValuationSubring K)
 
-theorem isIntegral_of_mem_ring_of_integers {x : L} (hx : x ∈ integralClosure v.ValuationSubring L) :
-    IsIntegral v.ValuationSubring (⟨x, hx⟩ : integralClosure v.ValuationSubring L) :=
-  by
+theorem algebraMap_injective : Injective (algebraMap v.valuationSubring L) := by
+  exact (NoZeroSMulDivisors.algebraMap_injective K L).comp (IsFractionRing.injective _ _)
+
+theorem isIntegral_of_mem_ring_of_integers {x : L} (hx : x ∈ integralClosure v.valuationSubring L) :
+    IsIntegral v.valuationSubring (⟨x, hx⟩ : integralClosure v.valuationSubring L) := by
   obtain ⟨P, hPm, hP⟩ := hx
   refine' ⟨P, hPm, _⟩
   rw [← Polynomial.aeval_def, ← Subalgebra.coe_eq_zero, Polynomial.aeval_subalgebra_coe,
@@ -52,10 +59,9 @@ theorem isIntegral_of_mem_ring_of_integers {x : L} (hx : x ∈ integralClosure v
 
 variable (E : Type _) [Field E] [Algebra K E] [Algebra L E] [IsScalarTower K L E]
 
-instance int_isScalarTower : IsScalarTower v.ValuationSubring L E
-    where smul_assoc x y z := by
-    nth_rw 1 [← one_smul K y]
-    rw [← one_smul K (y • z), ← smul_assoc, ← smul_assoc, ← smul_assoc]
+instance int_isScalarTower : IsScalarTower v.valuationSubring L E where smul_assoc x y z := by
+  {nth_rw 1 [← one_smul K y]
+   rw [← one_smul K (y • z), ← smul_assoc, ← smul_assoc, ← smul_assoc]}
 
 /-- Given an algebra between two field extensions `L` and `E` of a field `K` with a valuation `v`,
   create an algebra between their two rings of integers. For now, this is not an instance by
@@ -63,7 +69,7 @@ instance int_isScalarTower : IsScalarTower v.ValuationSubring L E
   This is caused by `x = ⟨x, x.prop⟩` not being defeq on subtypes. It will be an instance when
   ported to Lean 4, since the above will not be an issue. -/
 def valuationSubringAlgebra :
-    Algebra (integralClosure v.ValuationSubring L) (integralClosure v.ValuationSubring E) :=
+    Algebra (integralClosure v.valuationSubring L) (integralClosure v.valuationSubring E) :=
   RingHom.toAlgebra
     { toFun := fun k => ⟨algebraMap L E k, IsIntegral.algebraMap k.2⟩
       map_zero' :=
@@ -74,24 +80,28 @@ def valuationSubringAlgebra :
       map_mul' := fun x y =>
         Subtype.ext <| by simp only [Subalgebra.coe_mul, _root_.map_mul, Subtype.coe_mk] }
 
+
 /-- A ring equivalence between the integral closure of the valuation subring of `K` in `L`
   and a ring `R` satisfying `is_integral_closure R ↥(v.valuation_subring) L`. -/
-protected noncomputable def equiv (R : Type _) [CommRing R] [Algebra v.ValuationSubring R]
-    [Algebra R L] [IsScalarTower v.ValuationSubring R L]
-    [IsIntegralClosure R v.ValuationSubring L] : integralClosure v.ValuationSubring L ≃+* R :=
-  (IsIntegralClosure.equiv v.ValuationSubring R L
-        (integralClosure v.ValuationSubring L)).symm.toRingEquiv
+protected noncomputable def equiv (R : Type _) [CommRing R] [Algebra v.valuationSubring R]
+  [Algebra R L] [IsScalarTower v.valuationSubring R L]
+  [IsIntegralClosure R v.valuationSubring L] : integralClosure v.valuationSubring L ≃+* R := by
+  use (@IsIntegralClosure.equiv v.valuationSubring R L _ _ _ _ _ _
+    (integralClosure v.valuationSubring L) _ _ _ _ _ _ ?_).symm
+  sorry
+  sorry
+  sorry
 
 theorem integralClosure_algebraMap_injective :
-    Injective (algebraMap v.ValuationSubring (integralClosure v.ValuationSubring L)) :=
+    Injective (algebraMap v.valuationSubring (integralClosure v.valuationSubring L)) :=
   by
-  have hinj : injective ⇑(algebraMap v.valuation_subring L) :=
+  have hinj : Injective ⇑(algebraMap v.valuationSubring L) :=
     ValuationSubring.algebraMap_injective v L
   rw [injective_iff_map_eq_zero
-      (algebraMap v.valuation_subring ↥(integralClosure v.valuation_subring L))]
+      (algebraMap v.valuationSubring ↥(integralClosure v.valuationSubring L))]
   intro x hx
   rw [← Subtype.coe_inj, Subalgebra.coe_zero] at hx
-  rw [injective_iff_map_eq_zero (algebraMap v.valuation_subring L)] at hinj
+  rw [injective_iff_map_eq_zero (algebraMap v.valuationSubring L)] at hinj
   exact hinj x hx
 
 end ValuationSubring
