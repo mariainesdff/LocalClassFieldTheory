@@ -13,6 +13,7 @@ import LocalClassFieldTheory.ForMathlib.RankOneValuation
 import LocalClassFieldTheory.ForMathlib.RingTheory.DedekindDomain.Ideal
 import LocalClassFieldTheory.ForMathlib.RingTheory.Valuation.Integers
 import LocalClassFieldTheory.ForMathlib.RingTheory.Valuation.IntPolynomial
+import LocalClassFieldTheory.ForMathlib.RingTheory.Valuation.Minpoly
 import LocalClassFieldTheory.ForMathlib.RingTheory.IntegralClosure
 import LocalClassFieldTheory.ForMathlib.Topology.UniformSpace.AbstractCompletion
 import LocalClassFieldTheory.ForMathlib.WithZero

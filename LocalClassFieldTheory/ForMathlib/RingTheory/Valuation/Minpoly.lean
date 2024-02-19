@@ -40,14 +40,11 @@ theorem unit_ne_zero (x : Kˣ) : v x ≠ (0 : Γ₀) := by
   zeroth coefficient of the minimal polynomial of `x` over `K` is nonzero. This lemma is helpful
   for defining the valuation on `L` inducing `v`.-/
 theorem unit_pow_ne_zero [FiniteDimensional K L] (x : Lˣ) :
-    v ((minpoly K x.1).coeff 0) ^ (finrank K L / (minpoly K x.1).natDegree) ≠ (0 : Γ₀) :=
-  by
-  have h_alg : Algebra.IsAlgebraic K L := Algebra.isAlgebraic_of_finite K L
-  have hdeg : 0 < finrank K L / (minpoly K x.val).natDegree :=
-    Nat.div_pos (nat_degree_le (is_algebraic_iff_is_integral.mp (h_alg x.val)))
-      (nat_degree_pos (is_algebraic_iff_is_integral.mp (h_alg x.val)))
-  rw [Ne.def, pow_eq_zero_iff hdeg, Valuation.zero_iff]
-  exact coeff_zero_ne_zero (is_algebraic_iff_is_integral.mp (h_alg x.val)) (Units.ne_zero x)
-  infer_instance
+    v ((minpoly K x.1).coeff 0) ^ (finrank K L / (minpoly K x.1).natDegree) ≠ (0 : Γ₀) := by
+  have h_alg : Algebra.IsAlgebraic K L := Algebra.IsAlgebraic.of_finite K L
+  have hdeg := Nat.div_pos (natDegree_le x.val)
+    (natDegree_pos (isAlgebraic_iff_isIntegral.mp (h_alg x.val)))
+  rw [Ne.def, pow_eq_zero_iff hdeg.ne.symm, Valuation.zero_iff]
+  exact coeff_zero_ne_zero (isAlgebraic_iff_isIntegral.mp (h_alg x.val)) (Units.ne_zero x)
 
 end Valuation
