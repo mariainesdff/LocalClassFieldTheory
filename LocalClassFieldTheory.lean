@@ -2,6 +2,7 @@ import LocalClassFieldTheory.SpectralNorm
 -- DiscreteValuationRing folder
 import LocalClassFieldTheory.DiscreteValuationRing.Basic
 import LocalClassFieldTheory.DiscreteValuationRing.Complete
+import LocalClassFieldTheory.DiscreteValuationRing.DiscreteNorm
 -- ForMathlib folder
 import LocalClassFieldTheory.ForMathlib.Data.Set.Lattice
 import LocalClassFieldTheory.ForMathlib.DiscreteUniformity
@@ -11,6 +12,7 @@ import LocalClassFieldTheory.ForMathlib.NumberTheory.Padics.PadicIntegers
 import LocalClassFieldTheory.ForMathlib.RankOneValuation
 import LocalClassFieldTheory.ForMathlib.RingTheory.DedekindDomain.Ideal
 import LocalClassFieldTheory.ForMathlib.RingTheory.Valuation.Integers
+import LocalClassFieldTheory.ForMathlib.RingTheory.IntegralClosure
 import LocalClassFieldTheory.ForMathlib.Topology.UniformSpace.AbstractCompletion
 import LocalClassFieldTheory.ForMathlib.WithZero
 -- FromMathlib folder
