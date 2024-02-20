@@ -1,4 +1,4 @@
-import Mathlib.RingTheory.DedekindDomain.AdicValuation
+iimport Mathlib.RingTheory.DedekindDomain.AdicValuation
 import Mathlib.RingTheory.DedekindDomain.PID
 import Mathlib.RingTheory.DiscreteValuationRing.Basic
 import Mathlib.RingTheory.Ideal.Basic
@@ -36,7 +36,7 @@ structure on the unit ball of a `valued` field whose valuation is discrete.
 * `Uniformizer_of_associated` If two elements are uniformizers, they are associated.
 * `IsUniformizer_is_generator` A generator of the maximal ideal is a uniformizer if the valuation
   is discrete.
-* `is_discrete_of_exists_uniformizer` If there exists a uniformizer, the valuation is discrete.
+* `isDiscreteOfExistsUniformizer` If there exists a uniformizer, the valuation is discrete.
 * `exists_Uniformizer_ofDiscrete` Conversely, if the valuation is discrete there exists a
   uniformizer.
 * `IsUniformizer_of_generator` A uniformizer generates the maximal ideal.
