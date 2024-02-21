@@ -574,12 +574,36 @@ def valued [FiniteDimensional K L] : Valued L ℤₘ₀ :=
             Real.rpow_mul (coe_nonneg _)]
           exact hx }
 
+-- attribute [local instance 1001] Field.toSemifield
+-- attribute [local instance 1000 ] Field.toCommRing
+-- attribute [local instance 1000 ] SeminormedCommRing.toCommRing
+attribute [-instance ] Semifield.toCommSemiring
+attribute [-instance ] EuclideanDomain.toCommRing
+-- attribute [-instance ] Field.toCommRing
 
-example (x : K) (y : L) : true := by
+-- attribute [-instance]
+--   Subalgebra.instSMulSubtypeMemSubalgebraInstMembershipInstSetLikeSubalgebra
+--   Subsemiring.smul
+--   Submonoid.smul
+--   IntermediateField.module'
+--   Subalgebra.isScalarTower_left
+--   Subsemiring.isScalarTower
+--   Submonoid.isScalarTower
+
+-- example (x : K) (y : L) : true := by
     -- @CompleteSpace L (UniformSpace (Algebra.IsAlgebraic.of_finite K L)) :=
-  have a : NontriviallyNormedField K := nontriviallyDiscretelyNormedField K
-  -- letI : Algebra K L := by infer_instance
-  have b := @spectral_norm_completeSpace K a L _ _
+  -- have a : NontriviallyNormedField K := nontriviallyDiscretelyNormedField K
+  -- let f : NormedField K := by infer_instance
+  -- let foo := @CommRing.toCommSemiring K (@Field.toCommRing K _)
+  -- let bar := @CommRing.toCommSemiring K (@SeminormedCommRing.toCommRing K _)
+  -- have : bar = foo
+  -- rfl -- it fails, of course
+
+  -- K SeminormedCommRing.toCommRing
+  -- let c : @Algebra K L bar _ := by
+
+  -- have b := @spectral_norm_completeSpace K a L _ c
+
     -- spectral_norm_completeSpace (Algebra.IsAlgebraic.of_finite K L) (norm_isNonarchimedean K)
 
 
