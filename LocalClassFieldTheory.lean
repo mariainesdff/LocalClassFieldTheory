@@ -5,11 +5,8 @@ import LocalClassFieldTheory.DiscreteValuationRing.Complete
 import LocalClassFieldTheory.DiscreteValuationRing.DiscreteNorm
 -- ForMathlib folder
 import LocalClassFieldTheory.ForMathlib.Data.Set.Lattice
-import LocalClassFieldTheory.ForMathlib.DiscreteUniformity
-import LocalClassFieldTheory.ForMathlib.DiscreteValuationRing
 import LocalClassFieldTheory.ForMathlib.FieldTheory.Minpoly.IsIntegrallyClosed
 import LocalClassFieldTheory.ForMathlib.NumberTheory.Padics.PadicIntegers
-import LocalClassFieldTheory.ForMathlib.RankOneValuation
 import LocalClassFieldTheory.ForMathlib.RingTheory.DedekindDomain.Ideal
 import LocalClassFieldTheory.ForMathlib.RingTheory.Valuation.AlgebraInstances
 import LocalClassFieldTheory.ForMathlib.RingTheory.Valuation.Integers
@@ -17,8 +14,13 @@ import LocalClassFieldTheory.ForMathlib.RingTheory.Valuation.IntPolynomial
 import LocalClassFieldTheory.ForMathlib.RingTheory.Valuation.Minpoly
 import LocalClassFieldTheory.ForMathlib.RingTheory.IntegralClosure
 import LocalClassFieldTheory.ForMathlib.Topology.UniformSpace.AbstractCompletion
+import LocalClassFieldTheory.ForMathlib.DiscreteUniformity
+import LocalClassFieldTheory.ForMathlib.DiscreteValuationRing
+import LocalClassFieldTheory.ForMathlib.Polynomial
+-- import LocalClassFieldTheory.ForMathlib.PoweSeries
+import LocalClassFieldTheory.ForMathlib.RankOneValuation
 import LocalClassFieldTheory.ForMathlib.WithZero
--- FromMathlib folder
+-- FromMathlib folder *complete*
 import LocalClassFieldTheory.FromMathlib.AlgNormOfGalois
 import LocalClassFieldTheory.FromMathlib.CpDef
 import LocalClassFieldTheory.FromMathlib.Filter
@@ -36,3 +38,4 @@ import LocalClassFieldTheory.FromMathlib.SeminormFromConst
 import LocalClassFieldTheory.FromMathlib.SmoothingSeminorm
 import LocalClassFieldTheory.FromMathlib.SpecificLimits
 import LocalClassFieldTheory.FromMathlib.SpectralNormUnique
+-- MixedCharacteristic folder

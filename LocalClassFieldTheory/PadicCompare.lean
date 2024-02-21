@@ -61,15 +61,15 @@ noncomputable section
 open IsDedekindDomain IsDedekindDomain.HeightOneSpectrum
 
 /-- The ideal `pℤ` as term of the height_one_spectrum of `ℤ`.-/
-def Int.pHeightOneIdeal (p : outParam ℕ) [hp : Fact p.Prime] : HeightOneSpectrum ℤ
+def Int.pHeightOneIdeal (p : semiOutParam ℕ) [hp : Fact p.Prime] : HeightOneSpectrum ℤ
     where
   asIdeal := Ideal.span {(p : ℤ)}
-  IsPrime := by
+  isPrime := by
     rw [Ideal.span_singleton_prime]
-    exacts [nat.prime_iff_prime_int.mp hp.1, nat.cast_ne_zero.mpr hp.1.NeZero]
+    exacts [Nat.prime_iff_prime_int.mp hp.1, NeZero.natCast_ne p ℤ]
   ne_bot := by
     simp only [Ne.def, Ideal.span_singleton_eq_bot, Nat.cast_eq_zero]
-    exact hp.1.NeZero
+    exact NeZero.ne p
 
 variable (p : outParam ℕ) [Fact p.Prime]
 
@@ -79,17 +79,15 @@ open Valuation Int
 
 open scoped DiscreteValuation
 
-attribute [-instance] Rat.metricSpace Rat.normedField Rat.denselyNormedField Rat.divisionRing
+attribute [-instance] Rat.instMetricSpaceRat Rat.normedField Rat.denselyNormedField Rat.divisionRing
   Rat.normedAddCommGroup
 
 instance : SeparatedSpace ℚ_[p] :=
   MetricSpace.to_separated
 
 /-- The valued structure on `ℚ` induced by the `p`-adic valuation. -/
-def padicValued : Valued ℚ ℤₘ₀ :=
-  (pHeightOneIdeal p).adicValued
+def padicValued : Valued ℚ ℤₘ₀ := (pHeightOneIdeal p).adicValued
 
-attribute [local instance] padic_valued
 
 /-- The adic completion of ℚ defined as the uniform completion of the valued field
 `ℚ` endowed with its `p`-adic valued structure.-/
@@ -103,17 +101,24 @@ instance : IsDiscrete (@Valued.v (QP p) _ ℤₘ₀ _ _) :=
 instance : NormedField (QP p) :=
   RankOneValuation.ValuedField.toNormedField (QP p) ℤₘ₀
 
+/-porting note: it is no longer possible to define `padicValued` as a local insance, so we need to
+  keep inserting the explicit field eveywhere
+-/
+
+def padicUniform := (padicValued p).toUniformSpace
+
+
 /-- The abstract completion of `ℚ` whose underlying space is `Q_p`. -/
-def padicPkg' : AbstractCompletion ℚ where
-  Space := QP p
-  coe := coe
-  /- This `coe` is not the coercion from `ℚ` to every field of characteristic zero, but rather the
-  coercion from a space to its uniform completion-/
-  uniformStruct := inferInstance
-  complete := inferInstance
-  separation := inferInstance
-  UniformInducing := (UniformSpace.Completion.uniformEmbedding_coe ℚ).1
-  dense := UniformSpace.Completion.denseRange_coe
+def padicPkg' : @AbstractCompletion ℚ (padicValued p).toUniformSpace := sorry--where
+  -- space := sorry--QP p
+  -- coe := sorry--coe
+  -- /- This `coe` is not the coercion from `ℚ` to every field of characteristic zero, but rather the
+  -- coercion from a space to its uniform completion-/
+  -- uniformStruct := sorry--inferInstance
+  -- complete := sorry--inferInstance
+  -- separation := sorry--inferInstance
+  -- uniformInducing := sorry--(UniformSpace.Completion.uniformEmbedding_coe ℚ).1
+  -- dense := sorry--UniformSpace.Completion.denseRange_coe
 
 end Padic'
 
@@ -123,7 +128,7 @@ open NNReal Polynomial Int NormalizationMonoid Multiplicative Padic Valuation
 
 open scoped Classical NNReal DiscreteValuation
 
-attribute [-instance] Rat.metricSpace Rat.normedField Rat.denselyNormedField Rat.divisionRing
+attribute [-instance] Rat.instMetricSpaceRat Rat.normedField Rat.denselyNormedField Rat.divisionRing
   Rat.normedAddCommGroup
 
 /-- This is the valued structure on `ℚ` induced from the `p`-adic valuation. -/
@@ -133,77 +138,85 @@ def padicValued : Valued ℚ ℤₘ₀ :=
 instance : SeparatedSpace ℚ_[p] :=
   MetricSpace.to_separated
 
-attribute [local instance] padic_valued
+-- attribute [local instance] padicValued
 
 section Valuation
 
-theorem padicNorm_of_int_eq_val_norm (x : ℤ) :
-    (padicNorm p x : ℝ) = withZeroMultIntToNnreal (NeZero.ne p) (Valued.v (x : ℚ)) :=
-  by
+
+-- porting note: added in Lean4
+lemma NNReal_Cast.p_ne_zero : ((p : ℝ≥0) ≠ 0) := by
+  have := @Nat.Prime.ne_zero p Fact.out
+  simp_all only [ne_eq, Nat.cast_eq_zero, not_false_eq_true]
+
+theorem padicNorm_of_int_eq_val_norm (x : ℤ) : (padicNorm p x : ℝ) =
+  withZeroMultIntToNnreal (NNReal_Cast.p_ne_zero p) ((@padicValued p _).v x) := by
   by_cases hx : x = 0
-  · simp only [hx, padicNorm.zero, algebraMap.coe_zero, _root_.map_zero]
+  · simp only [hx, padicNorm.zero, algebraMap.coe_zero, _root_.map_zero, cast_zero, padicNorm.zero,
+      Rat.cast_zero, _root_.map_zero, NNReal.coe_zero]
   · have hx0 : ¬(x : ℚ) = 0 := cast_ne_zero.mpr hx
-    have hv0 : Valued.v (x : ℚ) ≠ (0 : ℤₘ₀) := by rw [Ne.def, zero_iff]; exact hx0
-    have heq :
-      Multiplicative.ofAdd
-          (-(Associates.mk (p_height_one_ideal p).asIdeal).count
-                (Associates.mk (Ideal.span {x} : Ideal ℤ)).factors :
-            ℤ) =
-        WithZero.unzero hv0 :=
-      by
-      erw [← WithZero.coe_inj, ← int_valuation_def_if_neg _ hx, WithZero.coe_unzero,
-        valuation_of_algebra_map]
+    have hv0 : ((@padicValued p _).v x) ≠ (0 : ℤₘ₀) := by rw [Ne.def, zero_iff]; exact hx0
+    have heq : Multiplicative.ofAdd (-(Associates.mk (pHeightOneIdeal p).asIdeal).count
+                (Associates.mk (Ideal.span {x} : Ideal ℤ)).factors : ℤ) = WithZero.unzero hv0 := by
+      erw [← WithZero.coe_inj, ← intValuationDef_if_neg _ hx, WithZero.coe_unzero,
+        valuation_of_algebraMap]
       rfl
     have hx' : (Ideal.span {x} : Ideal ℤ) ≠ 0 := by
       rwa [Ideal.zero_eq_bot, Ne.def, Ideal.span_singleton_eq_bot]
-    have hp : Prime (p : ℤ) := nat.prime_iff_prime_int.mp _inst_1.1
+    have hp : Prime (p : ℤ) := Nat.prime_iff_prime_int.mp Fact.out
     have hp' : (Ideal.span {(p : ℤ)} : Ideal ℤ).IsPrime := by
       rwa [Ideal.span_singleton_prime (NeZero.ne (p : ℤ))]
-    have hpne : (Ideal.span {(p : ℤ)} : Ideal ℤ) ≠ ⊥ := by rw [Ne.def, Ideal.span_singleton_eq_bot];
+    have hpne : (Ideal.span {(p : ℤ)} : Ideal ℤ) ≠ ⊥ := by
+      rw [Ne.def, Ideal.span_singleton_eq_bot]
       exact NeZero.ne (p : ℤ)
     simp only [padicNorm.eq_zpow_of_nonzero hx0, withZeroMultIntToNnreal,
       withZeroMultIntToNnrealDef, zero_iff, Rat.cast_zpow, Rat.cast_coe_nat,
       MonoidWithZeroHom.coe_mk, dif_neg hx0, coe_zpow, NNReal.coe_nat_cast]
-    apply congr_arg
-    rw [← HEq, padicValRat.of_int_multiplicity (Nat.Prime.ne_one _inst_1.1) hx, toAdd_ofAdd,
-      neg_inj, Nat.cast_inj, ← PartENat.natCast_inj, PartENat.natCast_get,
-      UniqueFactorizationMonoid.multiplicity_eq_count_normalizedFactors hp.irreducible hx,
-      Int.normalize_coe_nat, PartENat.natCast_inj,
-      count_normalized_factors_eq_count_normalized_factors_span hx (NeZero.ne p) rfl hp,
-      NormalizationMonoid.count_normalizedFactors_eq_associates_count _ _ _ hx' hp' hpne]
-    rfl
+    simp only [padicValRat.of_int, zpow_neg, zpow_coe_nat, ZeroHom.coe_mk]
+    sorry
+    -- apply congr_arg
+    -- simp only [/- ← HEq, -/ padicValRat.of_int_multiplicity (Nat.Prime.ne_one Fact.out) hx, toAdd_ofAdd,
+    --   neg_inj, Nat.cast_inj, ← PartENat.natCast_inj, PartENat.natCast_get,
+    --   UniqueFactorizationMonoid.multiplicity_eq_count_normalizedFactors hp.irreducible hx,
+    --   Int.normalize_coe_nat, PartENat.natCast_inj]
+      -- count_normalized_factors_eq_count_normalized_factors_span hx (NeZero.ne p) rfl hp,
+      -- NormalizationMonoid.count_normalizedFactors_eq_associates_count _ _ _ hx' hp' hpne]
+    -- rfl
 
-theorem padicNorm_eq_val_norm (z : ℚ) :
-    (padicNorm p z : ℝ) = withZeroMultIntToNnreal (NeZero.ne p) (Valued.v z) :=
-  by
+theorem padicNorm_eq_val_norm (z : ℚ) : (padicNorm p z : ℝ) =
+  withZeroMultIntToNnreal (NNReal_Cast.p_ne_zero p) ((@padicValued p _).v z) := by
   by_cases hz : z = 0
-  · simp only [hz, padicNorm.zero, algebraMap.coe_zero, _root_.map_zero]
+  · simp only [hz, padicNorm.zero, algebraMap.coe_zero, _root_.map_zero, Rat.cast_zero,
+      NNReal.coe_zero]
   · obtain ⟨x, y, hxy⟩ := IsLocalization.mk'_surjective (nonZeroDivisors ℤ) z
     have hz : IsLocalization.mk' ℚ x y = x / y := by
-      simp only [IsFractionRing.mk'_eq_div, eq_intCast, _root_.coe_coe]
-    erw [← hxy, valuation_of_mk', hz, padicNorm.div, _root_.coe_coe, Rat.cast_div, map_div₀,
-      Nonneg.coe_div]
-    apply congr_arg₂ <;> · convert padic_norm_of_int_eq_val_norm p _; erw [valuation_of_algebra_map]
+      simp only [IsFractionRing.mk'_eq_div, eq_intCast,/-  _root_.coe_coe -/]
+    erw [← hxy, valuation_of_mk', hz, padicNorm.div,/-  _root_.coe_coe,  -/Rat.cast_div, map_div₀,
+      /- Nonneg.coe_div -/]
+    apply congr_arg₂ <;>
+    · convert padicNorm_of_int_eq_val_norm p _; erw [valuation_of_algebraMap]
 
 end Valuation
 
 section AbstractCompletion
 
-theorem uniformInducing_coe : UniformInducing (coe : ℚ → ℚ_[p]) :=
-  by
-  have hp_one : (1 : ℝ≥0) < p := nat.one_lt_cast.mpr (Nat.Prime.one_lt (Fact.out _))
+theorem uniformInducing_coe : @UniformInducing _ _ ((@padicValued p _)).toUniformSpace _
+    (coe : ℚ → ℚ_[p]) := by
+  letI := ((@padicValued p _))
+  have hp_one : (1 : ℝ≥0) < p := Nat.one_lt_cast.mpr (Nat.Prime.one_lt Fact.out)
   apply UniformInducing.mk'
   simp_rw [@Metric.mem_uniformity_dist ℚ_[p] _ _]
   refine' fun S => ⟨fun hS => _, _⟩
   · obtain ⟨m, ⟨-, hM_sub⟩⟩ := (Valued.hasBasis_uniformity ℚ ℤₘ₀).mem_iff.mp hS
-    set M := (withZeroMultIntToNnreal (NeZero.ne p) m.1).1 with hM
-    refine' ⟨{p : ℚ_[p] × ℚ_[p] | dist p.1 p.2 < M}, ⟨⟨M, ⟨_, fun a b h => h⟩⟩, fun x y h => _⟩⟩
-    · exact withZeroMultIntToNnreal_pos _ (is_unit_iff_ne_zero.mp (Units.isUnit m))
+    set M := (withZeroMultIntToNnreal (NNReal_Cast.p_ne_zero p) m.1).1 with hM
+    refine' ⟨{p : ℚ_[p] × ℚ_[p] | dist p.1 p.2 < M}, ⟨⟨M, ⟨_, fun _ => _ ⟩⟩, fun x y h => _⟩⟩
+    · exact withZeroMultIntToNnreal_pos _ (isUnit_iff_ne_zero.mp (Units.isUnit m))
+    · tauto
     · apply hM_sub
       simp only [Set.mem_setOf_eq, dist] at h ⊢
-      rwa [← Padic.coe_sub, padicNormE.eq_padic_norm', padic_norm_eq_val_norm, hM, Units.val_eq_coe,
-        val_eq_coe, NNReal.coe_lt_coe, (withZeroMultIntToNnreal_strictMono hp_one).lt_iff_lt, ←
-        neg_sub, Valuation.map_neg] at h
+      sorry
+      -- rwa [/- ← Padic.coe_sub,  -/padicNormE.eq_padic_norm', padicNorm_eq_val_norm, hM, Units.val_eq_coe,
+      --   val_eq_coe, NNReal.coe_lt_coe, (withZeroMultIntToNnreal_strictMono hp_one).lt_iff_lt, ←
+      --   neg_sub, Valuation.map_neg] at h
   · rw [(Valued.hasBasis_uniformity ℚ ℤₘ₀).mem_iff]
     rintro ⟨T, ⟨ε, ⟨hε, H⟩⟩, h⟩
     obtain ⟨M, hM⟩ := Real.exists_strictMono_lt (withZeroMultIntToNnreal_strictMono hp_one) hε
@@ -211,13 +224,15 @@ theorem uniformInducing_coe : UniformInducing (coe : ℚ → ℚ_[p]) :=
     simp only [Set.mem_setOf_eq, dist] at H hq
     have : (↑q.fst, ↑q.snd) ∈ T := by
       apply H
-      rw [← Padic.coe_sub, padicNormE.eq_padic_norm', padic_norm_eq_val_norm, ← neg_sub,
+      rw [← Padic.coe_sub, padicNormE.eq_padic_norm', padicNorm_eq_val_norm, ← neg_sub,
         Valuation.map_neg]
-      exact
-        (nnreal.coe_lt_coe.mpr ((withZeroMultIntToNnreal_strictMono hp_one).lt_iff_lt.mpr hq)).trans
-          hM
-    specialize h q.1 q.2 this
-    rwa [Prod.mk.eta] at h
+      exact (NNReal.coe_lt_coe.mpr
+        ((withZeroMultIntToNnreal_strictMono hp_one).lt_iff_lt.mpr hq)).trans hM
+    apply h
+    sorry --this would be `rfl` if the definition on line 114 was not `sorry`ed
+    -- simp_all?
+    -- specialize h q.1 q.2 this
+    -- rwa [Prod.mk.eta] at h
 
 theorem dense_coe : DenseRange (coe : ℚ → ℚ_[p]) :=
   Metric.denseRange_iff.mpr (Padic.rat_dense p)
