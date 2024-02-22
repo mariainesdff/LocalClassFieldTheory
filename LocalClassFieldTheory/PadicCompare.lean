@@ -108,18 +108,16 @@ instance : NormedField (QP p) :=
   keep inserting the explicit field eveywhere
 -/
 
-
 /-- The abstract completion of `ℚ` whose underlying space is `Q_p`. -/
-def padicPkg' : @AbstractCompletion _ (padicValued p).toUniformSpace := by
+def padicPkg' : @AbstractCompletion _ (padicValued p).toUniformSpace :=
   letI := (padicValued p).toUniformSpace
-  fconstructor
-  · exact QP p
-  · exact UniformSpace.Completion.coe' ℚ
-  · infer_instance
-  · infer_instance
-  · infer_instance
-  · exact (UniformSpace.Completion.uniformEmbedding_coe ℚ).1
-  · exact UniformSpace.Completion.denseRange_coe
+  { space := QP p,
+    coe := UniformSpace.Completion.coe' ℚ,
+    uniformStruct := inferInstance,
+    complete := inferInstance,
+    separation := inferInstance,
+    uniformInducing := (UniformSpace.Completion.uniformEmbedding_coe ℚ).1,
+    dense := UniformSpace.Completion.denseRange_coe }
 
 
 end Padic'
