@@ -239,10 +239,9 @@ theorem UniformizerOfAssociated {π₁ π₂ : K₀} (h1 : IsUniformizer v π₁
     (Integer.isUnit_iff_valuation_eq_one u.1).mp u.isUnit, mul_one, ← IsUniformizer_iff]
 
 
-theorem associatedOfUniformizer {π₁ π₂ : Uniformizer v} : Associated π₁.1 π₂.1 :=
-  by
-  have hval : v ((π₁.1 : K)⁻¹ * π₂.1) = 1
-  simp only [Valuation.map_mul, map_inv₀, IsUniformizer_iff.mp π₁.2,
+theorem associatedOfUniformizer {π₁ π₂ : Uniformizer v} : Associated π₁.1 π₂.1 := by
+  have hval : v ((π₁.1 : K)⁻¹ * π₂.1) = 1 := by
+    simp only [Valuation.map_mul, map_inv₀, IsUniformizer_iff.mp π₁.2,
     IsUniformizer_iff.mp π₂.2, ofAdd_neg, coe_inv, inv_inv, mul_inv_cancel, Ne.def, coe_ne_zero,
     not_false_iff]
   let p : v.integer := ⟨(π₁.1 : K)⁻¹ * π₂.1, (Valuation.mem_integer v _).mpr (le_of_eq hval)⟩
@@ -317,7 +316,7 @@ theorem pow_Uniformizer_is_pow_generator {π : Uniformizer v} (n : ℕ) :
 variable [IsDiscrete v]
 
 theorem exists_Uniformizer_ofDiscrete : ∃ π : K₀, IsUniformizer v (π : K) := by
-  let surj_v : IsDiscrete v; infer_instance
+  let surj_v : IsDiscrete v := by infer_instance
   refine'
     ⟨⟨(surj_v.surj (↑(Multiplicative.ofAdd (-1 : ℤ)) : ℤₘ₀)).choose, _⟩,
       (surj_v.surj (↑(Multiplicative.ofAdd (-1 : ℤ)) : ℤₘ₀)).choose_spec⟩
@@ -364,8 +363,8 @@ theorem val_le_iff_dvd (L : Type w₁) [Field L] {w : Valuation L ℤₘ₀} [Is
   · rw [Ideal.span_singleton_eq_bot.mpr hx, hx, Subring.coe_zero, Valuation.map_zero]
     simp only [WithZero.zero_le, true_iff_iff, ← Ideal.zero_eq_bot, dvd_zero]
   · set r := Submodule.IsPrincipal.generator (LocalRing.maximalIdeal w.valuationSubring) with hr
-    have hrn : w (r ^ n) = ofAdd (-(n : ℤ))
-    · replace hr : IsUniformizer w r := DiscreteValuation.IsUniformizerOfGenerator w ?_
+    have hrn : w (r ^ n) = ofAdd (-(n : ℤ)) := by
+      replace hr : IsUniformizer w r := DiscreteValuation.IsUniformizerOfGenerator w ?_
       rw [WithZero.ofAdd_zpow, zpow_neg, ← Nat.cast_one, ← WithZero.ofAdd_neg_one_pow_comm ↑n 1,
           pow_one, zpow_neg, inv_inv, zpow_ofNat, Valuation.map_pow]
       congr
@@ -374,8 +373,8 @@ theorem val_le_iff_dvd (L : Type w₁) [Field L] {w : Valuation L ℤₘ₀} [Is
       @Valuation.Integers.le_iff_dvd L ℤₘ₀ _ _ w w.valuationSubring _ _
         (Valuation.integer.integers w) x (r ^ n)
     erw [← hrn, this]
-    have DD : IsDedekindDomain w.valuationSubring
-    · apply IsPrincipalIdealRing.isDedekindDomain
+    have DD : IsDedekindDomain w.valuationSubring := by
+      apply IsPrincipalIdealRing.isDedekindDomain
     rw [← Ideal.span_singleton_generator (LocalRing.maximalIdeal w.valuationSubring), ← hr,
       Ideal.span_singleton_pow, Ideal.dvd_iff_le, Ideal.span_singleton_le_iff_mem,
       Ideal.mem_span_singleton', dvd_iff_exists_eq_mul_left]
@@ -399,8 +398,8 @@ end RankOne
 
 theorem ideal_isPrincipal (I : Ideal K₀) : I.IsPrincipal :=
   by
-  suffices : ∀ P : Ideal K₀, P.IsPrime → Submodule.IsPrincipal P
-  exact (IsPrincipalIdealRing.of_prime this).principal I
+  suffices ∀ P : Ideal K₀, P.IsPrime → Submodule.IsPrincipal P by
+    exact (IsPrincipalIdealRing.of_prime this).principal I
   intro P hP
   by_cases h_ne_bot : P = ⊥
   · rw [h_ne_bot]; exact bot_isPrincipal

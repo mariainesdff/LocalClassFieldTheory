@@ -18,8 +18,8 @@ set_option autoImplicit false
 ### The field `Q_p`
 * `Q_p` is the adic completion of ℚ defined as the uniform completion of the valued field
   `ℚ` endowed with its `p`-adic valued structure.
-* `padic_pkg'` is the abstract completion of `ℚ` whose underlying space is `Q_p`.
-* `padic_pkg` is the abstract completion of `ℚ` (endowed with the uniformity coming from the
+* `padicPkg'` is the abstract completion of `ℚ` whose underlying space is `Q_p`.
+* `padicPkg` is the abstract completion of `ℚ` (endowed with the uniformity coming from the
   `p`-adic valued structure) whose underlying space is "usual" `ℚ_[p]` defined in terms of the
   `p`-adic metric. In particular, terms of `padic_pkg'.space` are limits of abstract Cauchy filters
     as in `topology.uniform_space.completion` while terms of `padic_pkg.space = ℚ_[p]` are limits
