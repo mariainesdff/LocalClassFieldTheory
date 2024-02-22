@@ -7,6 +7,9 @@ import LocalClassFieldTheory.ForMathlib.RingTheory.DedekindDomain.Ideal
 
 -- #align_import padic_compare
 
+
+set_option autoImplicit false
+
 /-!
 
 ## Main definitions
@@ -105,20 +108,19 @@ instance : NormedField (QP p) :=
   keep inserting the explicit field eveywhere
 -/
 
-def padicUniform := (padicValued p).toUniformSpace
-
 
 /-- The abstract completion of `ℚ` whose underlying space is `Q_p`. -/
-def padicPkg' : @AbstractCompletion ℚ (padicValued p).toUniformSpace := sorry--where
-  -- space := sorry--QP p
-  -- coe := sorry--coe
-  -- /- This `coe` is not the coercion from `ℚ` to every field of characteristic zero, but rather the
-  -- coercion from a space to its uniform completion-/
-  -- uniformStruct := sorry--inferInstance
-  -- complete := sorry--inferInstance
-  -- separation := sorry--inferInstance
-  -- uniformInducing := sorry--(UniformSpace.Completion.uniformEmbedding_coe ℚ).1
-  -- dense := sorry--UniformSpace.Completion.denseRange_coe
+def padicPkg' : @AbstractCompletion _ (padicValued p).toUniformSpace := by
+  letI := (padicValued p).toUniformSpace
+  fconstructor
+  · exact QP p
+  · exact UniformSpace.Completion.coe' ℚ
+  · infer_instance
+  · infer_instance
+  · infer_instance
+  · exact (UniformSpace.Completion.uniformEmbedding_coe ℚ).1
+  · exact UniformSpace.Completion.denseRange_coe
+
 
 end Padic'
 
@@ -199,6 +201,7 @@ end Valuation
 
 section AbstractCompletion
 
+
 theorem uniformInducing_coe : @UniformInducing _ _ ((@padicValued p _)).toUniformSpace _
     (coe : ℚ → ℚ_[p]) := by
   letI := ((@padicValued p _))
@@ -234,8 +237,17 @@ theorem uniformInducing_coe : @UniformInducing _ _ ((@padicValued p _)).toUnifor
     -- specialize h q.1 q.2 this
     -- rwa [Prod.mk.eta] at h
 
-theorem dense_coe : DenseRange (coe : ℚ → ℚ_[p]) :=
-  Metric.denseRange_iff.mpr (Padic.rat_dense p)
+theorem dense_coe : DenseRange (coe : ℚ → ℚ_[p]) := by
+  rw [Metric.denseRange_iff]-- (Padic.rat_dense p)
+  have := Padic.rat_dense p
+  intro x r hr
+  obtain ⟨s, hs⟩ := this x hr
+  use s
+  have : ‖x - ↑s‖ = dist x ↑s := by rfl
+  rw [this] at hs
+  convert hs
+  sorry --this would be `rfl` if the definition on line 114 was not `sorry`ed (and the whole proof would be a one-liner)
+  -- apply Padic.norm
 
 /-- The abstract completion of `ℚ` (endowed with the uniformity coming from the `p`-adic valued
   structure) whose underlying space is `ℚ_[p]`-/
