@@ -27,10 +27,9 @@ theorem count_normalizedFactors_eq_count_normalizedFactors_span {R : Type _} [Co
     [DecidableEq (Ideal R)] {r X : R} (hr : r ≠ 0) (hX₀ : X ≠ 0) (hX₁ : normUnit X = 1)
     (hX : Prime X) :
     Multiset.count X (normalizedFactors r) =
-      Multiset.count (Ideal.span {X} : Ideal R) (normalizedFactors (Ideal.span {r})) :=
-  by
-  replace hX₁ : X = normalize X
-  · simp only [normalize_apply, hX₁, Units.val_one, mul_one]
+      Multiset.count (Ideal.span {X} : Ideal R) (normalizedFactors (Ideal.span {r})) := by
+  replace hX₁ : X = normalize X := by
+    simp only [normalize_apply, hX₁, Units.val_one, mul_one]
   have : (Ideal.span {normalize X} : Ideal R) = normalize (Ideal.span {X}) :=
     by
     simp only [normalize_apply, normalize_eq, @Ideal.span_singleton_mul_right_unit R _
@@ -45,18 +44,16 @@ theorem count_normalizedFactors_eq_count_normalizedFactors_span {R : Type _} [Co
 
 theorem count_normalizedFactors_eq_associates_count (R : Type _) [CommRing R] [IsDomain R]
     [IsPrincipalIdealRing R] (I J : Ideal R) (hI : I ≠ 0) (hJ : J.IsPrime) (hJ₀ : J ≠ ⊥) :
-    Multiset.count J (normalizedFactors I) = (Associates.mk J).count (Associates.mk I).factors :=
-  by
-  replace hI : Associates.mk I ≠ 0
-  · exact Associates.mk_ne_zero.mpr hI
-  · have hJ' : Irreducible (Associates.mk J)
-    · rw [Associates.irreducible_mk]
-      exact (Ideal.prime_of_isPrime hJ₀ hJ).irreducible
-    · apply Ideal.count_normalizedFactors_eq
-      any_goals
-        rw [← Ideal.dvd_iff_le, ← Associates.mk_dvd_mk, Associates.mk_pow]
-        simp only [Associates.dvd_eq_le]
-        rw [Associates.prime_pow_dvd_iff_le hI hJ']
-      linarith
+    Multiset.count J (normalizedFactors I) = (Associates.mk J).count (Associates.mk I).factors := by
+  replace hI : Associates.mk I ≠ 0 := Associates.mk_ne_zero.mpr hI
+  have hJ' : Irreducible (Associates.mk J) := by
+    rw [Associates.irreducible_mk]
+    exact (Ideal.prime_of_isPrime hJ₀ hJ).irreducible
+  apply Ideal.count_normalizedFactors_eq
+  any_goals
+    rw [← Ideal.dvd_iff_le, ← Associates.mk_dvd_mk, Associates.mk_pow]
+    simp only [Associates.dvd_eq_le]
+    rw [Associates.prime_pow_dvd_iff_le hI hJ']
+  linarith
 
 end NormalizationMonoid
