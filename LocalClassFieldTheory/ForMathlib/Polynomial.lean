@@ -1,4 +1,4 @@
-import Mathlib.FieldTheory.Ratfunc
+import Mathlib.FieldTheory.RatFunc
 import Mathlib.RingTheory.DedekindDomain.AdicValuation
 
 #align_import for_mathlib.polynomial
