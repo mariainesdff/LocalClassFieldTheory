@@ -81,8 +81,7 @@ theorem dividedByXPow_ofX_eq_one : dividedByXPow (@X_ne_zero K _ _) = 1 := by
     not_false_iff] using self_eq_X_pow_mul_divided_by_X_pow (@X_ne_zero K _ _)
 
 theorem dividedByXPowMul {f g : PowerSeries K} (hf : f ≠ 0) (hg : g ≠ 0) :
-    dividedByXPow hf * dividedByXPow hg = dividedByXPow (mul_ne_zero hf hg) :=
-  by
+    dividedByXPow hf * dividedByXPow hg = dividedByXPow (mul_ne_zero hf hg) := by
   set df := f.order.get (order_finite_iff_ne_zero.mpr hf) with hdf
   set dg := g.order.get (order_finite_iff_ne_zero.mpr hg) with hdg
   set dfg := (f * g).order.get (order_finite_iff_ne_zero.mpr (mul_ne_zero hf hg)) with hdfg
