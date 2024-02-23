@@ -646,8 +646,10 @@ theorem max_root_norm_eq_spectralValue {f : AlgebraNorm K L} (hf_pm : IsPowMul f
       exact hm'
     rw [Function.comp_apply]
     exact root_norm_le_spectralValue hf_pm hf_na (le_of_eq hf1) (p.monic_of_prod b hp) hm
-  · haveI : Nonempty (Fin n) := Fin.pos_iff_nonempty.mp hn
-    have h_supr : 0 ≤ iSup (f ∘ b) := Real.iSup_nonneg fun x => apply_nonneg f (b x)
+  · have : Nonempty (Fin n) := by
+      exact Fin.pos_iff_nonempty.mp hn
+    have h_supr : 0 ≤ iSup (f ∘ b) := by
+      exact Real.iSup_nonneg fun x => apply_nonneg f (b x)
     apply ciSup_le
     intro m
     by_cases hm : m < p.natDegree
@@ -690,8 +692,8 @@ theorem max_root_norm_eq_spectralValue {f : AlgebraNorm K L} (hf_pm : IsPowMul f
       apply le_trans this
       apply le_of_eq
       simp only [Finset.prod_const]
-      suffices h_card : (s : Finset (Fin n)).card = p.natDegree - m
-      · rw [h_card]
+      suffices h_card : (s : Finset (Fin n)).card = p.natDegree - m by
+        rw [h_card]
       have hs' := s.property
       simp only [Fintype.card_fin, Finset.mem_powersetCard] at hs'
       rw [hs'.right, hpn]

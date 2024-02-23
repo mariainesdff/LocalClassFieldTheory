@@ -151,8 +151,8 @@ theorem Real.iSup_hMul_le_hMul_iSup_of_nonneg {ι : Type _} [Nonempty ι] [Finit
     (hf_nn : ∀ i, 0 ≤ f i) (hg_nn : ∀ i, 0 ≤ g i) : (⨆ i : ι, f i * g i) ≤ iSup f * iSup g :=
   by
   cases nonempty_fintype ι
-  have hf : BddAbove (Set.range f) := Fintype.bddAbove_range f
-  have hg : BddAbove (Set.range g) := Fintype.bddAbove_range g
+  have hf : BddAbove (Set.range f) := Finite.bddAbove_range f
+  have hg : BddAbove (Set.range g) := Finite.bddAbove_range g
   exact
     ciSup_le fun x => mul_le_mul (le_ciSup hf x) (le_ciSup hg x) (hg_nn x) (Real.iSup_nonneg hf_nn)
 

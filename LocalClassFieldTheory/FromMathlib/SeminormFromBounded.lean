@@ -308,14 +308,14 @@ theorem seminorm_from_bounded_add (f_nonneg : ∀ x : R, 0 ≤ f x)
     seminormFromBounded' f (x + y) ≤ seminormFromBounded' f x + seminormFromBounded' f y := by
   apply ciSup_le
   intro z
-  suffices hf : f ((x + y) * z) / f z ≤ f (x * z) / f z + f (y * z) / f z
-  · exact le_trans hf (add_le_add
+  suffices hf : f ((x + y) * z) / f z ≤ f (x * z) / f z + f (y * z) / f z by
+    exact le_trans hf (add_le_add
       (le_ciSup_of_le (seminorm_from_bounded_bdd_range f_nonneg f_mul x) z (le_refl _))
       (le_ciSup_of_le (seminorm_from_bounded_bdd_range f_nonneg f_mul y) z (le_refl _)))
-  · by_cases hz : f z = 0
-    · simp only [hz, div_zero, zero_add, le_refl, or_self_iff]
-    · rw [div_add_div_same, div_le_div_right (lt_of_le_of_ne' (f_nonneg _) hz), add_mul]
-      exact f_add _ _
+  by_cases hz : f z = 0
+  · simp only [hz, div_zero, zero_add, le_refl, or_self_iff]
+  · rw [div_add_div_same, div_le_div_right (lt_of_le_of_ne' (f_nonneg _) hz), add_mul]
+    exact f_add _ _
 
 /-- `seminorm_from_bounded'` is a ring seminorm on `R`. -/
 def seminormFromBounded (f_zero : f 0 = 0) (f_nonneg : ∀ x : R, 0 ≤ f x)
@@ -337,15 +337,15 @@ theorem seminorm_from_bounded_isNonarchimedean (f_nonneg : ∀ x : R, 0 ≤ f x)
   apply ciSup_le
   intro z
   rw [le_max_iff]
-  suffices hf : f ((x + y) * z) / f z ≤ f (x * z) / f z ∨ f ((x + y) * z) / f z ≤ f (y * z) / f z
-  cases' hf with hfx hfy <;> [left; right]
-  · exact le_ciSup_of_le (seminorm_from_bounded_bdd_range f_nonneg f_mul x) z hfx
-  · exact le_ciSup_of_le (seminorm_from_bounded_bdd_range f_nonneg f_mul y) z hfy
-  · by_cases hz : f z = 0
-    · simp only [hz, div_zero, le_refl, or_self_iff]
-    · rw [div_le_div_right (lt_of_le_of_ne' (f_nonneg _) hz),
-        div_le_div_right (lt_of_le_of_ne' (f_nonneg _) hz), add_mul, ← le_max_iff]
-      exact hna _ _
+  suffices hf : f ((x + y) * z) / f z ≤ f (x * z) / f z ∨ f ((x + y) * z) / f z ≤ f (y * z) / f z by
+    cases' hf with hfx hfy <;> [left; right]
+    · exact le_ciSup_of_le (seminorm_from_bounded_bdd_range f_nonneg f_mul x) z hfx
+    · exact le_ciSup_of_le (seminorm_from_bounded_bdd_range f_nonneg f_mul y) z hfy
+  by_cases hz : f z = 0
+  · simp only [hz, div_zero, le_refl, or_self_iff]
+  · rw [div_le_div_right (lt_of_le_of_ne' (f_nonneg _) hz),
+      div_le_div_right (lt_of_le_of_ne' (f_nonneg _) hz), add_mul, ← le_max_iff]
+    exact hna _ _
 
 /-- If `f : R → ℝ` is a nonnegative, multiplicatively bounded function and `x : R` is
   multiplicative for `f`, then `seminorm_from_bounded' f x = f x`. -/

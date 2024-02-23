@@ -272,8 +272,8 @@ theorem smoothingSeminorm_def_is_limit_ne_zero (hf1 : f 1 ≤ 1) {x : R} (hx : f
     rw [← PNat.mk_coe n hn0]
     apply ciInf_le (smoothing_seminorm_seq_bdd f x)
   refine' ⟨lt_of_lt_of_le (neg_lt_zero.mpr hε) (sub_nonneg.mpr hL_le), _⟩
-  · suffices h : smoothingSeminormSeq f x n < L + ε
-    · rw [tsub_lt_iff_left hL_le]; exact h
+  · suffices h : smoothingSeminormSeq f x n < L + ε by
+      rw [tsub_lt_iff_left hL_le]; exact h
     by_cases hxn : f (x ^ (n % m1)) = 0
     · simp only [smoothingSeminormSeq]
       nth_rw 1 [← Nat.div_add_mod n m1]

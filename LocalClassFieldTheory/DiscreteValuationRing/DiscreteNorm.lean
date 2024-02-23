@@ -69,6 +69,7 @@ def discretelyNormedField : NormedField K :=
   RankOneValuation.ValuedField.toNormedField K ℤₘ₀
 
 /-- The nontrivially normed field structure on `K` induced by its discrete valuation. -/
+@[reducible]
 def nontriviallyDiscretelyNormedField : NontriviallyNormedField K :=
   { @RankOneValuation.ValuedField.toNormedField K _ ℤₘ₀ _ _ (DiscreteValuation.isRankOne _) with
     non_trivial := by
@@ -81,17 +82,17 @@ def nontriviallyDiscretelyNormedField : NontriviallyNormedField K :=
 
 /-- The norm on `K` induced by its discrete valuation. -/
 def hasDiscreteNorm : Norm K := by
-  letI : NontriviallyNormedField K := nontriviallyDiscretelyNormedField K
+  let _ : NontriviallyNormedField K := nontriviallyDiscretelyNormedField K
   infer_instance
 
 /-- The seminormed commutative ring structure on `K` induced by its discrete valuation. -/
 def discretelySemiNormedCommRing : SeminormedCommRing K := by
-  letI : NontriviallyNormedField K := nontriviallyDiscretelyNormedField K
+  let _ : NontriviallyNormedField K := nontriviallyDiscretelyNormedField K
   infer_instance
 
 /-- The seminormed ring structure on `K` induced by its discrete valuation. -/
 def discretelySemiNormedRing : SeminormedRing K := by
-  letI : NontriviallyNormedField K := nontriviallyDiscretelyNormedField K
+  let _ : NontriviallyNormedField K := nontriviallyDiscretelyNormedField K
   infer_instance
 
 theorem norm_isNonarchimedean : IsNonarchimedean (@norm K (hasDiscreteNorm K)) := fun x y =>
@@ -118,7 +119,7 @@ def discretelyNormedFieldExtension (h_alg : Algebra.IsAlgebraic K L) : NormedFie
 /-- The `uniform_space` structure on `L` induced by `discrete_norm_extension h_alg` -/
 def discretelyNormedFieldExtensionUniformSpace (h_alg : Algebra.IsAlgebraic K L) :
   UniformSpace L := by
-  haveI := discretelyNormedFieldExtension h_alg
+  have := discretelyNormedFieldExtension h_alg
   infer_instance
 
 namespace DiscreteNormExtension
@@ -167,8 +168,9 @@ theorem hMul (h_alg : Algebra.IsAlgebraic K L) (x y : L) :
 
 theorem le_one_iff_integral_minpoly (h_alg : Algebra.IsAlgebraic K L) (x : L) :
     discreteNormExtension h_alg x ≤ 1 ↔ ∀ n : ℕ, hv.v ((minpoly K x).coeff n) ≤ 1 := by
-  letI := nontriviallyDiscretelyNormedField K
-  have h : spectralMulAlgNorm h_alg _ x = spectralNorm K L x; rfl
+  let _ := nontriviallyDiscretelyNormedField K
+  have h : spectralMulAlgNorm h_alg (norm_isNonarchimedean _) x = spectralNorm K L x := by
+    rfl
   rw [discreteNormExtension, h, spectralNorm,
     spectralValue_le_one_iff (minpoly.monic (isAlgebraic_iff_isIntegral.mp (h_alg x)))]
   simp_rw [norm_le_one_iff_val_le_one]
