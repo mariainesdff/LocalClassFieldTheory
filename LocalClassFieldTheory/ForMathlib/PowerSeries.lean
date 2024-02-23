@@ -7,6 +7,9 @@ import Mathlib.RingTheory.Valuation.ValuationSubring
 import Mathlib.RingTheory.LaurentSeries
 import Mathlib.RingTheory.PowerSeries.WellKnown
 
+-- Porting note: I am adding these
+import Mathlib.RingTheory.DedekindDomain.Basic
+import Mathlib.FieldTheory.RatFunc
 #align_import for_mathlib.power_series
 
 /-!
@@ -94,19 +97,18 @@ theorem dividedByXPowMul {f g : PowerSeries K} (hf : f ≠ 0) (hg : g ≠ 0) :
       _ = X ^ dfg * dividedByXPow hf * dividedByXPow hg := by rw [H_add_d]
       _ = X ^ dfg * (dividedByXPow hf * dividedByXPow hg) := by rw [mul_assoc]
   simp [← hdfg, this] at H
+  --convert (IsLeftCancelMulZero.mul_left_cancel_of_ne_zero _ H).symm
   sorry
   -- convert (IsDomain.hMul_left_cancel_of_ne_zero _ H).symm
   -- exact pow_ne_zero dfg X_ne_zero
 
 /-- `first_unit_coeff` is the non-zero coefficient whose index is `f.order`, seen as a unit of the
   field.-/
-def firstUnitCoeff {f : PowerSeries K} (hf : f ≠ 0) : Kˣ :=
-  by
+def firstUnitCoeff {f : PowerSeries K} (hf : f ≠ 0) : Kˣ := by
   set d := f.order.get (PowerSeries.order_finite_iff_ne_zero.mpr hf) with hd
   have f_const : PowerSeries.coeff K d f ≠ 0 := by apply PowerSeries.coeff_order
-  have : Invertible (PowerSeries.constantCoeff K (dividedByXPow hf))
-    -- by
-  · apply invertibleOfNonzero
+  have : Invertible (PowerSeries.constantCoeff K (dividedByXPow hf)) := by
+    apply invertibleOfNonzero
     convert f_const
     · rw [← PowerSeries.coeff_zero_eq_constantCoeff, ← zero_add d]
       convert
@@ -127,17 +129,19 @@ def dividedByXPowInv {f : PowerSeries K} (hf : f ≠ 0) : PowerSeries K :=
   PowerSeries.invOfUnit (dividedByXPow hf) (firstUnitCoeff hf)
 
 theorem dividedByXPowInv_right_inv {f : PowerSeries K} (hf : f ≠ 0) :
-    dividedByXPowInv hf * dividedByXPowInv hf = 1 := by /- sorry -/
+    dividedByXPow hf * dividedByXPowInv hf = 1 := by
   -- mul_invOfUnit (dividedByXPow hf) (firstUnitCoeff hf) rfl
   simp only [dividedByXPowInv]
   have := @mul_invOfUnit _ _ (dividedByXPow hf) (firstUnitCoeff hf) ?_
   simp only [dividedByXPowInv] at this
   sorry
+  sorry
   -- rfl
 
 theorem dividedByXPowInv_left_inv {f : PowerSeries K} (hf : f ≠ 0) :
-    dividedByXPowInv hf * dividedByXPow hf = 1 := by rw [mul_comm];
-  exact mul_inv_of_unit (divided_by_X_pow hf) (first_unit_coeff hf) rfl
+    dividedByXPowInv hf * dividedByXPow hf = 1 := by
+  rw [mul_comm]
+  sorry --exact mul_inv_of_unit (divided_by_X_pow hf) (first_unit_coeff hf) rfl
 
 /-- `unit_of_divided_by_X_pow` is the unit of power series obtained by dividing a non-zero power
 series by the largest power of `X` that divides it. -/
@@ -150,23 +154,23 @@ def unitOfDividedByXPow (f : PowerSeries K) : (PowerSeries K)ˣ :=
       inv_val := dividedByXPowInv_left_inv hf }
 
 theorem isUnit_dividedByXPow {f : PowerSeries K} (hf : f ≠ 0) : IsUnit (dividedByXPow hf) :=
-  ⟨unitOfDividedByXPow f, by simp only [unit_of_divided_by_X_pow, dif_neg hf, Units.val_mk]⟩
+  sorry --⟨unitOfDividedByXPow f, by simp only [unit_of_divided_by_X_pow, dif_neg hf, Units.val_mk]⟩
 
 theorem unitOfDividedByXPow_nonzero {f : PowerSeries K} (hf : f ≠ 0) :
     ↑(unitOfDividedByXPow f) = dividedByXPow hf := by
-  simp only [unit_of_divided_by_X_pow, dif_neg hf, Units.val_mk]
+  sorry --simp only [unit_of_divided_by_X_pow, dif_neg hf, Units.val_mk]
 
 theorem unitOfDividedByXPow_zero : unitOfDividedByXPow (0 : PowerSeries K) = 1 := by
-  simp only [unit_of_divided_by_X_pow, dif_pos]
+  sorry --simp only [unit_of_divided_by_X_pow, dif_pos]
 
 theorem eq_divided_by_X_iff_unit {f : PowerSeries K} (hf : f ≠ 0) :
     f = dividedByXPow hf ↔ IsUnit f :=
-  ⟨fun h => by rw [h]; exact is_unit_divided_by_X_pow hf, fun h =>
+  sorry/- ⟨fun h => by rw [h]; exact is_unit_divided_by_X_pow hf, fun h =>
     by
     have : f.order.get (order_finite_iff_ne_zero.mpr hf) = 0 := by
       simp only [order_zero_of_unit h, PartENat.get_zero]
     convert (self_eq_X_pow_mul_divided_by_X_pow hf).symm
-    simp only [this, pow_zero, one_mul]⟩
+    simp only [this, pow_zero, one_mul]⟩ -/
 
 theorem hasUnitMulPowIrreducibleFactorization :
     HasUnitMulPowIrreducibleFactorization (PowerSeries K) :=
@@ -174,13 +178,14 @@ theorem hasUnitMulPowIrreducibleFactorization :
     And.intro PowerSeries.irreducible_x
       (by
         intro f hf
-        use f.order.get (power_series.order_finite_iff_ne_zero.mpr hf)
-        use unit_of_divided_by_X_pow f
+        use f.order.get (PowerSeries.order_finite_iff_ne_zero.mpr hf)
+        sorry
+        /- use unit_of_divided_by_X_pow f
         simp only [unit_of_divided_by_X_pow_nonzero hf]
-        exact self_eq_X_pow_mul_divided_by_X_pow hf)⟩
+        exact self_eq_X_pow_mul_divided_by_X_pow hf) -/)⟩
 
 instance : UniqueFactorizationMonoid (PowerSeries K) :=
-  PowerSeries.hasUnitMulPowIrreducibleFactorization.to_uniqueFactorizationMonoid
+  sorry --PowerSeries.hasUnitMulPowIrreducibleFactorization.to_uniqueFactorizationMonoid
 
 instance : DiscreteValuationRing (PowerSeries K) :=
   ofHasUnitMulPowIrreducibleFactorization PowerSeries.hasUnitMulPowIrreducibleFactorization
@@ -229,23 +234,24 @@ theorem not_isField (R : Type _) [CommRing R] [Nontrivial R] : ¬IsField (PowerS
     exact one_ne_zero
 
 instance isDedekindDomain : IsDedekindDomain (PowerSeries K) :=
-  IsPrincipalIdealRing.isDedekindDomain (PowerSeries K)
+  sorry --IsPrincipalIdealRing.isDedekindDomain (PowerSeries K)
 
 instance : NormalizationMonoid (PowerSeries K)
     where
   normUnit f := (unitOfDividedByXPow f)⁻¹
-  normUnit_zero := by simp only [unit_of_divided_by_X_pow_zero, inv_one]
-  normUnit_hMul f g hf hg := by
+  normUnit_zero := by sorry --simp only [unit_of_divided_by_X_pow_zero, inv_one]
+  normUnit_mul  := sorry/- fun f g hf hg => by
     simp only [← mul_inv, inv_inj]
     simp only [unit_of_divided_by_X_pow_nonzero (mul_ne_zero hf hg),
       unit_of_divided_by_X_pow_nonzero hf, unit_of_divided_by_X_pow_nonzero hg, Units.ext_iff,
-      val_unitOfInvertible, Units.val_mul, divided_by_X_pow_mul]
+      val_unitOfInvertible, Units.val_mul, divided_by_X_pow_mul] -/
   normUnit_coe_units := by
     intro u
     set u₀ := u.1 with hu
     have h₀ : IsUnit u₀ := ⟨u, hu.symm⟩
-    rw [inv_inj, Units.ext_iff, ← u.val_eq_coe, ← hu, unit_of_divided_by_X_pow_nonzero h₀.ne_zero]
-    exact ((eq_divided_by_X_iff_unit h₀.ne_zero).mpr h₀).symm
+    sorry
+    /- rw [inv_inj, Units.ext_iff, ← u.val_eq_coe, ← hu, unit_of_divided_by_X_pow_nonzero h₀.ne_zero]
+    exact ((eq_divided_by_X_iff_unit h₀.ne_zero).mpr h₀).symm -/
 
 open LocalRing
 
@@ -262,7 +268,7 @@ def residueFieldOfPowerSeries : ResidueField (PowerSeries K) ≃+* K :=
   (Ideal.quotEquivOfEq (ker_constantCoeff_eq_max_ideal K).symm).trans
     (RingHom.quotientKerEquivOfSurjective (constantCoeff_surj K))
 
-end PowerSeries
+--end PowerSeries
 
 variable {K : Type _} [Field K]
 
@@ -270,41 +276,39 @@ namespace Polynomial
 
 open RatFunc PowerSeries
 
-theorem coe_coe (P : Polynomial K) : (P : LaurentSeries K) = (↑P : RatFunc K) :=
+--TODO: fix
+/- theorem coe_coe (P : Polynomial K) : (P : LaurentSeries K) = (↑P : RatFunc K) :=
   by
   erw [RatFunc.coe_def, RatFunc.coeAlgHom, lift_alg_hom_apply, RatFunc.num_algebraMap,
     RatFunc.denom_algebraMap P, map_one, div_one]
-  rfl
+  rfl -/
 
 theorem coe_ne_zero {f : Polynomial K} : f ≠ 0 → (↑f : PowerSeries K) ≠ 0 := by
-  simp only [Ne.def, coe_eq_zero_iff, imp_self]
+  sorry --simp only [Ne.def, coe_eq_zero_iff, imp_self]
 
 end Polynomial
 
 namespace HahnSeries
 
 theorem single_pow {R : Type _} [Ring R] (n : ℕ) :
-    HahnSeries.single (n : ℤ) (1 : R) = HahnSeries.single (1 : ℤ) 1 ^ n :=
-  by
+    HahnSeries.single (n : ℤ) (1 : R) = HahnSeries.single (1 : ℤ) 1 ^ n := by
   induction' n with n h_ind
   · simp only [Nat.zero_eq, Int.ofNat_eq_coe, ZMod.nat_cast_self, zpow_zero]
     rfl
-  ·
-    rw [← Int.ofNat_add_one_out, ← one_mul (1 : R), ← HahnSeries.single_mul_single, h_ind,
+  · rw [← Int.ofNat_add_one_out, ← one_mul (1 : R), ← HahnSeries.single_mul_single, h_ind,
       pow_succ', one_mul (1 : R)]
 
 theorem single_inv (d : ℤ) (α : K) (hα : α ≠ 0) :
     (HahnSeries.single (d : ℤ) (α : K))⁻¹ = HahnSeries.single (-d) (α⁻¹ : K) := by
   rw [inv_eq_of_mul_eq_one_left];
-  simpa only [HahnSeries.single_mul_single, add_left_neg, inv_mul_cancel hα]
+  sorry --simpa only [HahnSeries.single_mul_single, add_left_neg, inv_mul_cancel hα]
 
-theorem single_zpow (n : ℤ) : HahnSeries.single (n : ℤ) (1 : K) = HahnSeries.single (1 : ℤ) 1 ^ n :=
-  by
+theorem single_zpow (n : ℤ) :
+    HahnSeries.single (n : ℤ) (1 : K) = HahnSeries.single (1 : ℤ) 1 ^ n := by
   induction' n with n_pos n_neg
   · apply single_pow
-  ·
-    rw [Int.negSucc_coe, Int.ofNat_add, Nat.cast_one, ← inv_one, ←
+  · rw [Int.negSucc_coe, Int.ofNat_add, Nat.cast_one, ← inv_one, ←
       single_inv (n_neg + 1 : ℤ) (1 : K) one_ne_zero, zpow_neg, ← Nat.cast_one, ← Int.ofNat_add,
-      algebraMap.coe_one, inv_inj, zpow_ofNat, single_pow, inv_one]
+      Nat.cast_one, inv_inj, zpow_ofNat, single_pow, inv_one]
 
 end HahnSeries
