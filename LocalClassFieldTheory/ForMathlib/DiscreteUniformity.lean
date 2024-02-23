@@ -86,10 +86,9 @@ theorem cauchy_discrete_le {X : Type _} {_ : UniformSpace X} (hX : uniformity X 
   Exists.choose_spec (cauchy_discrete_le_principal hX hα)
 
 theorem neBot_unique_principal {X : Type _} [UniformSpace X] (hX : uniformity X = 𝓟 idRel)
-    {α : Filter X} (hα : α.NeBot) {x y : X} (hx : α ≤ 𝓟 {x}) (hy : α ≤ 𝓟 {y}) : x = y :=
-  by
-  have h_disc : DiscreteTopology X
-  apply discreteTopology_of_discrete_uniformity hX
+    {α : Filter X} (hα : α.NeBot) {x y : X} (hx : α ≤ 𝓟 {x}) (hy : α ≤ 𝓟 {y}) : x = y := by
+  have h_disc : DiscreteTopology X := by
+    apply discreteTopology_of_discrete_uniformity hX
   have t2X := @DiscreteTopology.toT2Space X _ h_disc
   apply @eq_of_nhds_neBot X _ t2X x y
   simp only [discreteTopology_iff_nhds.mp h_disc]
