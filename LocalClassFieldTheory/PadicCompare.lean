@@ -201,8 +201,9 @@ section AbstractCompletion
 
 
 theorem uniformInducing_coe : @UniformInducing _ _ ((@padicValued p _)).toUniformSpace _
-    (coe : ℚ → ℚ_[p]) := by
-  letI := ((@padicValued p _))
+    (Rat.cast : ℚ → ℚ_[p]) := by
+    -- (coe : ℚ → ℚ_[p]) := by
+  let _ := ((@padicValued p _))
   have hp_one : (1 : ℝ≥0) < p := Nat.one_lt_cast.mpr (Nat.Prime.one_lt Fact.out)
   apply UniformInducing.mk'
   simp_rw [@Metric.mem_uniformity_dist ℚ_[p] _ _]
@@ -214,10 +215,10 @@ theorem uniformInducing_coe : @UniformInducing _ _ ((@padicValued p _)).toUnifor
     · tauto
     · apply hM_sub
       simp only [Set.mem_setOf_eq, dist] at h ⊢
-      sorry
-      -- rwa [/- ← Padic.coe_sub,  -/padicNormE.eq_padic_norm', padicNorm_eq_val_norm, hM, Units.val_eq_coe,
-      --   val_eq_coe, NNReal.coe_lt_coe, (withZeroMultIntToNnreal_strictMono hp_one).lt_iff_lt, ←
-      --   neg_sub, Valuation.map_neg] at h
+      -- sorry
+      rwa [/- ← Padic.coe_sub,  -/padicNormE.eq_padic_norm', padicNorm_eq_val_norm, hM, Units.val_eq_coe,
+        val_eq_coe, NNReal.coe_lt_coe, (withZeroMultIntToNnreal_strictMono hp_one).lt_iff_lt, ←
+        neg_sub, Valuation.map_neg] at h
   · rw [(Valued.hasBasis_uniformity ℚ ℤₘ₀).mem_iff]
     rintro ⟨T, ⟨ε, ⟨hε, H⟩⟩, h⟩
     obtain ⟨M, hM⟩ := Real.exists_strictMono_lt (withZeroMultIntToNnreal_strictMono hp_one) hε
