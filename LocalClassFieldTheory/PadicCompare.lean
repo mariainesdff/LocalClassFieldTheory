@@ -142,8 +142,6 @@ def padicValued : Valued ℚ ℤₘ₀ :=
 instance : SeparatedSpace ℚ_[p] :=
   MetricSpace.to_separated
 
--- attribute [local instance] padicValued
-
 section Valuation
 
 
@@ -153,7 +151,7 @@ lemma NNReal_Cast.p_ne_zero : ((p : ℝ≥0) ≠ 0) := by
   simp_all only [ne_eq, Nat.cast_eq_zero, not_false_eq_true]
 
 theorem padicNorm_of_int_eq_val_norm (x : ℤ) : (padicNorm p x : ℝ) =
-  withZeroMultIntToNnreal (NNReal_Cast.p_ne_zero p) ((@padicValued p _).v x) := by
+  withZeroMultIntToNNReal (NNReal_Cast.p_ne_zero p) ((@padicValued p _).v x) := by
   by_cases hx : x = 0
   · simp only [hx, padicNorm.zero, algebraMap.coe_zero, _root_.map_zero, cast_zero, padicNorm.zero,
       Rat.cast_zero, _root_.map_zero, NNReal.coe_zero]
@@ -172,8 +170,8 @@ theorem padicNorm_of_int_eq_val_norm (x : ℤ) : (padicNorm p x : ℝ) =
     have hpne : (Ideal.span {(p : ℤ)} : Ideal ℤ) ≠ ⊥ := by
       rw [Ne.def, Ideal.span_singleton_eq_bot]
       exact NeZero.ne (p : ℤ)
-    simp only [padicNorm.eq_zpow_of_nonzero hx0, withZeroMultIntToNnreal,
-      withZeroMultIntToNnrealDef, zero_iff, Rat.cast_zpow, Rat.cast_coe_nat,
+    simp only [padicNorm.eq_zpow_of_nonzero hx0, withZeroMultIntToNNReal,
+      withZeroMultIntToNNRealDef, zero_iff, Rat.cast_zpow, Rat.cast_coe_nat,
       MonoidWithZeroHom.coe_mk, dif_neg hx0, coe_zpow, NNReal.coe_nat_cast]
     simp only [padicValRat.of_int, zpow_neg, zpow_coe_nat, ZeroHom.coe_mk]
     sorry
@@ -187,7 +185,7 @@ theorem padicNorm_of_int_eq_val_norm (x : ℤ) : (padicNorm p x : ℝ) =
     -- rfl
 
 theorem padicNorm_eq_val_norm (z : ℚ) : (padicNorm p z : ℝ) =
-  withZeroMultIntToNnreal (NNReal_Cast.p_ne_zero p) ((@padicValued p _).v z) := by
+  withZeroMultIntToNNReal (NNReal_Cast.p_ne_zero p) ((@padicValued p _).v z) := by
   by_cases hz : z = 0
   · simp only [hz, padicNorm.zero, algebraMap.coe_zero, _root_.map_zero, Rat.cast_zero,
       NNReal.coe_zero]
@@ -214,18 +212,18 @@ theorem uniformInducing_cast : letI := ((@padicValued p _))
   simp_rw [@Metric.mem_uniformity_dist ℚ_[p] _ _]
   refine' fun S => ⟨fun hS => _, _⟩
   · obtain ⟨m, ⟨-, hM_sub⟩⟩ := (Valued.hasBasis_uniformity ℚ ℤₘ₀).mem_iff.mp hS
-    set M := (withZeroMultIntToNnreal (NNReal_Cast.p_ne_zero p) m.1).1
+    set M := (withZeroMultIntToNNReal (NNReal_Cast.p_ne_zero p) m.1).1
     refine' ⟨{p : ℚ_[p] × ℚ_[p] | dist p.1 p.2 < M}, ⟨⟨M, ⟨_, fun _ => _ ⟩⟩, fun x y h => _⟩⟩
-    · exact withZeroMultIntToNnreal_pos _ (isUnit_iff_ne_zero.mp (Units.isUnit m))
+    · exact withZeroMultIntToNNReal_pos _ (isUnit_iff_ne_zero.mp (Units.isUnit m))
     · tauto
     · apply hM_sub
       simp only [Set.mem_setOf_eq, dist] at h ⊢
       rwa [← Padic.coe_sub, padicNormE.eq_padic_norm', padicNorm_eq_val_norm, val_eq_coe, coe_lt_coe,
-        @StrictMono.lt_iff_lt _ _ _ _ _ (withZeroMultIntToNnreal_strictMono hp_one), ← neg_sub,
+        @StrictMono.lt_iff_lt _ _ _ _ _ (withZeroMultIntToNNReal_strictMono hp_one), ← neg_sub,
           Valuation.map_neg] at h
   · rw [(Valued.hasBasis_uniformity ℚ ℤₘ₀).mem_iff]
     rintro ⟨T, ⟨ε, ⟨hε, H⟩⟩, h⟩
-    obtain ⟨M, hM⟩ := Real.exists_strictMono_lt (withZeroMultIntToNnreal_strictMono hp_one) hε
+    obtain ⟨M, hM⟩ := Real.exists_strictMono_lt (withZeroMultIntToNNReal_strictMono hp_one) hε
     refine' ⟨M, by triv, fun q hq => _⟩
     simp only [Set.mem_setOf_eq, dist] at H hq
     have : (↑q.fst, ↑q.snd) ∈ T := by
@@ -233,7 +231,7 @@ theorem uniformInducing_cast : letI := ((@padicValued p _))
       rw [← Padic.coe_sub, padicNormE.eq_padic_norm', padicNorm_eq_val_norm, ← neg_sub,
         Valuation.map_neg]
       exact (NNReal.coe_lt_coe.mpr
-        ((withZeroMultIntToNnreal_strictMono hp_one).lt_iff_lt.mpr hq)).trans hM
+        ((withZeroMultIntToNNReal_strictMono hp_one).lt_iff_lt.mpr hq)).trans hM
     exact h _ _ this
 
 /-The natural map from ℚ to ℚ_[p], seen as a field of characeristic zero, has dense range when
