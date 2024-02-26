@@ -18,11 +18,11 @@ of its unit ball. In this file we prove that these two valuations on `K_v`, name
 `v.valuation` and the adic valuation just discussed, coincide.
 
 ## Main definitions
-* `K_v` and `R_v` are, respectively, the adico completion of `K` with respect to `v.valuation` and
+* `K_v` and `R_v` are, respectively, the adic completion of `K` with respect to `v.valuation` and
 the unit ball inside `K_v`.
 * `maxIdealOfCompletion` Is the maximal ideal of `R_v`, that is a discrete valuation ring, as a
 term of the `height_one_spectrum` of `R_v`. The underlying ideal is `height_one_spectrum_def`.
-* `v_adic_of_compl` is the adic valuation on `K_v` attached to `max_ideal_of_completion`
+* `v_adic_of_compl` is the adic valuation on `K_v` attached to `maxIdealOfCompletion`
 * `v_compl_of_adic` is the uniform extension of `valuation.v` to the adic (=uniform) completion
 `K_v` of `K`.
 
