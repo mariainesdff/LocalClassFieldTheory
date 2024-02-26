@@ -160,7 +160,7 @@ theorem isNonarchimedean (h_alg : Algebra.IsAlgebraic K L) :
     IsNonarchimedean (discreteNormExtension h_alg) :=
   @spectralNorm_isNonarchimedean K (discretelyNormedField K) L _ _ h_alg (norm_isNonarchimedean K)
 
-theorem hMul (h_alg : Algebra.IsAlgebraic K L) (x y : L) :
+theorem mul (h_alg : Algebra.IsAlgebraic K L) (x y : L) :
     discreteNormExtension h_alg (x * y) =
       discreteNormExtension h_alg x * discreteNormExtension h_alg y :=
   @spectral_norm_is_mul K (nontriviallyDiscretelyNormedField K) L _ _ h_alg _
