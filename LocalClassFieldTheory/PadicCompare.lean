@@ -6,12 +6,6 @@ import LocalClassFieldTheory.ForMathlib.NumberTheory.Padics.PadicIntegers
 import LocalClassFieldTheory.ForMathlib.RingTheory.DedekindDomain.Ideal
 import LocalClassFieldTheory.FromMathlib.SpecificLimits
 
-
--- #align_import padic_compare
-
-
-set_option autoImplicit false
-
 /-!
 
 ## Main definitions
@@ -106,10 +100,6 @@ instance : IsDiscrete (@Valued.v (Q_p p) _ ℤₘ₀ _ _) :=
 instance : NormedField (Q_p p) :=
   RankOneValuation.ValuedField.toNormedField (Q_p p) ℤₘ₀
 
-/-porting note: it is no longer possible to define `padicValued` as a local insance, so we need to
-  keep inserting the explicit field eveywhere
--/
-
 /-- The abstract completion of `ℚ` whose underlying space is `Q_p`. -/
 def padicPkg' :
   letI := (padicValued p).toUniformSpace
@@ -144,11 +134,11 @@ instance : SeparatedSpace ℚ_[p] :=
 
 section Valuation
 
-
 -- porting note: added in Lean4
 lemma NNReal_Cast.p_ne_zero : ((p : ℝ≥0) ≠ 0) := by
   have := @Nat.Prime.ne_zero p Fact.out
   simp_all only [ne_eq, Nat.cast_eq_zero, not_false_eq_true]
+
 
 theorem padicNorm_of_Int_eq_val_norm (x : ℤ) : (padicNorm p x : ℝ) =
   withZeroMultIntToNNReal (NNReal_Cast.p_ne_zero p) ((@padicValued p _).v x) := by
@@ -159,59 +149,32 @@ theorem padicNorm_of_Int_eq_val_norm (x : ℤ) : (padicNorm p x : ℝ) =
   · have hx0 : ¬(x : ℚ) = 0 := cast_ne_zero.mpr hx
     have hv0 : ((@padicValued p _).v x) ≠ (0 : ℤₘ₀) := by rw [Ne.def, zero_iff]; exact hx0
     have heq : Multiplicative.ofAdd (-(Associates.mk (pHeightOneIdeal p).asIdeal).count
-                (Associates.mk (Ideal.span {x} : Ideal ℤ)).factors : ℤ) = WithZero.unzero hv0 := by
+      (Associates.mk (Ideal.span {x} : Ideal ℤ)).factors : ℤ) = WithZero.unzero hv0 := by
       erw [← WithZero.coe_inj, ← intValuationDef_if_neg _ hx, WithZero.coe_unzero,
         valuation_of_algebraMap]
       rfl
-    have hx' : (Ideal.span {x} : Ideal ℤ) ≠ 0 := by
+    rw [padicNorm.eq_zpow_of_nonzero hx0, withZeroMultIntToNNReal, Rat.cast_zpow, Rat.cast_coe_nat,
+      MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk, withZeroMultIntToNNRealDef_neg_apply, ← heq,
+      padicValRat.of_int, @padicValInt.of_ne_one_ne_zero p x (Nat.Prime.ne_one Fact.out) hx,
+      toAdd_ofAdd]
+    simp only [UniqueFactorizationMonoid.multiplicity_eq_count_normalizedFactors
+        (Nat.prime_iff_prime_int.mp Fact.out).irreducible hx, normalize_apply,
+          PartENat.get_natCast']
+    have h_x_span : (Ideal.span {x} : Ideal ℤ) ≠ 0 := by
       rwa [Ideal.zero_eq_bot, Ne.def, Ideal.span_singleton_eq_bot]
-    have hp : Prime (p : ℤ) := Nat.prime_iff_prime_int.mp Fact.out
-    have hp' : (Ideal.span {(p : ℤ)} : Ideal ℤ).IsPrime := by
-      rwa [Ideal.span_singleton_prime (NeZero.ne (p : ℤ))]
-    have hpne : (Ideal.span {(p : ℤ)} : Ideal ℤ) ≠ ⊥ := by
+    have h_p_span : (Ideal.span {(p : ℤ)} : Ideal ℤ).IsPrime := by
+      simp only [Ideal.span_singleton_prime (NeZero.ne (p : ℤ)), Nat.prime_iff_prime_int.mp Fact.out]
+    have h_p_span_ne : (Ideal.span {(p : ℤ)} : Ideal ℤ) ≠ ⊥ := by
       rw [Ne.def, Ideal.span_singleton_eq_bot]
       exact NeZero.ne (p : ℤ)
-    simp only [padicNorm.eq_zpow_of_nonzero hx0, withZeroMultIntToNNReal,
-      withZeroMultIntToNNRealDef, zero_iff, Rat.cast_zpow, Rat.cast_coe_nat,
-      MonoidWithZeroHom.coe_mk, dif_neg hx0, coe_zpow, NNReal.coe_nat_cast]
-    simp only [padicValRat.of_int,/-  zpow_neg, -/ /- zpow_coe_nat, -/ ZeroHom.coe_mk]
-
-
-    rw [@padicValInt.of_ne_one_ne_zero p x (Nat.Prime.ne_one Fact.out) hx]
-    rw [withZeroMultIntToNNRealDef_neg_apply p hv0, NNReal.coe_zpow]
+    erw [count_normalizedFactors_eq_count_normalizedFactors_span hx _ (by rfl),
+      ← NormalizationMonoid.count_normalizedFactors_eq_associates_count _ _ _ h_x_span h_p_span
+      h_p_span_ne]
     congr
-    -- simp?
-    -- simp?
-    -- sorry
-    -- congr
-    -- apply congr_arg
-    -- simp only [/- ← HEq, -/ padicValRat.of_int_multiplicity (Nat.Prime.ne_one Fact.out) hx,
-    simp only [UniqueFactorizationMonoid.multiplicity_eq_count_normalizedFactors hp.irreducible hx,
-      normalize_apply, PartENat.get_natCast']
-    -- unfold Valued.v
-    -- unfold padicValued
-    -- unfold adicValued
-    -- unfold HeightOneSpectrum.valuation
-    let A := UniqueFactorizationMonoid.normalizedFactors x
-    -- have uno := @count_normalizedFactors_eq_count_normalizedFactors_span
-    have due := NormalizationMonoid.count_normalizedFactors_eq_associates_count _ _ _ hx' hp' hpne
-    rw [← count_normalizedFactors_eq_count_normalizedFactors_span] at due
-    --
-    have tre : Multiset.count (p : ℤ) A =
-      Multiset.count ((p * (normUnit p)) : ℤ) A := by sorry
-    rw [tre] at due
-    erw [due]
-    -- let lavalutazione := (@padicValued p _)
-    -- have ifnegsub := @if_neg (Valued.v (x : ℚ) = 0) ?_ hv0 ℝ≥0 0
-    --   (p ^ toAdd (WithZero.unzero ?_)))
+    · exact mul_right_eq_self₀.mpr (Or.inl rfl)
+    · exact prime_mul_iff.mpr (Or.inl ⟨Nat.prime_iff_prime_int.mp Fact.out, Units.isUnit _⟩)
+    · exact mul_ne_zero (NeZero.ne (p : ℤ)) (Units.ne_zero _)
 
-
-    -- simp only [zpow_neg, zpow_coe_nat, coe_zpow, NNReal.coe_nat_cast]
-    -- split_ifs
-
-    -- simp [count_normalized_factors_eq_count_normalized_factors_span hx (NeZero.ne p) rfl hp,
-    --   NormalizationMonoid.count_normalizedFactors_eq_associates_count _ _ _ hx' hp' hpne]
-    -- rfl
 
 theorem padicNorm_eq_val_norm (z : ℚ) : (padicNorm p z : ℝ) =
   withZeroMultIntToNNReal (NNReal_Cast.p_ne_zero p) ((@padicValued p _).v z) := by
@@ -597,5 +560,3 @@ def residueField : LocalRing.ResidueField (Z_p p) ≃+* ZMod p :=
 end Z_p
 
 end PadicComparison
-
-#lint
