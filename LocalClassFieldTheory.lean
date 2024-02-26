@@ -1,3 +1,4 @@
+import LocalClassFieldTheory.PadicCompare
 import LocalClassFieldTheory.SpectralNorm
 -- DiscreteValuationRing folder
 import LocalClassFieldTheory.DiscreteValuationRing.Basic

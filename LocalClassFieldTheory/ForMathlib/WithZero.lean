@@ -134,8 +134,20 @@ end WithZero
 /-- Given `e : ℝ≥0`, we define a map `ℤₘ₀ → ℝ≥0` sending `0 ↦ 0` and
   `x ↦ e^(multiplicative.to_add (with_zero.unzero hx)` when `x ≠ 0`.
   We regard this map as an inclusion of `ℤₘ₀` in `ℝ≥0`. -/
+@[reducible]
 def withZeroMultIntToNNRealDef (e : NNReal) : ℤₘ₀ → ℝ≥0 := fun x =>
   if hx : x = 0 then 0 else e ^ Multiplicative.toAdd (WithZero.unzero hx)
+
+theorem withZeroMultIntToNNRealDef_pos_apply (e : NNReal) {x : ℤₘ₀} (hx : x = 0) :
+  withZeroMultIntToNNRealDef e x = 0 := by
+  rw [withZeroMultIntToNNRealDef]
+  split_ifs
+  rfl
+
+theorem withZeroMultIntToNNRealDef_neg_apply (e : NNReal) {x : ℤₘ₀} (hx : x ≠ 0) :
+  withZeroMultIntToNNRealDef e x = e ^ Multiplicative.toAdd (WithZero.unzero hx) := by
+  rw [withZeroMultIntToNNRealDef]
+  split_ifs; tauto; rfl
 
 open WithZero
 
