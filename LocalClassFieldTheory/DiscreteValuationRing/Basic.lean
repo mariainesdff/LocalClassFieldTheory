@@ -385,14 +385,14 @@ section RankOne
 open IsRankOne
 
 noncomputable instance isRankOne : IsRankOne v where
-  hom := withZeroMultIntToNnreal (base_ne_zero K v)
-  strictMono := withZeroMultIntToNnreal_strictMono (one_lt_base K v)
+  hom := withZeroMultIntToNNReal (base_ne_zero K v)
+  strictMono := withZeroMultIntToNNReal_strictMono (one_lt_base K v)
   nontrivial := by
     obtain ⟨π, hπ⟩ := exists_Uniformizer_ofDiscrete v
     exact
       ⟨π, ne_of_gt (Uniformizer_valuation_pos v hπ), ne_of_lt (Uniformizer_valuation_lt_one v hπ)⟩
 
-theorem isRankOne_hom_def : IsRankOne.hom v = withZeroMultIntToNnreal (base_ne_zero K v) := rfl
+theorem isRankOne_hom_def : IsRankOne.hom v = withZeroMultIntToNNReal (base_ne_zero K v) := rfl
 
 end RankOne
 

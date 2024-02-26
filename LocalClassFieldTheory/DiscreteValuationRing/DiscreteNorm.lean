@@ -44,9 +44,9 @@ section AuxLemma
 variable {K : Type _} [Field K] {v : Valuation K ℤₘ₀} {L : Type _} [Field L] [Algebra K L]
 
 theorem map_pow_div [FiniteDimensional K L] (x : Lˣ) :
-    (withZeroMultIntToNnreal (base_ne_zero K v))
+    (withZeroMultIntToNNReal (base_ne_zero K v))
         (v ((minpoly K (x : L)).coeff 0) ^ (finrank K L / (minpoly K (x : L)).natDegree)) =
-      ((withZeroMultIntToNnreal (base_ne_zero K v)) (v ((minpoly K (x : L)).coeff 0)) ^
+      ((withZeroMultIntToNNReal (base_ne_zero K v)) (v ((minpoly K (x : L)).coeff 0)) ^
           (1 / ((minpoly K (x : L)).natDegree : ℝ))) ^
         (finrank K L : ℝ) := by
   have h_alg : Algebra.IsAlgebraic K L := Algebra.IsAlgebraic.of_finite K L
@@ -132,21 +132,21 @@ theorem zero (h_alg : Algebra.IsAlgebraic K L) : discreteNormExtension h_alg 0 =
   `(1/(minpoly K x).nat_degree` power. -/
 theorem eq_root_zero_coeff (h_alg : Algebra.IsAlgebraic K L) (x : L) :
     discreteNormExtension h_alg x =
-      withZeroMultIntToNnreal (base_ne_zero K hv.v) (Valued.v ((minpoly K x).coeff 0)) ^
+      withZeroMultIntToNNReal (base_ne_zero K hv.v) (Valued.v ((minpoly K x).coeff 0)) ^
         (1 / (minpoly K x).natDegree : ℝ) :=
   @spectralNorm_eq_root_zero_coeff K (nontriviallyDiscretelyNormedField K) _ L _ _ h_alg
     (norm_isNonarchimedean K) x
 
 theorem pow_eq_pow_root_zero_coeff' (h_alg : Algebra.IsAlgebraic K L) (x : L) (n : ℕ) :
     discreteNormExtension h_alg x ^ n =
-      withZeroMultIntToNnreal (base_ne_zero K hv.v) (Valued.v ((minpoly K x).coeff 0)) ^
+      withZeroMultIntToNNReal (base_ne_zero K hv.v) (Valued.v ((minpoly K x).coeff 0)) ^
         (n / (minpoly K x).natDegree : ℝ) := by
   rw [div_eq_inv_mul, Real.rpow_mul NNReal.zero_le_coe, eq_root_zero_coeff, inv_eq_one_div,
     Real.rpow_nat_cast]
 
 theorem pow_eq_pow_root_zero_coeff (h_alg : Algebra.IsAlgebraic K L) (x : L) {n : ℕ}
     (hn : (minpoly K x).natDegree ∣ n) : discreteNormExtension h_alg x ^ n =
-      withZeroMultIntToNnreal (base_ne_zero K hv.v) (Valued.v ((minpoly K x).coeff 0)) ^
+      withZeroMultIntToNNReal (base_ne_zero K hv.v) (Valued.v ((minpoly K x).coeff 0)) ^
         (n / (minpoly K x).natDegree) := by
   nth_rw 2 [← Real.rpow_nat_cast]
   rw [Nat.cast_div hn (Nat.cast_ne_zero.mpr
