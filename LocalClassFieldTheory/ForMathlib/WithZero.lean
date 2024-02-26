@@ -134,23 +134,23 @@ end WithZero
 /-- Given `e : ℝ≥0`, we define a map `ℤₘ₀ → ℝ≥0` sending `0 ↦ 0` and
   `x ↦ e^(multiplicative.to_add (with_zero.unzero hx)` when `x ≠ 0`.
   We regard this map as an inclusion of `ℤₘ₀` in `ℝ≥0`. -/
-def withZeroMultIntToNnrealDef (e : NNReal) : ℤₘ₀ → ℝ≥0 := fun x =>
+def withZeroMultIntToNNRealDef (e : NNReal) : ℤₘ₀ → ℝ≥0 := fun x =>
   if hx : x = 0 then 0 else e ^ Multiplicative.toAdd (WithZero.unzero hx)
 
 open WithZero
 
 /-- Given a nonzero `e : ℝ≥0`, this is the map `ℤₘ₀ → ℝ≥0` sending `0 ↦ 0` and
   `x ↦ e^(multiplicative.to_add (with_zero.unzero hx)` when `x ≠ 0` as a `monoid_with_zero_hom`. -/
-def withZeroMultIntToNnreal {e : NNReal} (he : e ≠ 0) : ℤₘ₀ →*₀ ℝ≥0
+def withZeroMultIntToNNReal {e : NNReal} (he : e ≠ 0) : ℤₘ₀ →*₀ ℝ≥0
     where
-  toFun := withZeroMultIntToNnrealDef e
+  toFun := withZeroMultIntToNNRealDef e
   map_zero' := rfl
   map_one' := by
-    simp only [withZeroMultIntToNnrealDef]; rw [dif_neg]
+    simp only [withZeroMultIntToNNRealDef]; rw [dif_neg]
     · erw [toAdd_one, zpow_zero]
     · exact one_ne_zero
   map_mul' x y := by
-    simp only [withZeroMultIntToNnrealDef]
+    simp only [withZeroMultIntToNNRealDef]
     by_cases hxy : x * y = 0
     · cases' zero_eq_mul.mp (Eq.symm hxy) with hx hy
       --either x = 0 or y = 0
@@ -165,21 +165,21 @@ def withZeroMultIntToNnreal {e : NNReal} (he : e ≠ 0) : ℤₘ₀ →*₀ ℝ�
       rw [← WithZero.coe_inj, WithZero.coe_mul, coe_unzero hx, coe_unzero hy, coe_unzero hxy]
 
 /-- `with_zero_mult_int_to_nnreal` sends nonzero elements to nonzero elements. -/
-theorem withZeroMultIntToNnreal_ne_zero {e : NNReal} {m : ℤₘ₀} (he : e ≠ 0) (hm : m ≠ 0) :
-    withZeroMultIntToNnreal he m ≠ 0 := by
+theorem withZeroMultIntToNNReal_ne_zero {e : NNReal} {m : ℤₘ₀} (he : e ≠ 0) (hm : m ≠ 0) :
+    withZeroMultIntToNNReal he m ≠ 0 := by
     simp only [ne_eq, map_eq_zero, hm, not_false_eq_true]
 
 /-- `with_zero_mult_int_to_nnreal` sends nonzero elements to positive elements. -/
-theorem withZeroMultIntToNnreal_pos {e : NNReal} {m : ℤₘ₀} (he : e ≠ 0) (hm : m ≠ 0) :
-    0 < withZeroMultIntToNnreal he m :=
-  lt_of_le_of_ne zero_le' (withZeroMultIntToNnreal_ne_zero he hm).symm
+theorem withZeroMultIntToNNReal_pos {e : NNReal} {m : ℤₘ₀} (he : e ≠ 0) (hm : m ≠ 0) :
+    0 < withZeroMultIntToNNReal he m :=
+  lt_of_le_of_ne zero_le' (withZeroMultIntToNNReal_ne_zero he hm).symm
 
 /-- The map `with_zero_mult_int_to_nnreal` is strictly monotone whenever `1 < e`. -/
-theorem withZeroMultIntToNnreal_strictMono {e : NNReal} (he : 1 < e) :
-    StrictMono (withZeroMultIntToNnreal (ne_zero_of_lt he)) :=
+theorem withZeroMultIntToNNReal_strictMono {e : NNReal} (he : 1 < e) :
+    StrictMono (withZeroMultIntToNNReal (ne_zero_of_lt he)) :=
   by
   intro x y hxy
-  simp only [withZeroMultIntToNnreal, withZeroMultIntToNnrealDef, MonoidWithZeroHom.coe_mk,
+  simp only [withZeroMultIntToNNReal, withZeroMultIntToNNRealDef, MonoidWithZeroHom.coe_mk,
     ZeroHom.coe_mk]
   split_ifs with hx hy hy
   · simp only [hy, not_lt_zero'] at hxy
