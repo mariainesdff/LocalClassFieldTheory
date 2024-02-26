@@ -150,8 +150,9 @@ lemma NNReal_Cast.p_ne_zero : ((p : ℝ≥0) ≠ 0) := by
   have := @Nat.Prime.ne_zero p Fact.out
   simp_all only [ne_eq, Nat.cast_eq_zero, not_false_eq_true]
 
-theorem padicNorm_of_int_eq_val_norm (x : ℤ) : (padicNorm p x : ℝ) =
+theorem padicNorm_of_Int_eq_val_norm (x : ℤ) : (padicNorm p x : ℝ) =
   withZeroMultIntToNNReal (NNReal_Cast.p_ne_zero p) ((@padicValued p _).v x) := by
+  classical
   by_cases hx : x = 0
   · simp only [hx, padicNorm.zero, algebraMap.coe_zero, _root_.map_zero, cast_zero, padicNorm.zero,
       Rat.cast_zero, _root_.map_zero, NNReal.coe_zero]
@@ -173,15 +174,43 @@ theorem padicNorm_of_int_eq_val_norm (x : ℤ) : (padicNorm p x : ℝ) =
     simp only [padicNorm.eq_zpow_of_nonzero hx0, withZeroMultIntToNNReal,
       withZeroMultIntToNNRealDef, zero_iff, Rat.cast_zpow, Rat.cast_coe_nat,
       MonoidWithZeroHom.coe_mk, dif_neg hx0, coe_zpow, NNReal.coe_nat_cast]
-    simp only [padicValRat.of_int, zpow_neg, zpow_coe_nat, ZeroHom.coe_mk]
-    sorry
+    simp only [padicValRat.of_int,/-  zpow_neg, -/ /- zpow_coe_nat, -/ ZeroHom.coe_mk]
+
+
+    rw [@padicValInt.of_ne_one_ne_zero p x (Nat.Prime.ne_one Fact.out) hx]
+    rw [withZeroMultIntToNNRealDef_neg_apply p hv0, NNReal.coe_zpow]
+    congr
+    -- simp?
+    -- simp?
+    -- sorry
+    -- congr
     -- apply congr_arg
-    -- simp only [/- ← HEq, -/ padicValRat.of_int_multiplicity (Nat.Prime.ne_one Fact.out) hx, toAdd_ofAdd,
-    --   neg_inj, Nat.cast_inj, ← PartENat.natCast_inj, PartENat.natCast_get,
-    --   UniqueFactorizationMonoid.multiplicity_eq_count_normalizedFactors hp.irreducible hx,
-    --   Int.normalize_coe_nat, PartENat.natCast_inj]
-      -- count_normalized_factors_eq_count_normalized_factors_span hx (NeZero.ne p) rfl hp,
-      -- NormalizationMonoid.count_normalizedFactors_eq_associates_count _ _ _ hx' hp' hpne]
+    -- simp only [/- ← HEq, -/ padicValRat.of_int_multiplicity (Nat.Prime.ne_one Fact.out) hx,
+    simp only [UniqueFactorizationMonoid.multiplicity_eq_count_normalizedFactors hp.irreducible hx,
+      normalize_apply, PartENat.get_natCast']
+    -- unfold Valued.v
+    -- unfold padicValued
+    -- unfold adicValued
+    -- unfold HeightOneSpectrum.valuation
+    let A := UniqueFactorizationMonoid.normalizedFactors x
+    -- have uno := @count_normalizedFactors_eq_count_normalizedFactors_span
+    have due := NormalizationMonoid.count_normalizedFactors_eq_associates_count _ _ _ hx' hp' hpne
+    rw [← count_normalizedFactors_eq_count_normalizedFactors_span] at due
+    --
+    have tre : Multiset.count (p : ℤ) A =
+      Multiset.count ((p * (normUnit p)) : ℤ) A := by sorry
+    rw [tre] at due
+    erw [due]
+    -- let lavalutazione := (@padicValued p _)
+    -- have ifnegsub := @if_neg (Valued.v (x : ℚ) = 0) ?_ hv0 ℝ≥0 0
+    --   (p ^ toAdd (WithZero.unzero ?_)))
+
+
+    -- simp only [zpow_neg, zpow_coe_nat, coe_zpow, NNReal.coe_nat_cast]
+    -- split_ifs
+
+    -- simp [count_normalized_factors_eq_count_normalized_factors_span hx (NeZero.ne p) rfl hp,
+    --   NormalizationMonoid.count_normalizedFactors_eq_associates_count _ _ _ hx' hp' hpne]
     -- rfl
 
 theorem padicNorm_eq_val_norm (z : ℚ) : (padicNorm p z : ℝ) =
@@ -195,7 +224,7 @@ theorem padicNorm_eq_val_norm (z : ℚ) : (padicNorm p z : ℝ) =
     erw [← hxy, valuation_of_mk', hz, padicNorm.div,/-  _root_.coe_coe,  -/Rat.cast_div, map_div₀,
       /- Nonneg.coe_div -/]
     apply congr_arg₂ <;>
-    · convert padicNorm_of_int_eq_val_norm p _; erw [valuation_of_algebraMap]
+    · convert padicNorm_of_Int_eq_val_norm p _; erw [valuation_of_algebraMap]
 
 end Valuation
 
