@@ -1,9 +1,10 @@
 import LocalClassFieldTheory.DiscreteValuationRing.Complete
+import Mathlib.Analysis.SpecificLimits.Basic
 import Mathlib.NumberTheory.Padics.PadicIntegers
 import Mathlib.RingTheory.DedekindDomain.AdicValuation
 import LocalClassFieldTheory.ForMathlib.NumberTheory.Padics.PadicIntegers
 import LocalClassFieldTheory.ForMathlib.RingTheory.DedekindDomain.Ideal
--- import LocalClassFieldTheory.FromMathlib.SpecificLimits
+
 
 -- #align_import padic_compare
 
@@ -95,23 +96,25 @@ def padicValued : Valued ℚ ℤₘ₀ := (pHeightOneIdeal p).adicValued
 /-- The adic completion of ℚ defined as the uniform completion of the valued field
 `ℚ` endowed with its `p`-adic valued structure.-/
 @[reducible]
-def QP : Type _ :=
+def Q_p : Type _ :=
   adicCompletion ℚ (pHeightOneIdeal p)
 
-instance : IsDiscrete (@Valued.v (QP p) _ ℤₘ₀ _ _) :=
+instance : IsDiscrete (@Valued.v (Q_p p) _ ℤₘ₀ _ _) :=
   Completion.isDiscrete _ _ _
 
-instance : NormedField (QP p) :=
-  RankOneValuation.ValuedField.toNormedField (QP p) ℤₘ₀
+instance : NormedField (Q_p p) :=
+  RankOneValuation.ValuedField.toNormedField (Q_p p) ℤₘ₀
 
 /-porting note: it is no longer possible to define `padicValued` as a local insance, so we need to
   keep inserting the explicit field eveywhere
 -/
 
 /-- The abstract completion of `ℚ` whose underlying space is `Q_p`. -/
-def padicPkg' : @AbstractCompletion _ (padicValued p).toUniformSpace :=
+def padicPkg' :
   letI := (padicValued p).toUniformSpace
-  { space := QP p,
+  AbstractCompletion ℚ :=
+  let _ := (padicValued p).toUniformSpace
+  { space := Q_p p,
     coe := UniformSpace.Completion.coe' ℚ,
     uniformStruct := inferInstance,
     complete := inferInstance,
@@ -200,25 +203,25 @@ end Valuation
 section AbstractCompletion
 
 
-theorem uniformInducing_coe : @UniformInducing _ _ ((@padicValued p _)).toUniformSpace _
-    (Rat.cast : ℚ → ℚ_[p]) := by
-    -- (coe : ℚ → ℚ_[p]) := by
+/-The natural map from ℚ to ℚ_[p], seen as a field of characeristic zero, is uniformInducing when
+  the rational field is endowed with the `p`-adic uniformity. -/
+theorem uniformInducing_cast : letI := ((@padicValued p _))
+  UniformInducing (Rat.cast : ℚ → ℚ_[p]) := by
   let _ := ((@padicValued p _))
   have hp_one : (1 : ℝ≥0) < p := Nat.one_lt_cast.mpr (Nat.Prime.one_lt Fact.out)
   apply UniformInducing.mk'
   simp_rw [@Metric.mem_uniformity_dist ℚ_[p] _ _]
   refine' fun S => ⟨fun hS => _, _⟩
   · obtain ⟨m, ⟨-, hM_sub⟩⟩ := (Valued.hasBasis_uniformity ℚ ℤₘ₀).mem_iff.mp hS
-    set M := (withZeroMultIntToNnreal (NNReal_Cast.p_ne_zero p) m.1).1 with hM
+    set M := (withZeroMultIntToNnreal (NNReal_Cast.p_ne_zero p) m.1).1
     refine' ⟨{p : ℚ_[p] × ℚ_[p] | dist p.1 p.2 < M}, ⟨⟨M, ⟨_, fun _ => _ ⟩⟩, fun x y h => _⟩⟩
     · exact withZeroMultIntToNnreal_pos _ (isUnit_iff_ne_zero.mp (Units.isUnit m))
     · tauto
     · apply hM_sub
       simp only [Set.mem_setOf_eq, dist] at h ⊢
-      -- sorry
-      rwa [/- ← Padic.coe_sub,  -/padicNormE.eq_padic_norm', padicNorm_eq_val_norm, hM, Units.val_eq_coe,
-        val_eq_coe, NNReal.coe_lt_coe, (withZeroMultIntToNnreal_strictMono hp_one).lt_iff_lt, ←
-        neg_sub, Valuation.map_neg] at h
+      rwa [← Padic.coe_sub, padicNormE.eq_padic_norm', padicNorm_eq_val_norm, val_eq_coe, coe_lt_coe,
+        @StrictMono.lt_iff_lt _ _ _ _ _ (withZeroMultIntToNnreal_strictMono hp_one), ← neg_sub,
+          Valuation.map_neg] at h
   · rw [(Valued.hasBasis_uniformity ℚ ℤₘ₀).mem_iff]
     rintro ⟨T, ⟨ε, ⟨hε, H⟩⟩, h⟩
     obtain ⟨M, hM⟩ := Real.exists_strictMono_lt (withZeroMultIntToNnreal_strictMono hp_one) hε
@@ -230,14 +233,12 @@ theorem uniformInducing_coe : @UniformInducing _ _ ((@padicValued p _)).toUnifor
         Valuation.map_neg]
       exact (NNReal.coe_lt_coe.mpr
         ((withZeroMultIntToNnreal_strictMono hp_one).lt_iff_lt.mpr hq)).trans hM
-    apply h
-    sorry --this would be `rfl` if the definition on line 114 was not `sorry`ed
-    -- simp_all?
-    -- specialize h q.1 q.2 this
-    -- rwa [Prod.mk.eta] at h
+    exact h _ _ this
 
-theorem dense_coe : DenseRange (coe : ℚ → ℚ_[p]) := by
-  rw [Metric.denseRange_iff]-- (Padic.rat_dense p)
+/-The natural map from ℚ to ℚ_[p], seen as a field of characeristic zero, has dense range when
+  the rational field is endowed with the `p`-adic uniformity. -/
+theorem dense_cast : DenseRange (Rat.cast : ℚ → ℚ_[p]) := by
+  rw [Metric.denseRange_iff]
   have := Padic.rat_dense p
   intro x r hr
   obtain ⟨s, hs⟩ := this x hr
@@ -245,29 +246,32 @@ theorem dense_coe : DenseRange (coe : ℚ → ℚ_[p]) := by
   have : ‖x - ↑s‖ = dist x ↑s := by rfl
   rw [this] at hs
   convert hs
-  sorry --this would be `rfl` if the definition on line 114 was not `sorry`ed (and the whole proof would be a one-liner)
-  -- apply Padic.norm
 
 /-- The abstract completion of `ℚ` (endowed with the uniformity coming from the `p`-adic valued
   structure) whose underlying space is `ℚ_[p]`-/
-def padicPkg : AbstractCompletion ℚ where
-  Space := ℚ_[p]
-  coe := coe
-  uniformStruct := inferInstance
-  complete := inferInstance
-  separation := inferInstance
-  UniformInducing := uniformInducing_coe p
-  dense := dense_coe p
+def padicPkg : letI := (padicValued p).toUniformSpace
+  AbstractCompletion ℚ :=
+  let _ := (padicValued p).toUniformSpace
+  { space := ℚ_[p]
+    coe := Rat.cast
+    uniformStruct := inferInstance
+    complete := inferInstance
+    separation := inferInstance
+    uniformInducing := uniformInducing_cast p
+    dense := dense_cast p}
+
+#check padicPkg
 
 /-- The coercion from the uniform space `ℚ` to its uniform completion `ℚ_[p]` as a ring
   homomorphims. Beware that this is not the coercion from `ℚ` to `ℚ_[p]` induced from the structure
   of characteristic-zero field on `ℚ_[p]`. -/
-def coeRingHom : ℚ →+* ℚ_[p] where
-  toFun := (padicPkg p).2
-  map_one' := Rat.cast_one
-  map_mul' := Rat.cast_mul
-  map_zero' := Rat.cast_zero
-  map_add' := Rat.cast_add
+def coeRingHom : ℚ →+* ℚ_[p] :=
+  let _ := (padicValued p).toUniformSpace
+  { toFun := (padicPkg p).2
+    map_one' := Rat.cast_one
+    map_mul' := Rat.cast_mul
+    map_zero' := Rat.cast_zero
+    map_add' := Rat.cast_add }
 
 end AbstractCompletion
 
@@ -276,142 +280,121 @@ open Padic'
 section Comparison
 
 /-- The main result is the uniform equivalence from `Q_p p` and `ℚ_[p]`-/
-def compare : QP p ≃ᵤ ℚ_[p] :=
+def compare : Q_p p ≃ᵤ ℚ_[p] :=
+  let _ := (padicValued p).toUniformSpace
   AbstractCompletion.compareEquiv (padicPkg' p) (padicPkg p)
 
-theorem uniformContinuous_coe : UniformContinuous (coe : ℚ → ℚ_[p]) :=
-  (uniformInducing_iff'.1 (uniformInducing_coe p)).1
+theorem uniformContinuous_cast : letI := (padicValued p).toUniformSpace
+  UniformContinuous (Rat.cast : ℚ → ℚ_[p]) :=
+  let _ := (padicValued p).toUniformSpace
+  (uniformInducing_iff'.1 (uniformInducing_cast p)).1
 
 /-- The upgrade of the comparison as a ring homomorphism -/
-def extensionAsRingHom : QP p →+* ℚ_[p] :=
-  UniformSpace.Completion.extensionHom (coeRingHom p) (uniformContinuous_coe p).Continuous
+def extensionAsRingHom : Q_p p →+* ℚ_[p] :=
+  let _ := (padicValued p).toUniformSpace
+  UniformSpace.Completion.extensionHom (coeRingHom p) (uniformContinuous_cast p).continuous
 
 @[simp]
-theorem extensionAsRingHom_toFun :
-    (extensionAsRingHom p).toFun = UniformSpace.Completion.extension (coe : ℚ → ℚ_[p]) :=
+theorem extensionAsRingHom_toFun : letI := (padicValued p).toUniformSpace
+  (extensionAsRingHom p).toFun = UniformSpace.Completion.extension (Rat.cast : ℚ → ℚ_[p]) :=
   rfl
 
-theorem extension_eq_compare : (extensionAsRingHom p).toFun = (compare p).toFun :=
-  by
-  simp only [extension_as_ring_hom_to_fun, Equiv.toFun_as_coe, UniformEquiv.coe_toEquiv]
-  apply
-    UniformSpace.Completion.extension_unique (uniform_continuous_coe p)
-      ((padic_pkg' p).uniformContinuous_compareEquiv (padic_pkg p))
+theorem extension_eq_compare : (extensionAsRingHom p).toFun = (compare p).toFun := by
+  let _ := (padicValued p).toUniformSpace
+  simp only [Equiv.toFun_as_coe, UniformEquiv.coe_toEquiv]
+  apply UniformSpace.Completion.extension_unique (uniformContinuous_cast p)
+    ((padicPkg' p).uniformContinuous_compareEquiv (padicPkg p))
   intro a
-  have : (padic_pkg p).coe a = (↑a : ℚ_[p]) := rfl
+  have : (padicPkg p).coe a = (↑a : ℚ_[p]) := rfl
   rw [← this, ← AbstractCompletion.compare_coe]
   rfl
 
 /-- The uniform equivalence `compare` as a ring equivalence -/
-def padicEquiv : QP p ≃+* ℚ_[p] :=
-  {
-    compare
-      p with
-    map_mul' := by rw [← extension_eq_compare p]; use(extension_as_ring_hom p).map_mul'
-    map_add' := by rw [← extension_eq_compare p]; exact (extension_as_ring_hom p).map_add' }
+def padicEquiv : Q_p p ≃+* ℚ_[p] :=
+  { compare p with
+    map_mul' := by rw [← extension_eq_compare p]; use (extensionAsRingHom p).map_mul'
+    map_add' := by rw [← extension_eq_compare p]; exact (extensionAsRingHom p).map_add' }
 
-instance : CharZero (QP p) :=
-  (padicEquiv p).toRingHom.CharZero
+instance : CharZero (Q_p p) := (padicEquiv p).toRingHom.charZero
 
-instance : Algebra ℚ_[p] (QP p) :=
-  RingHom.toAlgebra (PadicComparison.padicEquiv p).symm
+instance : Algebra ℚ_[p] (Q_p p) := RingHom.toAlgebra (PadicComparison.padicEquiv p).symm
 
-instance : IsScalarTower ℚ ℚ_[p] (QP p)
-    where smul_assoc r x y :=
-    by
-    simp only [Algebra.smul_def, eq_ratCast, _root_.map_mul, map_ratCast, mul_assoc]
-    rfl
+instance : IsScalarTower ℚ ℚ_[p] (Q_p p) where smul_assoc r x y := by
+    { simp only [Algebra.smul_def, eq_ratCast, _root_.map_mul, map_ratCast, mul_assoc]
+      rfl}
 
-theorem Padic'.coe_eq (x : ℚ) : (x : QP p) = ((padicPkg' p).coe x : (padicPkg' p).Space) :=
-  by
-  have hp : (x : Q_p p) = (padic_pkg p).compare (padic_pkg' p) (x : ℚ_[p]) :=
-    by
-    have h : (padic_pkg p).compare (padic_pkg' p) (x : ℚ_[p]) = algebraMap ℚ_[p] (Q_p p) x := rfl
+theorem Padic'.coe_eq (x : ℚ) : letI := (padicValued p).toUniformSpace
+   (x : Q_p p) = ((padicPkg' p).coe x : (padicPkg' p).space) := by
+  let _ := (padicValued p).toUniformSpace
+  have hp : (x : Q_p p) = (padicPkg p).compare (padicPkg' p) (x : ℚ_[p]) := by
+    have h : (padicPkg p).compare (padicPkg' p) (x : ℚ_[p]) = algebraMap ℚ_[p] (Q_p p) x := rfl
     rw [h, map_ratCast]
-  rw [← AbstractCompletion.compare_coe (padic_pkg p) (padic_pkg' p), hp]
+  rw [← AbstractCompletion.compare_coe (padicPkg p) (padicPkg' p), hp]
   rfl
 
-theorem padicValued_valuation_p : @Valued.v ℚ _ ℤₘ₀ _ (padicValued p) (p : ℚ) = ofAdd (-1 : ℤ) :=
-  by
+theorem padicValued_valuation_p :
+    @Valued.v ℚ _ ℤₘ₀ _ (padicValued p) (p : ℚ) = ofAdd (-1 : ℤ) := by
   have hp : (p : ℚ) = algebraMap ℤ ℚ (p : ℤ) := rfl
-  rw [adic_valued_apply, hp, valuation_of_algebra_map, int_valuation_apply,
-    int_valuation_def_if_neg (p_height_one_ideal p)
-      (nat.cast_ne_zero.mpr (Nat.Prime.ne_zero _inst_1.1))]
-  congr
+  rw [adicValued_apply, hp, valuation_of_algebraMap, intValuation_apply,
+    intValuationDef_if_neg (pHeightOneIdeal p) (NeZero.natCast_ne p ℤ)]
+  simp only [ofAdd_neg, WithZero.coe_inv, reduceNeg, inv_inj, WithZero.coe_inj,
+    EmbeddingLike.apply_eq_iff_eq, Nat.cast_eq_one]
   apply Associates.count_self
-  rw [Associates.irreducible_mk]
-  apply Prime.irreducible
-  exact
-    Ideal.prime_of_isPrime
-      (ideal.span_singleton_eq_bot.mp.mt (nat.cast_ne_zero.mpr (Nat.Prime.ne_zero _inst_1.1)))
-      (Ideal.IsMaximal.isPrime' (p_height_one_ideal p).asIdeal)
+  simpa [Associates.irreducible_mk] using (prime (pHeightOneIdeal p)).irreducible
 
-theorem Padic'.valuation_p : Valued.v (p : QP p) = ofAdd (-1 : ℤ) :=
-  by
-  letI : Valued ℚ ℤₘ₀ := padic_valued p
-  have hp : (p : Q_p p) = ((coe : ℚ → Q_p p) p : Q_p p) :=
-    by
-    have : ∀ x : ℚ, (coe : ℚ → Q_p p) x = (x : Q_p p) := by intro x; rw [padic'.coe_eq]; rfl
+
+theorem Padic'.valuation_p : Valued.v (p : Q_p p) = ofAdd (-1 : ℤ) := by
+  let _ : Valued ℚ ℤₘ₀ := padicValued p
+  have hp : (p : Q_p p) = ((Rat.cast : ℚ → Q_p p) p : Q_p p) := by
+    have : ∀ x : ℚ, (Rat.cast : ℚ → Q_p p) x = (x : Q_p p) := by intro x; rw [Padic'.coe_eq]
     rw [this]; simp only [Rat.cast_coe_nat]
-  rw [hp, Valued.valuedCompletion_apply (p : ℚ), padic_valued_valuation_p p]
+  erw [hp, Padic'.coe_eq, Valued.valuedCompletion_apply (p : ℚ), padicValued_valuation_p p]
 
 end Comparison
 
-section ZP
+section Z_p
 
 /-- The unit ball in `Q_p` -/
 @[reducible]
-def zP :=
-  (@Valued.v (QP p) _ ℤₘ₀ _ _).ValuationSubring
+def Z_p := (@Valued.v (Q_p p) _ ℤₘ₀ _ _).valuationSubring
 
-theorem exists_mem_le_one_of_lt_one {x : QP p} (hx : Valued.v x ≤ (1 : ℤₘ₀)) :
-    ∃ y : zP p, (y : QP p) = x ∧ Valued.v (y : QP p) = Valued.v x :=
-  by
-  have hv := valued.v.is_equiv_valuation_valuation_subring
-  have := ValuationSubring.mem_of_valuation_le_one (Z_p p) x _
-  use⟨x, this⟩
-  simp only [SetLike.coe_mk, eq_self_iff_true, and_self_iff]
-  exact ((Valuation.isEquiv_iff_val_le_one _ _).mp hv).mp hx
+theorem exists_mem_le_one_of_lt_one {x : Q_p p} (hx : Valued.v x ≤ (1 : ℤₘ₀)) :
+    ∃ y : Z_p p, (y : Q_p p) = x ∧ Valued.v (y : Q_p p) = Valued.v x := by
+  have hv := (@Valued.v (Q_p p) _ ℤₘ₀ _ _).isEquiv_valuation_valuationSubring
+  use ⟨x,
+    ValuationSubring.mem_of_valuation_le_one (Z_p p) x
+    (((Valuation.isEquiv_iff_val_le_one _ _).mp hv).mp hx)⟩
 
-theorem exists_mem_lt_one_of_lt_one {x : QP p} (hx : Valued.v x < (1 : ℤₘ₀)) :
-    ∃ y : zP p, (y : QP p) = x ∧ Valued.v (y : QP p) = Valued.v x :=
-  by
-  have hv := valued.v.is_equiv_valuation_valuation_subring
-  have := ValuationSubring.mem_of_valuation_le_one (Z_p p) x (le_of_lt _)
-  use⟨x, this⟩
-  simp only [SetLike.coe_mk, eq_self_iff_true, and_self_iff]
-  exact ((Valuation.isEquiv_iff_val_lt_one _ _).mp hv).mp hx
+theorem exists_mem_lt_one_of_lt_one {x : Q_p p} (hx : Valued.v x < (1 : ℤₘ₀)) :
+    ∃ y : Z_p p, (y : Q_p p) = x ∧ Valued.v (y : Q_p p) = Valued.v x := by
+  have hv := (@Valued.v (Q_p p) _ ℤₘ₀ _ _).isEquiv_valuation_valuationSubring
+  use ⟨x, ValuationSubring.mem_of_valuation_le_one (Z_p p) x
+    (le_of_lt <| ((Valuation.isEquiv_iff_val_lt_one _ _).mp hv).mp hx)⟩
 
-instance : CharZero (zP p)
-    where cast_injective m n h :=
-    by
-    simp only [Subtype.ext_iff, Subring.coe_natCast, Nat.cast_inj] at h
-    exact h
+instance : CharZero (Z_p p) where cast_injective m n h := by
+  { simp only [Subtype.ext_iff, Subring.coe_natCast, Nat.cast_inj] at h
+    exact h}
 
 /-- The maximal ideal of `Z_p p` as an element of the height-one spectrum -/
-def Padic'Int.heightOneIdeal : HeightOneSpectrum (zP p)
-    where
-  asIdeal := LocalRing.maximalIdeal (zP p)
-  IsPrime := Ideal.IsMaximal.isPrime (LocalRing.maximalIdeal.isMaximal _)
-  ne_bot := by
-    simpa [Ne.def, ← LocalRing.isField_iff_maximalIdeal_eq] using DiscreteValuation.not_isField _
+def Padic'Int.heightOneIdeal : HeightOneSpectrum (Z_p p) where
+  asIdeal := LocalRing.maximalIdeal (Z_p p)
+  isPrime := Ideal.IsMaximal.isPrime (LocalRing.maximalIdeal.isMaximal _)
+  ne_bot := by simpa [Ne.def, ← LocalRing.isField_iff_maximalIdeal_eq] using
+    DiscreteValuation.not_isField _
 
 theorem Padic'Int.heightOneIdeal_is_principal :
     (Padic'Int.heightOneIdeal p).asIdeal = Ideal.span {(p : Z_p p)} :=
-  DiscreteValuation.isUniformizer_is_generator _ (Padic'.valuation_p p)
+  DiscreteValuation.IsUniformizer_is_generator _ (Padic'.valuation_p p)
 
-instance : Valued (QP p) ℤₘ₀ :=
-  HeightOneSpectrum.valuedAdicCompletion ℚ (pHeightOneIdeal p)
+instance : Valued (Q_p p) ℤₘ₀ := HeightOneSpectrum.valuedAdicCompletion ℚ (pHeightOneIdeal p)
 
 /-- The ring `ℤ_[p]` as a valuation subring of `ℚ_[p]`. -/
-def PadicInt.valuationSubring : ValuationSubring ℚ_[p]
-    where
+def PadicInt.valuationSubring : ValuationSubring ℚ_[p] where
   toSubring := PadicInt.subring p
-  mem_or_inv_mem' :=
-    by
+  mem_or_inv_mem' := by
     have not_field : ¬IsField ℤ_[p] := DiscreteValuationRing.not_isField _
     -- Marking `not_field` as a separate assumption makes the computation faster
-    have := ((DiscreteValuationRing.TFAE ℤ_[p] not_field).out 0 1).mp PadicInt.discreteValuationRing
+    have := ((DiscreteValuationRing.TFAE ℤ_[p] not_field).out 0 1).mp (by infer_instance)
     intro x
     rcases(ValuationRing.iff_isInteger_or_isInteger ℤ_[p] ℚ_[p]).mp this x with (hx | hx)
     · apply Or.intro_left
@@ -427,6 +410,7 @@ def PadicInt.valuationSubring : ValuationSubring ℚ_[p]
         PadicInt.padic_norm_e_of_padicInt]
       apply PadicInt.norm_le_one
 
+
 open Filter
 
 open scoped Filter Topology
@@ -434,7 +418,10 @@ open scoped Filter Topology
 /-- The valuation subring of `ℚ_[p]` that is the image via the isomorphism `padic_equiv` of `Z_p`-/
 @[reducible]
 def comapZp : ValuationSubring ℚ_[p] :=
-  ValuationSubring.comap (zP p) (padicEquiv p).symm.toRingHom
+  ValuationSubring.comap (Z_p p) (padicEquiv p).symm.toRingHom
+
+example (x : ℝ) (hx : Tendsto (fun n : ℕ => x^n) atTop (𝓝 0)) : |x| < 1 := by
+  apply?
 
 /-- The two lemmas `padic_int.nonunit_mem_iff_top_nilpotent` and
 `unit_ball.nonunit_mem_iff_top_nilpotent` have basically the same proof, except that in the first we
@@ -446,15 +433,16 @@ theorem PadicInt.nonunit_mem_iff_top_nilpotent (x : ℚ_[p]) :
   have aux : ∀ n : ℕ, ‖x ^ n‖ = ‖x‖ ^ n := fun n => norm_pow _ n
   rw [tendsto_zero_iff_norm_tendsto_zero, Filter.tendsto_congr aux]
   refine' ⟨fun H => _, fun H => _⟩
-  · obtain ⟨h1, h2⟩ := valuation_subring.mem_nonunits_iff_exists_mem_maximal_ideal.mp H
+  · obtain ⟨h1, h2⟩ := ValuationSubring.mem_nonunits_iff_exists_mem_maximalIdeal.mp H
     exact
-      _root_.tendsto_pow_at_top_nhds_0_of_lt_1 (norm_nonneg _)
-        (padic_int.mem_nonunits.mp <| (LocalRing.mem_maximalIdeal _).mp h2)
-  · have : ‖x‖ < 1 :=
-      by
+      _root_.tendsto_pow_atTop_nhds_zero_of_lt_one (norm_nonneg _)
+        (PadicInt.mem_nonunits.mp <| (LocalRing.mem_maximalIdeal _).mp h2)
+  · have : ‖x‖ < 1 := by
       suffices (⟨‖x‖, norm_nonneg _⟩ : ℝ≥0) < 1 by
-        rwa [← NNReal.coe_lt_coe, NNReal.coe_one, ← Subtype.val_eq_coe] at this
-      apply NNReal.lt_one_of_tendsto_pow_0
+        rwa [← NNReal.coe_lt_coe, NNReal.coe_one, /- ← Subtype.val_eq_coe -/] at this
+      -- apply?
+      have := @tendsto_pow_atTop_nhds_zero_iff
+      apply NNReal.lt_one_of_tendsto_pow_zero
       rwa [← NNReal.tendsto_coe, NNReal.coe_zero]
     apply valuation_subring.mem_nonunits_iff_exists_mem_maximal_ideal.mpr
     exact
@@ -462,8 +450,8 @@ theorem PadicInt.nonunit_mem_iff_top_nilpotent (x : ℚ_[p]) :
         (LocalRing.mem_maximalIdeal _).mpr (padic_int.mem_nonunits.mpr this)⟩
 
 @[nolint unused_arguments]
-theorem mem_unit_ball_of_tendsto_zero {x : QP p} (H : Tendsto (fun n : ℕ => ‖x‖ ^ n) atTop (𝓝 0))
-    (h_go : ‖x‖ < 1) : x ∈ (zP p).nonunits :=
+theorem mem_unit_ball_of_tendsto_zero {x : Q_p p} (H : Tendsto (fun n : ℕ => ‖x‖ ^ n) atTop (𝓝 0))
+    (h_go : ‖x‖ < 1) : x ∈ (Z_p p).nonunits :=
   by
   apply valuation_subring.mem_nonunits_iff_exists_mem_maximal_ideal.mpr
   have : ‖x‖ < 1 :=
@@ -491,8 +479,8 @@ theorem mem_unit_ball_of_tendsto_zero {x : QP p} (H : Tendsto (fun n : ℕ => �
     ValuationSubring.algebraMap_apply, SetLike.coe_mk, forall_true_left] at this
   exact this
 
-theorem UnitBall.nonunit_mem_iff_top_nilpotent (x : QP p) :
-    x ∈ (zP p).nonunits ↔ Filter.Tendsto (fun n : ℕ => x ^ n) atTop (𝓝 0) :=
+theorem UnitBall.nonunit_mem_iff_top_nilpotent (x : Q_p p) :
+    x ∈ (Z_p p).nonunits ↔ Filter.Tendsto (fun n : ℕ => x ^ n) atTop (𝓝 0) :=
   by
   have h_max_ideal : (padic'_int.height_one_ideal p).asIdeal = LocalRing.maximalIdeal ↥(Z_p p) :=
     rfl
@@ -520,8 +508,8 @@ theorem UnitBall.nonunit_mem_iff_top_nilpotent (x : QP p) :
       rwa [← NNReal.tendsto_coe, NNReal.coe_zero]
     apply mem_unit_ball_of_tendsto_zero p H this
 
-theorem mem_nonunits_iff (x : QP p) :
-    x ∈ (zP p).nonunits ↔ (padicEquiv p) x ∈ (comapZp p).nonunits :=
+theorem mem_nonunits_iff (x : Q_p p) :
+    x ∈ (Z_p p).nonunits ↔ (padicEquiv p) x ∈ (comapZp p).nonunits :=
   by
   let φ : Z_p p ≃+* comap_Zp p :=
     by
@@ -573,7 +561,7 @@ theorem valuation_subrings_eq : PadicInt.valuationSubring p = comapZp p :=
     · rw [← _root_.map_zero (padic_equiv p)]
       apply Continuous.tendsto (compare p).symm.3.Continuous 0
 
-theorem padic_int_ring_equiv_range : (zP p).map (padicEquiv p).toRingHom = PadicInt.subring p :=
+theorem padic_int_ring_equiv_range : (Z_p p).map (padicEquiv p).toRingHom = PadicInt.subring p :=
   by
   have : (comap_Zp p).toSubring = (padic_int.valuation_subring p).toSubring
   rw [← valuation_subrings_eq]
@@ -596,11 +584,11 @@ theorem padic_int_ring_equiv_range : (zP p).map (padicEquiv p).toRingHom = Padic
     simp only [RingEquiv.toRingHom_apply_symm_toRingHom_apply]
 
 /-- The ring equivalence between `Z_p p` and `ℤ_[p]`. -/
-noncomputable def padicIntRingEquiv : zP p ≃+* ℤ_[p] :=
+noncomputable def padicIntRingEquiv : Z_p p ≃+* ℤ_[p] :=
   (RingEquiv.subringMap _).trans (RingEquiv.subringCongr (padic_int_ring_equiv_range p))
 
 /-- The ring equivalence between the residue field of `Z_p p` and `ℤ/pℤ`. -/
-def residueField : LocalRing.ResidueField (zP p) ≃+* ZMod p :=
+def residueField : LocalRing.ResidueField (Z_p p) ≃+* ZMod p :=
   (LocalRing.ResidueField.mapEquiv (padicIntRingEquiv p)).trans (PadicInt.residueField p)
 
 end ZP
