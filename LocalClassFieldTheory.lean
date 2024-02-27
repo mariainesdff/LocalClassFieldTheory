@@ -5,6 +5,7 @@ import LocalClassFieldTheory.DiscreteValuationRing.Basic
 import LocalClassFieldTheory.DiscreteValuationRing.Complete
 import LocalClassFieldTheory.DiscreteValuationRing.DiscreteNorm
 import LocalClassFieldTheory.DiscreteValuationRing.Extensions
+import LocalClassFieldTheory.DiscreteValuationRing.Localization
 import LocalClassFieldTheory.DiscreteValuationRing.TrivialExtension
 -- ForMathlib folder
 import LocalClassFieldTheory.ForMathlib.Data.Set.Lattice

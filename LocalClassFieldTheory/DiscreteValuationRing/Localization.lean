@@ -23,8 +23,7 @@ open scoped DiscreteValuation
 variable (R : Type _) [CommRing R] [IsDomain R] [IsDedekindDomain R] (K : Type _) [Field K]
   [Algebra R K] [IsFractionRing R K] (v : HeightOneSpectrum R)
 
-theorem adicValuedIsDiscrete : IsDiscrete (@adicValued R _ _ _ K _ _ _ v).v :=
-  by
+theorem adicValuedIsDiscrete : IsDiscrete (@adicValued R _ _ _ K _ _ _ v).v := by
   obtain ⟨π, hπ⟩ := valuation_exists_uniformizer K v
   apply isDiscreteOfExistsUniformizer
   swap
@@ -40,13 +39,12 @@ theorem valuation_completion_exists_uniformizer :
     ∃ π : K_v, Valued.v π = Multiplicative.ofAdd (-1 : ℤ) := by
   obtain ⟨x, hx⟩ := IsDedekindDomain.HeightOneSpectrum.valuation_exists_uniformizer K v
   use ↑x
-  haveI := Valued.mk' (@adicValued R _ _ _ K _ _ _ v).v
-  rw [IsDedekindDomain.HeightOneSpectrum.valuedAdicCompletion_def, ← hx/- , Valued.extension_extends -/]
-  sorry--rfl
+  rw [IsDedekindDomain.HeightOneSpectrum.valuedAdicCompletion_def, ← hx,
+    @Valued.extension_extends K _ ℤₘ₀ _ (adicValued v)]
+  rfl
 
 theorem valuation_completion_integers_exists_uniformizer :
-    ∃ π : R_v, Valued.v (π : K_v) = Multiplicative.ofAdd (-1 : ℤ) :=
-  by
+    ∃ π : R_v, Valued.v (π : K_v) = Multiplicative.ofAdd (-1 : ℤ) := by
   obtain ⟨x, hx⟩ := valuation_completion_exists_uniformizer R K v
   refine' ⟨⟨x, _⟩, hx⟩
   rw [HeightOneSpectrum.mem_adicCompletionIntegers, hx]
