@@ -307,61 +307,53 @@ theorem extensionDef_add [FiniteDimensional K L] (x y : L) :
     · by_cases hxy : x + y = 0
       · simp only [extensionDef_apply, dif_pos hxy, zero_le']
       · simp only [extensionDef_apply, dif_neg hx, dif_neg hy, dif_neg hxy]
-        set ux := (exists_mul_expExtensionOnUnits K (isUnit_iff_ne_zero.mpr hx).choose).choose with
-          hux_def
-        set uy := (exists_mul_expExtensionOnUnits K (isUnit_iff_ne_zero.mpr hy).choose).choose with
-          huy_def
-        set uxy :=
-          (exists_mul_expExtensionOnUnits K (isUnit_iff_ne_zero.mpr hxy).choose).choose with
-          huxy_def
+        set ux := (exists_mul_expExtensionOnUnits K (isUnit_iff_ne_zero.mpr hx).choose).choose
+        set uy := (exists_mul_expExtensionOnUnits K (isUnit_iff_ne_zero.mpr hy).choose).choose
+        set uxy := (exists_mul_expExtensionOnUnits K (isUnit_iff_ne_zero.mpr hxy).choose).choose
         rw [_root_.le_max_iff]
         simp only [← WithZero.coe_zpow, WithZero.coe_le_coe]
         have hd : 0 < (expExtensionOnUnits K L : ℤ) := by
           rw [Int.coe_nat_pos]
           exact Nat.pos_of_ne_zero (expExtensionOnUnits_ne_zero K L)
-        --rw [← hux_def, ← huy_def, ← huxy_def]
         rw [← zpow_le_zpow_iff' hd, zpow_ofNat, zpow_ofNat, ← WithZero.coe_le_coe, WithZero.coe_pow,
            WithZero.coe_zpow]
-        have h' := (exists_mul_expExtensionOnUnits K (isUnit_iff_ne_zero.mpr hxy).unit).choose_spec
-        sorry
-        -- rw [← zpow_le_zpow_iff' hd, zpow_ofNat, zpow_ofNat, ← coe_le_coe, WithZero.coe_pow,
-        --   WithZero.coe_zpow,
-        --   (exists_mul_expExtensionOnUnits K (is_unit_iff_ne_zero.mpr hxy).Unit).choose_spec]
-        -- rw [WithZero.coe_pow, WithZero.coe_zpow,
-        --   (exists_mul_expExtensionOnUnits K (is_unit_iff_ne_zero.mpr hx).Unit).choose_spec]
-        -- rw [← zpow_le_zpow_iff' hd, zpow_ofNat, zpow_ofNat]
-        -- nth_rw 2 [← coe_le_coe]
-        -- simp only [WithZero.coe_pow, WithZero.coe_zpow,
-        --   (exists_mul_expExtensionOnUnits K (is_unit_iff_ne_zero.mpr hxy).Unit).choose_spec,
-        --   (exists_mul_expExtensionOnUnits K (is_unit_iff_ne_zero.mpr hy).Unit).choose_spec]
-        -- simp only [← (withZeroMultIntToNNReal_strictMono (one_lt_base K hv.v)).le_iff_le, ←
-        --   NNReal.coe_le_coe]
-        -- rw [_root_.map_pow, NNReal.coe_pow, ← Real.rpow_nat_cast, Nat.cast_div, ←
-        --   pow_eq_pow_root_zero_coeff' h_alg]
-        -- --x + y
-        -- rw [_root_.map_pow, NNReal.coe_pow, ←
-        --   Real.rpow_nat_cast _ (finrank K L / (minpoly K _).natDegree), Nat.cast_div, ←
-        --   pow_eq_pow_root_zero_coeff' h_alg]
-        -- -- x
-        -- rw [_root_.map_pow, NNReal.coe_pow, ←
-        --   Real.rpow_nat_cast _ (finrank K L / (minpoly K _).natDegree), Nat.cast_div, ←
-        --   pow_eq_pow_root_zero_coeff' h_alg]
-        -- -- y
-        -- have h_le :
-        --   (discrete_norm_extension h_alg) (x + y) ≤ (discrete_norm_extension h_alg) x ∨
-        --     (discrete_norm_extension h_alg) (x + y) ≤ (discrete_norm_extension h_alg) y :=
-        --   by
-        --   rw [← _root_.le_max_iff]
-        --   exact (IsNonarchimedean h_alg) _ _
-        -- cases' h_le with hlex hley
-        -- · left
-        --   exact pow_le_pow_of_le_left (nonneg h_alg _) hlex _
-        -- · right
-        --   exact pow_le_pow_of_le_left (nonneg h_alg _) hley _
-        -- repeat' exact minpoly.degree_dvd (is_algebraic_iff_is_integral.mp (h_alg _))
-        -- repeat'
-        --   rw [Nat.cast_ne_zero]
-        --   exact ne_of_gt (minpoly.natDegree_pos (is_algebraic_iff_is_integral.mp (h_alg _)))
+        simp only [(isUnit_iff_ne_zero.mpr hx).choose_spec, (isUnit_iff_ne_zero.mpr hy).choose_spec,
+          (isUnit_iff_ne_zero.mpr hxy).choose_spec]
+        rw [(exists_mul_expExtensionOnUnits K (isUnit_iff_ne_zero.mpr hxy).unit).choose_spec]
+        rw [WithZero.coe_pow, WithZero.coe_zpow,
+          (exists_mul_expExtensionOnUnits K (isUnit_iff_ne_zero.mpr hx).unit).choose_spec]
+        rw [← zpow_le_zpow_iff' hd, zpow_ofNat, zpow_ofNat]
+        nth_rw 2 [← WithZero.coe_le_coe]
+        simp only [WithZero.coe_pow, WithZero.coe_zpow,
+          (exists_mul_expExtensionOnUnits K (isUnit_iff_ne_zero.mpr hxy).unit).choose_spec,
+          (exists_mul_expExtensionOnUnits K (isUnit_iff_ne_zero.mpr hy).unit).choose_spec]
+        simp only [← (withZeroMultIntToNNReal_strictMono (one_lt_base K hv.v)).le_iff_le, ←
+          NNReal.coe_le_coe]
+        rw [_root_.map_pow, NNReal.coe_pow, ← Real.rpow_nat_cast, Nat.cast_div, ←
+          pow_eq_pow_root_zero_coeff' h_alg]
+        --x + y
+        rw [_root_.map_pow, NNReal.coe_pow, ← Real.rpow_nat_cast _
+          (finrank K L / (minpoly K _).natDegree), Nat.cast_div,
+          ← pow_eq_pow_root_zero_coeff' h_alg]
+        -- x
+        rw [_root_.map_pow, NNReal.coe_pow, ← Real.rpow_nat_cast _
+          (finrank K L / (minpoly K _).natDegree), Nat.cast_div,
+          ← pow_eq_pow_root_zero_coeff' h_alg]
+        -- y
+        have h_le :
+          (discreteNormExtension h_alg) (x + y) ≤ (discreteNormExtension h_alg) x ∨
+            (discreteNormExtension h_alg) (x + y) ≤ (discreteNormExtension h_alg) y := by
+          rw [← _root_.le_max_iff]
+          exact (isNonarchimedean h_alg) _ _
+        cases' h_le with hlex hley
+        · left
+          exact pow_le_pow_left (nonneg h_alg _) hlex _
+        · right
+          exact pow_le_pow_left (nonneg h_alg _) hley _
+        repeat' exact minpoly.degree_dvd (isAlgebraic_iff_isIntegral.mp (h_alg _))
+        repeat'
+          rw [Nat.cast_ne_zero]
+          exact ne_of_gt (minpoly.natDegree_pos (isAlgebraic_iff_isIntegral.mp (h_alg _)))
 
 variable (K L)
 
@@ -499,8 +491,7 @@ variable (K L)
 
 --porting note: the @[protected] attribute has been commented
 -- @[protected]
-def normedField [FiniteDimensional K L] : NormedField L :=
-  by
+def normedField [FiniteDimensional K L] : NormedField L := by
   have h_alg := Algebra.IsAlgebraic.of_finite K L
   letI : NontriviallyNormedField K := nontriviallyDiscretelyNormedField K
   exact spectralNormToNormedField h_alg (norm_isNonarchimedean K)
@@ -515,12 +506,9 @@ def valued [FiniteDimensional K L] : Valued L ℤₘ₀ :=
     @NonUnitalNormedRing.toNormedAddCommGroup L _ with
     v := extendedValuation K L
     is_topological_valuation := fun U =>  by
-      sorry
-      /- letI : Module K L := sorry
-      --letI : NoZeroSMulDivisors K L := sorry
       have hpos : 0 < (expExtensionOnUnits K L : ℝ) :=
         Nat.cast_pos.mpr (expExtensionOnUnits_pos K L)
-      have hpos' : 0 < (finrank K L : ℝ) := sorry --Nat.cast_pos.mpr finrank_pos
+      have hpos' : 0 < (finrank K L : ℝ) := Nat.cast_pos.mpr finrank_pos
       have h_alg := Algebra.IsAlgebraic.of_finite K L
       rw [Metric.mem_nhds_iff]
       refine' ⟨fun h => _, fun h => _⟩
@@ -529,37 +517,33 @@ def valued [FiniteDimensional K L] : Valued L ℤₘ₀ :=
           Real.exists_strictMono_lt (withZeroMultIntToNNReal_strictMono (one_lt_base K hv.v)) hε
         use δ ^ (finrank K L / expExtensionOnUnits K L)
         intro x hx
-        simp only [Set.mem_setOf_eq, extension.apply] at hx
+        simp only [Set.mem_setOf_eq, Extension.apply] at hx
         apply h
         rw [mem_ball_zero_iff]
-        split_ifs at hx  with h0 h0
+        split_ifs at hx  with h0
         · rw [h0, norm_zero]; exact hε
-        · set n := (exists_mul_expExtensionOnUnits K (is_unit_iff_ne_zero.mpr h0).Unit).some with
+        · set n := (exists_mul_expExtensionOnUnits K (isUnit_iff_ne_zero.mpr h0).unit).choose with
             hn_def
-          set hn :=
-            (exists_mul_expExtensionOnUnits K (is_unit_iff_ne_zero.mpr h0).Unit).choose_spec
+          set hn := (exists_mul_expExtensionOnUnits K (isUnit_iff_ne_zero.mpr h0).unit).choose_spec
+          simp only [(isUnit_iff_ne_zero.mpr h0).choose_spec] at hx
           rw [← hn_def] at hx
-          have hx' :=
-            Real.rpow_lt_rpow (NNReal.coe_nonneg _)
+          have hx' := Real.rpow_lt_rpow (NNReal.coe_nonneg _)
               ((withZeroMultIntToNNReal_strictMono (one_lt_base K hv.v)) hx) hpos
           rw [Real.rpow_nat_cast, ← NNReal.coe_pow, ← _root_.map_pow, hn, _root_.map_pow,
-            NNReal.coe_pow, ←
-            discrete_norm_extension.pow_eq_pow_root_zero_coeff h_alg _
+            NNReal.coe_pow, ← DiscreteNormExtension.pow_eq_pow_root_zero_coeff h_alg _
               (minpoly.degree_dvd
-                (is_algebraic_iff_is_integral.mp (h_alg ↑(is_unit_iff_ne_zero.mpr h0).Unit)))]
+                (isAlgebraic_iff_isIntegral.mp (h_alg ↑(isUnit_iff_ne_zero.mpr h0).unit)))]
             at hx'
           rw [← Real.rpow_lt_rpow_iff (norm_nonneg _) (le_of_lt hε) hpos', Real.rpow_nat_cast]
           apply lt_trans hx'
-          rw [Units.val_pow_eq_pow_val, _root_.map_pow, NNReal.coe_pow, Real.rpow_nat_cast, ←
-            pow_mul, Nat.div_mul_cancel (expExtensionOnUnits_dvd K L), ← Real.rpow_nat_cast,
-            Real.rpow_lt_rpow_iff (NNReal.coe_nonneg _) (le_of_lt hε) hpos']
+          simp only [Units.val_pow_eq_pow_val, _root_.map_pow, val_eq_coe, NNReal.coe_pow,
+            Real.rpow_nat_cast]
+          rw [← pow_mul, Nat.div_mul_cancel (expExtensionOnUnits_dvd K L), ← Real.rpow_nat_cast,
+            ← Real.rpow_nat_cast, Real.rpow_lt_rpow_iff (NNReal.coe_nonneg _) (le_of_lt hε) hpos']
           exact hδ
       · obtain ⟨ε, hε⟩ := h
-        have hε_pos :
-          0 <
-            (withZeroMultIntToNNReal (base_ne_zero K hv.v) ε : ℝ) ^
-              ((expExtensionOnUnits K L : ℝ) / (finrank K L : ℝ)) :=
-          by
+        have hε_pos : 0 < (withZeroMultIntToNNReal (base_ne_zero K hv.v) ε : ℝ) ^
+            ((expExtensionOnUnits K L : ℝ) / (finrank K L : ℝ)) := by
           apply rpow_pos
           rw [← _root_.map_zero (withZeroMultIntToNNReal (base_ne_zero K hv.v)),
             (withZeroMultIntToNNReal_strictMono (one_lt_base K hv.v)).lt_iff_lt]
@@ -570,66 +554,34 @@ def valued [FiniteDimensional K L] : Valued L ℤₘ₀ :=
         intro x hx
         rw [mem_ball_zero_iff] at hx
         apply hε
-        rw [Set.mem_setOf_eq, extension.apply]
-        split_ifs with h0 h0
+        rw [Set.mem_setOf_eq, Extension.apply]
+        split_ifs with h0
         · exact Units.zero_lt _
-        · set n := (exists_mul_expExtensionOnUnits K (is_unit_iff_ne_zero.mpr h0).Unit).some with
+        · set n := (exists_mul_expExtensionOnUnits K (isUnit_iff_ne_zero.mpr h0).unit).choose with
             hn_def
-          set hn :=
-            (exists_mul_expExtensionOnUnits K (is_unit_iff_ne_zero.mpr h0).Unit).choose_spec
-          rw [← hn_def] at hn ⊢
+          set hn := (exists_mul_expExtensionOnUnits K (isUnit_iff_ne_zero.mpr h0).unit).choose_spec
+          simp only [IsUnit.unit_spec, ← hn_def] at hn
           rw [← (withZeroMultIntToNNReal_strictMono (one_lt_base K hv.v)).lt_iff_lt, ←
-            rpow_lt_rpow_iff hpos, rpow_nat_cast, ← _root_.map_pow, hn, ← NNReal.coe_lt_coe,
-            _root_.map_pow, NNReal.coe_pow, ←
-            pow_eq_pow_root_zero_coeff h_alg _
-              (minpoly.degree_dvd (is_algebraic_iff_is_integral.mp (h_alg _))),
-            ←
-            Real.rpow_lt_rpow_iff (pow_nonneg (discrete_norm_extension.nonneg h_alg _) _)
-              (coe_nonneg _) (inv_pos.mpr hpos'),
-            ← Real.rpow_nat_cast, ← Real.rpow_mul (discrete_norm_extension.nonneg h_alg _),
-            mul_inv_cancel (ne_of_gt hpos'), Real.rpow_one, coe_rpow, ←
-            Real.rpow_mul (coe_nonneg _)]
-          exact hx -/ }
+            rpow_lt_rpow_iff hpos, rpow_nat_cast, ← _root_.map_pow]
+          simp only [(isUnit_iff_ne_zero.mpr h0).choose_spec]
+          rw [hn, ← NNReal.coe_lt_coe, _root_.map_pow, NNReal.coe_pow,
+            ← pow_eq_pow_root_zero_coeff h_alg _
+              (minpoly.degree_dvd (isAlgebraic_iff_isIntegral.mp (h_alg _))),
+            ← Real.rpow_lt_rpow_iff (pow_nonneg (DiscreteNormExtension.nonneg h_alg _) _)
+                (coe_nonneg _) (inv_pos.mpr hpos'),
+            ← Real.rpow_nat_cast, ← Real.rpow_mul (DiscreteNormExtension.nonneg h_alg _),
+            mul_inv_cancel (ne_of_gt hpos'), Real.rpow_one, coe_rpow,
+            ← Real.rpow_mul (coe_nonneg _)]
+          exact hx }
 
--- attribute [local instance 1001] Field.toSemifield
--- attribute [local instance 1000 ] Field.toCommRing
--- attribute [local instance 1000 ] SeminormedCommRing.toCommRing
 attribute [-instance ] Semifield.toCommSemiring
 attribute [-instance ] EuclideanDomain.toCommRing
--- attribute [-instance ] Field.toCommRing
-
--- attribute [-instance]
---   Subalgebra.instSMulSubtypeMemSubalgebraInstMembershipInstSetLikeSubalgebra
---   Subsemiring.smul
---   Submonoid.smul
---   IntermediateField.module'
---   Subalgebra.isScalarTower_left
---   Subsemiring.isScalarTower
---   Submonoid.isScalarTower
-
--- example (x : K) (y : L) : true := by
-    -- @CompleteSpace L (UniformSpace (Algebra.IsAlgebraic.of_finite K L)) :=
-  -- have a : NontriviallyNormedField K := nontriviallyDiscretelyNormedField K
-  -- let f : NormedField K := by infer_instance
-  -- let foo := @CommRing.toCommSemiring K (@Field.toCommRing K _)
-  -- let bar := @CommRing.toCommSemiring K (@SeminormedCommRing.toCommRing K _)
-  -- have : bar = foo
-  -- rfl -- it fails, of course
-
-  -- K SeminormedCommRing.toCommRing
-  -- let c : @Algebra K L bar _ := by
-
-  -- have b := @spectral_norm_completeSpace K a L _ c
-
-    -- spectral_norm_completeSpace (Algebra.IsAlgebraic.of_finite K L) (norm_isNonarchimedean K)
-
-
 
 /-- `L` is a complete space with respect to the topology induced by `extended-valuation`. -/
--- instance (priority := 100) completeSpace [FiniteDimensional K L] :
---     @CompleteSpace L (UniformSpace (Algebra.IsAlgebraic.of_finite K L)) :=
---   letI : NontriviallyNormedField K := nontriviallyDiscretelyNormedField K
---   spectral_norm_completeSpace (Algebra.IsAlgebraic.of_finite K L) (norm_isNonarchimedean K)
+instance (priority := 100) completeSpace [FiniteDimensional K L] :
+    @CompleteSpace L (uniformSpace (Algebra.IsAlgebraic.of_finite K L)) :=
+  letI : NontriviallyNormedField K := nontriviallyDiscretelyNormedField K
+  spectral_norm_completeSpace (Algebra.IsAlgebraic.of_finite K L) (norm_isNonarchimedean K)
 
 --porting note: the @[protected] attribute has been commented
 -- @[protected]

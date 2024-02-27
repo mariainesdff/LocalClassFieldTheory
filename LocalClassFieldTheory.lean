@@ -4,6 +4,7 @@ import LocalClassFieldTheory.SpectralNorm
 import LocalClassFieldTheory.DiscreteValuationRing.Basic
 import LocalClassFieldTheory.DiscreteValuationRing.Complete
 import LocalClassFieldTheory.DiscreteValuationRing.DiscreteNorm
+import LocalClassFieldTheory.DiscreteValuationRing.Extensions
 -- ForMathlib folder
 import LocalClassFieldTheory.ForMathlib.Data.Set.Lattice
 import LocalClassFieldTheory.ForMathlib.FieldTheory.Minpoly.IsIntegrallyClosed
