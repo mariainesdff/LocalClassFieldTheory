@@ -61,7 +61,7 @@ namespace DiscreteValuation
 
 variable (K : Type u) [Field K] [hv : Valued K ℤₘ₀] (L : Type w) [Field L] [Algebra K L]
 
-local notation "K₀" => hv.v.valuationSubring
+local notation3 "K₀" => hv.v.valuationSubring
 
 -- Porting note: needed to add this to avoid timeouts
 instance : Algebra ↥(integralClosure K₀ L) ↥(integralClosure K₀ L) := Algebra.id _
@@ -75,8 +75,7 @@ instance : CommSemiring ↥(integralClosure K₀ L) := inferInstance
 -- Porting note: needed to add this to avoid timeouts
 instance : AddCommGroup ↥(integralClosure K₀ L) := Ring.toAddCommGroup
 
--- Porting note: needed to add this to avoid timeouts
-instance : IsDedekindDomain ↥(integralClosure K₀ L) := sorry
+
 
 /-- The ideal in the ìntegers of `L` obtained by extending the maximal ideal of `K₀`-/
 @[reducible]
@@ -112,11 +111,17 @@ instance [IsSeparable K L] : IsNoetherian K₀ (integralClosure K₀ L) :=
 
 variable [CompleteSpace K]
 
+/- -- Porting note: needed to add this to avoid timeouts
+instance : DiscreteValuationRing ↥(integralClosure K₀ L) :=
+  DiscreteValuation.integralClosure.discreteValuationRing_of_finite_extension K L -/
+
+-- Porting note: needed to add this to avoid timeouts
+instance : IsDedekindDomain ↥(integralClosure K₀ L) := IsPrincipalIdealRing.isDedekindDomain _
+
 theorem ramificationIdx_maximal_neZero :
     NeZero
       (ramificationIdx (algebraMap K₀ (integralClosure K₀ L)) (LocalRing.maximalIdeal K₀)
         (LocalRing.maximalIdeal (integralClosure K₀ L))) := by
-
   apply NeZero.mk
   apply IsDedekindDomain.ramificationIdx_ne_zero (extendedMaxIdeal_ne_zero K L)
   · apply IsMaximal.isPrime'
@@ -213,12 +218,51 @@ theorem algebraMap_comp_power_e :
           (algebraModExtended K L) ∘
         Ideal.Quotient.mk (LocalRing.maximalIdeal K₀) =
       Ideal.Quotient.mk (extendedMaxIdeal K L) ∘ algebraMap K₀ (integralClosure K₀ L) := by
-  convert algebraMap_comp_extended K L using 4
+  letI := algebraModExtended K L
+  have : HEq (⇑(algebraMap (ResidueField K₀)
+          (↥(integralClosure (K₀) L) ⧸ extendedMaxIdeal K L)) ∘
+      ⇑(Ideal.Quotient.mk (LocalRing.maximalIdeal K₀))) ((algebraMap (ResidueField K₀)
+          (↥(integralClosure (K₀) L) ⧸
+            LocalRing.maximalIdeal ↥(integralClosure (K₀) L) ^
+              ramificationIdx
+                (algebraMap K₀ ↥(integralClosure (K₀) L))
+                (LocalRing.maximalIdeal K₀)
+                (LocalRing.maximalIdeal ↥(integralClosure (K₀) L)))) ∘
+      ⇑(Ideal.Quotient.mk (LocalRing.maximalIdeal K₀))) := by
+    congr
+    --erw [extended_eq_pow_ramification_index]
+    sorry
+  --convert algebraMap_comp_extended K L
+  --simp only [extended_eq_pow_ramification_index]
+  /- ⇑(algebraMap (ResidueField K₀)
+          (↥(integralClosure (K₀) L) ⧸ extendedMaxIdeal K L)) ∘
+      ⇑(Ideal.Quotient.mk (LocalRing.maximalIdeal K₀)) =
+    ⇑(Ideal.Quotient.mk (extendedMaxIdeal K L)) ∘
+      ⇑(algebraMap K₀ ↥(integralClosure (K₀) L)) ↔
+
+
+  ⇑(algebraMap (ResidueField K₀)
+          (↥(integralClosure (K₀) L) ⧸
+            LocalRing.maximalIdeal ↥(integralClosure (K₀) L) ^
+              ramificationIdx
+                (algebraMap K₀ ↥(integralClosure (K₀) L))
+                (LocalRing.maximalIdeal K₀)
+                (LocalRing.maximalIdeal ↥(integralClosure (K₀) L)))) ∘
+      ⇑(Ideal.Quotient.mk (LocalRing.maximalIdeal K₀)) =
+    ⇑(Ideal.Quotient.mk
+          (LocalRing.maximalIdeal ↥(integralClosure (K₀) L) ^
+            ramificationIdx
+              (algebraMap K₀ ↥(integralClosure (K₀) L))
+              (LocalRing.maximalIdeal K₀)
+              (LocalRing.maximalIdeal ↥(integralClosure (K₀) L)))) ∘
+      ⇑(algebraMap K₀ ↥(integralClosure (K₀) L))-/
+
   sorry
   /- any_goals rw [extended_eq_pow_ramification_index]
   · simp only [algebra_mod_extended]
     simp only [eq_mpr_eq_cast, ← cast_cast, cast_hEq] -/
 
+#exit
 attribute [local instance] algebraModExtended
 
 theorem algebraMap_comp_power_e_apply (a : K₀) :
@@ -288,6 +332,15 @@ theorem scalar_tower_power_e :
 
 instance : Module (ResidueField K₀) (↥(integralClosure K₀ L) ⧸ extendedMaxIdeal K L) := sorry
 
+instance : Module (ResidueField K₀) (↥(integralClosure (K₀) L) ⧸
+    LocalRing.maximalIdeal ↥(integralClosure (K₀) L) ^
+      ramificationIdx (algebraMap K₀ ↥(integralClosure (K₀) L)) (LocalRing.maximalIdeal K₀)
+    (LocalRing.maximalIdeal ↥(integralClosure (K₀) L))) := by
+  sorry
+
+instance : Module ↥(integralClosure (K₀) L) ↥(integralClosure (K₀) L) := by
+  sorry
+
 /-- The equivalence as vector spaces over the residue field of the base of
 * the quotient of the integral closure of `K₀` modulo the extension of the maximal ideal below; and
 * the quotient of the integral closure of `K₀` modulo the `e`-th power of the maximal idal above;
@@ -298,7 +351,8 @@ noncomputable def quotientLinearIso :
         LocalRing.maximalIdeal (integralClosure K₀ L) ^
           ramificationIdx (algebraMap K₀ (integralClosure K₀ L)) (LocalRing.maximalIdeal K₀)
             (LocalRing.maximalIdeal (integralClosure K₀ L)) := by
-  let f := (Submodule.quotEquivOfEq _ _ (extended_eq_pow_ramification_index K L)).restrictScalars K₀
+  sorry
+  /- let f := (Submodule.quotEquivOfEq _ _ (extended_eq_pow_ramification_index K L)).restrictScalars K₀
   let g :
     integralClosure K₀ L ⧸ extendedMaxIdeal K L →ₗ[residue_field K₀]
       integralClosure K₀ L ⧸
@@ -319,11 +373,22 @@ noncomputable def quotientLinearIso :
       rw [scalar_tower_v, RingHom.id_apply, scalar_tower_fv]
       apply f.map_smul
   have h : Function.Bijective g := by apply f.bijective
-  use LinearEquiv.ofBijective g f.bijective
+  use LinearEquiv.ofBijective g f.bijective -/
 
-attribute [local instance] algebra_residue_fields
+attribute [local instance] algebraResidueFields
 
-theorem finiteDimensional_pow [IsSeparable K L] :
+instance : Module (K₀⧸ LocalRing.maximalIdeal K₀)
+    ↥(Ideal.map
+        (Ideal.Quotient.mk
+          (LocalRing.maximalIdeal ↥(integralClosure (K₀) L) ^
+            ramificationIdx
+              (algebraMap K₀ ↥(integralClosure (K₀) L))
+              (LocalRing.maximalIdeal K₀)
+              (LocalRing.maximalIdeal ↥(integralClosure (K₀) L))))
+        (LocalRing.maximalIdeal ↥(integralClosure (K₀) L) ^ (0 + 1))) := by
+  sorry
+
+/-theorem finiteDimensional_pow [IsSeparable K L] :
     FiniteDimensional (ResidueField K₀)
       (map
           (Ideal.Quotient.mk
@@ -333,16 +398,15 @@ theorem finiteDimensional_pow [IsSeparable K L] :
           (LocalRing.maximalIdeal (integralClosure K₀ L) ^ 0) ⧸
         LinearMap.range
           (powQuotSuccInclusion (algebraMap K₀ (integralClosure K₀ L)) (LocalRing.maximalIdeal K₀)
-            (LocalRing.maximalIdeal (integralClosure K₀ L)) 0)) :=
-  by
+            (LocalRing.maximalIdeal (integralClosure K₀ L)) 0)) := by
   have aux :
     FiniteDimensional.finrank (K₀ ⧸ LocalRing.maximalIdeal K₀)
         (integralClosure K₀ L ⧸ extendedMaxIdeal K L) =
-      FiniteDimensional.finrank K L :=
-    by
+      FiniteDimensional.finrank K L := by
     apply
       @finrank_quotient_map K₀ _ (integralClosure K₀ L) _ (LocalRing.maximalIdeal K₀) _ K _ _ _ L _
         _ (integralClosure.isFractionRing_of_finite_extension K L) _ _ _ _ _ _ _ _ _ _
+    sorry
   have : FiniteDimensional (residue_field K₀) (integralClosure K₀ L ⧸ extendedMaxIdeal K L) :=
     by
     suffices 0 < FiniteDimensional.finrank K L
@@ -366,8 +430,8 @@ theorem finiteDimensional_pow [IsSeparable K L] :
           (LocalRing.maximalIdeal (integralClosure K₀ L) ^
             ramification_idx (algebraMap K₀ (integralClosure K₀ L)) (LocalRing.maximalIdeal K₀)
               (LocalRing.maximalIdeal (integralClosure K₀ L))))
-        (LocalRing.maximalIdeal (integralClosure K₀ L) ^ 0))
-  · rw [pow_zero, one_eq_top, Ideal.map_top]
+        (LocalRing.maximalIdeal (integralClosure K₀ L) ^ 0)) := by
+    rw [pow_zero, one_eq_top, Ideal.map_top]
     haveI := (quotient_linear_iso K L).FiniteDimensional
     apply
       (@Submodule.topEquiv (residue_field K₀)
@@ -377,41 +441,66 @@ theorem finiteDimensional_pow [IsSeparable K L] :
                   (LocalRing.maximalIdeal (integralClosure K₀ L)))
             _ _ _).symm.FiniteDimensional
   exact @FiniteDimensional.finiteDimensional_quotient (residue_field K₀) _ _ _ _ aux _
+ -/
+
+instance : Ring
+    (↥(integralClosure (K₀) L) ⧸
+      LocalRing.maximalIdeal ↥(integralClosure (K₀) L) ^
+        ramificationIdx (algebraMap K₀ ↥(integralClosure (K₀) L))
+          (LocalRing.maximalIdeal K₀)
+          (LocalRing.maximalIdeal ↥(integralClosure (K₀) L))) := by
+  sorry
+
+instance : AddCommGroup
+    ↥(Ideal.map
+        (Ideal.Quotient.mk
+          (LocalRing.maximalIdeal ↥(integralClosure (K₀) L) ^
+            ramificationIdx
+              (algebraMap K₀ ↥(integralClosure (K₀) L))
+              (LocalRing.maximalIdeal K₀)
+              (LocalRing.maximalIdeal ↥(integralClosure (K₀) L))))
+        (LocalRing.maximalIdeal ↥(integralClosure (K₀) L) ^ 0)) := by
+  sorry
+
+instance : Ring ↥(integralClosure (K₀) L) := by sorry
 
 theorem finiteDimensional_residueField_of_integralClosure [IsSeparable K L] :
-    FiniteDimensional (ResidueField K₀) (ResidueField (integralClosure K₀ L)) :=
-  by
-  let alg := algebra_residue_fields K L
-  dsimp only [residue_field] at alg
+    FiniteDimensional (ResidueField K₀) (ResidueField (integralClosure K₀ L)) := by
+  let alg := algebraResidueFields K L
+  dsimp only [ResidueField] at alg
   letI := alg
-  letI h0 := ramification_idx_maximal_ne_zero K L
+  letI h0 := ramificationIdx_maximal_neZero K L
   have zero_lt :
     0 <
-      ramification_idx (algebraMap K₀ (integralClosure K₀ L)) (LocalRing.maximalIdeal K₀)
+      ramificationIdx (algebraMap K₀ (integralClosure K₀ L)) (LocalRing.maximalIdeal K₀)
         (LocalRing.maximalIdeal (integralClosure K₀ L)) :=
     by apply Nat.pos_of_ne_zero h0.1
   let surj :=
-    quotient_range_pow_quot_succ_inclusion_equiv (algebraMap K₀ (integralClosure K₀ L))
+    quotientRangePowQuotSuccInclusionEquiv (algebraMap K₀ (integralClosure K₀ L))
       (LocalRing.maximalIdeal K₀) (LocalRing.maximalIdeal (integralClosure K₀ L))
       (DiscreteValuationRing.not_a_field _) zero_lt
-  apply
-    @LinearEquiv.finiteDimensional (residue_field K₀) _ _ _ _ (residue_field (integralClosure K₀ L))
-      _ _ surj (finite_dimensional_pow K L)
+  /- apply
+    @LinearEquiv.finiteDimensional (ResidueField K₀) _ _ _ _ (ResidueField (integralClosure K₀ L))
+      _ _ surj _ --(finiteDimensional_pow K L) -/
+  sorry
 
 /-- The residue field of the integral closure of a DVR in a  finite, separable extension of a
 fraction field of the DVR is finite if the residue field of the base is finite-/
 noncomputable def finiteResidueFieldOfIntegralClosure [IsSeparable K L]
-    (hres : Fintype (ResidueField K₀)) : Fintype (ResidueField (integralClosure K₀ L)) :=
-  letI := finite_dimensional_residue_field_of_integral_closure K L
+    [Fintype (ResidueField K₀)] : Fintype (ResidueField (integralClosure K₀ L)) :=
+  letI := finiteDimensional_residueField_of_integralClosure K L
   Module.fintypeOfFintype
-    (FiniteDimensional.finBasis (residue_field K₀) (residue_field (integralClosure K₀ L)))
+    (FiniteDimensional.finBasis (ResidueField K₀) (ResidueField (integralClosure K₀ L)))
+
+instance : LocalRing ↥(Subalgebra.toSubring (integralClosure (K₀) L)) := by
+  sorry
 
 /-- The residue field of the unit ball of a  finite, separable extension of a fraction field of a
 DVR is finite if the residue field of the base is finite-/
 noncomputable def finiteResidueFieldOfUnitBall [IsSeparable K L]
-    (hres : Fintype (LocalRing.ResidueField K₀)) :
-    Fintype (ResidueField (extendedValuation K L).ValuationSubring) :=
-  @Fintype.ofEquiv _ _ (finiteResidueFieldOfIntegralClosure K L hres)
+    [Fintype (LocalRing.ResidueField K₀)] :
+    Fintype (ResidueField (extendedValuation K L).valuationSubring) :=
+  @Fintype.ofEquiv _ _ (finiteResidueFieldOfIntegralClosure K L)
     (LocalRing.ResidueField.mapEquiv
         (RingEquiv.subringCongr
           (DiscreteValuation.Extension.integralClosure_eq_integer K L))).toEquiv
