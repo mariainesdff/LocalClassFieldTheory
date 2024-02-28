@@ -38,40 +38,40 @@ variable (p : ℕ) [Fact (Nat.Prime p)]
 /-- A mixed characteristic local field is a field which has characteristic zero and is finite
 dimensional over `Q_p p`, for some prime `p`. -/
 class MixedCharLocalField (p : outParam ℕ) [Fact (Nat.Prime p)] (K : Type _) [Field K] extends
-    Algebra (QP p) K where
-  [to_finiteDimensional : FiniteDimensional (QP p) K]
+    Algebra (Q_p p) K where
+  [to_finiteDimensional : FiniteDimensional (Q_p p) K]
 
 namespace MixedCharLocalField
 
-@[nolint dangerous_instance]
+--@[nolint dangerous_instance] --Porting note: Linter not found
 instance (priority := 100) to_charZero (p : outParam ℕ) [Fact (Nat.Prime p)] (K : Type _) [Field K]
     [MixedCharLocalField p K] : CharZero K :=
   ⟨fun n m h => by
     rwa [← map_natCast (algebraMap (Q_p p) K), ← map_natCast (algebraMap (Q_p p) K),
-      (algebraMap (Q_p p) K).Injective.eq_iff, Nat.cast_inj] at h ⟩
+      (algebraMap (Q_p p) K).injective.eq_iff, Nat.cast_inj] at h ⟩
 
-attribute [instance] to_finite_dimensional
+attribute [instance] to_finiteDimensional
 
 variable (K : Type _) [Field K] [MixedCharLocalField p K]
 
 variable (L : Type _) [Field L] [MixedCharLocalField p L]
 
-protected theorem isAlgebraic : Algebra.IsAlgebraic (QP p) K :=
-  Algebra.isAlgebraic_of_finite _ _
+protected theorem isAlgebraic : Algebra.IsAlgebraic (Q_p p) K :=
+  Algebra.IsAlgebraic.of_finite _ _
 
 /-- The ring of integers of a mixed characteristic local field is the integral closure of ℤ_[p]
   in the local field. -/
-def ringOfIntegers :=
-  integralClosure (zP p) K
+def ringOfIntegers := integralClosure (Z_p p) K
 
 scoped notation "𝓞" => MixedCharLocalField.ringOfIntegers
 
-theorem mem_ringOfIntegers (x : K) : x ∈ 𝓞 p K ↔ IsIntegral (zP p) x :=
-  Iff.rfl
+theorem mem_ringOfIntegers (x : K) : x ∈ 𝓞 p K ↔ IsIntegral (Z_p p) x := Iff.rfl
+
+-- Porting note: needed to add this
+instance : Algebra ↥(Z_p p) ↥(𝓞 p K) := Subalgebra.algebra _
 
 theorem isIntegral_of_mem_ringOfIntegers {x : K} (hx : x ∈ 𝓞 p K) :
-    IsIntegral (zP p) (⟨x, hx⟩ : 𝓞 p K) :=
-  by
+    IsIntegral (Z_p p) (⟨x, hx⟩ : 𝓞 p K) := by
   obtain ⟨P, hPm, hP⟩ := hx
   refine' ⟨P, hPm, _⟩
   rw [← Polynomial.aeval_def, ← Subalgebra.coe_eq_zero, Polynomial.aeval_subalgebra_coe,
@@ -81,7 +81,7 @@ theorem isIntegral_of_mem_ringOfIntegers {x : K} (hx : x ∈ 𝓞 p K) :
 of integers. For now, this is not an instance by default as it creates an equal-but-not-defeq
 diamond with `algebra.id` when `K = L`. This is caused by `x = ⟨x, x.prop⟩` not being defeq on
 subtypes. It will be an instance when ported to Lean 4, since the above will not be an issue. -/
-def ringOfIntegersAlgebra [Algebra K L] [IsScalarTower (QP p) K L] : Algebra (𝓞 p K) (𝓞 p L) :=
+def ringOfIntegersAlgebra [Algebra K L] [IsScalarTower (Q_p p) K L] : Algebra (𝓞 p K) (𝓞 p L) :=
   ValuationSubring.valuationSubringAlgebra _ K L
 
 namespace RingOfIntegers
@@ -89,20 +89,20 @@ namespace RingOfIntegers
 variable {K}
 
 noncomputable instance : IsFractionRing (𝓞 p K) K :=
-  integralClosure.isFractionRing_of_finite_extension (QP p) _
+  integralClosure.isFractionRing_of_finite_extension (Q_p p) _
 
-instance : IsIntegralClosure (𝓞 p K) (zP p) K :=
+instance : IsIntegralClosure (𝓞 p K) (Z_p p) K :=
   integralClosure.isIntegralClosure _ _
 
 noncomputable instance : IsIntegrallyClosed (𝓞 p K) :=
-  integralClosure.isIntegrallyClosedOfFiniteExtension (QP p)
+  integralClosure.isIntegrallyClosedOfFiniteExtension (Q_p p)
 
-theorem isIntegral_coe (x : 𝓞 p K) : IsIntegral (zP p) (x : K) :=
+theorem isIntegral_coe (x : 𝓞 p K) : IsIntegral (Z_p p) (x : K) :=
   x.2
 
 /-- The ring of integers of `K` is equivalent to any integral closure of `Z_p` in `K` -/
-protected noncomputable def equiv (R : Type _) [CommRing R] [Algebra (zP p) R] [Algebra R K]
-    [IsScalarTower (zP p) R K] [IsIntegralClosure R (zP p) K] : 𝓞 p K ≃+* R :=
+protected noncomputable def equiv (R : Type _) [CommRing R] [Algebra (Z_p p) R] [Algebra R K]
+    [IsScalarTower (Z_p p) R K] [IsIntegralClosure R (Z_p p) K] : 𝓞 p K ≃+* R :=
   ValuationSubring.equiv _ K R
 
 variable (K)
@@ -110,10 +110,20 @@ variable (K)
 instance : CharZero (𝓞 p K) :=
   CharZero.of_module _ K
 
-instance : IsNoetherian (zP p) (𝓞 p K) :=
-  IsIntegralClosure.isNoetherian (zP p) (QP p) K (𝓞 p K)
+-- Porting note: needed to add this for the `IsNoetherian` instance to work.
+instance : Module ↥(Z_p p) ↥(𝓞 p K) := Algebra.toModule
 
-theorem algebraMap_injective : Function.Injective ⇑(algebraMap (zP p) (ringOfIntegers p K)) :=
+-- Porting note: I needed to add this for the `IsNoetherian` instance to work.
+instance sMul : SMul (Z_p p) (𝓞 p K) := Algebra.toSMul
+
+-- Porting note: I needed to add this for the `IsNoetherian` instance to work.
+instance isScalarTower : IsScalarTower (Z_p p) (𝓞 p K) K :=
+  IsScalarTower.subalgebra' (↥(Z_p p)) K K (𝓞 p K)
+
+instance : IsNoetherian (Z_p p) (𝓞 p K) :=
+  IsIntegralClosure.isNoetherian (Z_p p) (Q_p p) K (𝓞 p K)
+
+theorem algebraMap_injective : Function.Injective ⇑(algebraMap (Z_p p) (ringOfIntegers p K)) :=
   ValuationSubring.integralClosure_algebraMap_injective _ K
 
 end RingOfIntegers
@@ -124,23 +134,29 @@ namespace Padic
 
 open MixedCharLocalField
 
-instance mixedCharLocalField (p : ℕ) [Fact (Nat.Prime p)] : MixedCharLocalField p (QP p)
+instance mixedCharLocalField (p : ℕ) [Fact (Nat.Prime p)] : MixedCharLocalField p (Q_p p)
     where to_finiteDimensional := inferInstance
+
+-- Porting note: I needed to add this for `ringOfIntegersEquiv` to work.
+instance :  SMul ↥(Z_p p) ↥(Z_p p) := Algebra.toSMul
+
+-- Porting note: I needed to add this for `ringOfIntegersEquiv` to work.
+instance isScalarTower : IsScalarTower (Z_p p) (Z_p p) (Q_p p):= IsScalarTower.left _
 
 /-- The ring of integers of `Q_p p` as a mixed characteristic local field is just `Z_p`. -/
 noncomputable def ringOfIntegersEquiv (p : ℕ) [Fact (Nat.Prime p)] :
-    ringOfIntegers p (QP p) ≃+* zP p :=
-  ringOfIntegers.equiv p (zP p)
+    ringOfIntegers p (Q_p p) ≃+* Z_p p :=
+  RingOfIntegers.equiv p (Z_p p)
 
 namespace RingOfIntegers
 
 open DiscreteValuation
 
-instance : Fintype (LocalRing.ResidueField (zP p)) :=
+instance : Fintype (LocalRing.ResidueField (Z_p p)) :=
   Fintype.ofEquiv _ (PadicComparison.residueField p).toEquiv.symm
 
 /-- The `fintype` structure on the residue field of `Z_p`. -/
-def residueFieldFintypeOfCompletion : Fintype (LocalRing.ResidueField (zP p)) :=
+def residueFieldFintypeOfCompletion : Fintype (LocalRing.ResidueField (Z_p p)) :=
   inferInstance
 
 end RingOfIntegers

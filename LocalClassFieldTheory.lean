@@ -43,3 +43,4 @@ import LocalClassFieldTheory.FromMathlib.SmoothingSeminorm
 import LocalClassFieldTheory.FromMathlib.SpecificLimits
 import LocalClassFieldTheory.FromMathlib.SpectralNormUnique
 -- MixedCharacteristic folder
+import LocalClassFieldTheory.MixedCharacteristic.Basic
