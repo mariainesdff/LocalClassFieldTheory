@@ -21,7 +21,7 @@ import LocalClassFieldTheory.ForMathlib.Topology.UniformSpace.AbstractCompletion
 import LocalClassFieldTheory.ForMathlib.DiscreteUniformity
 import LocalClassFieldTheory.ForMathlib.DiscreteValuationRing
 import LocalClassFieldTheory.ForMathlib.Polynomial
--- import LocalClassFieldTheory.ForMathlib.PoweSeries
+-- import LocalClassFieldTheory.ForMathlib.PowerSeries
 import LocalClassFieldTheory.ForMathlib.RankOneValuation
 import LocalClassFieldTheory.ForMathlib.WithZero
 -- FromMathlib folder *complete*
@@ -42,5 +42,6 @@ import LocalClassFieldTheory.FromMathlib.SeminormFromConst
 import LocalClassFieldTheory.FromMathlib.SmoothingSeminorm
 import LocalClassFieldTheory.FromMathlib.SpecificLimits
 import LocalClassFieldTheory.FromMathlib.SpectralNormUnique
--- MixedCharacteristic folder
+-- MixedCharacteristic folder *complete*
 import LocalClassFieldTheory.MixedCharacteristic.Basic
+import LocalClassFieldTheory.MixedCharacteristic.Valuation
