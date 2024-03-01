@@ -61,8 +61,7 @@ open Filter Set
 open scoped Filter Topology
 
 theorem cauchy_discrete_le_principal {X : Type _} {uX : UniformSpace X}
-    (hX : uniformity X = 𝓟 idRel) {α : Filter X} (hα : Cauchy α) : ∃ x : X, α ≤ 𝓟 {x} :=
-  by
+    (hX : uniformity X = 𝓟 idRel) {α : Filter X} (hα : Cauchy α) : ∃ x : X, α ≤ 𝓟 {x} := by
   rcases hα with ⟨α_ne_bot, α_le⟩
   rw [Filter.le_def] at α_le
   specialize α_le idRel
@@ -77,12 +76,12 @@ theorem cauchy_discrete_le_principal {X : Type _} {uX : UniformSpace X}
 
 /-- The constant to which a Cauchy filter in a discrete space converges.
 -/
-noncomputable def cauchyDiscreteIsConstant {X : Type _} {_ : UniformSpace X}
+noncomputable def cauchy_discrete_is_constant {X : Type _} {_ : UniformSpace X}
     (hX : uniformity X = 𝓟 idRel) {α : Filter X} (hα : Cauchy α) : X :=
   (cauchy_discrete_le_principal hX hα).choose
 
 theorem cauchy_discrete_le {X : Type _} {_ : UniformSpace X} (hX : uniformity X = 𝓟 idRel)
-    {α : Filter X} (hα : Cauchy α) : α ≤ 𝓟 {cauchyDiscreteIsConstant hX hα} :=
+    {α : Filter X} (hα : Cauchy α) : α ≤ 𝓟 {cauchy_discrete_is_constant hX hα} :=
   Exists.choose_spec (cauchy_discrete_le_principal hX hα)
 
 theorem neBot_unique_principal {X : Type _} [UniformSpace X] (hX : uniformity X = 𝓟 idRel)
