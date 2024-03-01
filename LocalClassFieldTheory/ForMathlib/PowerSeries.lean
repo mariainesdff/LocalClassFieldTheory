@@ -36,11 +36,12 @@ relating the powers and the inverse of the Hahn series `single 1 1` with the Hah
 -/
 
 
+noncomputable section
+
 namespace PowerSeries
 
 open scoped DiscreteValuation
 
-noncomputable section
 
 theorem coeff_zero_eq_eval {K : Type _} [Semiring K] (f : PowerSeries K) :
     (PowerSeries.coeff K 0) f = f 0 := by
@@ -267,7 +268,7 @@ def residueFieldOfPowerSeries : ResidueField (PowerSeries K) ≃+* K :=
   (Ideal.quotEquivOfEq (ker_constantCoeff_eq_max_ideal K).symm).trans
     (RingHom.quotientKerEquivOfSurjective (constantCoeff_surj K))
 
---end PowerSeries
+end PowerSeries
 
 variable {K : Type _} [Field K]
 
@@ -275,12 +276,13 @@ namespace Polynomial
 
 open RatFunc PowerSeries
 
---TODO: fix
-/- theorem coe_coe (P : Polynomial K) : (P : LaurentSeries K) = (↑P : RatFunc K) :=
-  by
-  erw [RatFunc.coe_def, RatFunc.coeAlgHom, lift_alg_hom_apply, RatFunc.num_algebraMap,
+-- Porting note: I added this
+instance : Coe (Polynomial K) (RatFunc K) := ⟨algebraMap _ _⟩
+
+theorem coe_coe (P : Polynomial K) : (P : LaurentSeries K) = (P : RatFunc K) := by
+  erw [RatFunc.coe_def, RatFunc.coeAlgHom, liftAlgHom_apply, RatFunc.num_algebraMap,
     RatFunc.denom_algebraMap P, map_one, div_one]
-  rfl -/
+  rfl
 
 theorem coe_ne_zero {f : Polynomial K} : f ≠ 0 → (↑f : PowerSeries K) ≠ 0 := by
   sorry --simp only [Ne.def, coe_eq_zero_iff, imp_self]

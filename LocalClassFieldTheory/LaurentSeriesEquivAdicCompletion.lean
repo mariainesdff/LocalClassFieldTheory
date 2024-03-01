@@ -249,7 +249,7 @@ theorem mk_val (f : Polynomial K) (g : Polynomial K) (hg : g ≠ 0) :
 
 theorem valuation_eq_laurentSeries_valuation (P : RatFunc K) :
     (Polynomial.idealX K).valuation P = (PowerSeries.idealX K).valuation (↑P : LaurentSeries K) := by
-  sorry/- apply RatFunc.induction_on' P
+  refine' RatFunc.induction_on' P _
   intro f g h
   convert RatFunc.mk_val K f g h
   rw [RatFunc.mk_eq_mk' K f g h]
@@ -258,16 +258,15 @@ theorem valuation_eq_laurentSeries_valuation (P : RatFunc K) :
         LaurentSeries K) =
       (IsLocalization.mk' (LaurentSeries K) (↑f : PowerSeries K)
           ⟨g, mem_nonZeroDivisors_iff_ne_zero.2 <| coe_ne_zero h⟩ :
-        LaurentSeries K) :=
-    by
-    simp only [IsFractionRing.mk'_eq_div, SetLike.coe_mk, coe_div]
+        LaurentSeries K) := by
+    simp only [IsFractionRing.mk'_eq_div, coe_div]
     congr
     exacts [(Polynomial.coe_coe f).symm, (Polynomial.coe_coe g).symm]
   rw [aux]
-  convert
-      @valuation_of_mk' (PowerSeries K) _ _ _ (LaurentSeries K) _ _ _ (PowerSeries.idealX K) ↑f
+  convert @valuation_of_mk' (PowerSeries K) _ _ _ (LaurentSeries K) _ _ _ (PowerSeries.idealX K) ↑f
         ⟨g, mem_nonZeroDivisors_iff_ne_zero.2 <| coe_ne_zero h⟩ <;>
-    apply PowerSeries.pol_intValuation_eq_powerSeries -/
+    apply PowerSeries.pol_intValuation_eq_powerSeries
+
 
 end RatFunc
 
@@ -447,12 +446,11 @@ theorem bounded_supp_of_valuation_le (f : LaurentSeries K) (d : ℤ) :
   · refine' ⟨d, fun _ hg _ hn => _⟩
     simpa only [eq_coeff_of_valuation_sub_lt K hg hn, hf] using HahnSeries.zero_coeff
   · refine' ⟨min (f.2.isWF.min (HahnSeries.support_nonempty_iff.mpr hf)) d - 1, fun _ hg n hn => _⟩
-    have hn' : f.coeff n = 0 :=
-      sorry/- Function.nmem_support.mp fun h =>
-        Set.IsWF.not_lt_min f.2.isWF (HahnSeries.support_nonempty_iff.mpr hf) h _ -/
+    have hn' : f.coeff n = 0 := Function.nmem_support.mp fun h =>
+      Set.IsWF.not_lt_min f.2.isWF (HahnSeries.support_nonempty_iff.mpr hf) h
+        (lt_trans hn (Int.sub_one_lt_iff.mpr (Int.min_le_left _ _)))
     rwa [eq_coeff_of_valuation_sub_lt K hg _]
     · exact lt_trans hn (Int.lt_of_le_sub_one <| (sub_le_sub_iff_right _).mpr (min_le_right _ d))
-    --· exact lt_trans hn (Int.lt_of_le_sub_one <| (sub_le_sub_iff_right _).mpr (min_le_left _ _))
 
 theorem val_le_one_iff_eq_coe (f : LaurentSeries K) :
     Valued.v f ≤ (1 : ℤₘ₀) ↔ ∃ F : PowerSeries K, ↑F = f := by
