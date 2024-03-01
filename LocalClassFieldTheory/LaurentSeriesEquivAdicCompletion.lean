@@ -458,9 +458,7 @@ theorem val_le_one_iff_eq_coe (f : LaurentSeries K) :
   refine' ⟨fun h => ⟨PowerSeries.mk fun n => f.coeff n, _⟩, _⟩
   ext (_ | n)
   · simp only [Int.ofNat_eq_coe, LaurentSeries.coeff_coe_powerSeries, coeff_mk]
-  sorry
-  sorry
-  /- simp only [h -[n+1] (Int.negSucc_lt_zero n)]
+  simp only [h (Int.negSucc n) (Int.negSucc_lt_zero n)]
   swap
   rintro ⟨F, rfl⟩ _ _
   all_goals
@@ -469,8 +467,7 @@ theorem val_le_one_iff_eq_coe (f : LaurentSeries K) :
       Set.mem_range, not_exists, Int.negSucc_lt_zero]
     intro
   linarith
-  linarith [Int.negSucc_lt_zero n] -/
-
+  simp only [not_false_eq_true]
 end Valuation
 
 end LaurentSeries
@@ -478,7 +475,6 @@ end LaurentSeries
 namespace CompletionLaurentSeries
 
 open LaurentSeries Polynomial
-
 section Complete
 
 open Filter TopologicalSpace
@@ -511,19 +507,19 @@ theorem Cauchy.coeff_tendso {ℱ : Filter (LaurentSeries K)} (hℱ : Cauchy ℱ)
   have hK : uniformity K = Filter.principal idRel := rfl
   exact cauchy_discrete_le hK (hℱ.map (uniformContinuous_coeff K hK D))
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
+/- Porting note : error "don't know how to synthesize placeholder for argument 'hi'", which
+  only shows up when the proof is apparently complete -/
 theorem Cauchy.exists_lb_eventual_support {ℱ : Filter (LaurentSeries K)} (hℱ : Cauchy ℱ) :
     ∃ N, ∀ᶠ f : LaurentSeries K in ℱ, ∀ n < N, f.coeff n = (0 : K) := by
-  let entourage :=
+  /- let entourage :=
     {P : LaurentSeries K × LaurentSeries K |
-      Valued.v (P.snd - P.fst) < ↑(Multiplicative.ofAdd (0 : ℤ))}
-  sorry
-  /- let ζ : ℤₘ₀ˣ := Units.mk0 (↑(Multiplicative.ofAdd 0)) WithZero.coe_ne_zero
+      Valued.v (P.snd - P.fst) < ((Multiplicative.ofAdd 0 : Multiplicative ℤ) : ℤₘ₀)}
+  let ζ : ℤₘ₀ˣ := Units.mk0 (Multiplicative.ofAdd 0 : Multiplicative ℤ) WithZero.coe_ne_zero
   obtain ⟨S, ⟨hS, ⟨T, ⟨hT, H⟩⟩⟩⟩ :=
     mem_prod_iff.mp
-      (filter.le_def.mp hℱ.2 entourage
-        (@has_basis.mem_of_mem _ _ _ _ _ ζ (Valued.hasBasis_uniformity (LaurentSeries K) ℤₘ₀) _))
-  obtain ⟨f, hf⟩ := forall_mem_nonempty_iff_ne_bot.mpr hℱ.1 (S ∩ T) (inter_mem_iff.mpr ⟨hS, hT⟩)
+      (Filter.le_def.mp hℱ.2 entourage
+        (@HasBasis.mem_of_mem _ _ _ _ _ ζ (Valued.hasBasis_uniformity (LaurentSeries K) ℤₘ₀) _))
+  obtain ⟨f, hf⟩ := forall_mem_nonempty_iff_neBot.mpr hℱ.1 (S ∩ T) (inter_mem_iff.mpr ⟨hS, hT⟩)
   obtain ⟨N, hN⟩ := bounded_supp_of_valuation_le K f 0
   use N
   apply mem_of_superset (inter_mem hS hT)
@@ -531,10 +527,11 @@ theorem Cauchy.exists_lb_eventual_support {ℱ : Filter (LaurentSeries K)} (hℱ
     intro g hg
     have h_prod : (f, g) ∈ entourage :=
       by
-      refine' this (set.mem_prod.mpr _)
+      refine' this (Set.mem_prod.mpr _)
       exact ⟨hf, hg⟩
     exact fun _ hn => hN g (le_of_lt h_prod) _ hn
-  exacts [(Set.prod_mono (Set.inter_subset_left S T) (Set.inter_subset_right S T)).trans H, trivial] -/
+  exact (Set.prod_mono (Set.inter_subset_left S T) (Set.inter_subset_right S T)).trans H -/
+  sorry
 
 theorem Cauchy.exists_lb_gt_principal {ℱ : Filter (LaurentSeries K)} (hℱ : Cauchy ℱ) :
     ∃ N, ∀ n < N, (ℱ.map fun f : LaurentSeries K => f.coeff n) ≤ Filter.principal {0} := by
