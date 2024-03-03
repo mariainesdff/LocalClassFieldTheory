@@ -536,63 +536,56 @@ theorem Cauchy.exists_lb_eventual_support {ℱ : Filter (LaurentSeries K)} (hℱ
 theorem Cauchy.exists_lb_gt_principal {ℱ : Filter (LaurentSeries K)} (hℱ : Cauchy ℱ) :
     ∃ N, ∀ n < N, (ℱ.map fun f : LaurentSeries K => f.coeff n) ≤ Filter.principal {0} := by
   simp only [principal_singleton, pure_zero, nonpos_iff, mem_map]
-  sorry/- obtain ⟨N, hN⟩ := hℱ.exists_lb_eventual_support
-  use N
-  intro n hn
-  apply Filter.mem_of_superset hN
-  intro a ha
-  exact ha n hn -/
+  obtain ⟨N, hN⟩ := Cauchy.exists_lb_eventual_support hℱ -- Porting note: dot notation doesn't work
+  exact ⟨N, fun n hn =>  Filter.mem_of_superset hN (fun a ha => ha n hn)⟩
 
-/- theorem Cauchy.exists_lb_support {ℱ : Filter (LaurentSeries K)} (hℱ : Cauchy ℱ) :
-    ∃ N, ∀ n, n < N → hℱ.coeff n = 0 := by
+theorem Cauchy.exists_lb_support {ℱ : Filter (LaurentSeries K)} (hℱ : Cauchy ℱ) :
+    ∃ N, ∀ n, n < N → coeff hℱ n = 0 := by -- Porting note: dot notation doesn't work
   letI : UniformSpace K := ⊥
   have hK : uniformity K = Filter.principal idRel := rfl
-  obtain ⟨N, hN⟩ := hℱ.exists_lb_gt_principal
-  use N
-  intro n hn
-  refine'
-    neBot_unique_principal hK (hℱ.map (uniform_continuous_coeff K hK n)).1 (cauchy.coeff_tendso _ _)
-      (hN n hn) -/
+  obtain ⟨N, hN⟩ := exists_lb_gt_principal hℱ -- Porting note: dot notation doesn't work
+  exact ⟨N, fun n hn => neBot_unique_principal hK (hℱ.map (uniformContinuous_coeff K hK n)).1
+    (coeff_tendso _ _) (hN n hn)⟩
+
+/- Porting note: dot notation doesn't work for the `Cauchy` hypothesis `hℱ`. -/
 
 /- The following lemma shows that for every `d` smaller than the minimum between the integers
 produced in `cauchy.exists_lb_eventual_support` and `cauchy.exists_lb_support`, for almost all
-series in `ℱ` the `d`th coefficient coincides with the `d`th coefficient of `hℱ.coeff`. -/
-/- theorem Cauchy.exists_lb_coeff_ne {ℱ : Filter (LaurentSeries K)} (hℱ : Cauchy ℱ) :
-    ∃ N, ∀ᶠ f : LaurentSeries K in ℱ, ∀ d < N, hℱ.coeff d = f.coeff d :=
-  by
-  obtain ⟨⟨N₁, hN₁⟩, ⟨N₂, hN₂⟩⟩ := hℱ.exists_lb_eventual_support, hℱ.exists_lb_support
+series in `ℱ` the `d`th coefficient coincides with the `d`th coefficient of `coeff hℱ`. -/
+theorem Cauchy.exists_lb_coeff_ne {ℱ : Filter (LaurentSeries K)} (hℱ : Cauchy ℱ) :
+    ∃ N, ∀ᶠ f : LaurentSeries K in ℱ, ∀ d < N, coeff hℱ d = f.coeff d := by
+  obtain ⟨⟨N₁, hN₁⟩, ⟨N₂, hN₂⟩⟩ := exists_lb_eventual_support hℱ, exists_lb_support hℱ
   refine' ⟨min N₁ N₂, ℱ.3 hN₁ fun _ hf d hd => _⟩
   rw [hf d (lt_of_lt_of_le hd (min_le_left _ _)), hN₂ d (lt_of_lt_of_le hd (min_le_right _ _))]
 
 theorem Cauchy.coeff_support_bdd {ℱ : Filter (LaurentSeries K)} (hℱ : Cauchy ℱ) :
-    BddBelow hℱ.coeff.support :=
-  by
-  refine' ⟨hℱ.exists_lb_support.some, fun d hd => _⟩
-  by_contra' hNd
-  exact hd (hℱ.exists_lb_support.some_spec d hNd) -/
+    BddBelow (coeff hℱ).support := by
+  refine' ⟨(exists_lb_support hℱ).choose, fun d hd => _⟩
+  by_contra hNd
+  exact hd ((exists_lb_support hℱ).choose_spec d (not_le.mp hNd))
 
 /-- To any Cauchy filter ℱ of `laurent_series K`, we can attach a laurent series that is the limit
 of the filter. Its `d`-th coefficient is defined as the limit of `ℱ.coeff d`, which is again Cauchy
 but valued in the discrete space `K`. That sufficiently negative coefficients vanish follows from
 `cauchy.coeff_support_bdd` -/
-def Cauchy.mkLaurentSeries {ℱ : Filter (LaurentSeries K)} (hℱ : Cauchy ℱ) : LaurentSeries K :=
-  sorry --HahnSeries.mk (fun d => hℱ.coeff d) (Set.IsWf.isPwo hℱ.coeff_support_bdd.wellFoundedOn_lt)
-/-
+def Cauchy.mk_laurentSeries {ℱ : Filter (LaurentSeries K)} (hℱ : Cauchy ℱ) : LaurentSeries K :=
+  HahnSeries.mk (fun d => coeff hℱ d) (Set.IsWF.isPWO (coeff_support_bdd hℱ).wellFoundedOn_lt)
+
 theorem Cauchy.coeff_eventually_equal {ℱ : Filter (LaurentSeries K)} (hℱ : Cauchy ℱ) :
-    ∀ D : ℤ, ∀ᶠ f : LaurentSeries K in ℱ, ∀ d, d < D → hℱ.coeff d = f.coeff d := by
+    ∀ D : ℤ, ∀ᶠ f : LaurentSeries K in ℱ, ∀ d, d < D → (coeff hℱ) d = f.coeff d := by
   intro D
-  set X : ℤ → Set (LaurentSeries K) := fun d => {f | hℱ.coeff d = f.coeff d} with hX
+  set X : ℤ → Set (LaurentSeries K) := fun d => {f | (coeff hℱ) d = f.coeff d} with hX
   have intersec :
-    (⋂ n ∈ Set.Iio D, X n) ⊆ {x : LaurentSeries K | ∀ d : ℤ, d < D → hℱ.coeff d = x.coeff d} :=
+    (⋂ n ∈ Set.Iio D, X n) ⊆ {x : LaurentSeries K | ∀ d : ℤ, d < D → (coeff hℱ) d = x.coeff d} :=
     by
     rintro (_ hf n hn)
     simp only [Set.mem_iInter, Set.mem_setOf_eq, hX] at hf
     exact hf n hn
-  set N := min hℱ.exists_lb_coeff_ne.some D with hN₀
+  set N := min (exists_lb_coeff_ne hℱ).choose D with hN₀
   suffices (⋂ n ∈ Set.Iio D, X n) ∈ ℱ by
     exact ℱ.3 this intersec
-  by_cases H : D < hℱ.exists_lb_coeff_ne.some
-  · apply ℱ.3 hℱ.exists_lb_coeff_ne.some_spec
+  by_cases H : D < (exists_lb_coeff_ne hℱ).choose
+  · apply ℱ.3 (exists_lb_coeff_ne hℱ).choose_spec
     simp only [Set.mem_Iio, Set.subset_iInter₂_iff, Set.setOf_subset_setOf]
     intro m hm f hd
     exact hd _ (lt_trans hm H)
@@ -600,35 +593,35 @@ theorem Cauchy.coeff_eventually_equal {ℱ : Filter (LaurentSeries K)} (hℱ : C
       hN₀]
     constructor
     · rw [hN₀, min_eq_left (not_lt.mp H), hX]
-      convert hℱ.exists_lb_coeff_ne.some_spec
-      ext f
-      simpa only [Set.mem_iInter, Set.mem_setOf_eq, Set.mem_setOf_eq]
+      convert (exists_lb_coeff_ne hℱ).choose_spec
+      sorry/- ext f
+      simpa only [Set.mem_iInter, Set.mem_setOf_eq, Set.mem_setOf_eq] -/
     · have : (⋂ (n : ℤ) (H : n ∈ Set.Ico N D), X n) = ⋂ n : (Finset.Ico N D : Set ℤ), X n := by
         simp only [Set.mem_Ico, Set.iInter_coe_set, Finset.mem_coe, Finset.mem_Ico, Subtype.coe_mk]
       simp only [this, Filter.iInter_mem]
       intro d
-      apply hℱ.coeff_tendso
-      simpa only [principal_singleton, mem_pure] using rfl -/
+      apply coeff_tendso hℱ
+      simp only [principal_singleton, mem_pure]
+      rfl
 
-/- theorem Cauchy.eventually_mem_nhds {ℱ : Filter (LaurentSeries K)} (hℱ : Cauchy ℱ)
-    {U : Set (LaurentSeries K)} (hU : U ∈ 𝓝 hℱ.mkLaurentSeries) : ∀ᶠ f in ℱ, f ∈ U :=
-  by
-  obtain ⟨γ, hU₁⟩ := valued.mem_nhds.mp hU
-  suffices ∀ᶠ f in ℱ, f ∈ {y : LaurentSeries K | Valued.v (y - hℱ.mk_laurent_series) < ↑γ} by
+theorem Cauchy.eventually_mem_nhds {ℱ : Filter (LaurentSeries K)} (hℱ : Cauchy ℱ)
+    {U : Set (LaurentSeries K)} (hU : U ∈ 𝓝 (mk_laurentSeries hℱ)) : ∀ᶠ f in ℱ, f ∈ U := by
+  letI : Ring (LaurentSeries K) := inferInstance -- Porting note : I had to add this
+  obtain ⟨γ, hU₁⟩ := Valued.mem_nhds.mp hU
+  suffices ∀ᶠ f in ℱ, f ∈ {y : LaurentSeries K | Valued.v (y - (mk_laurentSeries hℱ)) < ↑γ} by
     apply this.mono fun _ hf => hU₁ hf
   · set D := -(Multiplicative.toAdd (WithZero.unzero γ.ne_zero) - 1) with hD₀
-    have hD : (Multiplicative.ofAdd (-D) : ℤₘ₀) < γ :=
-      by
+    have hD : ((Multiplicative.ofAdd (-D) : Multiplicative ℤ) : ℤₘ₀) < γ := by
       rw [← WithZero.coe_unzero γ.ne_zero, WithZero.coe_lt_coe, hD₀, neg_neg, ofAdd_sub,
         ofAdd_toAdd, div_lt_comm, div_self', ← ofAdd_zero, Multiplicative.ofAdd_lt]
       exact zero_lt_one
-    apply (hℱ.coeff_eventually_equal D).mono
+    apply (coeff_eventually_equal  hℱ D).mono
     intro f hf
     apply lt_of_le_of_lt (valuation_le_of_coeff_eventually_eq _ _) hD
-    apply hf -/
+    apply hf
 
 instance : CompleteSpace (LaurentSeries K) :=
-  sorry --⟨fun _ hℱ => ⟨hℱ.mkLaurentSeries, fun S hS => hℱ.eventually_mem_nhds hS⟩⟩
+  ⟨fun hℱ => ⟨Cauchy.mk_laurentSeries hℱ, fun _ hS => Cauchy.eventually_mem_nhds hℱ hS⟩⟩
 
 end Complete
 
@@ -637,8 +630,7 @@ section Dense
 open HahnSeries
 
 theorem exists_pol_int_val_lt (F : PowerSeries K) (η : ℤₘ₀ˣ) :
-    ∃ P : Polynomial K, (PowerSeries.idealX K).intValuation (F - P) < η :=
-  by
+    ∃ P : Polynomial K, (PowerSeries.idealX K).intValuation (F - P) < η := by
   by_cases h_neg' : 1 < η
   · use 0
     rw [Polynomial.coe_zero, sub_zero]
@@ -655,29 +647,26 @@ theorem exists_pol_int_val_lt (F : PowerSeries K) (η : ℤₘ₀ˣ) :
       intro m hm
       rw [map_sub, sub_eq_zero, Polynomial.coeff_coe, coeff_trunc, if_pos hm]
     have := (LaurentSeries.int_valuation_le_iff_coeff_zero_of_lt K _).mpr trunc_prop
-    sorry
-    /- rw [Nat.cast_add, neg_add, ofAdd_add, ← hd, hD, ofAdd_toAdd, WithZero.coe_mul,
+    rw [Nat.cast_add, neg_add, ofAdd_add, ← hd, hD, ofAdd_toAdd, WithZero.coe_mul,
       WithZero.coe_unzero, LaurentSeries.coe_powerSeries, ← LaurentSeries.coe_algebraMap] at this
-    rw [←
-      @valuation_of_algebra_map (PowerSeries K) _ _ _ (LaurentSeries K) _ _ _ (PowerSeries.idealX K)
-        (F - ↑(F.trunc (d + 1)))]
+    rw [← @valuation_of_algebraMap (PowerSeries K) _ _ _ (LaurentSeries K) _ _ _
+      (PowerSeries.idealX K) (F - ↑(F.trunc (d + 1)))]
     apply lt_of_le_of_lt this
-    rw [← mul_one ↑η, mul_assoc, one_mul]
+    rw [← mul_one (η : ℤₘ₀), mul_assoc, one_mul]
     apply WithZero.lt_hMul_left₀ _ η.ne_zero
-    rw [← WithZero.coe_one, WithZero.coe_lt_coe, algebraMap.coe_one, ofAdd_neg,
-      Right.inv_lt_one_iff, ← ofAdd_zero, Multiplicative.ofAdd_lt]
-    apply Int.zero_lt_one -/
+    rw [← WithZero.coe_one, WithZero.coe_lt_coe, ofAdd_neg, Right.inv_lt_one_iff, ← ofAdd_zero,
+      Multiplicative.ofAdd_lt]
+    apply Int.zero_lt_one
 
 theorem exists_ratFunc_val_lt (f : LaurentSeries K) (γ : ℤₘ₀ˣ) :
     ∃ Q : RatFunc K, Valued.v (f - Q) < γ := by
   set F := f.powerSeriesPart with hF
   by_cases ord_nonpos : f.order < 0
-  · --have h₀ : (Multiplicative.ofAdd f.order : ℤₘ₀) ≠ 0 := WithZero.coe_ne_zero
-    sorry
-    /- set η : ℤₘ₀ˣ := Units.mk0 (Multiplicative.ofAdd f.order) h₀ with hη
+  · have h₀ : ((Multiplicative.ofAdd f.order : Multiplicative ℤ) : ℤₘ₀) ≠ 0 := WithZero.coe_ne_zero
+    set η : ℤₘ₀ˣ := Units.mk0 (Multiplicative.ofAdd f.order : Multiplicative ℤ) h₀ with hη
     obtain ⟨P, hP⟩ := exists_pol_int_val_lt K F (η * γ)
-    use RatFunc.X ^ f.order * ↑P
-    have F_mul := f.of_power_series_power_series_part
+    use RatFunc.X ^ f.order * (P : RatFunc K)
+    have F_mul := f.ofPowerSeries_powerSeriesPart
     obtain ⟨s, hs⟩ := Int.exists_eq_neg_ofNat (le_of_lt ord_nonpos)
     rw [← hF, hs, neg_neg, ← HahnSeries.ofPowerSeries_X_pow s, ← LaurentSeries.coe_powerSeries, ←
       LaurentSeries.coe_powerSeries, ← inv_mul_eq_iff_eq_mul₀] at F_mul
@@ -685,26 +674,25 @@ theorem exists_ratFunc_val_lt (f : LaurentSeries K) (γ : ℤₘ₀ˣ) :
       inv_eq_one_div (RatFunc.X ^ s), RatFunc.coe_div, RatFunc.coe_pow, RatFunc.coe_X,
       RatFunc.coe_one, ← inv_eq_one_div, ← mul_sub, map_mul, map_inv₀, ← PowerSeries.coe_X,
       valuation_of_X_zpow, ← hs, ← Polynomial.coe_coe, ← coe_sub, LaurentSeries.coe_powerSeries, ←
-      LaurentSeries.coe_algebraMap, valuation_of_algebra_map, ← Units.val_mk0 h₀, ← hη]
+      LaurentSeries.coe_algebraMap, valuation_of_algebraMap, ← Units.val_mk0 h₀, ← hη]
     apply inv_mul_lt_of_lt_mul₀
     rwa [← Units.val_mul]
-    ·
-      simp only [PowerSeries.coe_pow, pow_ne_zero, PowerSeries.coe_X, Ne.def,
-        HahnSeries.single_eq_zero_iff, one_ne_zero, not_false_iff]-/
+    · simp only [PowerSeries.coe_pow, pow_ne_zero, PowerSeries.coe_X, Ne.def,
+        HahnSeries.single_eq_zero_iff, one_ne_zero, not_false_iff]
   · obtain ⟨s, hs⟩ := Int.exists_eq_neg_ofNat (Int.neg_nonpos_of_nonneg (not_lt.mp ord_nonpos))
     simp only [neg_inj] at hs
-    sorry
-    /- have hf_coe : ↑(PowerSeries.X ^ s * F) = f := by
-      sorry/- rw [← f.single_order_mul_powerSeriesPart, hs, hF, PowerSeries.coe_mul, PowerSeries.coe_pow,
-        PowerSeries.coe_X, ← single_pow] -/
+    have hf_coe : (PowerSeries.X ^ s * F : PowerSeries K) = f := by
+      rw [← f.single_order_mul_powerSeriesPart, hs, hF, PowerSeries.coe_mul, PowerSeries.coe_pow,
+        PowerSeries.coe_X, ← single_pow]
     rw [← hf_coe]
     obtain ⟨P, hP⟩ := exists_pol_int_val_lt K (PowerSeries.X ^ s * F) γ
     use ↑P
     erw [← Polynomial.coe_coe, ← coe_sub, LaurentSeries.coe_powerSeries, ←
-      LaurentSeries.coe_algebraMap, valuation_of_algebra_map]
-    exact hP -/
+      LaurentSeries.coe_algebraMap, valuation_of_algebraMap]
+    exact hP
 
 theorem coe_range_dense : DenseRange (coe : RatFunc K → LaurentSeries K) := by
+  letI : Ring (LaurentSeries K) := inferInstance -- Porting note: I had to add this
   rw [denseRange_iff_closure_range]
   ext f
   simp only [UniformSpace.mem_closure_iff_symm_ball, Set.mem_univ, iff_true_iff, Set.Nonempty,
@@ -712,42 +700,47 @@ theorem coe_range_dense : DenseRange (coe : RatFunc K → LaurentSeries K) := by
   intro V hV h_symm
   rw [uniformity_eq_comap_neg_add_nhds_zero_swapped] at hV
   obtain ⟨T, hT₀, hT₁⟩ := hV
-  sorry/- obtain ⟨γ, hγ⟩ := Valued.mem_nhds_zero.mp hT₀
-  obtain ⟨P, _⟩ := exists_ratfunc_val_lt K f γ
+  obtain ⟨γ, hγ⟩ := Valued.mem_nhds_zero.mp hT₀
+  obtain ⟨P, hP⟩ := exists_ratFunc_val_lt K f γ
   use P
   apply hT₁
   apply hγ
-  simpa only [Set.mem_setOf_eq, add_comm, ← sub_eq_add_neg]
- -/
+  simp only [add_comm, ← sub_eq_add_neg, gt_iff_lt, Set.mem_setOf_eq] -- Porting note: simpa only this worked before
+  convert hP
+  sorry -- Porting note: `coe = RatFunc.coeToLaurentSeries_fun` missing
+
+
 end Dense
 
 section Comparison
 
 open RatFunc
 
-theorem coe_is_inducing : UniformInducing (coe : RatFunc K → LaurentSeries K) :=
-  by
+theorem coe_is_inducing : UniformInducing (coe : RatFunc K → LaurentSeries K) := by
+  letI : Ring (LaurentSeries K) := inferInstance -- Porting note: I had to add this
   rw [uniformInducing_iff, Filter.comap]
   ext S
   simp only [exists_prop, Filter.mem_mk, Set.mem_setOf_eq, uniformity_eq_comap_nhds_zero,
     Filter.mem_comap]
   constructor
   · rintro ⟨T, ⟨⟨R, ⟨hR, pre_R⟩⟩, pre_T⟩⟩
-    sorry/- obtain ⟨d, hd⟩ := Valued.mem_nhds.mp hR
+    obtain ⟨d, hd⟩ := Valued.mem_nhds.mp hR
     use{P : RatFunc K | Valued.v P < ↑d}
     · simp only [Valued.mem_nhds, sub_zero]
-      use d
-      refine' subset_trans _ pre_T
-      rintro _ _
-      apply pre_R
-      apply hd
-      simp only
-      erw [Set.mem_setOf_eq, sub_zero, ← RatFunc.coe_sub, ←
-        RatFunc.valuation_eq_laurentSeries_valuation]
-      assumption -/
+      constructor
+      · use d
+      · refine' subset_trans _ pre_T
+        rintro _ _
+        apply pre_R
+        apply hd
+        simp only [sub_zero, Set.mem_setOf_eq]
+        sorry
+        /- erw [← RatFunc.coe_sub, ← RatFunc.valuation_eq_laurentSeries_valuation]
+        assumption -/
   · rintro ⟨T, ⟨hT, pre_T⟩⟩
     obtain ⟨d, hd⟩ := Valued.mem_nhds.mp hT
-    /- let X := {f : LaurentSeries K | Valued.v f < ↑d}
+    let X := {f : LaurentSeries K | Valued.v f < ↑d}
+    /-
      use(fun x : LaurentSeries K × LaurentSeries K => x.snd - x.fst) ⁻¹' X, X
     · simp only [Valued.mem_nhds, sub_zero]
       use d
@@ -819,9 +812,10 @@ equivalence: it goes from `laurent_series K` to `ratfunc_adic_compl K` -/
 def laurentSeriesRingEquiv : LaurentSeries K ≃+* RatfuncAdicCompl K :=
   (ratfuncAdicComplRingEquiv K).symm
 
+-- Porting note: times out
 /- theorem laurentSeriesRingEquiv_apply (x : LaurentSeries K) :
     (laurentSeriesRingEquiv K) x = compareEquiv (laurentSeriesPkg K) (ratfuncAdicComplPkg K) x := by
-  simpa only [RingEquiv.apply_symm_apply] -/
+  simpa only [RingEquiv.apply_symm_apply]  -/
 
 theorem ratfuncAdicComplRingEquiv_apply (x : RatfuncAdicCompl K) :
     ratfuncAdicComplRingEquiv K x = (ratfuncAdicComplPkg K).compare (laurentSeriesPkg K) x :=
@@ -880,11 +874,12 @@ theorem tendsto_valuation (a : (Polynomial.idealX K).adicCompletion (RatFunc K))
       exact Int.zero_lt_one -/
     --rwa [← Valued.extension_extends, diff_b_y]
 
+-- Porting note: times out
 /- theorem valuation_compare (f : LaurentSeries K) :
     (@Valued.v (RatfuncAdicCompl K) _ ℤₘ₀ _ _)
         ((laurentSeriesPkg K).compare (ratfuncAdicComplPkg K) f) =
       Valued.v f := by
-  simpa only [← valuation_laurent_series_equal_extension, ←
+  simpa only [← valuation_laurentSeries_equal_extension, ←
     extend_compare_extend (ratfunc_adic_compl_pkg K) (laurent_series_pkg K)
       (@Valued.v (RatFunc K) _ ℤₘ₀ _ _) Valued.continuous_valuation (tendsto_valuation K)] using
     rfl -/
