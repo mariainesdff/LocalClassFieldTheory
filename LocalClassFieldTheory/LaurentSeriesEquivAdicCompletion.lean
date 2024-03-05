@@ -213,24 +213,18 @@ open Filter LaurentSeries
 
 open scoped Filter
 
--- TODO: conflicting decidable instances
 theorem intValuation_of_X :
     (PowerSeries.idealX K).intValuation X = ↑(Multiplicative.ofAdd (-1 : ℤ)) := by
   rw [intValuation_apply, intValuationDef_if_neg (PowerSeries.idealX K) PowerSeries.X_ne_zero]
   congr
-  /- have hX : (idealX K).asIdeal = (Ideal.span {X}) := rfl
-  rw [← hX] -/
-  sorry
-  --have hX : Irreducible (PowerSeries.idealX K).asIdeal := sorry
-  --apply Associates.count_self hX
-
-  /- apply Associates.count_self
-  rw [Associates.irreducible_mk]
-  apply Prime.irreducible
-  apply Ideal.prime_of_isPrime
-  apply ideal.span_singleton_eq_bot.mp.mt
-  apply PowerSeries.X_ne_zero
-  apply PowerSeries.span_X_isPrime -/
+  have hX : Irreducible (Associates.mk (PowerSeries.idealX K).asIdeal) := by
+    rw [Associates.irreducible_mk]
+    apply Prime.irreducible
+    apply Ideal.prime_of_isPrime
+    apply Ideal.span_singleton_eq_bot.mp.mt
+    apply PowerSeries.X_ne_zero
+    apply PowerSeries.span_X_isPrime
+  convert Associates.count_self hX
 
 end Valuation
 
@@ -511,7 +505,7 @@ theorem Cauchy.coeff_tendso {ℱ : Filter (LaurentSeries K)} (hℱ : Cauchy ℱ)
   only shows up when the proof is apparently complete -/
 theorem Cauchy.exists_lb_eventual_support {ℱ : Filter (LaurentSeries K)} (hℱ : Cauchy ℱ) :
     ∃ N, ∀ᶠ f : LaurentSeries K in ℱ, ∀ n < N, f.coeff n = (0 : K) := by
-  /- let entourage :=
+  /- let entourage : Set (LaurentSeries K × LaurentSeries K) :=
     {P : LaurentSeries K × LaurentSeries K |
       Valued.v (P.snd - P.fst) < ((Multiplicative.ofAdd 0 : Multiplicative ℤ) : ℤₘ₀)}
   let ζ : ℤₘ₀ˣ := Units.mk0 (Multiplicative.ofAdd 0 : Multiplicative ℤ) WithZero.coe_ne_zero
@@ -593,10 +587,11 @@ theorem Cauchy.coeff_eventually_equal {ℱ : Filter (LaurentSeries K)} (hℱ : C
       hN₀]
     constructor
     · rw [hN₀, min_eq_left (not_lt.mp H), hX]
-      convert (exists_lb_coeff_ne hℱ).choose_spec
-      sorry/- ext f
-      simpa only [Set.mem_iInter, Set.mem_setOf_eq, Set.mem_setOf_eq] -/
-    · have : (⋂ (n : ℤ) (H : n ∈ Set.Ico N D), X n) = ⋂ n : (Finset.Ico N D : Set ℤ), X n := by
+      convert (exists_lb_coeff_ne hℱ).choose_spec using 1
+      ext f
+      simp only [Set.mem_Iio, Set.mem_iInter, Set.mem_setOf_eq]
+      rfl
+    · have : (⋂ (n : ℤ) (_ : n ∈ Set.Ico N D), X n) = ⋂ n : (Finset.Ico N D : Set ℤ), X n := by
         simp only [Set.mem_Ico, Set.iInter_coe_set, Finset.mem_coe, Finset.mem_Ico, Subtype.coe_mk]
       simp only [this, Filter.iInter_mem]
       intro d
@@ -725,7 +720,7 @@ theorem coe_is_inducing : UniformInducing (coe : RatFunc K → LaurentSeries K) 
   constructor
   · rintro ⟨T, ⟨⟨R, ⟨hR, pre_R⟩⟩, pre_T⟩⟩
     obtain ⟨d, hd⟩ := Valued.mem_nhds.mp hR
-    use{P : RatFunc K | Valued.v P < ↑d}
+    use {P : RatFunc K | Valued.v P < ↑d}
     · simp only [Valued.mem_nhds, sub_zero]
       constructor
       · use d
@@ -734,8 +729,7 @@ theorem coe_is_inducing : UniformInducing (coe : RatFunc K → LaurentSeries K) 
         apply pre_R
         apply hd
         simp only [sub_zero, Set.mem_setOf_eq]
-        sorry
-        /- erw [← RatFunc.coe_sub, ← RatFunc.valuation_eq_laurentSeries_valuation]
+        sorry/- erw [← RatFunc.coe_sub, ← RatFunc.valuation_eq_laurentSeries_valuation]
         assumption -/
   · rintro ⟨T, ⟨hT, pre_T⟩⟩
     obtain ⟨d, hd⟩ := Valued.mem_nhds.mp hT
