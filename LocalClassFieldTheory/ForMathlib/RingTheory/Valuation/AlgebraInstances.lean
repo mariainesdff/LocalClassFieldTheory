@@ -32,20 +32,19 @@ instance algebra' : Algebra v.valuationSubring L :=
   Algebra.ofSubring v.valuationSubring.toSubring
 
 --Porting note: In Lean3 the following was already found as an instance, now it has to be specified
-instance : Algebra (v.valuationSubring) (integralClosure v.valuationSubring L) :=
+instance algebra : Algebra (v.valuationSubring) (integralClosure v.valuationSubring L) :=
     Subalgebra.algebra (integralClosure (↥(valuationSubring v)) L)
 
 -- Porting note : this instance was automatic in Lean3
-instance : SMul v.valuationSubring (integralClosure v.valuationSubring L) := Algebra.toSMul
+instance smul : SMul v.valuationSubring (integralClosure v.valuationSubring L) := Algebra.toSMul
 
 
 @[simp]
 theorem algebraMap_def :
     algebraMap v.valuationSubring L = (ValuationSubring.algebra' v L).toRingHom := rfl
 
-instance : IsScalarTower v.valuationSubring K L :=
+instance isScalarTower : IsScalarTower v.valuationSubring K L :=
   IsScalarTower.subsemiring v.valuationSubring.toSubsemiring
-
 
 theorem algebraMap_injective : Injective (algebraMap v.valuationSubring L) := by
   exact (NoZeroSMulDivisors.algebraMap_injective K L).comp (IsFractionRing.injective _ _)
@@ -93,8 +92,7 @@ protected noncomputable def equiv (R : Type _) [CommRing R] [Algebra v.valuation
   exact ⟨e, fun x y => e.map_mul _ _, fun x y => e.map_add _ _⟩
 
 theorem integralClosure_algebraMap_injective :
-    Injective (algebraMap v.valuationSubring (integralClosure v.valuationSubring L)) :=
-  by
+    Injective (algebraMap v.valuationSubring (integralClosure v.valuationSubring L)) := by
   have hinj : Injective ⇑(algebraMap v.valuationSubring L) :=
     ValuationSubring.algebraMap_injective v L
   rw [injective_iff_map_eq_zero

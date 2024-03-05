@@ -17,8 +17,6 @@ Hahn series in general and it is meant to expand the current `mathlib` library.#
 ## Main Results
 * `val_X_eq_neg_one` is the result that the `ideal_X`-adic valuation of `X` equals
   `multiplicative.of_add (-1 : ℤ)`
-
-
 -/
 
 
@@ -64,7 +62,7 @@ def idealX : IsDedekindDomain.HeightOneSpectrum (Polynomial K)
 theorem idealX_span : (idealX K).asIdeal = Ideal.span {Polynomial.X} :=
   rfl
 
-theorem val_x_eq_neg_one :
+theorem val_X_eq_neg_one :
     (idealX K).valuation (RatFunc.X : RatFunc K) = Multiplicative.ofAdd (-1 : ℤ) :=
   by
   rw [← RatFunc.algebraMap_X, valuation_of_algebraMap, intValuation_singleton]

@@ -815,7 +815,7 @@ theorem ratfuncAdicComplRingEquiv_apply (x : RatfuncAdicCompl K) :
     ratfuncAdicComplRingEquiv K x = (ratfuncAdicComplPkg K).compare (laurentSeriesPkg K) x :=
   rfl
 
-theorem coe_x_compare :
+theorem coe_X_compare :
     (ratfuncAdicComplRingEquiv K) (↑(@RatFunc.X K _ _) : RatfuncAdicCompl K) =
       (↑(@PowerSeries.X K _) : LaurentSeries K) := by
   rw [PowerSeries.coe_X, ← RatFunc.coe_X, ← laurentSeries_coe, ← AbstractCompletion.compare_coe]
@@ -868,15 +868,15 @@ theorem tendsto_valuation (a : (Polynomial.idealX K).adicCompletion (RatFunc K))
       exact Int.zero_lt_one -/
     --rwa [← Valued.extension_extends, diff_b_y]
 
--- Porting note: times out
-/- theorem valuation_compare (f : LaurentSeries K) :
+set_option maxHeartbeats 400000 -- Porting note: times out otherwise
+theorem valuation_compare (f : LaurentSeries K) :
     (@Valued.v (RatfuncAdicCompl K) _ ℤₘ₀ _ _)
-        ((laurentSeriesPkg K).compare (ratfuncAdicComplPkg K) f) =
+        (AbstractCompletion.compare (laurentSeriesPkg K) (ratfuncAdicComplPkg K) f) =
       Valued.v f := by
-  simpa only [← valuation_laurentSeries_equal_extension, ←
-    extend_compare_extend (ratfunc_adic_compl_pkg K) (laurent_series_pkg K)
-      (@Valued.v (RatFunc K) _ ℤₘ₀ _ _) Valued.continuous_valuation (tendsto_valuation K)] using
-    rfl -/
+  simp only [← valuation_laurentSeries_equal_extension, ←
+    extend_compare_extend (ratfuncAdicComplPkg K) (laurentSeriesPkg K)
+      (@Valued.v (RatFunc K) _ ℤₘ₀ _ _) Valued.continuous_valuation (tendsto_valuation K)]
+  rfl
 
 section PowerSeries
 
