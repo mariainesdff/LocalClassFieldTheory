@@ -7,7 +7,7 @@ import LocalClassFieldTheory.DiscreteValuationRing.DiscreteNorm
 import LocalClassFieldTheory.DiscreteValuationRing.Extensions
 import LocalClassFieldTheory.DiscreteValuationRing.Localization
 import LocalClassFieldTheory.DiscreteValuationRing.TrivialExtension
--- ForMathlib folder
+-- ForMathlib folder *complete*
 import LocalClassFieldTheory.ForMathlib.Data.Set.Lattice
 import LocalClassFieldTheory.ForMathlib.FieldTheory.Minpoly.IsIntegrallyClosed
 import LocalClassFieldTheory.ForMathlib.NumberTheory.Padics.PadicIntegers
@@ -21,7 +21,7 @@ import LocalClassFieldTheory.ForMathlib.Topology.UniformSpace.AbstractCompletion
 import LocalClassFieldTheory.ForMathlib.DiscreteUniformity
 import LocalClassFieldTheory.ForMathlib.DiscreteValuationRing
 import LocalClassFieldTheory.ForMathlib.Polynomial
--- import LocalClassFieldTheory.ForMathlib.PowerSeries
+import LocalClassFieldTheory.ForMathlib.PowerSeries
 import LocalClassFieldTheory.ForMathlib.RankOneValuation
 import LocalClassFieldTheory.ForMathlib.WithZero
 -- FromMathlib folder *complete*
