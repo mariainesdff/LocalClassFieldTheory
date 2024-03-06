@@ -5,7 +5,7 @@ noncomputable section
 
 open LocalRing
 
-variable {R S : Type} [CommRing R] [CommRing S] [LocalRing R] [LocalRing S] [Algebra R S]
+variable {R S : Type*} [CommRing R] [CommRing S] [LocalRing R] [LocalRing S] [Algebra R S]
 
 instance [IsLocalRingHom (algebraMap R S)] : Algebra (ResidueField R) (ResidueField S) :=
   (ResidueField.map (algebraMap R S)).toAlgebra
@@ -16,7 +16,7 @@ instance [IsLocalRingHom (algebraMap R S)] : Algebra R (ResidueField S) :=
 instance [IsLocalRingHom (algebraMap R S)] : IsScalarTower R (ResidueField R) (ResidueField S) :=
   IsScalarTower.of_algebraMap_eq (congrFun rfl)
 
-lemma FiniteDimensional_of_finite (H : IsNoetherian R S) (hloc : IsLocalRingHom (algebraMap R S))
+lemma FiniteDimensional_of_finite [IsNoetherian R S] [IsLocalRingHom (algebraMap R S)]
   : FiniteDimensional (ResidueField R) (ResidueField S) := by
   apply IsNoetherian.iff_fg.mp <|
     isNoetherian_of_tower R (S := ResidueField R) (M := ResidueField S) _
@@ -25,7 +25,9 @@ lemma FiniteDimensional_of_finite (H : IsNoetherian R S) (hloc : IsLocalRingHom 
   congr
   exact Algebra.algebra_ext _ _ (fun r => rfl)
 
-lemma ResidueField.finite_of_finite (H : IsNoetherian R S) (hloc : IsLocalRingHom (algebraMap R S))
+lemma ResidueField.finite_of_finite [IsNoetherian R S] [IsLocalRingHom (algebraMap R S)]
   (hfin : Finite (ResidueField R)) : Finite (ResidueField S) := by
-  have := FiniteDimensional_of_finite H
+  have := @FiniteDimensional_of_finite R S _
   exact FiniteDimensional.finite_of_finite (ResidueField R) (ResidueField S)
+
+#check ResidueField.finite_of_finite

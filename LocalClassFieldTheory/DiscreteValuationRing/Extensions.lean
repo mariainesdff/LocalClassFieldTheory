@@ -19,10 +19,10 @@ valuation on `K`.
   `(v ((minpoly K x.1).coeff 0))^((finrank K L)/(minpoly K x.1).nat_degree)`.
 * `DiscreteValuation.expExtensionOnUnits` : the natural number `n` such that `of_add (n : ℤ)`
   generates the image of the map `powExtensionOnUnits K L`.
-* `DiscretValuation.extended_valuation` : the unique discrete valuation on `L` induced by the
+* `DiscreteValuation.extendedValuation` : the unique discrete valuation on `L` induced by the
   valuation on `K`.
 * `DiscreteValuation.valuation_subring.algebra` : the valuation subring of `L` with respect to
-  `extended_valuation K L` is an algebra over the valuation subring of `K`.
+  `extendedValuation K L` is an algebra over the valuation subring of `K`.
 
 ## Main Results
 
@@ -32,8 +32,8 @@ valuation on `K`.
   divides the degree of `L` over `K`.
 * `DiscreteValuation.Extension.isDiscreteOfFinite` : the extended valuation on `L` is discrete.
 * `DiscreteValuation.Extension.complete_space` : `L` is a complete space with respect to the
-  topology induced by `extended_valuation`.
-* `DiscreteValuation.integral_closure.discrete_valuation_ring_of_finite_extension` : the integral
+  topology induced by `extendedValuation`.
+* `DiscreteValuation.integral_closure.discreteValuationRing_of_finite_extension` : the integral
   closure of the the valuation subring of `K` in `L` is a discrete valuation ring.
 
 
@@ -477,7 +477,7 @@ instance isDiscrete_of_finite [FiniteDimensional K L] : IsDiscrete (extendedValu
 
 variable {K L}
 
-/-- The uniform space structure on `L` induced by `discrete_valuation.extended_valuation`. -/
+/-- The uniform space structure on `L` induced by `discrete_valuation.extendedValuation`. -/
 --porting note: the @[protected] attribute has been commented
 
 -- @[protected]
@@ -495,7 +495,7 @@ def normedField [FiniteDimensional K L] : NormedField L := by
   letI : NontriviallyNormedField K := nontriviallyDiscretelyNormedField K
   exact spectralNormToNormedField h_alg (norm_isNonarchimedean K)
 
-/-- The valued field structure on `L` induced by `discrete_valuation.extended_valuation`.  -/
+/-- The valued field structure on `L` induced by `discrete_valuation.extendedValuation`.  -/
 
 --porting note: the @[protected] attribute has been commented
 -- @[protected]
@@ -647,7 +647,7 @@ This means we cannot eagerly check your notation/quotation for unbound identifie
 set_option quotPrecheck false
 local notation "L₀" => (extendedValuation K L).valuationSubring
 
-/-- The valuation subring of `L` with respect to `extended_valuation K L` is an algebra over the
+/-- The valuation subring of `L` with respect to `extendedValuation K L` is an algebra over the
   valuation subring of `K`. -/
 def ValuationSubring.algebra : Algebra K₀ L₀ :=
   haveI h : Algebra hv.v.valuationSubring (extendedValuation K L).valuationSubring.toSubring := by

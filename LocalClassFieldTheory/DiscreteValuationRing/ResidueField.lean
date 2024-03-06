@@ -1,5 +1,6 @@
 import LocalClassFieldTheory.DiscreteValuationRing.Extensions
-import Mathlib.NumberTheory.RamificationInertia
+import LocalClassFieldTheory.ForMathlib.RingTheory.Ideal.LocalRing
+-- import Mathlib.NumberTheory.RamificationInertia
 import Mathlib.RingTheory.DedekindDomain.IntegralClosure
 
 #align_import discrete_valuation_ring.residue_field
@@ -48,10 +49,15 @@ consequence, when the residue field of `K₀` is finite, so is the residue field
   finiteness to `L₀`.
 -/
 
+lemma mathlib_units {A B : Type*} [Ring A] [Ring B] (e : A ≃+* B) (a : A) :
+    IsUnit a ↔ IsUnit (e a) := by
+  constructor
+  · exact fun a_1 => IsUnit.map e a_1
+  · convert IsUnit.map e.symm
+    simp only [RingEquiv.symm_apply_apply]
 
-open LocalRing Valuation Ideal
 
-open scoped DiscreteValuation Classical
+open LocalRing Valuation Ideal DiscreteValuation Valuation Integer Extension
 
 noncomputable section
 
@@ -59,9 +65,51 @@ universe u w
 
 namespace DiscreteValuation
 
-variable (K : Type u) [Field K] [hv : Valued K ℤₘ₀] (L : Type w) [Field L] [Algebra K L]
+variable (K : Type*) [Field K] [hv : Valued K ℤₘ₀] [IsDiscrete hv.v] [CompleteSpace K]
+variable (L : Type*) [Field L] [Algebra K L] [FiniteDimensional K L]
 
 local notation3 "K₀" => hv.v.valuationSubring
+
+local notation3 "S" => (integralClosure K₀ L)
+
+-- Porting note: needed to add this to avoid timeouts *FAE*: Re-check
+instance : Module K₀ S := Algebra.toModule
+
+instance : DiscreteValuationRing S :=
+  DiscreteValuation.integralClosure.discreteValuationRing_of_finite_extension K L
+
+instance [IsSeparable K L] : IsNoetherian K₀ S := IsIntegralClosure.isNoetherian K₀ K L S
+
+instance : IsLocalRingHom (algebraMap K₀ S) := by
+  constructor
+  intro _ ha
+  have h : RingHom.ker (algebraMap K₀ S) ≤ LocalRing.maximalIdeal K₀ :=
+    LocalRing.le_maximalIdeal (RingHom.ker_ne_top _)
+  obtain ⟨Q, hQ_max, hQ⟩ :=
+    exists_ideal_over_maximal_of_isIntegral (le_integralClosure_iff_isIntegral.mp (le_refl _))
+      (LocalRing.maximalIdeal K₀) h
+  rw [← @not_not (IsUnit _), ← mem_nonunits_iff, ← mem_maximalIdeal] at ha ⊢
+  rwa [← hQ, mem_comap, eq_maximalIdeal hQ_max]
+
+theorem FiniteDimensional_residueField_of_integralClosure [IsSeparable K L] :
+    FiniteDimensional (ResidueField K₀) (ResidueField (integralClosure K₀ L)) :=
+  FiniteDimensional_of_finite
+
+theorem finiteResidueFieldOfIntegralClosure [IsSeparable K L]
+    (hfin : Finite (ResidueField K₀)) : Finite (ResidueField S) :=
+  ResidueField.finite_of_finite hfin
+
+-- This should probably be omitted, since we are shifting from `Finite` to `Fintype`.
+def fintypeResidueFieldOfIntegralClosure [IsSeparable K L]
+    (hfin : Fintype (ResidueField K₀)) : Fintype (ResidueField S) := by
+  let _ := @Finite.of_fintype _ hfin
+  exact @Fintype.ofFinite (ResidueField S) (finiteResidueFieldOfIntegralClosure K L inferInstance)
+
+
+
+
+
+#exit
 
 -- Porting note: needed to add this to avoid timeouts
 instance : Algebra ↥(integralClosure K₀ L) ↥(integralClosure K₀ L) := Algebra.id _
@@ -111,12 +159,15 @@ instance [IsSeparable K L] : IsNoetherian K₀ (integralClosure K₀ L) :=
 
 variable [CompleteSpace K]
 
-/- -- Porting note: needed to add this to avoid timeouts
+-- Porting note: needed to add this to avoid timeouts
 instance : DiscreteValuationRing ↥(integralClosure K₀ L) :=
-  DiscreteValuation.integralClosure.discreteValuationRing_of_finite_extension K L -/
+  DiscreteValuation.integralClosure.discreteValuationRing_of_finite_extension K L
 
 -- Porting note: needed to add this to avoid timeouts
-instance : IsDedekindDomain ↥(integralClosure K₀ L) := IsPrincipalIdealRing.isDedekindDomain _
+instance : IsDedekindDomain ↥(integralClosure K₀ L) :=
+  -- let _ : IsPrincipalIdealRing (integralClosure K₀ L) :=
+  --   DiscreteValuationRing.toIsPrincipalIdealRing
+  DiscreteValuationRing.toIsPrincipalIdealRing.isDedekindDomain
 
 local notation3 "e" => (ramificationIdx (algebraMap K₀ (integralClosure K₀ L))
   (LocalRing.maximalIdeal K₀) (LocalRing.maximalIdeal (integralClosure K₀ L)))
