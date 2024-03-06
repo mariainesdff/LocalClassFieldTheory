@@ -204,17 +204,15 @@ theorem uniformInducing_cast : letI := ((@padicValued p _))
   simp_rw [@Metric.mem_uniformity_dist ℚ_[p] _ _]
   refine' fun S => ⟨fun hS => _, _⟩
   · obtain ⟨m, ⟨-, hM_sub⟩⟩ := (Valued.hasBasis_uniformity ℚ ℤₘ₀).mem_iff.mp hS
-    set M := (withZeroMultIntToNNReal (NNReal_Cast.p_ne_zero p) m.1).1
+    set M := (withZeroMultIntToNNReal (NNReal_Cast.p_ne_zero p) m.1).1 with hM
     refine' ⟨{p : ℚ_[p] × ℚ_[p] | dist p.1 p.2 < M}, ⟨⟨M, ⟨_, fun _ => _ ⟩⟩, fun x y h => _⟩⟩
     · exact withZeroMultIntToNNReal_pos _ (isUnit_iff_ne_zero.mp (Units.isUnit m))
     · tauto
     · apply hM_sub
       simp only [Set.mem_setOf_eq, dist] at h ⊢
-      rw [← Padic.coe_sub, padicNormE.eq_padic_norm', padicNorm_eq_val_norm] at h
-      sorry
-      -- , val_eq_coe, coe_lt_coe,
-      --   @StrictMono.lt_iff_lt _ _ _ _ _ (withZeroMultIntToNNReal_strictMono hp_one), ← neg_sub,
-      --     Valuation.map_neg] at h
+      rwa [hM, ← Padic.coe_sub, padicNormE.eq_padic_norm', padicNorm_eq_val_norm,
+        val_eq_coe, coe_lt_coe, @StrictMono.lt_iff_lt _ _ _ _ _
+        (withZeroMultIntToNNReal_strictMono hp_one), ← neg_sub, Valuation.map_neg] at h
   · rw [(Valued.hasBasis_uniformity ℚ ℤₘ₀).mem_iff]
     rintro ⟨T, ⟨ε, ⟨hε, H⟩⟩, h⟩
     obtain ⟨M, hM⟩ := Real.exists_strictMono_lt (withZeroMultIntToNNReal_strictMono hp_one) hε
