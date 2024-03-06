@@ -223,7 +223,7 @@ theorem expExtensionOnUnits_dvd [FiniteDimensional K L] :
   have h_dvd : ((minpoly K ((algebraMap K L) ↑π)).natDegree : ℤ) ∣ finrank K L :=
     Int.coe_nat_dvd.mpr (minpoly.degree_dvd (isAlgebraic_iff_isIntegral.mp (h_alg _)))
   rw [hu, hu_def, Valuation.coeff_zero, IsUniformizer_iff.mp hπ, ← WithZero.coe_pow, ←
-    WithZero.coe_zpow, ← WithZero.coe_pow, WithZero.coe_inj, ← zpow_ofNat, ← zpow_mul, ← zpow_ofNat,
+    WithZero.coe_zpow, ← WithZero.coe_pow, WithZero.coe_inj, ← zpow_coe_nat, ← zpow_mul, ← zpow_coe_nat,
     ofAdd_pow_comm, ofAdd_pow_comm (-1)] at hn
   simp only [zpow_neg, zpow_one, inv_inj] at hn
   replace hn := ofAdd_inj hn
@@ -308,29 +308,32 @@ theorem extensionDef_add [FiniteDimensional K L] (x y : L) :
       · simp only [extensionDef_apply, dif_pos hxy, zero_le']
       · simp only [extensionDef_apply, dif_neg hx, dif_neg hy, dif_neg hxy]
         set ux := (exists_mul_expExtensionOnUnits K (isUnit_iff_ne_zero.mpr hx).choose).choose
+          with hux
         set uy := (exists_mul_expExtensionOnUnits K (isUnit_iff_ne_zero.mpr hy).choose).choose
+          with huy
         set uxy := (exists_mul_expExtensionOnUnits K (isUnit_iff_ne_zero.mpr hxy).choose).choose
+          with huxy
         rw [_root_.le_max_iff]
         simp only [← WithZero.coe_zpow, WithZero.coe_le_coe]
         have hd : 0 < (expExtensionOnUnits K L : ℤ) := by
           rw [Int.coe_nat_pos]
           exact Nat.pos_of_ne_zero (expExtensionOnUnits_ne_zero K L)
-        rw [← zpow_le_zpow_iff' hd, zpow_ofNat, zpow_ofNat, ← WithZero.coe_le_coe, WithZero.coe_pow,
+        rw [← zpow_le_zpow_iff' hd, zpow_coe_nat, zpow_coe_nat, ← WithZero.coe_le_coe, WithZero.coe_pow,
            WithZero.coe_zpow]
-        simp only [(isUnit_iff_ne_zero.mpr hx).choose_spec, (isUnit_iff_ne_zero.mpr hy).choose_spec,
+        simp_all only [(isUnit_iff_ne_zero.mpr hx).choose_spec, (isUnit_iff_ne_zero.mpr hy).choose_spec,
           (isUnit_iff_ne_zero.mpr hxy).choose_spec]
         rw [(exists_mul_expExtensionOnUnits K (isUnit_iff_ne_zero.mpr hxy).unit).choose_spec]
         rw [WithZero.coe_pow, WithZero.coe_zpow,
           (exists_mul_expExtensionOnUnits K (isUnit_iff_ne_zero.mpr hx).unit).choose_spec]
-        rw [← zpow_le_zpow_iff' hd, zpow_ofNat, zpow_ofNat]
+        rw [← zpow_le_zpow_iff' hd, zpow_coe_nat, zpow_coe_nat]
         nth_rw 2 [← WithZero.coe_le_coe]
-        simp only [WithZero.coe_pow, WithZero.coe_zpow,
+        simp_all only [WithZero.coe_pow, WithZero.coe_zpow,
           (exists_mul_expExtensionOnUnits K (isUnit_iff_ne_zero.mpr hxy).unit).choose_spec,
           (exists_mul_expExtensionOnUnits K (isUnit_iff_ne_zero.mpr hy).unit).choose_spec]
-        simp only [← (withZeroMultIntToNNReal_strictMono (one_lt_base K hv.v)).le_iff_le, ←
+        simp_all only [← (withZeroMultIntToNNReal_strictMono (one_lt_base K hv.v)).le_iff_le, ←
           NNReal.coe_le_coe]
-        rw [_root_.map_pow, NNReal.coe_pow, ← Real.rpow_nat_cast, Nat.cast_div, ←
-          pow_eq_pow_root_zero_coeff' h_alg]
+        rw [_root_.map_pow, NNReal.coe_pow, ← Real.rpow_nat_cast, Nat.cast_div,
+          ← pow_eq_pow_root_zero_coeff' h_alg]
         --x + y
         rw [_root_.map_pow, NNReal.coe_pow, ← Real.rpow_nat_cast _
           (finrank K L / (minpoly K _).natDegree), Nat.cast_div,
@@ -377,7 +380,7 @@ theorem extensionDef_one [FiniteDimensional K L] : extensionDef K (1 : L) = 1 :=
   simp only [IsUnit.unit_spec, minpoly.one, coeff_sub, coeff_X_zero, coeff_one_zero, zero_sub,
     Valuation.map_neg, Valuation.map_one, one_pow, inv_eq_one] at hu
   simp only [← WithZero.coe_one, ← ofAdd_zero, ← WithZero.coe_zpow, ← WithZero.coe_pow,
-    WithZero.coe_inj, ← zpow_ofNat, ← Int.ofAdd_mul] at hu
+    WithZero.coe_inj, ← zpow_coe_nat, ← Int.ofAdd_mul] at hu
   have hu' := Int.eq_zero_or_eq_zero_of_mul_eq_zero hu
   have hf : ((expExtensionOnUnits K L : ℤ) = 0) ↔ False := by
     simp only [expExtensionOnUnits_ne_zero, Nat.cast_eq_zero]
@@ -386,10 +389,6 @@ theorem extensionDef_one [FiniteDimensional K L] : extensionDef K (1 : L) = 1 :=
   apply congr_arg
   rw [hu_def]
   convert hu'
-  · rw [← WithZero.coe_zpow, ← Int.ofAdd_mul]
-    simp only [Int.reduceNeg, neg_mul, one_mul, ofAdd_neg, WithZero.coe_inv, inv_pow, Int.ofAdd_mul,
-      zpow_coe_nat, WithZero.coe_pow]
-  · rw [zpow_ofNat]
 
 /-- The discrete valuation on `L` induced by the valuation on `K`. -/
 def extendedValuation [FiniteDimensional K L] : Valuation L ℤₘ₀
@@ -436,8 +435,8 @@ theorem le_one_iff_discreteNormExtension_le_one [FiniteDimensional K L] (x : L) 
     rw [← h', ← NNReal.coe_one, NNReal.coe_le_coe,
       ← _root_.map_one (withZeroMultIntToNNReal (base_ne_zero K hv.v)),
       (withZeroMultIntToNNReal_strictMono (one_lt_base K hv.v)).le_iff_le, ← WithZero.coe_one, ←
-      WithZero.coe_zpow, WithZero.coe_le_coe, ← WithZero.coe_pow, WithZero.coe_le_coe, ← zpow_ofNat,
-      ← Int.ofAdd_mul, ← Int.ofAdd_mul, ← ofAdd_zero, ofAdd_le, ofAdd_le]
+      WithZero.coe_zpow, WithZero.coe_le_coe, ← WithZero.coe_pow, WithZero.coe_le_coe,
+      ← zpow_coe_nat, ← Int.ofAdd_mul, ← Int.ofAdd_mul, ← ofAdd_zero, ofAdd_le, ofAdd_le]
     exact ⟨fun h => mul_nonpos_of_nonpos_of_nonneg h (Nat.cast_nonneg _), fun h =>
       nonpos_of_mul_nonpos_left h (Nat.cast_pos.mpr (expExtensionOnUnits_pos K L))⟩
 
@@ -465,7 +464,7 @@ instance isDiscrete_of_finite [FiniteDimensional K L] : IsDiscrete (extendedValu
   have hπ1 : extendedValuation K L x = Multiplicative.ofAdd (-1 : ℤ) := by
     rw [Extension.apply_if_neg (Units.ne_zero _),
       ← WithZero.zpow_left_inj (zpow_ne_zero _ WithZero.coe_ne_zero) WithZero.coe_ne_zero
-      (Nat.cast_ne_zero.mpr (expExtensionOnUnits_ne_zero K L)), zpow_ofNat, zpow_ofNat, ← hx,
+      (Nat.cast_ne_zero.mpr (expExtensionOnUnits_ne_zero K L)), zpow_coe_nat, zpow_coe_nat, ← hx,
       ← (exists_mul_expExtensionOnUnits K x).choose_spec]
     congr 3
     ext n

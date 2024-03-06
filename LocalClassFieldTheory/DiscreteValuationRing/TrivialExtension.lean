@@ -66,5 +66,6 @@ theorem trivial_extension_eq_valuation : extendedValuation K K = hv.v := by
     · simp only [FiniteDimensional.finrank_self, minpoly.eq_X_sub_C', IsUnit.unit_spec, coeff_sub,
         coeff_X_zero, coeff_C_zero, zero_sub, Valuation.map_neg, natDegree_X_sub_C, Nat.div_self,
         Nat.lt_one_iff, pow_one]
+      rfl
 
 end DiscreteValuation.Extension

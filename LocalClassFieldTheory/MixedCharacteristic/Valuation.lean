@@ -1,5 +1,6 @@
 import LocalClassFieldTheory.DiscreteValuationRing.TrivialExtension
 import LocalClassFieldTheory.MixedCharacteristic.Basic
+import LocalClassFieldTheory.PadicCompare
 
 #align_import mixed_characteristic.valuation
 
@@ -36,15 +37,15 @@ on `Q_p p`, whenever the diamond comes up.
 
 noncomputable section
 
-open DiscreteValuation DiscreteValuation.Extension IsDedekindDomain Multiplicative NNReal
-  PadicComparison Padic' Polynomial Multiplicative IsDedekindDomain.HeightOneSpectrum
+open PadicComparison DiscreteValuation DiscreteValuation.Extension IsDedekindDomain Multiplicative NNReal
+  Padic' Polynomial Multiplicative IsDedekindDomain.HeightOneSpectrum UniqueFactorizationMonoid
 
 open scoped MixedCharLocalField NNReal DiscreteValuation
 
 variable (p : outParam ℕ) [hp : Fact p.Prime]
 
-theorem Padic'.mem_integers_iff (y : Q_p p) : y ∈ 𝓞 p (Q_p p) ↔ ‖y‖ ≤ 1 :=
- by
+theorem Padic'.mem_integers_iff (y : Q_p p) : y ∈ 𝓞 p (Q_p p) ↔ ‖y‖ ≤ 1 := by
+  let _ : IsIntegrallyClosed (Z_p p) := instIsIntegrallyClosed
   rw [MixedCharLocalField.mem_ringOfIntegers, IsIntegrallyClosed.isIntegral_iff,
     norm_le_one_iff_val_le_one]
   refine' ⟨fun h => _, fun h => ⟨⟨y, h⟩, rfl⟩⟩

@@ -261,13 +261,13 @@ def spectralNormToSeminormedAddCommGroup [CompleteSpace K] (h_alg : Algebra.IsAl
 /-- `L` with the spectral norm is a `normed_space` over `K`. -/
 def spectralNormToNormedSpace [CompleteSpace K] (h_alg : Algebra.IsAlgebraic K L)
     (h : IsNonarchimedean (norm : K → ℝ)) :
-    @NormedSpace K L _ (spectralNormToSeminormedAddCommGroup h_alg h) :=
-  { spectralNormToSeminormedAddCommGroup h_alg h,
-    (inferInstance : Module K L) with
+    @NormedSpace K L _ (spectralNormToSeminormedAddCommGroup h_alg h) := /- by -/
+  letI _ := spectralNormToSeminormedAddCommGroup h_alg h
+  {(inferInstance : Module K L) with
     norm_smul_le := fun r x =>
       by
       change spectralAlgNorm h_alg h (r • x) ≤ ‖r‖ * spectralAlgNorm h_alg h x
-      exact le_of_eq (map_smul_eq_mul _ _ _) }
+      exact le_of_eq (map_smul_eq_mul _ _ _)}
 
 /-- The metric space structure on `L` induced by the spectral norm. -/
 def ms [CompleteSpace K] (h : IsNonarchimedean (norm : K → ℝ)) : MetricSpace L :=
