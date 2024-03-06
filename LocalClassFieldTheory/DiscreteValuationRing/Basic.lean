@@ -270,16 +270,18 @@ theorem pow_Uniformizer {r : K₀} (hr : r ≠ 0) (π : Uniformizer v) :
     by
     simp only [ha, neg_neg, Ne.def]
     by_cases h0 : toAdd (unzero hr₀) = 0
-    · rw [h0, zpow_zero, one_mul, Subring.coe_eq_zero_iff]; exact hr
+    · simp_all only [ne_eq, neg_zero, Nat.cast_eq_zero, CharP.cast_eq_zero, le_refl, zpow_zero,
+      one_mul, Subtype.coe_eta, ZeroMemClass.coe_eq_zero, not_false_eq_true]
     · apply mul_ne_zero
-      · rw [Ne.def, zpow_eq_zero_iff h0]
-        exact Uniformizer_ne_zero' v π
+      · rw [Ne.def, zpow_eq_zero_iff]
+        · exact Uniformizer_ne_zero' v π
+        · rwa [hm, neg_neg]
       · rw [Ne.def, Subring.coe_eq_zero_iff]; exact hr
   have h_unit_a : IsUnit a :=
     Integers.isUnit_of_one (integer.integers v) (isUnit_iff_ne_zero.mpr ha₀) hpow
   use h_unit_a.unit
-  rw [IsUnit.unit_spec, Subring.coe_pow, ha, ← mul_assoc, zpow_neg, hn, zpow_ofNat, mul_inv_cancel,
-    one_mul]
+  rw [IsUnit.unit_spec, Subring.coe_pow, ha, ← mul_assoc, zpow_neg, hn, zpow_coe_nat,
+    mul_inv_cancel, one_mul]
   · apply pow_ne_zero
     exact Uniformizer_ne_zero' _ π
 
@@ -330,7 +332,7 @@ theorem not_isField : ¬IsField K₀ := by
   obtain ⟨π, hπ⟩ := exists_Uniformizer_ofDiscrete v
   rintro ⟨-, -, h⟩
   have := Uniformizer_ne_zero v hπ
-  simp only [Uniformizer_ne_zero v hπ, Ne.def, Subring.coe_eq_zero_iff] at this
+  simp only [Ne.def, Subring.coe_eq_zero_iff] at this
   specialize h this
   rw [← isUnit_iff_exists_inv] at h
   exact Uniformizer_not_isUnit v hπ h
@@ -366,7 +368,7 @@ theorem val_le_iff_dvd (L : Type w₁) [Field L] {w : Valuation L ℤₘ₀} [Is
     have hrn : w (r ^ n) = ofAdd (-(n : ℤ)) := by
       replace hr : IsUniformizer w r := DiscreteValuation.IsUniformizerOfGenerator w ?_
       rw [WithZero.ofAdd_zpow, zpow_neg, ← Nat.cast_one, ← WithZero.ofAdd_neg_one_pow_comm ↑n 1,
-          pow_one, zpow_neg, inv_inv, zpow_ofNat, Valuation.map_pow]
+          pow_one, zpow_neg, inv_inv, zpow_coe_nat, Valuation.map_pow]
       congr
       rw [span_singleton_generator]
     have :=
@@ -478,9 +480,9 @@ theorem exists_of_le_one {x : FractionRing A} (H : Valued.v x ≤ (1 : ℤₘ₀
       zify
       rw [← sub_nonneg]
       rw [← coe_unzero this, ← WithZero.coe_one] at H π_lt_one
-      rw [div_eq_mul_inv, ← WithZero.coe_pow, ← WithZero.coe_pow, ← WithZero.coe_inv, ← zpow_ofNat,
-        ← zpow_ofNat, ← WithZero.coe_mul, WithZero.coe_le_coe, ← zpow_sub, ← ofAdd_zero, ←
-        ofAdd_toAdd (unzero _ ^ ((n : ℤ) - (m : ℤ))), ofAdd_le, Int.toAdd_zpow] at H
+      rw [div_eq_mul_inv, ← WithZero.coe_pow, ← WithZero.coe_pow, ← WithZero.coe_inv,
+        ← zpow_coe_nat, ← zpow_coe_nat, ← WithZero.coe_mul, WithZero.coe_le_coe, ← zpow_sub,
+        ← ofAdd_zero, ← ofAdd_toAdd (unzero _ ^ ((n : ℤ) - (m))), ofAdd_le, Int.toAdd_zpow] at H
       apply nonneg_of_mul_nonpos_right H
       rwa [← toAdd_one, toAdd_lt, ← WithZero.coe_lt_coe]
     use u * π ^ (n - m) * w.2

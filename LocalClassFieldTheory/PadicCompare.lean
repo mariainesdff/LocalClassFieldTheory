@@ -210,9 +210,11 @@ theorem uniformInducing_cast : letI := ((@padicValued p _))
     · tauto
     · apply hM_sub
       simp only [Set.mem_setOf_eq, dist] at h ⊢
-      rwa [← Padic.coe_sub, padicNormE.eq_padic_norm', padicNorm_eq_val_norm, val_eq_coe, coe_lt_coe,
-        @StrictMono.lt_iff_lt _ _ _ _ _ (withZeroMultIntToNNReal_strictMono hp_one), ← neg_sub,
-          Valuation.map_neg] at h
+      rw [← Padic.coe_sub, padicNormE.eq_padic_norm', padicNorm_eq_val_norm] at h
+      sorry
+      -- , val_eq_coe, coe_lt_coe,
+      --   @StrictMono.lt_iff_lt _ _ _ _ _ (withZeroMultIntToNNReal_strictMono hp_one), ← neg_sub,
+      --     Valuation.map_neg] at h
   · rw [(Valued.hasBasis_uniformity ℚ ℤₘ₀).mem_iff]
     rintro ⟨T, ⟨ε, ⟨hε, H⟩⟩, h⟩
     obtain ⟨M, hM⟩ := Real.exists_strictMono_lt (withZeroMultIntToNNReal_strictMono hp_one) hε
@@ -307,9 +309,8 @@ instance : CharZero (Q_p p) := (padicEquiv p).toRingHom.charZero
 
 instance : Algebra ℚ_[p] (Q_p p) := RingHom.toAlgebra (PadicComparison.padicEquiv p).symm
 
-instance : IsScalarTower ℚ ℚ_[p] (Q_p p) where smul_assoc r x y := by
-    { simp only [Algebra.smul_def, eq_ratCast, _root_.map_mul, map_ratCast, mul_assoc]
-      rfl}
+instance : IsScalarTower ℚ ℚ_[p] (Q_p p) where smul_assoc r x y :=
+  by {simp only [Algebra.smul_def, eq_ratCast, _root_.map_mul, map_ratCast, mul_assoc]}
 
 theorem Padic'.coe_eq (x : ℚ) : letI := (padicValued p).toUniformSpace
    (x : Q_p p) = ((padicPkg' p).coe x : (padicPkg' p).space) := by

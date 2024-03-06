@@ -12,6 +12,7 @@ import LocalClassFieldTheory.ForMathlib.Data.Set.Lattice
 import LocalClassFieldTheory.ForMathlib.FieldTheory.Minpoly.IsIntegrallyClosed
 import LocalClassFieldTheory.ForMathlib.NumberTheory.Padics.PadicIntegers
 import LocalClassFieldTheory.ForMathlib.RingTheory.DedekindDomain.Ideal
+import LocalClassFieldTheory.ForMathlib.RingTheory.Ideal.LocalRing
 import LocalClassFieldTheory.ForMathlib.RingTheory.Valuation.AlgebraInstances
 import LocalClassFieldTheory.ForMathlib.RingTheory.Valuation.Integers
 import LocalClassFieldTheory.ForMathlib.RingTheory.Valuation.IntPolynomial

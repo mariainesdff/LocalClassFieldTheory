@@ -57,7 +57,7 @@ theorem ofAdd_neg_one_pow_comm (a : ℤ) (n : ℕ) :
     ((↑(ofAdd (-1 : ℤ)) : ℤₘ₀) ^ (-a)) ^ n = ofAdd (n : ℤ) ^ a := by
   rw [ofAdd_zpow (-1)]
   simp only [zpow_neg, zpow_one, inv_zpow', inv_inv, coe_zpow]
-  rw [← zpow_ofNat, ofAdd_pow_pow_comm, ← ofAdd_zpow]
+  rw [← zpow_coe_nat, ofAdd_pow_pow_comm, ← ofAdd_zpow]
 
 
 instance : Nontrivial ℤₘ₀ˣ := (unitsWithZeroEquiv).toEquiv.nontrivial
@@ -66,7 +66,7 @@ instance : Nontrivial ℤₘ₀ˣ := (unitsWithZeroEquiv).toEquiv.nontrivial
 theorem one_lt_zpow' {α : Type _} [LinearOrderedCommGroupWithZero α] {a : α} (ha : 1 < a) {k : ℤ}
     (hk : 0 < k) : 1 < a ^ k := by
   lift k to ℕ using Int.le_of_lt hk
-  rw [zpow_ofNat]
+  rw [zpow_coe_nat]
   exact one_lt_pow' ha (Int.coe_nat_pos.mp hk).ne'
 
 theorem mul_lt_mul_right₀ {α : Type _} {a b c : α} [LinearOrderedCommGroupWithZero α]
@@ -115,7 +115,7 @@ theorem zpow_left_inj {n : ℤ} {a b : ℤₘ₀} (ha : a ≠ 0) (hb : b ≠ 0) 
 
 theorem ofAdd_neg_nat (n : ℕ) : (↑(ofAdd (-n : ℤ)) : ℤₘ₀) = ofAdd (-1 : ℤ) ^ n := by
   simp only [ofAdd_neg, coe_inv, inv_pow, coe_pow, inv_inj]
-  rw [← @WithZero.coe_pow, WithZero.coe_inj, ← one_mul (n : ℤ), Int.ofAdd_mul, zpow_ofNat]
+  rw [← @WithZero.coe_pow, WithZero.coe_inj, ← one_mul (n : ℤ), Int.ofAdd_mul, zpow_coe_nat]
 
 theorem ofAdd_neg_one_lt_one : (↑(Multiplicative.ofAdd (-1 : ℤ)) : ℤₘ₀) < (1 : ℤₘ₀) := by
   rw [← WithZero.coe_one, WithZero.coe_lt_coe, ← ofAdd_zero, ofAdd_lt]

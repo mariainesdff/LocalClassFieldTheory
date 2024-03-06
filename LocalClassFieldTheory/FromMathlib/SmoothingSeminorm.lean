@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: María Inés de Frutos-Fernández
 -/
 import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
+import Mathlib.Topology.MetricSpace.Sequences
 import LocalClassFieldTheory.FromMathlib.Limsup
 import LocalClassFieldTheory.FromMathlib.RingSeminorm
 

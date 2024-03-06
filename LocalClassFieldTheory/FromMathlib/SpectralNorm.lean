@@ -154,6 +154,7 @@ theorem multiset_prod_le_pow_card {K L : Type _} [SeminormedCommRing K] [Ring L]
   rw [← NNReal.coe_le_coe] at hg_le
   convert hg_le
   · simp only [NNReal.coe_multiset_prod, Multiset.map_map, Function.comp_apply, NNReal.coe_mk]
+    rfl
   · simp only [card_map]; rfl
 
 theorem multiset_le_prod_of_submultiplicative {α : Type _} [CommMonoid α] {f : α → ℝ}
@@ -169,6 +170,7 @@ theorem multiset_le_prod_of_submultiplicative {α : Type _} [CommMonoid α] {f :
   rw [← NNReal.coe_le_coe] at hg_le
   convert hg_le
   simp only [NNReal.coe_multiset_prod, Multiset.map_map, Function.comp_apply, NNReal.coe_mk]
+  rfl
 
 end Real
 
