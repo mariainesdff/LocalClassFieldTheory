@@ -1,6 +1,6 @@
 import LocalClassFieldTheory.PadicCompare
 import LocalClassFieldTheory.SpectralNorm
--- DiscreteValuationRing folder
+-- DiscreteValuationRing folder *complete*
 import LocalClassFieldTheory.DiscreteValuationRing.Basic
 import LocalClassFieldTheory.DiscreteValuationRing.Complete
 import LocalClassFieldTheory.DiscreteValuationRing.DiscreteNorm
@@ -8,6 +8,8 @@ import LocalClassFieldTheory.DiscreteValuationRing.Extensions
 import LocalClassFieldTheory.DiscreteValuationRing.Localization
 import LocalClassFieldTheory.DiscreteValuationRing.ResidueField
 import LocalClassFieldTheory.DiscreteValuationRing.TrivialExtension
+-- EqCharacteristic folder
+import LocalClassFieldTheory.EqCharacteristic.Basic
 -- ForMathlib folder *complete*
 import LocalClassFieldTheory.ForMathlib.Data.Set.Lattice
 import LocalClassFieldTheory.ForMathlib.FieldTheory.Minpoly.IsIntegrallyClosed

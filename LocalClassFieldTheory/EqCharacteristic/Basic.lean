@@ -81,7 +81,7 @@ instance charP : CharP (FpXCompletion p) p :=
 def WithZero.valued : Valued (FpXCompletion p) ℤₘ₀ :=
   HeightOneSpectrum.valuedAdicCompletion (RatFunc 𝔽_[p]) (Polynomial.idealX 𝔽_[p])
 
-theorem valuation_x :
+theorem valuation_X :
     Valued.v ((algebraMap (RatFunc (GaloisField p 1)) (FpXCompletion p)) X) = ofAdd (-1 : ℤ) := by
   erw [valuedAdicCompletion_def, FpXCompletion.algebraMap_eq_coe, Valued.extension_extends,
     val_X_eq_neg_one]
@@ -90,8 +90,8 @@ theorem mem_FpXIntCompletion {x : FpXCompletion p} :
     x ∈ FpXIntCompletion p ↔ (Valued.v x : ℤₘ₀) ≤ 1 :=
   Iff.rfl
 
-theorem x_mem_FpXIntCompletion : algebraMap (RatFunc 𝔽_[p]) _ X ∈ FpXIntCompletion p := by
-  erw [FpXCompletion.mem_FpXIntCompletion, FpXCompletion.valuation_x, ← WithZero.coe_one,
+theorem X_mem_FpXIntCompletion : algebraMap (RatFunc 𝔽_[p]) _ X ∈ FpXIntCompletion p := by
+  erw [FpXCompletion.mem_FpXIntCompletion, FpXCompletion.valuation_X, ← WithZero.coe_one,
     WithZero.coe_le_coe, ← ofAdd_zero, ofAdd_le]
   linarith
 
@@ -188,8 +188,8 @@ instance : IsIntegralClosure (FpXIntCompletion p) (FpXIntCompletion p) (FpXCompl
 
 /-- `FpX_int_completions.X` is the polynomial variable `X : ratfunc 𝔽_[p]`, first coerced to the
 completion `FpX_completion` and then regarded as an integral element using the bound on its norm.-/
-def x : FpXIntCompletion p :=
-  ⟨algebraMap (RatFunc 𝔽_[p]) _ X, FpXCompletion.x_mem_FpXIntCompletion⟩
+def X : FpXIntCompletion p :=
+  ⟨algebraMap (RatFunc 𝔽_[p]) _ RatFunc.X, FpXCompletion.X_mem_FpXIntCompletion⟩
 
 end FpXIntCompletion
 
@@ -199,7 +199,7 @@ namespace FpXCompletion
 embedding of the ring of integers in the whole space `FpX_completion` The next lemma shows that this
 is simply the coercion of `X : ratfunc 𝔽_[p]` to its adic completion `FpX_completion`. -/
 def X :=
-  algebraMap (FpXIntCompletion p) (FpXCompletion p) (FpXIntCompletion.x p)
+  algebraMap (FpXIntCompletion p) (FpXCompletion p) (FpXIntCompletion.X p)
 
 theorem X_eq_coe : X p = ↑(@RatFunc.X 𝔽_[p] _ _) :=
   rfl
@@ -245,15 +245,15 @@ end FpXCompletion
 
 namespace FpXIntCompletion
 
-theorem X_ne_zero : FpXIntCompletion.x p ≠ 0 := by
+theorem X_ne_zero : FpXIntCompletion.X p ≠ 0 := by
   have h0 : (0 : FpXIntCompletion p) = ⟨(0 : FpXCompletion p), Subring.zero_mem _⟩ := by rfl
-  rw [FpXIntCompletion.x, Ne.def, h0, Subtype.mk_eq_mk, _root_.map_eq_zero]
+  rw [FpXIntCompletion.X, Ne.def, h0, Subtype.mk_eq_mk, _root_.map_eq_zero]
   exact RatFunc.X_ne_zero
 
 open CompletionLaurentSeries LaurentSeries
 
 theorem dvd_of_norm_lt_one {F : FpXIntCompletion p} :
-    Valued.v (F : FpXCompletion p) < (1 : ℤₘ₀) → FpXIntCompletion.x p ∣ F := by
+    Valued.v (F : FpXCompletion p) < (1 : ℤₘ₀) → FpXIntCompletion.X p ∣ F := by
   set f : FpXCompletion p := ↑F with h_Ff
   set g := (ratfuncAdicComplRingEquiv 𝔽_[p]) f with h_fg
   have h_gf : (laurentSeriesRingEquiv 𝔽_[p]) g = f := by rw [h_fg, RingEquiv.symm_apply_apply]
@@ -278,7 +278,7 @@ theorem dvd_of_norm_lt_one {F : FpXIntCompletion p} :
   rfl
 
 theorem norm_lt_one_of_dvd {F : FpXIntCompletion p} :
-    FpXIntCompletion.x p ∣ F → Valued.v (F : FpXCompletion p) < (1 : ℤₘ₀) := by
+    FpXIntCompletion.X p ∣ F → Valued.v (F : FpXCompletion p) < (1 : ℤₘ₀) := by
   rcases F with ⟨f, f_mem⟩
   obtain ⟨G, h_fG⟩ := exists_powerSeries_of_mem_integers 𝔽_[p] f_mem
   rintro ⟨⟨y, y_mem⟩, h⟩
@@ -306,9 +306,9 @@ theorem norm_lt_one_of_dvd {F : FpXIntCompletion p} :
   rfl
 
 theorem norm_lt_one_iff_dvd (F : FpXIntCompletion p) :
-    ‖(F : FpXCompletion p)‖ < 1 ↔ FpXIntCompletion.x p ∣ F := by
+    ‖(F : FpXCompletion p)‖ < 1 ↔ FpXIntCompletion.X p ∣ F := by
   have H : ‖(F : FpXCompletion p)‖ = RankOneValuation.normDef (F : FpXCompletion p) := rfl
-  suffices Valued.v (F : FpXCompletion p) < (1 : ℤₘ₀) ↔ FpXIntCompletion.x p ∣ F by
+  suffices Valued.v (F : FpXCompletion p) < (1 : ℤₘ₀) ↔ FpXIntCompletion.X p ∣ F by
     rwa [H, RankOneValuation.norm_lt_one_iff_val_lt_one]
   exact ⟨dvd_of_norm_lt_one p, norm_lt_one_of_dvd p⟩
 
@@ -436,16 +436,16 @@ instance eqCharLocalField (p : ℕ) [Fact (Nat.Prime p)] : EqCharLocalField p (F
   `FpX_int_completion`. -/
 def ringOfIntegersEquiv (p : ℕ) [Fact (Nat.Prime p)] :
     ringOfIntegers p (FpXCompletion p) ≃+* FpXIntCompletion p := by
-  --have h : ↥(𝓞 p (FpXCompletion p)) ≃+* ↥(FpXIntCompletion p) := by
+  -- Porting note: I had to add these local instances
+  letI : SMul ↥(FpXIntCompletion p) ↥(FpXIntCompletion p) := Algebra.toSMul
+  letI : IsScalarTower (FpXIntCompletion p) (FpXIntCompletion p) (FpXCompletion p) :=
+    IsScalarTower.left _
   apply @RingOfIntegers.equiv p _ (FpXCompletion p) _ _ (FpXIntCompletion p) _ _
-    /- @RingOfIntegers.equiv p _ (FpXCompletion p) _ _ (FpXIntCompletion p) _ _
-      (FpXIntCompletion p).algebra (IsScalarTower.left (FpXIntCompletion p)) -/
-  have h1 := FpXIntCompletion.FpXCompletion.isIntegralClosure p
-  exact @h h1
+
 
 theorem open_unit_ball_def :
-    LocalRing.maximalIdeal (FpXIntCompletion p) = Ideal.span {FpXIntCompletion.x p} := by
-  apply DiscreteValuation.isUniformizer_is_generator <;> exact valuation_X
+    LocalRing.maximalIdeal (FpXIntCompletion p) = Ideal.span {FpXIntCompletion.X p} := by
+  apply DiscreteValuation.IsUniformizer_is_generator; exact valuation_X
 
 end FpXCompletion
 
@@ -457,12 +457,14 @@ open EqCharLocalField
 
 open scoped EqCharLocalField
 
-theorem x_coe_ne_zero : ¬(algebraMap (FpXIntCompletion p) (𝓞 p K)) (FpXIntCompletion.x p) = 0 :=
-  by
+
+theorem x_coe_ne_zero : ¬(algebraMap (FpXIntCompletion p) (𝓞 p K)) (FpXIntCompletion.X p) = 0 := by
+  -- Porting note: needed to add local instance
+  letI : AddMonoidHomClass (↥(FpXIntCompletion p) →+* ↥(ringOfIntegers p K))
+    ↥(FpXIntCompletion p) ↥(ringOfIntegers p K) := RingHomClass.toAddMonoidHomClass
   intro h
-  exact
-    FpXIntCompletion.x_ne_zero p
-      ((injective_iff_map_eq_zero _).mp (ring_of_integers.algebra_map_injective p K) _ h)
+  exact FpXIntCompletion.X_ne_zero p
+      ((injective_iff_map_eq_zero _).mp (RingOfIntegers.algebraMap_injective p K) _ h)
 
 instance : Algebra (RatFunc 𝔽_[p]) K :=
   (RingHom.comp (algebraMap (FpXCompletion p) K)
