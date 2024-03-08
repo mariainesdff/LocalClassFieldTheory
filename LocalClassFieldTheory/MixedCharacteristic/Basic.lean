@@ -159,6 +159,9 @@ instance : Fintype (LocalRing.ResidueField (Z_p p)) :=
 def residueFieldFintypeOfCompletion : Fintype (LocalRing.ResidueField (Z_p p)) :=
   inferInstance
 
+lemma residueFieldFiniteOfCompletion : Finite (LocalRing.ResidueField (Z_p p)) :=
+  Finite.of_fintype _
+
 end RingOfIntegers
 
 end Padic

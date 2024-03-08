@@ -145,6 +145,9 @@ noncomputable def residueFieldFintypeOfCompletion :
     Fintype (LocalRing.ResidueField (FpXIntCompletion p)) :=
   inferInstance
 
+lemma residueFieldFiniteOfCompletion :
+    Finite (LocalRing.ResidueField (FpXIntCompletion p)) := Finite.of_fintype _
+
 end FpXIntCompletion
 
 namespace FpXCompletion

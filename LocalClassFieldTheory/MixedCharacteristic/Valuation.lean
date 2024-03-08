@@ -63,11 +63,11 @@ instance (priority := 100) WithZero.valued: Valued K ℤₘ₀ :=
   Extension.valued (Q_p p) K
 
 /-- A mixed characteristic local field is a complete space. -/
-instance (priority := 100) : CompleteSpace K :=
+instance (priority := 100) completeSpace : CompleteSpace K :=
   Extension.completeSpace (Q_p p) K
 
 /-- The canonical valuation in a mixed characteristic local field is discrete. -/
-instance : Valuation.IsDiscrete (MixedCharLocalField.WithZero.valued p K).v :=
+instance valuation.IsDiscrete : Valuation.IsDiscrete (MixedCharLocalField.WithZero.valued p K).v :=
   Extension.isDiscrete_of_finite (Q_p p) K
 
 /-- The ring of integers of a mixed characteristic local field is a discrete valuation ring. -/

@@ -32,8 +32,9 @@ open scoped DiscreteValuation
 valuation is discrete, and that the residue field of the unit ball is finite. -/
 class LocalField (K : Type _) [Field K] [hv : Valued K ℤₘ₀] where
   complete : CompleteSpace K
-  IsDiscrete : IsDiscrete hv.V
-  finiteResidueField : Fintype (LocalRing.ResidueField hv.V.ValuationSubring)
+  IsDiscrete : IsDiscrete hv.v
+  finiteResidueField : Finite (LocalRing.ResidueField hv.v.valuationSubring)
+  -- porting note: we used to have `Fintype` here.
 
 namespace EqCharLocalField
 
@@ -47,16 +48,13 @@ variable (K : Type _) [Field K] [EqCharLocalField p K]
   The separability assumption is required to use some result in mathlib concerning
   the finiteness of the ring of integers.-/
 noncomputable def localField [Fact (IsSeparable (FpXCompletion p) K)] : LocalField K :=
-  {
-    EqCharLocalField.WithZero.valued p
-      K with
+  { EqCharLocalField.WithZero.valued p K with
     complete := EqCharLocalField.completeSpace p K
-    IsDiscrete := V.Valuation.isDiscrete p K
-    finiteResidueField :=
-      by
-      haveI : IsSeparable (FpXCompletion p) K := Fact.out _
-      apply finite_residue_field_of_unit_ball
-      apply fpXIntCompletion.residueFieldFintypeOfCompletion }
+    IsDiscrete := valuation.IsDiscrete p K
+    finiteResidueField := by
+      haveI : IsSeparable (FpXCompletion p) K := @Fact.out _ _
+      apply finiteResidueFieldOfUnitBall
+      apply FpXIntCompletion.residueFieldFiniteOfCompletion }
 
 end EqCharLocalField
 
@@ -70,13 +68,11 @@ variable (K : Type _) [Field K] [MixedCharLocalField p K]
 
 /-- A `mixed_char_local_field` is a local field. -/
 noncomputable def localField : LocalField K :=
-  {
-    MixedCharLocalField.WithZero.valued p
-      K with
+  { MixedCharLocalField.WithZero.valued p K with
     complete := MixedCharLocalField.completeSpace p K
-    IsDiscrete := V.Valuation.isDiscrete p K
+    IsDiscrete := valuation.IsDiscrete p K
     finiteResidueField := by
-      apply finite_residue_field_of_unit_ball
-      apply ring_of_integers.residue_field_fintype_of_completion }
+      apply finiteResidueFieldOfUnitBall
+      apply RingOfIntegers.residueFieldFiniteOfCompletion }
 
 end MixedCharLocalField
