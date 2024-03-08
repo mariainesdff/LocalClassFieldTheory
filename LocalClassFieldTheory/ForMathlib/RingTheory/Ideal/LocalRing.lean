@@ -29,5 +29,3 @@ lemma ResidueField.finite_of_finite [IsNoetherian R S] [IsLocalRingHom (algebraM
   (hfin : Finite (ResidueField R)) : Finite (ResidueField S) := by
   have := @FiniteDimensional_of_finite R S _
   exact FiniteDimensional.finite_of_finite (ResidueField R) (ResidueField S)
-
-#check ResidueField.finite_of_finite
