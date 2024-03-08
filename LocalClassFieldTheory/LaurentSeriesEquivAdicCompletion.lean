@@ -5,6 +5,7 @@ import LocalClassFieldTheory.ForMathlib.Data.Set.Lattice
 import LocalClassFieldTheory.FromMathlib.PR18604WellFounded
 import LocalClassFieldTheory.ForMathlib.RingTheory.DedekindDomain.Ideal
 import LocalClassFieldTheory.ForMathlib.Topology.UniformSpace.AbstractCompletion
+import Mathlib.RingTheory.PowerSeries.Trunc
 import Mathlib.Topology.UniformSpace.AbstractCompletion
 
 import LocalClassFieldTheory.ForMathlib.DiscreteUniformity -- Porting note : added
@@ -279,7 +280,7 @@ theorem valuation_of_X_zpow (s : ℕ) :
         (PowerSeries.idealX K) PowerSeries.X]
     apply intValuation_of_X K
   rw [map_pow, this, ← one_mul (s : ℤ), ← neg_mul (1 : ℤ) ↑s, Int.ofAdd_mul, WithZero.coe_zpow,
-    ofAdd_neg, WithZero.coe_inv, zpow_ofNat]
+    ofAdd_neg, WithZero.coe_inv, zpow_coe_nat]
 
 -- Porting note : This lemma has been removed from `Mathlib.RingTheory.laurentSeries`.
 lemma coe_powerSeries {R : Type*} [Semiring R] (x : PowerSeries R) : (x : LaurentSeries R) =
