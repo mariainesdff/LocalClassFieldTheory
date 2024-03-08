@@ -8,8 +8,9 @@ import LocalClassFieldTheory.DiscreteValuationRing.Extensions
 import LocalClassFieldTheory.DiscreteValuationRing.Localization
 import LocalClassFieldTheory.DiscreteValuationRing.ResidueField
 import LocalClassFieldTheory.DiscreteValuationRing.TrivialExtension
--- EqCharacteristic folder
+-- EqCharacteristic folder *complete*
 import LocalClassFieldTheory.EqCharacteristic.Basic
+import LocalClassFieldTheory.EqCharacteristic.Valuation
 -- ForMathlib folder *complete*
 import LocalClassFieldTheory.ForMathlib.Data.Set.Lattice
 import LocalClassFieldTheory.ForMathlib.FieldTheory.Minpoly.IsIntegrallyClosed

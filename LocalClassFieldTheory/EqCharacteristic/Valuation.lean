@@ -49,7 +49,7 @@ variable (K : Type _) [Field K] [EqCharLocalField p K]
 
 /-- The valued instance in an equal characteristic local field, induced by the extension of the
   `X`-adic valuation.-/
-instance (priority := 100) : Valued K ℤₘ₀ :=
+instance (priority := 100) WithZero.valued : Valued K ℤₘ₀ :=
   Extension.valued (FpXCompletion p) K
 
 /-- An equal characteristic local field is a complete space. -/
@@ -57,43 +57,42 @@ instance (priority := 100) : CompleteSpace K :=
   Extension.completeSpace (FpXCompletion p) K
 
 /-- The canonical valuation in an equal characteristic local field is discrete. -/
-instance : Valuation.IsDiscrete (EqCharLocalField.WithZero.valued p K).V :=
-  Extension.isDiscreteOfFinite (FpXCompletion p) K
+instance : Valuation.IsDiscrete (EqCharLocalField.WithZero.valued p K).v :=
+  Extension.isDiscrete_of_finite (FpXCompletion p) K
 
 /-- The ring of integers of an equal characteristic local field is a discrete valuation ring. -/
 instance : DiscreteValuationRing (𝓞 p K) :=
-  IntegralClosure.discreteValuationRing_of_finite_extension (FpXCompletion p) K
+  integralClosure.discreteValuationRing_of_finite_extension (FpXCompletion p) K
 
 variable {p}
 
-theorem valuation_x_ne_zero : Valued.v (algebraMap (RatFunc 𝔽_[p]) K X) ≠ (0 : ℤₘ₀) := by
+theorem valuation_X_ne_zero : Valued.v (algebraMap (RatFunc 𝔽_[p]) K X) ≠ (0 : ℤₘ₀) := by
   simp only [Ne.def, _root_.map_eq_zero, RatFunc.X_ne_zero, not_false_iff]
 
 /-- The ramification index of an equal characteristic local field `K` is given by the
   additive valuation of the element `(X : K)`. -/
 def ramificationIndex (K : Type _) [Field K] [EqCharLocalField p K] : ℤ :=
-  -(WithZero.unzero (valuation_x_ne_zero K)).toAdd
+  - toAdd (WithZero.unzero (valuation_X_ne_zero K))
+  -- Porting note: dot notation doesn't work
 
 scoped notation "e" => EqCharLocalField.ramificationIndex
 
 variable (p)
 
 /-- The local field `FpX_completion` is unramified. -/
-theorem is_unramified_fpXCompletion : e (FpXCompletion p) = 1 :=
-  by
+theorem is_unramified_fpXCompletion : e (FpXCompletion p) = 1 := by
   have hX :
-    (EqCharLocalField.WithZero.valued p (FpXCompletion p)).V (FpXCompletion.x p) =
-      of_add (-1 : ℤ) :=
-    by
+    (EqCharLocalField.WithZero.valued p (FpXCompletion p)).v (FpXCompletion.X p) =
+      ofAdd (-1 : ℤ) := by
     have heq :
-      (EqCharLocalField.WithZero.valued p (FpXCompletion p)).V =
-        extended_valuation (FpXCompletion p) (FpXCompletion p) :=
+      (EqCharLocalField.WithZero.valued p (FpXCompletion p)).v =
+        extendedValuation (FpXCompletion p) (FpXCompletion p) :=
       by rfl
-    rw [← @FpXCompletion.valuation_x p _, FpXCompletion.x, fpXIntCompletion.x,
-      EqCharLocalField.WithZero.valued, HEq,
+    rw [← @FpXCompletion.valuation_X p _, FpXCompletion.X, FpXIntCompletion.X,
+      EqCharLocalField.WithZero.valued, heq,
       DiscreteValuation.Extension.trivial_extension_eq_valuation]
     rfl
-  rw [ramification_index, neg_eq_iff_eq_neg, ← toAdd_ofAdd (-1 : ℤ)]
+  rw [ramificationIndex, neg_eq_iff_eq_neg, ← toAdd_ofAdd (-1 : ℤ)]
   apply congr_arg
   rw [← WithZero.coe_inj, ← hX, WithZero.coe_unzero]
   rfl
@@ -101,33 +100,33 @@ theorem is_unramified_fpXCompletion : e (FpXCompletion p) = 1 :=
 /-- A ring equivalence between `FpX_int_completion` and the valuation subring of `FpX_completion`
 viewed as an equal characteristic local field. -/
 noncomputable def FpXIntCompletion.equivValuationSubring :
-    fpXIntCompletion p ≃+*
-      ↥(EqCharLocalField.WithZero.valued p (FpXCompletion p)).V.ValuationSubring
+    FpXIntCompletion p ≃+*
+      ↥(EqCharLocalField.WithZero.valued p (FpXCompletion p)).v.valuationSubring
     where
   toFun x := by
     use x.1
     have heq :
-      (EqCharLocalField.WithZero.valued p (FpXCompletion p)).V x.val =
-        extended_valuation (FpXCompletion p) (FpXCompletion p) x.val :=
+      (EqCharLocalField.WithZero.valued p (FpXCompletion p)).v x.val =
+        extendedValuation (FpXCompletion p) (FpXCompletion p) x.val :=
       by rfl
-    rw [Valuation.mem_valuationSubring_iff, HEq, trivial_extension_eq_valuation (FpXCompletion p)]
+    rw [Valuation.mem_valuationSubring_iff, heq, trivial_extension_eq_valuation (FpXCompletion p)]
     exact x.2
   invFun x := by
     use x.1
-    rw [fpXIntCompletion, height_one_spectrum.mem_adic_completion_integers, ←
-      trivial_extension_eq_valuation (FpXCompletion p)]
+    rw [FpXIntCompletion, HeightOneSpectrum.mem_adicCompletionIntegers,
+      ← trivial_extension_eq_valuation (FpXCompletion p)]
     exact x.2
-  left_inv x := by simp only [Subtype.val_eq_coe, SetLike.eta]
-  right_inv x := by simp only [Subtype.val_eq_coe, SetLike.eta]
-  map_mul' x y := by simp only [Subtype.val_eq_coe, Subring.coe_mul, MulMemClass.mk_mul_mk]
-  map_add' x y := by simp only [Subtype.val_eq_coe, Subring.coe_add, AddMemClass.mk_add_mk]
+  left_inv x   := by simp only [SetLike.eta]
+  right_inv x  := by simp only [SetLike.eta]
+  map_mul' x y := by simp only [Subring.coe_mul, MulMemClass.mk_mul_mk]
+  map_add' x y := by simp only [Subring.coe_add, AddMemClass.mk_add_mk]
 
 variable {p}
 
 theorem FpXIntCompletion.equivValuationSubring_comm :
-    (algebraMap (EqCharLocalField.WithZero.valued p (FpXCompletion p)).V.ValuationSubring K).comp
+    (algebraMap (EqCharLocalField.WithZero.valued p (FpXCompletion p)).v.valuationSubring K).comp
         (FpXIntCompletion.equivValuationSubring p).toRingHom =
-      algebraMap (fpXIntCompletion p) K :=
+      algebraMap (FpXIntCompletion p) K :=
   rfl
 
 end EqCharLocalField
