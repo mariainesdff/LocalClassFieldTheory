@@ -888,7 +888,6 @@ theorem tendsto_valuation (a : (Polynomial.idealX K).adicCompletion (RatFunc K))
     rw [← Valued.extension_extends, ← val_y, ← diff_b_y]
     congr
 
--- set_option maxHeartbeats 400000 -- Porting note: times out otherwise
 theorem valuation_compare (f : LaurentSeries K) :
     (@Valued.v (RatfuncAdicCompl K) _ ℤₘ₀ _ _)
         (AbstractCompletion.compare (LaurentSeriesPkg K) (ratfuncAdicComplPkg K) f) =
