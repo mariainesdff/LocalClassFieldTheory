@@ -16,7 +16,7 @@ extension of `FpX_completion`.
 ## Main Definitions
 * `FpX_completion` is the adic completion of the rational functions `𝔽_p(X)`.
 * `FpX_int_completion` is the unit ball in the adic completion of the rational functions `𝔽_p(X)`.
-* `isom_laurent` is the ring isomorphism `(laurent_series 𝔽_[p]) ≃+* FpX_completion`
+* `isomLaurent` is the ring isomorphism `(LaurentSeries 𝔽_[p]) ≃+* FpX_completion`
 * `integers_equiv_power_series` is the isomorphism `(power_series 𝔽_[p]) ≃+* FpX_int_completion`.
 * `eq_char_local_field` defines an equal characteristic local field as a finite dimensional
 FpX_completion`-algebra for some prime number `p`.
@@ -109,9 +109,9 @@ theorem mem_FpX_int_completion' {x : FpXCompletion p} : x ∈ FpXIntCompletion p
 
 variable (p)
 
-/-- `isom_laurent` is the ring isomorphism `FpX_completion ≃+* (laurent_series 𝔽_[p])`. -/
+/-- `isomLaurent` is the ring isomorphism `FpX_completion ≃+* (LaurentSeries 𝔽_[p])`. -/
 def isomLaurent : LaurentSeries 𝔽_[p] ≃+* FpXCompletion p :=
-  CompletionLaurentSeries.laurentSeriesRingEquiv 𝔽_[p]
+  CompletionLaurentSeries.LaurentSeriesRingEquiv 𝔽_[p]
 
 end FpXCompletion
 
@@ -259,7 +259,7 @@ theorem dvd_of_norm_lt_one {F : FpXIntCompletion p} :
     Valued.v (F : FpXCompletion p) < (1 : ℤₘ₀) → FpXIntCompletion.X p ∣ F := by
   set f : FpXCompletion p := ↑F with h_Ff
   set g := (ratfuncAdicComplRingEquiv 𝔽_[p]) f with h_fg
-  have h_gf : (laurentSeriesRingEquiv 𝔽_[p]) g = f := by rw [h_fg, RingEquiv.symm_apply_apply]
+  have h_gf : (LaurentSeriesRingEquiv 𝔽_[p]) g = f := by rw [h_fg, RingEquiv.symm_apply_apply]
   erw [← h_gf, valuation_compare 𝔽_[p] g, ← WithZero.coe_one, ← ofAdd_zero, ← neg_zero]
   intro h
   obtain ⟨G, h_Gg⟩ : ∃ G : PowerSeries 𝔽_[p], ↑G = g :=
@@ -271,7 +271,7 @@ theorem dvd_of_norm_lt_one {F : FpXIntCompletion p} :
   specialize h 0 zero_lt_one
   rw [PowerSeries.coeff_zero_eq_constantCoeff, ← PowerSeries.X_dvd_iff] at h
   obtain ⟨C, rfl⟩ := dvd_iff_exists_eq_mul_left.mp h
-  refine' dvd_of_mul_left_eq ⟨(laurentSeriesRingEquiv 𝔽_[p]) C, _⟩ _
+  refine' dvd_of_mul_left_eq ⟨(LaurentSeriesRingEquiv 𝔽_[p]) C, _⟩ _
   · erw [FpXCompletion.mem_FpXIntCompletion, valuation_compare, val_le_one_iff_eq_coe]
     use C
   apply_fun algebraMap (FpXIntCompletion p) (FpXCompletion p) using Subtype.val_injective
@@ -283,7 +283,7 @@ theorem dvd_of_norm_lt_one {F : FpXIntCompletion p} :
 theorem norm_lt_one_of_dvd {F : FpXIntCompletion p} :
     FpXIntCompletion.X p ∣ F → Valued.v (F : FpXCompletion p) < (1 : ℤₘ₀) := by
   rcases F with ⟨f, f_mem⟩
-  obtain ⟨G, h_fG⟩ := exists_powerSeries_of_mem_integers 𝔽_[p] f_mem
+  obtain ⟨G, h_fG⟩ := exists_powerSeries_of_memIntegers 𝔽_[p] f_mem
   rintro ⟨⟨y, y_mem⟩, h⟩
   simp only
   erw [← h_fG, valuation_compare 𝔽_[p], ← WithZero.coe_one, ← ofAdd_zero, ← neg_zero, neg_zero, ←
@@ -299,10 +299,10 @@ theorem norm_lt_one_of_dvd {F : FpXIntCompletion p} :
     rw [map_mul, algebraMap_eq_coe, algebraMap_eq_coe, algebraMap_eq_coe, mul_comm,
       ← Subring.coe_mul] at h
     exact h
-  obtain ⟨Z, hZ⟩ := exists_powerSeries_of_mem_integers 𝔽_[p] y_mem
+  obtain ⟨Z, hZ⟩ := exists_powerSeries_of_memIntegers 𝔽_[p] y_mem
   refine' dvd_of_mul_left_eq Z _
   apply_fun HahnSeries.ofPowerSeries ℤ 𝔽_[p] using HahnSeries.ofPowerSeries_injective
-  apply_fun laurentSeriesRingEquiv 𝔽_[p]
+  apply_fun LaurentSeriesRingEquiv 𝔽_[p]
   rw [← LaurentSeries.coe_powerSeries]
   erw [PowerSeries.coe_mul, map_mul, hZ, h_fG, ← coe_X_compare 𝔽_[p], h_fy,
     RingEquiv.symm_apply_apply]
