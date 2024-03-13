@@ -1,3 +1,4 @@
+-- Basic folder *complete*
 import LocalClassFieldTheory.LaurentSeriesEquivAdicCompletion
 import LocalClassFieldTheory.LocalField
 import LocalClassFieldTheory.PadicCompare
