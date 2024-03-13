@@ -586,7 +586,7 @@ theorem root_norm_le_spectralValue {f : AlgebraNorm K L} (hf_pm : IsPowMul f)
           Real.rpow_mul (norm_nonneg _), Real.rpow_nat_cast, ← Nat.cast_sub (le_of_lt hn), one_div,
           Real.pow_rpow_inv_natCast (norm_nonneg _) (ne_of_gt (tsub_pos_of_lt hn))]
       have h_base : ‖p.coeff n‖ ^ (1 / (p.natDegree - n : ℝ)) < f x := by
-        rw [spectralValue, iSup, not_le, Set.Finite.cSup_lt_iff (spectralValueTerms_finite_range p)
+        rw [spectralValue, iSup, not_le, Set.Finite.csSup_lt_iff (spectralValueTerms_finite_range p)
             (Set.range_nonempty (spectralValueTerms p))] at h_ge
         have h_rg : ‖p.coeff n‖ ^ (1 / (p.natDegree - n : ℝ)) ∈ Set.range (spectralValueTerms p) :=
           by use n; simp only [spectralValueTerms, if_pos hn]

@@ -81,8 +81,7 @@ open scoped DiscreteValuation
 attribute [-instance] Rat.instMetricSpaceRat Rat.normedField Rat.denselyNormedField Rat.divisionRing
   Rat.normedAddCommGroup
 
-instance : SeparatedSpace ℚ_[p] :=
-  MetricSpace.to_separated
+instance : T0Space ℚ_[p] := inferInstance
 
 /-- The valued structure on `ℚ` induced by the `p`-adic valuation. -/
 def padicValued : Valued ℚ ℤₘ₀ := (pHeightOneIdeal p).adicValued
@@ -129,8 +128,7 @@ attribute [-instance] Rat.instMetricSpaceRat Rat.normedField Rat.denselyNormedFi
 def padicValued : Valued ℚ ℤₘ₀ :=
   (pHeightOneIdeal p).adicValued
 
-instance : SeparatedSpace ℚ_[p] :=
-  MetricSpace.to_separated
+instance : T0Space ℚ_[p] := inferInstance
 
 section Valuation
 

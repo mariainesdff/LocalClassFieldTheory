@@ -1,6 +1,5 @@
 import LocalClassFieldTheory.DiscreteValuationRing.Extensions
 import LocalClassFieldTheory.ForMathlib.RingTheory.Ideal.LocalRing
--- import Mathlib.NumberTheory.RamificationInertia
 import Mathlib.RingTheory.DedekindDomain.IntegralClosure
 
 #align_import discrete_valuation_ring.residue_field
@@ -48,14 +47,6 @@ consequence, when the residue field of `K₀` is finite, so is the residue field
   `integral_closure_eq_integer` proven in `discrete_valuation_ring.extensions` to transfer this
   finiteness to `L₀`.
 -/
-
-lemma mathlib_units {A B : Type*} [Ring A] [Ring B] (e : A ≃+* B) (a : A) :
-    IsUnit a ↔ IsUnit (e a) := by
-  constructor
-  · exact fun a_1 => IsUnit.map e a_1
-  · convert IsUnit.map e.symm
-    simp only [RingEquiv.symm_apply_apply]
-
 
 open LocalRing Valuation Ideal DiscreteValuation Valuation Integer Extension
 
