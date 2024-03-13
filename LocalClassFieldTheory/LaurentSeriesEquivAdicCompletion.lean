@@ -713,7 +713,7 @@ section Comparison
 
 open RatFunc
 
-theorem coe_is_inducing : UniformInducing (Coe.coe : RatFunc K → LaurentSeries K) := by
+theorem inducing_coe : UniformInducing (Coe.coe : RatFunc K → LaurentSeries K) := by
   letI : Ring (LaurentSeries K) := inferInstance -- Porting note: I had to add this
   rw [uniformInducing_iff, Filter.comap]
   ext S
@@ -746,6 +746,8 @@ theorem coe_is_inducing : UniformInducing (Coe.coe : RatFunc K → LaurentSeries
         RatFunc.coe_sub]
       assumption
 
+theorem continuous_coe : Continuous (Coe.coe : RatFunc K → LaurentSeries K) :=
+  (uniformInducing_iff'.1 (inducing_coe K)).1.continuous
 
 /-- The `X`-adic completion as an abstract completion of `ratfunc K`-/
 noncomputable def ratfuncAdicComplPkg : AbstractCompletion (RatFunc K) :=
@@ -760,7 +762,7 @@ noncomputable def LaurentSeriesPkg : AbstractCompletion (RatFunc K)
   uniformStruct := inferInstance
   complete := inferInstance
   separation := inferInstance
-  uniformInducing := coe_is_inducing K
+  uniformInducing := inducing_coe K
   dense := coe_range_dense K
 
 instance : TopologicalSpace (LaurentSeriesPkg K).space :=
@@ -774,55 +776,52 @@ open AbstractCompletion
 
 /-- Reintrerpret the extension of `coe : ratfunc K →+* laurent_series K` to the completion, as a
 ring homomorphism -/
-@[reducible]
+-- @[reducible]
 noncomputable def extensionAsRingHom :=
   UniformSpace.Completion.extensionHom (coeAlgHom K).toRingHom
 
+
 /-- An abbreviation for the `X`-adic completion of `ratfunc K` -/
 @[reducible]
-def RatfuncAdicCompl :=
-  adicCompletion (RatFunc K) (Polynomial.idealX K)
+def RatFuncAdicCompl := adicCompletion (RatFunc K) (Polynomial.idealX K)
+
+/-The two instances below make `comparePkg` and `comparePkg_eq_extension` slightly faster-/
+
+instance : UniformSpace (RatFuncAdicCompl K) := inferInstance
+
+instance : UniformSpace (LaurentSeries K) := inferInstance
 
 /-- The uniform space isomorphism between two abstract completions of `ratfunc K` -/
--- @[reducible]
-def comparePkg : RatfuncAdicCompl K ≃ᵤ LaurentSeries K :=
+@[reducible]
+def comparePkg : RatFuncAdicCompl K ≃ᵤ LaurentSeries K :=
   compareEquiv (ratfuncAdicComplPkg K) (LaurentSeriesPkg K)
+
+lemma comparePkg_eq_extension (x : UniformSpace.Completion (RatFunc K)) :
+    (comparePkg K).toFun x = (extensionAsRingHom K (continuous_coe K)).toFun x := rfl
 
 /-- The uniform space equivalence between two abstract completions of `ratfunc K` as a ring
 equivalence: this will be the *inverse* of the fundamental one.-/
 @[reducible]
-def ratfuncAdicComplRingEquiv : RatfuncAdicCompl K ≃+* LaurentSeries K :=
-  { comparePkg
-      K with
+def ratfuncAdicComplRingEquiv : RatFuncAdicCompl K ≃+* LaurentSeries K :=
+  {comparePkg K with
     map_mul' := by
-      set φ := (comparePkg K).1.1 with hφ
-      let b := (uniformInducing_iff'.1 (coe_is_inducing K)).1.continuous
-      rw [hφ]
-      unfold RatfuncAdicCompl
+      unfold RatFuncAdicCompl
       unfold IsDedekindDomain.HeightOneSpectrum.adicCompletion
-      unfold comparePkg
-      intros x y
-      have := (extensionAsRingHom K b).map_mul' x y
-      unfold extensionAsRingHom at this
-      unfold UniformSpace.Completion.extensionHom at this
-      unfold compareEquiv
-      simp only
-      simp at this
-      -- convert this
-      sorry
-      -- simp
-      -- simp at this
-      -- convert this
-      -- simp_all
-      -- (extensionAsRingHom K (uniformInducing_iff'.1 (coe_is_inducing K)).1.continuous).map_mul'
-    map_add' := sorry
-      /- (extensionAsRingHom K (uniformInducing_iff'.1 (coe_is_inducing K)).1.Continuous).map_add' -/ }
+      intro x y
+      rw [comparePkg_eq_extension, (extensionAsRingHom K (continuous_coe K)).map_mul']
+      rfl
+    map_add' := by
+      unfold RatFuncAdicCompl
+      unfold IsDedekindDomain.HeightOneSpectrum.adicCompletion
+      intro x y
+      rw [comparePkg_eq_extension, (extensionAsRingHom K (continuous_coe K)).map_add']
+      rfl }
 
 -- **NEW**
 /-- The uniform space equivalence between two abstract completions of `ratfunc K` as a ring
 equivalence: it goes from `laurent_series K` to `ratfunc_adic_compl K` -/
 @[reducible]
-def LaurentSeriesRingEquiv : LaurentSeries K ≃+* RatfuncAdicCompl K :=
+def LaurentSeriesRingEquiv : LaurentSeries K ≃+* RatFuncAdicCompl K :=
   (ratfuncAdicComplRingEquiv K).symm
 
 -- Porting note: times out
@@ -830,12 +829,12 @@ def LaurentSeriesRingEquiv : LaurentSeries K ≃+* RatfuncAdicCompl K :=
     (LaurentSeriesRingEquiv K) x = compareEquiv (LaurentSeriesPkg K) (ratfuncAdicComplPkg K) x := by
   simpa only [RingEquiv.apply_symm_apply]  -/
 
-theorem ratfuncAdicComplRingEquiv_apply (x : RatfuncAdicCompl K) :
+theorem ratfuncAdicComplRingEquiv_apply (x : RatFuncAdicCompl K) :
     ratfuncAdicComplRingEquiv K x = (ratfuncAdicComplPkg K).compare (LaurentSeriesPkg K) x :=
   rfl
 
 theorem coe_X_compare :
-    (ratfuncAdicComplRingEquiv K) (↑(@RatFunc.X K _ _) : RatfuncAdicCompl K) =
+    (ratfuncAdicComplRingEquiv K) (↑(@RatFunc.X K _ _) : RatFuncAdicCompl K) =
       (↑(@PowerSeries.X K _) : LaurentSeries K) := by
   rw [PowerSeries.coe_X, ← RatFunc.coe_X, ← LaurentSeries_coe, ← AbstractCompletion.compare_coe]
   rfl
@@ -889,7 +888,7 @@ theorem tendsto_valuation (a : (Polynomial.idealX K).adicCompletion (RatFunc K))
     congr
 
 theorem valuation_compare (f : LaurentSeries K) :
-    (@Valued.v (RatfuncAdicCompl K) _ ℤₘ₀ _ _)
+    (@Valued.v (RatFuncAdicCompl K) _ ℤₘ₀ _ _)
         (AbstractCompletion.compare (LaurentSeriesPkg K) (ratfuncAdicComplPkg K) f) =
       Valued.v f := by
   simp only [← valuation_LaurentSeries_equal_extension, ←
@@ -927,7 +926,7 @@ theorem mem_integers_of_powerSeries (F : PowerSeries K) :
     mem_adicCompletionIntegers, this, valuation_compare K F, val_le_one_iff_eq_coe]
   refine' ⟨F, rfl⟩
 
-theorem exists_powerSeries_of_memIntegers {x : RatfuncAdicCompl K}
+theorem exists_powerSeries_of_memIntegers {x : RatFuncAdicCompl K}
     (hx : x ∈ (Polynomial.idealX K).adicCompletionIntegers (RatFunc K)) :
     ∃ F : PowerSeries K, (LaurentSeriesRingEquiv K) F = x := by
   set f := (ratfuncAdicComplRingEquiv K) x with hf

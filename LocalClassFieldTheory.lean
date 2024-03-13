@@ -1,3 +1,4 @@
+import LocalClassFieldTheory.LaurentSeriesEquivAdicCompletion
 import LocalClassFieldTheory.LocalField
 import LocalClassFieldTheory.PadicCompare
 import LocalClassFieldTheory.SpectralNorm
