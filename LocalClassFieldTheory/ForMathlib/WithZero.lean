@@ -3,6 +3,8 @@ import Mathlib.Data.Real.NNReal
 import Mathlib.Logic.Equiv.TransferInstance
 import Mathlib.RingTheory.Valuation.Basic
 
+import Mathlib.Algebra.Order.Group.TypeTags
+
 #align_import for_mathlib.with_zero
 
 /-!
@@ -88,7 +90,8 @@ open scoped DiscreteValuation
 
 theorem strictMonoOn_zpow {n : ℤ} (hn : 0 < n) : StrictMonoOn (fun x : ℤₘ₀ => x ^ n) (Set.Ioi 0) :=
   fun a ha b hb hab => by
-  letI : LinearOrderedCommGroupWithZero ℤₘ₀ := sorry
+  letI : LinearOrderedCommGroup (Multiplicative ℤ) := Multiplicative.linearOrderedCommGroup
+  letI : LinearOrderedCommGroupWithZero ℤₘ₀ := instLinearOrderedCommGroupWithZeroWithZero
   simp only [Set.mem_Ioi] at ha hb
   have ha0 : a ≠ 0 := ne_of_gt ha
   have han : a ^ n ≠ 0 := by
@@ -96,10 +99,8 @@ theorem strictMonoOn_zpow {n : ℤ} (hn : 0 < n) : StrictMonoOn (fun x : ℤₘ�
     obtain ⟨x, hx⟩ := ha0
     exact ⟨x ^ n, by rw [← hx, WithZero.coe_zpow]⟩
   simp only
-  --rw [← one_lt_div' _ han]
-  sorry
-  --simp only [← one_lt_div' _ han, ← div_zpow]
-  --exact one_lt_zpow' ((one_lt_div' _ ha0).mpr hab) hn
+  rw [← one_lt_div' (b^n) han, ← div_zpow]
+  exact one_lt_zpow' ((one_lt_div' _ ha0).mpr hab) hn
 
 theorem zpow_left_injOn {n : ℤ} (hn : n ≠ 0) : Set.InjOn (fun _x : ℤₘ₀ => _x ^ n) (Set.Ioi 0) :=
   by

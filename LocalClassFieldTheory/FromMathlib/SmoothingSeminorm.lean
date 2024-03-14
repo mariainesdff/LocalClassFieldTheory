@@ -100,11 +100,11 @@ theorem tendsto_bdd_div_atTop_nhds_zero_nat (f : ℕ → ℝ) (hfb : ∃ b : ℝ
   · simp only [eventually_atTop, ge_iff_le] at hb ⊢
     obtain ⟨N, hN⟩ := hb
     use N; intro n hn
-    exact div_le_div_of_le (Nat.cast_nonneg _) (hN n hn)
+    exact div_le_div_of_nonneg_right (hN n hn) (Nat.cast_nonneg _)
   · simp only [eventually_atTop, ge_iff_le] at hB ⊢
     obtain ⟨N, hN⟩ := hB
     use N; intro n hn
-    exact div_le_div_of_le (Nat.cast_nonneg _) (hN n hn)
+    exact div_le_div_of_nonneg_right (hN n hn) (Nat.cast_nonneg _)
 
 /-- For any positive `m : ℕ`, `((n % m : ℕ) : ℝ) / (n : ℝ)` tends to `0` as `n` tends to `∞`. -/
 theorem tendsto_mod_div_atTop_nhds_zero_nat {m : ℕ} (hm : 0 < m) :
