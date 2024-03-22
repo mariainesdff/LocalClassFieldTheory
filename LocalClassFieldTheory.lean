@@ -42,7 +42,6 @@ import LocalClassFieldTheory.FromMathlib.NormalClosure
 import LocalClassFieldTheory.FromMathlib.NormedSpace
 import LocalClassFieldTheory.FromMathlib.NormedValued
 import LocalClassFieldTheory.FromMathlib.PowMultFaithful
-import LocalClassFieldTheory.FromMathlib.PR18604WellFounded
 import LocalClassFieldTheory.FromMathlib.RankOneValuation
 import LocalClassFieldTheory.FromMathlib.RingSeminorm
 import LocalClassFieldTheory.FromMathlib.SeminormFromBounded

@@ -151,7 +151,7 @@ theorem padicNorm_of_Int_eq_val_norm (x : ℤ) : (padicNorm p x : ℝ) =
       erw [← WithZero.coe_inj, ← intValuationDef_if_neg _ hx, WithZero.coe_unzero,
         valuation_of_algebraMap]
       rfl
-    rw [padicNorm.eq_zpow_of_nonzero hx0, withZeroMultIntToNNReal, Rat.cast_zpow, Rat.cast_coe_nat,
+    rw [padicNorm.eq_zpow_of_nonzero hx0, withZeroMultIntToNNReal, Rat.cast_zpow, Rat.cast_natCast,
       MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk, withZeroMultIntToNNRealDef_neg_apply, ← heq,
       padicValRat.of_int, @padicValInt.of_ne_one_ne_zero p x (Nat.Prime.ne_one Fact.out) hx,
       toAdd_ofAdd]
@@ -332,7 +332,7 @@ theorem Padic'.valuation_p : Valued.v (p : Q_p p) = ofAdd (-1 : ℤ) := by
   let _ : Valued ℚ ℤₘ₀ := padicValued p
   have hp : (p : Q_p p) = ((Rat.cast : ℚ → Q_p p) p : Q_p p) := by
     have : ∀ x : ℚ, (Rat.cast : ℚ → Q_p p) x = (x : Q_p p) := by intro x; rw [Padic'.coe_eq]
-    rw [this]; simp only [Rat.cast_coe_nat]
+    rw [this]; simp only [Rat.cast_natCast]
   erw [hp, Padic'.coe_eq, Valued.valuedCompletion_apply (p : ℚ), padicValued_valuation_p p]
 
 end Comparison

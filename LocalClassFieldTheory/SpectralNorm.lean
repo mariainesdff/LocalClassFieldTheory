@@ -129,7 +129,7 @@ theorem spectral_norm_pow_degree_eq_prof_roots (hna : IsNonarchimedean (norm : K
   split_ifs with hr
   · have h : ∀ s : ℝ, s ∈ Multiset.map (spectralMulAlgNorm h_alg_E hna) ((mapAlg K E) (minpoly K x)).roots → r = s := by
       intro s hs
-      simp only [Multiset.mem_map, mem_roots', Ne.def, IsRoot.def] at hs
+      simp only [Multiset.mem_map, mem_roots', Ne.def, IsRoot.definition] at hs
       obtain ⟨a, ha_root, has⟩ := hs
       rw [hr, ← has]
       change spectralNorm K E (algebraMap L E x) = spectralNorm K E a
@@ -141,7 +141,7 @@ theorem spectral_norm_pow_degree_eq_prof_roots (hna : IsNonarchimedean (norm : K
     exact h_deg
   · rw [Multiset.count_eq_zero_of_not_mem]
     intro hr_mem
-    simp only [Multiset.mem_map, mem_roots', Ne.def, IsRoot.def] at hr_mem
+    simp only [Multiset.mem_map, mem_roots', Ne.def, IsRoot.definition] at hr_mem
     obtain ⟨e, he_root, her⟩ := hr_mem
     have heq : (spectralMulAlgNorm h_alg_E hna) e =
       (spectralMulAlgNorm h_alg_E hna) ((algebraMap L E) x) := by
