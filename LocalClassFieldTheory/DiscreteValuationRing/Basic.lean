@@ -280,7 +280,7 @@ theorem pow_Uniformizer {r : K₀} (hr : r ≠ 0) (π : Uniformizer v) :
   have h_unit_a : IsUnit a :=
     Integers.isUnit_of_one (integer.integers v) (isUnit_iff_ne_zero.mpr ha₀) hpow
   use h_unit_a.unit
-  rw [IsUnit.unit_spec, Subring.coe_pow, ha, ← mul_assoc, zpow_neg, hn, zpow_coe_nat,
+  rw [IsUnit.unit_spec, Subring.coe_pow, ha, ← mul_assoc, zpow_neg, hn, zpow_natCast,
     mul_inv_cancel, one_mul]
   · apply pow_ne_zero
     exact Uniformizer_ne_zero' _ π
@@ -368,7 +368,7 @@ theorem val_le_iff_dvd (L : Type w₁) [Field L] {w : Valuation L ℤₘ₀} [Is
     have hrn : w (r ^ n) = ofAdd (-(n : ℤ)) := by
       replace hr : IsUniformizer w r := DiscreteValuation.IsUniformizerOfGenerator w ?_
       rw [WithZero.ofAdd_zpow, zpow_neg, ← Nat.cast_one, ← WithZero.ofAdd_neg_one_pow_comm ↑n 1,
-          pow_one, zpow_neg, inv_inv, zpow_coe_nat, Valuation.map_pow]
+          pow_one, zpow_neg, inv_inv, zpow_natCast, Valuation.map_pow]
       congr
       rw [span_singleton_generator]
     have :=
@@ -481,7 +481,7 @@ theorem exists_of_le_one {x : FractionRing A} (H : Valued.v x ≤ (1 : ℤₘ₀
       rw [← sub_nonneg]
       rw [← coe_unzero this, ← WithZero.coe_one] at H π_lt_one
       rw [div_eq_mul_inv, ← WithZero.coe_pow, ← WithZero.coe_pow, ← WithZero.coe_inv,
-        ← zpow_coe_nat, ← zpow_coe_nat, ← WithZero.coe_mul, WithZero.coe_le_coe, ← zpow_sub,
+        ← zpow_natCast, ← zpow_natCast, ← WithZero.coe_mul, WithZero.coe_le_coe, ← zpow_sub,
         ← ofAdd_zero, ← ofAdd_toAdd (unzero _ ^ ((n : ℤ) - (m))), ofAdd_le, Int.toAdd_zpow] at H
       apply nonneg_of_mul_nonpos_right H
       rwa [← toAdd_one, toAdd_lt, ← WithZero.coe_lt_coe]

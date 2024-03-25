@@ -2,9 +2,6 @@ import Mathlib.FieldTheory.Finite.GaloisField
 import Mathlib.RingTheory.PowerSeries.Order
 import Mathlib.RingTheory.PowerSeries.Inverse
 import Mathlib.RingTheory.Valuation.ValuationSubring
--- import LocalClassFieldTheory.ForMathlib.DiscreteUniformity
--- import LocalClassFieldTheory.ForMathlib.Polynomial
--- import LocalClassFieldTheory.Mathlib.Algebra.Order.Hom.Monoid
 import Mathlib.RingTheory.LaurentSeries
 import Mathlib.RingTheory.PowerSeries.WellKnown
 
@@ -294,6 +291,6 @@ theorem single_zpow (n : ℤ) :
   · apply single_pow
   · rw [Int.negSucc_coe, Int.ofNat_add, Nat.cast_one, ← inv_one, ←
       single_inv (n_neg + 1 : ℤ) (1 : K) one_ne_zero, zpow_neg, ← Nat.cast_one, ← Int.ofNat_add,
-      Nat.cast_one, inv_inj, zpow_coe_nat, single_pow, inv_one]
+      Nat.cast_one, inv_inj, zpow_natCast, single_pow, inv_one]
 
 end HahnSeries
