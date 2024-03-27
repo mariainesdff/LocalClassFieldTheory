@@ -105,19 +105,22 @@ open scoped DiscreteValuation
 
 variable (K : Type _) [Field K]
 
+--from here...
 namespace Polynomial
 
 open scoped Classical
 
-theorem normUnit_x : normUnit (Polynomial.X : Polynomial K) = 1 := by
+-- #synth NormalizationMonoid K[X]
+
+theorem normUnit_X : normUnit (Polynomial.X : Polynomial K) = 1 := by
   have := @coe_normUnit K _ _ _ Polynomial.X
   rwa [leadingCoeff_X, normUnit_one, Units.val_one, map_one, Units.val_eq_one] at this
 
-theorem x_eq_normalize : (Polynomial.X : Polynomial K) = normalize Polynomial.X := by
-  simp only [normalize_apply, Polynomial.normUnit_x, Units.val_one, mul_one]
+theorem X_eq_normalize : (Polynomial.X : Polynomial K) = normalize Polynomial.X := by
+  simp only [normalize_apply, normUnit_X, Units.val_one, mul_one]
 
 end Polynomial
-
+---to here is in PR
 namespace PowerSeries
 
 /-- The prime ideal `(X)` of of `power_series K`, as a term of the `height_one_spectrum`. -/
@@ -149,7 +152,7 @@ theorem factors_in_pol_eq_powerSeries (P : Polynomial K) (hP : P ≠ 0) :
         (Ideal.span {Polynomial.X} : Ideal (Polynomial K)) := by
   have for_pol :=
     NormalizationMonoid.count_normalizedFactors_eq_count_normalizedFactors_span hP
-      Polynomial.X_ne_zero (Polynomial.normUnit_x K) Polynomial.prime_X
+      Polynomial.X_ne_zero (normUnit_X K) Polynomial.prime_X
   rw [← for_pol]
   have for_pow :=
     NormalizationMonoid.count_normalizedFactors_eq_count_normalizedFactors_span (coe_ne_zero hP)
@@ -162,14 +165,14 @@ theorem factors_in_pol_eq_powerSeries (P : Polynomial K) (hP : P ≠ 0) :
     @multiplicity_eq_count_normalizedFactors (PowerSeries K) _ _ _ _ _ _ PowerSeries.X (↑P)
       (Prime.irreducible PowerSeries.X_prime) (coe_ne_zero hP)
   apply Nat.le_antisymm
-  · rw [Polynomial.x_eq_normalize, PowerSeries.x_eq_normalize, ← PartENat.coe_le_coe, ← aux_pol, ←
+  · rw [X_eq_normalize, PowerSeries.x_eq_normalize, ← PartENat.coe_le_coe, ← aux_pol, ←
       multiplicity.pow_dvd_iff_le_multiplicity, Polynomial.X_pow_dvd_iff]
     intro d hd
     replace aux_pow_series := le_of_eq aux_pow_series.symm
     rw [← multiplicity.pow_dvd_iff_le_multiplicity, PowerSeries.X_pow_dvd_iff] at aux_pow_series
     replace aux_pow_series := aux_pow_series d hd
     rwa [Polynomial.coeff_coe P d] at aux_pow_series
-  · rw [Polynomial.x_eq_normalize, PowerSeries.x_eq_normalize, ← PartENat.coe_le_coe, ←
+  · rw [X_eq_normalize, PowerSeries.x_eq_normalize, ← PartENat.coe_le_coe, ←
       aux_pow_series, ← multiplicity.pow_dvd_iff_le_multiplicity, PowerSeries.X_pow_dvd_iff]
     intro d hd
     replace aux_pol := le_of_eq aux_pol.symm
