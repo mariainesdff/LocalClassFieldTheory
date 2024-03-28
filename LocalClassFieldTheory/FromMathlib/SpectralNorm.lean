@@ -55,7 +55,7 @@ open scoped Polynomial
 
 noncomputable section
 
-
+universe u_1 u_2
 
 -- Auxiliary lemmas
 section AuxLemmas
