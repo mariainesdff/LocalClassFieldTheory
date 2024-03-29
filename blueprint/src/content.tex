@@ -5,78 +5,78 @@
 % If you want to split the blueprint content into several files then
 % the current file can be a simple sequence of \input. Otherwise It
 % can start with a \section or \chapter for instance.
-\input{macros}
 
 \chapter{Test}
 
 \section{Generalities}
 Fix a field $K$.
-\begin{c}
+\begin{def}
 	\label{def:discrete-val}
-	\lean{is_discrete}
+	\lean{IsDiscrete}
 	\leanok
 	A valuation $v\colon K \to \ZZ$ on $K$ is discrete if it is non-archimedean and surjective.
 \end{def}
+
 We have the
 
 \begin{proposition}[{\cite[Chap I,\S1, Proposition 1]{Se2}}]
 	\label{prop:unit_ball_dvr}
-	\lean{discrete_valuation.integer.discrete_valuation_ring}
+	%\lean{DiscreteValuation.Integer.discrete_valuation_ring}
 	If $K$ is complete with respect to a discrete valuation $v$, then its unit ball $\unitball{K}$ is a discrete valuation ring.
 \end{proposition}
 
 \begin{lemma}[{\cite[Chap II,\S2, last part of Proposition 3]{Se2}}] 
 	\label{lemma:val_L}
-	\lean{discrete_valuation.hw}
-	\lean{discrete_valuation.complete_of_finite}
-	\lean{discrete_valuation.is_discrete_of_finite}
+	%\lean{discrete_valuation.hw}
+	%\lean{discrete_valuation.complete_of_finite}
+	%\lean{discrete_valuation.is_discrete_of_finite}
 	If $K$ is complete with respect to a discrete valuation $v$ and if $L/K$ is a finite extension, then $L$ has a discrete valuation $w\colon L \twoheadrightarrow \ZZ$ inducing $v$ and $L$ is complete with respect to $w$.
 \end{lemma}
 
 Moreover,
 \begin{proposition}[{\cite[Chap II,\S2, Proposition 3]{Se2}}]
-	\label{prop:unitball_L}
-	\lean{discrete_valuation.integral_closure_eq_integer}
-	\lean{discrete_valuation.integral_closure.discrete_valuation_ring}
-	\lean{discrete_valuation.integral_closure_finrank}
+	\label{prop:unitball-L}
+	%\lean{discrete_valuation.integral_closure_eq_integer}
+	%\lean{discrete_valuation.integral_closure.discrete_valuation_ring}
+	%\lean{discrete_valuation.integral_closure_finrank}
 	If $K$ is complete with respect to a discrete valuation $v$ and if $L/K$ is a finite extension, then the integral closure of $\unitball{K}$ inside $L$ coincides $\unitball{L}$ and so, in particular, it is a discrete valuation ring by~\ref{prop:unit_ball_dvr}. Moreover, $\unitball{L}$ is a finite, free $\unitball{K}$-module of rank $n=[L:K]$.
 \end{proposition}
 \section{Local Fields}
 \begin{def}
-	\label{local_field}
-	\lean{local_field}
+	\label{def:LocalField}
+	\lean{LocalField}
 	\leanok
 	A \textit{(nonarchimedean) local field} is a field complete with respect to a discrete
 	valuation and with finite residue field.
 \end{def}
 
 \begin{def}
-	\label{mixed_char_local_field}
-	\lean{mixed_char_local_field}
+	\label{def:MixedCharLocalField}
+	\lean{MixedCharLocalField}
 	\leanok
 	A \textit{mixed characteristic local field} is a finite field extension of the field 
 	$\Qp$ of $p$-adic numbers, for some prime $p$.
 \end{def}
 
 \begin{def}
-	\label{eq_char_local_field}
-	\lean{eq_char_local_field}
+	\label{def:EqCharLocalField}
+	\lean{EqCharLocalField}
 	\leanok
 	An \textit{equal characteristic local field} is a finite field extension of the field 
 	$\laurentseries$, for some prime $p$.
 \end{def}
 
 \begin{lemma}
-	\label{mixed_char_local_field.local_field}
-	\lean{mixed_char_local_field.local_field}
-	\uses{local_field, mixed_char_local_field}
+	\label{lem:MixedCharLocalField.localField}
+	\lean{MixedCharLocalField.localField}
+	\uses{def:LocalField, def:MixedCharLocalField}
 	A mixed characteristic local field is a local field.
 \end{lemma}
 
 \begin{lemma}
-	\label{eq_char_local_field.local_field}
-	\lean{eq_char_local_field.local_field}
-	\uses{local_field, eq_char_local_field}
+	\label{lem:EqCharLocalField.localField}
+	\lean{EqCharLocalField.localField}
+	\uses{def:LocalField, def:EqCharLocalField}
 	An equal characteristic local field is a local field.
 \end{lemma}
 \subsection{Ramification Index}
@@ -90,18 +90,11 @@ Moreover,
 Starting with a Dedekind domain $R$ and a non-zero maximal ideal $\primeid$, let $K=\operatorname{Frac}(R)$. Then we prove the
 \begin{proposition}[{\cite[Chap. II, \S2, Théorème 1]{Se2}}]
 	\label{prop:extension_equal}
-	\lean{is_dedekind_domain.height_one_spectrum.is_discrete}
+	%\lean{is_dedekind_domain.height_one_spectrum.is_discrete}
 	The completion $K_{\primeid}$ has a discrete valuation extending the valuation $v_{\primeid}$ and such that $\unitball{K_{\primeid}}=R_{\primeid}$. In particular, this localization is a DVR by Proposition~\ref{prop:unit_ball_dvr}.
 \end{proposition}
 
-\begin{proposition}
-	\label{prop:number_field_localization}
-	\lean{number_field.adic_completion.mixed_char_local_field}
-	Let $F$ be a number field and let $v$ be a finite place of residue characteristic $p$. Then $F_v$ is a mixed characteristic local field with residue characteristic $p$.
-\end{proposition}
+% Bibliography
+\bibliographystyle{alpha}
 
-\begin{proposition}
-	\label{prop:function_field_localization}
-	\lean{function_field.adic_completion.eq_char_local_field}
-	Let $F$ be a function field and let $v$ be any place. Then $F_v$ is an equal characteristic local field with residue characteristic $p$.
-\end{proposition}
+\bibliography{lcft.bib}

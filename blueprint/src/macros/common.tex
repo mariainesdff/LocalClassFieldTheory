@@ -1,3 +1,42 @@
 % In this file you should put all LaTeX macros to be used
 % both by the pdf version and the web version.
 % This should be most of your macros.
+
+%\numberwithin{equation}{subsection}
+\newtheorem{theorem}{Theorem}
+\numberwithin{theorem}{subsection}
+%\newtheorem*{theoremx}{Theorem} % theorem not in dep graph
+%\newtheorem*{remarkx}{Remark} % unnumbered remark
+\newtheorem{lemma}[theorem]{Lemma}
+%\newtheorem{lemmax}[theorem]{Lemma} % lemma not in dep graph
+%\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{proposition}[theorem]{Proposition}
+%\newtheorem{conjecture}[theorem]{Conjecture}
+%\newtheorem{problem}[theorem]{Problem}
+%\newtheorem{assumption}[theorem]{Assumption}
+%\newtheorem{defprop}[theorem]{Definition/Proposition}
+
+\theoremstyle{definition}
+%\newtheorem{remark}[theorem]{Remark}
+%\newtheorem{exercise}[theorem]{Exercise}
+%\newtheorem{warning}[theorem]{Warning}
+\newtheorem{definition}{Definition}
+%\newtheorem{question}[theorem]{Question}
+%\newtheorem{example}[theorem]{Example}
+%\newtheorem{examples}[theorem]{Examples}
+%\newtheorem{observation}[theorem]{Observation}
+
+\date{\today}
+
+\setcounter{tocdepth}{1}
+
+\title{Blueprint for the LCFT}
+
+\author{MIdFF and FAEN}
+
+\newcommand*{\unitball}[1]{{#1}^\circ}
+\newcommand*{\ZZ}{\mathbb{Z}}
+\newcommand*{\Qp}[1][p]{\mathbb{Q}_{#1}}
+\newcommand*{\Fp}[1][p]{\mathbb{F}_{#1}}
+\newcommand*{\laurentseries}[1][\Fp]{{#1}(\!(X)\!)}
+\newcommand*{\primeid}[1][p]{\mathfrak{#1}}
