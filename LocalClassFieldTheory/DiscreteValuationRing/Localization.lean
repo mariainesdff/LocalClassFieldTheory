@@ -51,12 +51,12 @@ theorem valuation_completion_integers_exists_uniformizer :
   exact le_of_lt WithZero.ofAdd_neg_one_lt_one
 
 /-- The valuation on the `v`-adic completion `K_v` of `K` is discrete. -/
-instance : IsDiscrete (@Valued.v K_v _ ℤₘ₀ _ _) :=
+instance isDiscrete : IsDiscrete (@Valued.v K_v _ ℤₘ₀ _ _) :=
   isDiscreteOfExistsUniformizer _
     (valuation_completion_integers_exists_uniformizer R K v).choose_spec
 
 /-- The unit ball `R_v` of `K_v` is a discrete valuation ring. -/
-instance : DiscreteValuationRing R_v :=
+instance discreteValuationRing : DiscreteValuationRing R_v :=
   DiscreteValuation.dvr_of_isDiscrete (@Valued.v K_v _ ℤₘ₀ _ _)
 
 end IsDedekindDomain.HeightOneSpectrum

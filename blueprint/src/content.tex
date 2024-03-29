@@ -12,7 +12,7 @@
 Fix a field $K$.
 \begin{definition}
 	\label{def:discrete-val}
-	\lean{IsDiscrete}
+	\lean{Valuation.IsDiscrete}
 	\leanok
 	A valuation $v\colon K \to \ZZ$ on $K$ is discrete if it is non-archimedean and surjective.
 \end{definition}
@@ -21,24 +21,24 @@ We have the
 
 \begin{proposition}[{\cite[Chap I,\S1, Proposition 1]{Se2}}]
 	\label{prop:unit_ball_dvr}
-	\lean{DiscreteValuation.Integer.discrete_valuation_ring}
+	%\lean{DiscreteValuation.Integer.discrete_valuation_ring}
 	If $K$ is complete with respect to a discrete valuation $v$, then its unit ball $\unitball{K}$ is a discrete valuation ring.
 \end{proposition}
 
 \begin{lemma}[{\cite[Chap II,\S2, last part of Proposition 3]{Se2}}] 
 	\label{lemma:val_L}
-	\lean{discrete_valuation.hw}
-	\lean{discrete_valuation.complete_of_finite}
-	\lean{discrete_valuation.is_discrete_of_finite}
+	%\lean{discrete_valuation.hw}
+	%\lean{discrete_valuation.complete_of_finite}
+	%\lean{discrete_valuation.is_discrete_of_finite}
 	If $K$ is complete with respect to a discrete valuation $v$ and if $L/K$ is a finite extension, then $L$ has a discrete valuation $w\colon L \twoheadrightarrow \ZZ$ inducing $v$ and $L$ is complete with respect to $w$.
 \end{lemma}
 
 Moreover,
 \begin{proposition}[{\cite[Chap II,\S2, Proposition 3]{Se2}}]
 	\label{prop:unitball-L}
-	\lean{discrete_valuation.integral_closure_eq_integer}
-	\lean{discrete_valuation.integral_closure.discrete_valuation_ring}
-	\lean{discrete_valuation.integral_closure_finrank}
+	%\lean{discrete_valuation.integral_closure_eq_integer}
+	%\lean{discrete_valuation.integral_closure.discrete_valuation_ring}
+	%\lean{discrete_valuation.integral_closure_finrank}
 	If $K$ is complete with respect to a discrete valuation $v$ and if $L/K$ is a finite extension, then the integral closure of $\unitball{K}$ inside $L$ coincides $\unitball{L}$ and so, in particular, it is a discrete valuation ring by~\ref{prop:unit_ball_dvr}. Moreover, $\unitball{L}$ is a finite, free $\unitball{K}$-module of rank $n=[L:K]$.
 \end{proposition}
 \section{Local Fields}
@@ -90,7 +90,7 @@ Moreover,
 Starting with a Dedekind domain $R$ and a non-zero maximal ideal $\primeid$, let $K=\operatorname{Frac}(R)$. Then we prove the
 \begin{proposition}[{\cite[Chap. II, \S2, Théorème 1]{Se2}}]
 	\label{prop:extension_equal}
-	\lean{is_dedekind_domain.height_one_spectrum.is_discrete}
+	%\lean{IsDedekindDomain.HeightOneSpectrum.isDiscrete}
 	The completion $K_{\primeid}$ has a discrete valuation extending the valuation $v_{\primeid}$ and such that $\unitball{K_{\primeid}}=R_{\primeid}$. In particular, this localization is a DVR by Proposition~\ref{prop:unit_ball_dvr}.
 \end{proposition}
 
