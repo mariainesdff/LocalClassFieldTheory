@@ -23,7 +23,7 @@ open scoped DiscreteValuation
 variable (R : Type _) [CommRing R] [IsDomain R] [IsDedekindDomain R] (K : Type _) [Field K]
   [Algebra R K] [IsFractionRing R K] (v : HeightOneSpectrum R)
 
-theorem adicValuedIsDiscrete : IsDiscrete (@adicValued R _ _ _ K _ _ _ v).v := by
+theorem adicValuedIsDiscrete : IsDiscrete (@adicValued R _ _ K _ _ _ v).v := by
   obtain ⟨π, hπ⟩ := valuation_exists_uniformizer K v
   apply isDiscreteOfExistsUniformizer
   swap

@@ -106,21 +106,19 @@ open scoped DiscreteValuation
 variable (K : Type _) [Field K]
 
 --from here...
-namespace Polynomial
+-- namespace Polynomial
 
-open scoped Classical
+-- open scoped Classical
 
--- #synth NormalizationMonoid K[X]
+-- theorem normUnit_X : normUnit (Polynomial.X : Polynomial K) = 1 := by
+--   have := @coe_normUnit K _ _ _ Polynomial.X
+--   rwa [leadingCoeff_X, normUnit_one, Units.val_one, map_one, Units.val_eq_one] at this
 
-theorem normUnit_X : normUnit (Polynomial.X : Polynomial K) = 1 := by
-  have := @coe_normUnit K _ _ _ Polynomial.X
-  rwa [leadingCoeff_X, normUnit_one, Units.val_one, map_one, Units.val_eq_one] at this
+-- theorem X_eq_normalize : (Polynomial.X : Polynomial K) = normalize Polynomial.X := by
+--   simp only [normalize_apply, normUnit_X, Units.val_one, mul_one]
 
-theorem X_eq_normalize : (Polynomial.X : Polynomial K) = normalize Polynomial.X := by
-  simp only [normalize_apply, normUnit_X, Units.val_one, mul_one]
-
-end Polynomial
----to here is in PR
+-- end Polynomial
+---to here is in PR #11720
 namespace PowerSeries
 
 /-- The prime ideal `(X)` of of `power_series K`, as a term of the `height_one_spectrum`. -/
@@ -152,7 +150,7 @@ theorem factors_in_pol_eq_powerSeries (P : Polynomial K) (hP : P ≠ 0) :
         (Ideal.span {Polynomial.X} : Ideal (Polynomial K)) := by
   have for_pol :=
     NormalizationMonoid.count_normalizedFactors_eq_count_normalizedFactors_span hP
-      Polynomial.X_ne_zero (normUnit_X K) Polynomial.prime_X
+      Polynomial.X_ne_zero (normUnit_X (R := K))  Polynomial.prime_X
   rw [← for_pol]
   have for_pow :=
     NormalizationMonoid.count_normalizedFactors_eq_count_normalizedFactors_span (coe_ne_zero hP)
@@ -260,7 +258,7 @@ theorem valuation_eq_LaurentSeries_valuation (P : RatFunc K) :
     congr
     exacts [(Polynomial.coe_coe f).symm, (Polynomial.coe_coe g).symm]
   rw [aux]
-  convert @valuation_of_mk' (PowerSeries K) _ _ _ (LaurentSeries K) _ _ _ (PowerSeries.idealX K) ↑f
+  convert @valuation_of_mk' (PowerSeries K) _ _ (LaurentSeries K) _ _ _ (PowerSeries.idealX K) f
         ⟨g, mem_nonZeroDivisors_iff_ne_zero.2 <| coe_ne_zero h⟩ <;>
     apply PowerSeries.pol_intValuation_eq_powerSeries
 
@@ -278,7 +276,7 @@ theorem valuation_of_X_zpow (s : ℕ) :
       ↑(Multiplicative.ofAdd (-(s : ℤ))) := by
   have : Valued.v ((PowerSeries.X : PowerSeries K) : LaurentSeries K) =
      (↑(Multiplicative.ofAdd (-(1 : ℤ))) : ℤₘ₀) := by
-    erw [@valuation_of_algebraMap (PowerSeries K) _ _ _ (LaurentSeries K) _ _ _
+    erw [@valuation_of_algebraMap (PowerSeries K) _ _ (LaurentSeries K) _ _ _
         (PowerSeries.idealX K) PowerSeries.X]
     apply intValuation_of_X K
   rw [map_pow, this, ← one_mul (s : ℤ), ← neg_mul (1 : ℤ) ↑s, Int.ofAdd_mul, WithZero.coe_zpow,
@@ -311,11 +309,11 @@ theorem coeff_zero_of_lt_int_valuation {n d : ℕ} {f : PowerSeries K}
     n < d → coeff K n f = 0 := by
   intro hnd
   convert (@PowerSeries.X_pow_dvd_iff K _ d f).mp _ n hnd
-  have := @valuation_of_algebraMap (PowerSeries K) _ _ _ (LaurentSeries K) _ _ _
+  have := @valuation_of_algebraMap (PowerSeries K) _ _ (LaurentSeries K) _ _ _
     (PowerSeries.idealX K) f
   erw [this] at H
   have dvd_val_int :=
-    (@int_valuation_le_pow_iff_dvd (PowerSeries K) _ _ _ (PowerSeries.idealX K) f d).mp H
+    (@int_valuation_le_pow_iff_dvd (PowerSeries K) _ _ (PowerSeries.idealX K) f d).mp H
   rw [← span_singleton_dvd_span_singleton_iff_dvd, ← Ideal.span_singleton_pow]
   apply dvd_val_int
 
@@ -650,7 +648,7 @@ theorem exists_pol_int_val_lt (F : PowerSeries K) (η : ℤₘ₀ˣ) :
     have := (LaurentSeries.int_valuation_le_iff_coeff_zero_of_lt K _).mpr trunc_prop
     rw [Nat.cast_add, neg_add, ofAdd_add, ← hd, hD, ofAdd_toAdd, WithZero.coe_mul,
       WithZero.coe_unzero, LaurentSeries.coe_powerSeries, ← LaurentSeries.coe_algebraMap] at this
-    rw [← @valuation_of_algebraMap (PowerSeries K) _ _ _ (LaurentSeries K) _ _ _
+    rw [← @valuation_of_algebraMap (PowerSeries K) _ _ (LaurentSeries K) _ _ _
       (PowerSeries.idealX K) (F - ↑(F.trunc (d + 1)))]
     apply lt_of_le_of_lt this
     rw [← mul_one (η : ℤₘ₀), mul_assoc, one_mul]

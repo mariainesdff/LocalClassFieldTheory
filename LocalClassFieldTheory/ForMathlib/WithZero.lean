@@ -91,7 +91,6 @@ open scoped DiscreteValuation
 theorem strictMonoOn_zpow {n : ℤ} (hn : 0 < n) : StrictMonoOn (fun x : ℤₘ₀ => x ^ n) (Set.Ioi 0) :=
   fun a ha b hb hab => by
   letI : LinearOrderedCommGroup (Multiplicative ℤ) := Multiplicative.linearOrderedCommGroup
-  letI : LinearOrderedCommGroupWithZero ℤₘ₀ := instLinearOrderedCommGroupWithZeroWithZero
   simp only [Set.mem_Ioi] at ha hb
   have ha0 : a ≠ 0 := ne_of_gt ha
   have han : a ^ n ≠ 0 := by

@@ -277,8 +277,8 @@ theorem seminorm_from_const_apply_c : seminormFromConst' hf1 hc hpm c = f c :=
     have hseq : seminormFromConst_seq c f c = fun _n => f c := by
       ext n
       simp only [seminormFromConst_seq]
-      rw [← pow_succ, hpm _ le_add_self, pow_succ, mul_div_assoc, div_self (pow_ne_zero n hc.symm),
-        mul_one]
+      rw [mul_comm, ← pow_succ, hpm _ le_add_self, pow_succ, mul_comm,  mul_div_assoc,
+        div_self (pow_ne_zero n hc.symm), mul_one]
     rw [hseq]
     exact tendsto_const_nhds
   tendsto_nhds_unique (seminorm_from_const_is_limit hf1 hc hpm c) hlim

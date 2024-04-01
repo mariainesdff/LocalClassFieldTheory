@@ -468,7 +468,7 @@ theorem exists_of_le_one {x : FractionRing A} (H : Valued.v x ≤ (1 : ℤₘ₀
     simp only [map_inv₀] at H
     rw [Valuation.valuation_one_of_isUnit w.isUnit, inv_one, mul_one, ← div_eq_mul_inv, ← map_div₀,
       ← @IsFractionRing.mk'_mk_eq_div _ _ _ (FractionRing A) _ _ _ (π ^ n) _ hb] at H
-    erw [@valuation_of_mk' A _ _ _ (FractionRing A) _ _ _ (maximalIdeal A) (π ^ n) ⟨π ^ m, hb⟩,
+    erw [@valuation_of_mk' A _ _ (FractionRing A) _ _ _ (maximalIdeal A) (π ^ n) ⟨π ^ m, hb⟩,
       _root_.map_pow, _root_.map_pow] at H
     have h_mn : m ≤ n :=
       by

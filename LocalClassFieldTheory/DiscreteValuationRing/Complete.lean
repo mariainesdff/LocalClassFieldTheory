@@ -83,7 +83,7 @@ theorem IsDedekindDomain.HeightOneSpectrum.valuation_completion_integers_exists_
     SetLike.coe_mem]⟩
   have h2 : v.intValuationDef x = v.intValuation x := rfl
   rw [← hx,/-  SetLike.coe_mk, -/ IsDedekindDomain.HeightOneSpectrum.valuedAdicCompletion_def, h2,
-    ← @IsDedekindDomain.HeightOneSpectrum.valuation_of_algebraMap R _ _ _ K _ _ _ v x]
+    ← @IsDedekindDomain.HeightOneSpectrum.valuation_of_algebraMap R _ _ K _ _ _ v x]
   exact @Valued.extension_extends K _ ℤₘ₀ _ _ (algebraMap _ K x)
 
 theorem IsDedekindDomain.HeightOneSpectrum.valuation_completion_exists_uniformizer :
@@ -123,7 +123,7 @@ def maxIdealOfCompletion : HeightOneSpectrum R_v where
     exact adicCompletionIntegers_not_isField R v K
 
 local notation "v_adic_of_compl" =>
-  @IsDedekindDomain.HeightOneSpectrum.valuation R_v _ _ _ K_v _ _ _ (maxIdealOfCompletion R v K)
+  @IsDedekindDomain.HeightOneSpectrum.valuation R_v _ _ K_v _ _ _ (maxIdealOfCompletion R v K)
 
 local notation "v_compl_of_adic" => (Valued.v : Valuation K_v ℤₘ₀)
 
@@ -171,7 +171,7 @@ theorem int_adic_of_compl_eq_int_compl_of_adic (a : R_v) :
 
 theorem adic_of_compl_eq_compl_of_adic (x : K_v) : v_adic_of_compl x = v_compl_of_adic x := by
   obtain ⟨a, b, H⟩ := IsLocalization.mk'_surjective (nonZeroDivisors R_v) x
-  have h1 := @valuation_of_mk' R_v _ _ _ K_v _ _ _ (maxIdealOfCompletion R v K) a b
+  have h1 := @valuation_of_mk' R_v _ _ K_v _ _ _ (maxIdealOfCompletion R v K) a b
   have h2 :
     Valued.v (IsLocalization.mk' (adicCompletion K v) a b) =
       Valued.v (↑a : K_v) / Valued.v (↑b : K_v) :=

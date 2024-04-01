@@ -64,7 +64,7 @@ theorem is_mul_pow_of_is_mul {R : Type _} [CommRing R] (f : R → ℝ) {x : R}
   intro n
   induction' n with n hn
   · intro y; rw [pow_zero, pow_zero, one_mul, one_mul]
-  · intro y; rw [pow_succ', pow_succ', mul_assoc, mul_assoc, ← hx y]; exact hn _
+  · intro y; rw [pow_succ', pow_succ', mul_assoc, mul_assoc, hx, hn]
 
 /-- For any `r : ℝ≥0` and any positive `n : ℕ`,  `(r ^ n)^(1/n : ℝ) = r`. -/
 theorem NNReal.pow_n_n_inv (r : ℝ≥0) {n : ℕ} (hn : 0 < n) : (r ^ n) ^ (1 / n : ℝ) = r :=
@@ -129,7 +129,7 @@ theorem div_mul_eventually_cancel (s : ℕ → ℕ) {u : ℕ → ℕ} (hu : Tend
   obtain ⟨n, hn⟩ := hu 1
   use n
   intro m hm
-  rw [div_mul_cancel (s m : ℝ) (Nat.cast_ne_zero.mpr (Nat.one_le_iff_ne_zero.mp (hn m hm)))]
+  rw [div_mul_cancel₀ (s m : ℝ) (Nat.cast_ne_zero.mpr (Nat.one_le_iff_ne_zero.mp (hn m hm)))]
 
 /-- If when `n` tends to `∞`, `u` tends to `∞` and `(s n : ℝ) / (u n : ℝ))` tends to a nonzero
   constant, then `s` tends to `∞`. -/
@@ -690,13 +690,13 @@ theorem smoothing_seminorm_isNonarchimedean (hf1 : f 1 ≤ 1) (hna : IsNonarchim
         (Real.rpow_le_rpow (smoothing_seminorm_nonneg f hf1 _) h a_in.1)
         (Real.rpow_nonneg (smoothing_seminorm_nonneg f hf1 _) _))
       rw [hb, ← rpow_add_of_nonneg (smoothing_seminorm_nonneg f hf1 _) a_in.1
-        (sub_nonneg.mpr a_in.2), add_sub, add_sub_cancel', rpow_one]
+        (sub_nonneg.mpr a_in.2), add_sub, add_sub_cancel_left, rpow_one]
     · rw [add_le_add_iff_right]
       apply le_trans (mul_le_mul_of_nonneg_left
         (Real.rpow_le_rpow (smoothing_seminorm_nonneg f hf1 _) (le_of_lt (not_le.mp h)) b_in.1)
         (Real.rpow_nonneg (smoothing_seminorm_nonneg f hf1 _) _))
       rw [hb, ← rpow_add_of_nonneg (smoothing_seminorm_nonneg f hf1 _) a_in.1
-        (sub_nonneg.mpr a_in.2), add_sub, add_sub_cancel', rpow_one]
+        (sub_nonneg.mpr a_in.2), add_sub, add_sub_cancel_left, rpow_one]
   apply le_trans _ h_mul
   have hex : ∃ n : PNat, f (x ^ mu (φ n)) ^ (1 / (φ n : ℝ)) * f (y ^ nu (φ n)) ^ (1 / (φ n : ℝ)) <
       smoothingSeminorm_def f x ^ a * smoothingSeminorm_def f y ^ b + ε :=

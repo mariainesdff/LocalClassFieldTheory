@@ -276,8 +276,8 @@ theorem single_pow {R : Type _} [Ring R] (n : ℕ) :
   induction' n with n h_ind
   · simp only [Nat.zero_eq, Int.ofNat_eq_coe, ZMod.nat_cast_self, zpow_zero]
     rfl
-  · rw [← Int.ofNat_add_one_out, ← one_mul (1 : R), ← HahnSeries.single_mul_single, h_ind,
-      pow_succ', one_mul (1 : R)]
+  · rw [← Int.ofNat_add_one_out, pow_succ', ← h_ind, HahnSeries.single_mul_single, one_mul,
+      add_comm]
 
 theorem single_inv (d : ℤ) (α : K) (hα : α ≠ 0) :
     (HahnSeries.single (d : ℤ) (α : K))⁻¹ = HahnSeries.single (-d) (α⁻¹ : K) := by

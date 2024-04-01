@@ -121,8 +121,8 @@ theorem NNReal.iSup_pow {ι : Type _} [Nonempty ι] [Finite ι] (f : ι → ℝ�
       intro i j
       by_cases hij : f i < f j
       · have hj : f i * f j ^ n ≤ f j ^ n.succ := by
-          rw [pow_succ]
-          apply mul_le_mul' (le_of_lt hij) (le_refl _)
+          rw [pow_succ, mul_comm]
+          apply mul_le_mul' (le_refl _) (le_of_lt hij)
         exact le_trans hj (le_ciSup_of_le (Set.Finite.bddAbove (Set.finite_range _)) j (le_refl _))
       · have hi : f i * f j ^ n ≤ f i ^ n.succ := by
           rw [pow_succ]
