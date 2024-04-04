@@ -290,8 +290,7 @@ theorem extensionDef_mul [FiniteDimensional K L] (x y : L) :
 
 theorem extensionDef_add [FiniteDimensional K L] (x y : L) :
     extensionDef K (x + y) ≤ max (extensionDef K x) (extensionDef K y) := by
-  letI : LinearOrderedCommGroup (Multiplicative ℤ) := linearOrderedCommGroup
-  letI : LinearOrderedCommGroupWithZero ℤₘ₀ := instLinearOrderedCommGroupWithZeroWithZero
+  let _ : LinearOrderedCommGroup (Multiplicative ℤ) := linearOrderedCommGroup
   have h_alg : Algebra.IsAlgebraic K L := Algebra.IsAlgebraic.of_finite K L
   by_cases hx : x = 0
   · have hxy : x + y = y := by rw [hx, zero_add]

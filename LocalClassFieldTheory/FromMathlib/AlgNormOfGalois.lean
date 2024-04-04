@@ -120,14 +120,13 @@ theorem NNReal.iSup_pow {ι : Type _} [Nonempty ι] [Finite ι] (f : ι → ℝ�
     · apply NNReal.iSup_mul_iSup_le
       intro i j
       by_cases hij : f i < f j
-      · have hj : f i * f j ^ n ≤ f j ^ n.succ := by
-          rw [pow_succ, mul_comm]
-          apply mul_le_mul' (le_refl _) (le_of_lt hij)
-        exact le_trans hj (le_ciSup_of_le (Set.Finite.bddAbove (Set.finite_range _)) j (le_refl _))
-      · have hi : f i * f j ^ n ≤ f i ^ n.succ := by
+      · apply le_trans (mul_le_mul_right' (pow_le_pow_left' (le_of_lt hij) _) (f j))
+        rw [← pow_succ]
+        exact (le_ciSup_of_le (Set.Finite.bddAbove (Set.finite_range _))) j (le_refl _)
+      · have h : f i ^ n * f j ≤ f i ^n.succ := by
           rw [pow_succ]
-          exact mul_le_mul' (le_refl _) (pow_le_pow_left' (not_lt.mp hij) n)
-        exact le_trans hi (le_ciSup_of_le (Set.Finite.bddAbove (Set.finite_range _)) i (le_refl _))
+          apply mul_le_mul' (le_refl _) (le_of_not_lt hij)
+        exact le_trans h <| le_ciSup_of_le (Set.Finite.bddAbove (Set.finite_range _)) i <| le_refl _
     · have : Nonempty (Finset.univ : Finset ι) := Finset.nonempty_coe_sort.mpr Finset.univ_nonempty
       rw [← csupr_univ, ← Finset.sup_eq_csupr, ← csupr_univ, ← Finset.sup_eq_csupr,
         ← csupr_univ, ← Finset.sup_eq_csupr]
@@ -158,27 +157,26 @@ theorem Real.iSup_hMul_le_hMul_iSup_of_nonneg {ι : Type _} [Nonempty ι] [Finit
 
 /-- Given a non-negative `f : ι → ℝ` and `n : ℕ`, we have `(supr f)^n = supr (f^n)`. -/
 theorem Real.iSup_pow {ι : Type _} [Nonempty ι] [Finite ι] {f : ι → ℝ} (hf_nn : ∀ i, 0 ≤ f i)
-    (n : ℕ) : (⨆ i : ι, f i) ^ n = ⨆ i : ι, f i ^ n :=
-  by
+    (n : ℕ) : (⨆ i : ι, f i) ^ n = ⨆ i : ι, f i ^ n := by
   cases nonempty_fintype ι
   induction' n with n hn
   · simp only [pow_zero, ciSup_const]
   · rw [pow_succ, hn]
     apply le_antisymm
-    · refine' Real.iSup_hMul_iSup_le hf_nn (fun x => pow_nonneg (hf_nn x) n) _
+    · refine' Real.iSup_hMul_iSup_le ((fun x => pow_nonneg (hf_nn x) n)) hf_nn _
       intro i j
       by_cases hij : f i < f j
-      · have hj : f i * f j ^ n ≤ f j ^ n.succ := by
+      · have hj : f i ^n * f j ≤ f j ^ n.succ := by
           rw [pow_succ]
-          exact mul_le_mul (le_of_lt hij) (le_refl _) (pow_nonneg (hf_nn _) _) (hf_nn _)
+          exact mul_le_mul (pow_le_pow_left (hf_nn _) (le_of_lt hij) _) (le_refl _) (hf_nn _)
+            (pow_nonneg (hf_nn _) _)
         exact le_trans hj (le_ciSup_of_le (Set.Finite.bddAbove (Set.finite_range _)) j (le_refl _))
-      · have hi : f i * f j ^ n ≤ f i ^ n.succ := by
+      · have hi : f i ^ n * f j ≤ f i ^ n.succ := by
           rw [pow_succ]
-          exact mul_le_mul (le_refl _) (pow_le_pow_left (hf_nn _) (not_lt.mp hij) _)
-            (pow_nonneg (hf_nn _) _) (hf_nn _)
+          exact mul_le_mul_of_nonneg_left (le_of_not_lt hij) (pow_nonneg (hf_nn _) _)
         exact le_trans hi (le_ciSup_of_le (Set.Finite.bddAbove (Set.finite_range _)) i (le_refl _))
     · simp_rw [pow_succ]
-      exact Real.iSup_hMul_le_hMul_iSup_of_nonneg hf_nn fun x => pow_nonneg (hf_nn x) n
+      exact Real.iSup_hMul_le_hMul_iSup_of_nonneg (fun x => pow_nonneg (hf_nn x) n) hf_nn
 
 end iSup
 

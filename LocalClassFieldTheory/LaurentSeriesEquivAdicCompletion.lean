@@ -105,7 +105,7 @@ open scoped DiscreteValuation
 
 variable (K : Type _) [Field K]
 
---from here...
+--from here `*1`...
 -- namespace Polynomial
 
 -- open scoped Classical
@@ -118,7 +118,7 @@ variable (K : Type _) [Field K]
 --   simp only [normalize_apply, normUnit_X, Units.val_one, mul_one]
 
 -- end Polynomial
----to here is in PR #11720
+---`*1` to here is in PR #11720
 namespace PowerSeries
 
 /-- The prime ideal `(X)` of of `power_series K`, as a term of the `height_one_spectrum`. -/

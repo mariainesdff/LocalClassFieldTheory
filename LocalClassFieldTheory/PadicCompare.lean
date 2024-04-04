@@ -447,7 +447,7 @@ theorem mem_unit_ball_of_tendsto_zero {x : Q_p p} (H : Tendsto (fun n : ℕ => �
     exists_const]
   rw [← Completion.adic_of_compl_eq_compl_of_adic ℤ (pHeightOneIdeal p) ℚ ↑y] at this
   have v_lt_one :=
-    @IsDedekindDomain.HeightOneSpectrum.valuation_lt_one_iff_dvd (Z_p p) _ _ _ (Q_p p) _ _ _
+    @IsDedekindDomain.HeightOneSpectrum.valuation_lt_one_iff_dvd (Z_p p) _ _ (Q_p p) _ _ _
       (Completion.maxIdealOfCompletion ℤ (pHeightOneIdeal p) ℚ) y
   have eq_y : (algebraMap (↥(Z_p p)) (Q_p p)) y = (↑y : Q_p p) := rfl
   rw [eq_y] at v_lt_one
@@ -464,7 +464,7 @@ theorem UnitBall.nonunit_mem_iff_top_nilpotent (x : Q_p p) :
   refine' ⟨fun H => _, fun H => _⟩
   · obtain ⟨h, x_mem⟩ := ValuationSubring.mem_nonunits_iff_exists_mem_maximalIdeal.mp H
     have :=
-      (@valuation_lt_one_iff_dvd (Z_p p) _ _ _ (Q_p p) _ _ _ (Padic'Int.heightOneIdeal p)
+      (@valuation_lt_one_iff_dvd (Z_p p) _ _ (Q_p p) _ _ _ (Padic'Int.heightOneIdeal p)
           ⟨x, h⟩).mpr
     simp only [h_max_ideal, Ideal.dvd_span_singleton, mem_nonunits_iff,
       ValuationSubring.algebraMap_apply, x_mem, forall_true_left] at this

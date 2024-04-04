@@ -302,9 +302,8 @@ theorem seminorm_from_const_c_is_mul (x : R) :
       fun n => f c * seminormFromConst_seq c f x (n + 1) := by
     simp only [seminormFromConst_seq_def]
     ext n
-    rw [mul_comm c, pow_succ, pow_succ, mul_div, div_eq_mul_inv _ (f c * f c ^ n), mul_inv,
-      ← mul_assoc, mul_comm (f c), mul_assoc _ (f c), mul_inv_cancel hc.symm, mul_one, mul_assoc,
-      div_eq_mul_inv]
+    ring_nf
+    rw [mul_assoc _ (f c), mul_inv_cancel hc.symm, mul_one]
   simpa [hterm] using Filter.Tendsto.mul tendsto_const_nhds hlim
 
 end Ring
