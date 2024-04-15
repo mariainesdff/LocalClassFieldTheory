@@ -1,14 +1,15 @@
 -- Basic folder *complete*
 import LocalClassFieldTheory.LaurentSeriesEquivAdicCompletion
-import LocalClassFieldTheory.LocalField
 import LocalClassFieldTheory.PadicCompare
 import LocalClassFieldTheory.SpectralNorm
 -- DiscreteValuationRing folder *complete*
+import LocalClassFieldTheory.DiscreteValuationRing.AdjoinRoot -- It has sorrys
 import LocalClassFieldTheory.DiscreteValuationRing.Basic
 import LocalClassFieldTheory.DiscreteValuationRing.Complete
 import LocalClassFieldTheory.DiscreteValuationRing.DiscreteNorm
 import LocalClassFieldTheory.DiscreteValuationRing.Extensions
 import LocalClassFieldTheory.DiscreteValuationRing.Localization
+import LocalClassFieldTheory.DiscreteValuationRing.Ramification -- It has sorrys
 import LocalClassFieldTheory.DiscreteValuationRing.ResidueField
 import LocalClassFieldTheory.DiscreteValuationRing.TrivialExtension
 -- EqCharacteristic folder *complete*
@@ -49,6 +50,9 @@ import LocalClassFieldTheory.FromMathlib.SeminormFromConst
 import LocalClassFieldTheory.FromMathlib.SmoothingSeminorm
 import LocalClassFieldTheory.FromMathlib.SpecificLimits
 import LocalClassFieldTheory.FromMathlib.SpectralNormUnique
+-- LocalFields folder
+import LocalClassFieldTheory.LocalField.Basic
+import LocalClassFieldTheory.LocalField.Unramified -- It has sorrys
 -- MixedCharacteristic folder *complete*
 import LocalClassFieldTheory.MixedCharacteristic.Basic
 import LocalClassFieldTheory.MixedCharacteristic.Valuation

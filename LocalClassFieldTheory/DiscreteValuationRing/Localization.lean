@@ -13,7 +13,6 @@ We also show that the adic valuation on the completion `K_v` of `K` with respect
 valuation is discrete, and that its unit ball `R_v` is a discrete valuation ring.
 -/
 
-
 namespace IsDedekindDomain.HeightOneSpectrum
 
 open IsDedekindDomain IsDedekindDomain.HeightOneSpectrum Valuation DiscreteValuation
