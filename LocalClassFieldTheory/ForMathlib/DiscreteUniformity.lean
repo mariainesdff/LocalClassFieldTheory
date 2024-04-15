@@ -21,11 +21,9 @@ namespace Set
 
 
 theorem prod_subset_diag_singleton_left {X : Type _} {S T : Set X} (hS : S.Nonempty)
-    (hT : T.Nonempty) (h_diag : S ×ˢ T ⊆ idRel) : ∃ x, S = {x} :=
-  by
+    (hT : T.Nonempty) (h_diag : S ×ˢ T ⊆ idRel) : ∃ x, S = {x} := by
   rcases hS, hT with ⟨⟨s, hs⟩, ⟨t, ht⟩⟩
-  refine' ⟨s, eq_singleton_iff_nonempty_unique_mem.mpr ⟨⟨s, hs⟩, _⟩⟩
-  intro x hx
+  refine' ⟨s, eq_singleton_iff_nonempty_unique_mem.mpr ⟨⟨s, hs⟩, fun x hx ↦ ?_⟩⟩
   rw [prod_subset_iff] at h_diag
   replace hs := h_diag s hs t ht
   replace hx := h_diag x hx t ht
