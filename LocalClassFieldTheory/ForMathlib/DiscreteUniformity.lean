@@ -1,3 +1,5 @@
+-- `FAE` the whole file is in PR #12179
+
 import Mathlib.Order.Filter.Basic
 import Mathlib.Topology.UniformSpace.Cauchy
 
@@ -19,7 +21,6 @@ contain a non-trivial filter coincide
 
 namespace Set
 
--- `FAE` in PR #bbb
 theorem prod_subset_diag_singleton_left {X : Type _} {S T : Set X} (hS : S.Nonempty)
     (hT : T.Nonempty) (h_diag : S ×ˢ T ⊆ idRel) : ∃ x, S = {x} := by
   rcases hS, hT with ⟨⟨s, hs⟩, ⟨t, ht⟩⟩
@@ -30,7 +31,6 @@ theorem prod_subset_diag_singleton_left {X : Type _} {S T : Set X} (hS : S.Nonem
   simp only [idRel, mem_setOf_eq] at hx hs
   rwa [← hs] at hx
 
--- `FAE` in PR #bbb
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 theorem prod_subset_idRel_Eq_singleton_right {X : Type _} {S T : Set X} (hS : S.Nonempty)
     (hT : T.Nonempty) (h_diag : S ×ˢ T ⊆ idRel) : ∃ x, T = {x} :=
@@ -39,7 +39,6 @@ theorem prod_subset_idRel_Eq_singleton_right {X : Type _} {S T : Set X} (hS : S.
   replace h_diag := fun x hx y hy => (h_diag y hy x hx).symm
   exact prod_subset_diag_singleton_left hT hS (prod_subset_iff.mpr h_diag)
 
--- `FAE` in PR #bbb
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 theorem prod_subset_idRel_Eq_singleton {X : Type _} {S T : Set X} (hS : S.Nonempty) (hT : T.Nonempty)
     (h_diag : S ×ˢ T ⊆ idRel) : ∃ x, S = {x} ∧ T = {x} :=
@@ -59,6 +58,7 @@ section CauchyDiscrete
 open Filter Set
 
 open scoped Filter Topology
+
 
 theorem cauchy_discrete_le_principal {X : Type _} {uX : UniformSpace X}
     (hX : uniformity X = 𝓟 idRel) {α : Filter X} (hα : Cauchy α) : ∃ x : X, α ≤ 𝓟 {x} := by
