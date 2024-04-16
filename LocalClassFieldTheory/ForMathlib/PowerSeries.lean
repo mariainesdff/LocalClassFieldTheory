@@ -47,7 +47,7 @@ open scoped DiscreteValuation
 --   -- simp only [coeff, Mvcoeff, LinearMap.coe_proj, Finsupp.single_zero]
 --   exact LinearMap.proj_apply (R := K) (ι := Unit →₀ ℕ) 0 f
 
--- `FAE` in PR #aaa
+-- `FAE` in PR #12160
 theorem order_zero_of_unit {R : Type _} [Semiring R] [Nontrivial R] {f : PowerSeries R} :
     IsUnit f → f.order = 0 := by
   rintro ⟨⟨u, v, hu, hv⟩, hf⟩
@@ -55,7 +55,7 @@ theorem order_zero_of_unit {R : Type _} [Semiring R] [Nontrivial R] {f : PowerSe
   rw [← add_eq_zero_iff, ← hf, ← nonpos_iff_eq_zero, ← @order_one R _ _, ← hu]
   exact order_mul_ge _ _
 
--- `FAE` used to be `irreducible_x`, is in PR #aaa
+-- `FAE` used to be `irreducible_x`, is in PR #12160
 theorem X_Irreducible {K : Type _} [Field K] : Irreducible (X : PowerSeries K) :=
   Prime.irreducible X_prime
 
@@ -67,13 +67,13 @@ section Semiring
 
 variable {K : Type _} [Semiring K]
 
--- `FAE` Is in PR #aaa
+-- `FAE` Is in PR #12160
 /-- Given a non-zero power series `f`, `divided_by_X_pow_order f` is the power series obtained by
   dividing out the largest power of X that divides `f`, that is its order-/
 def divided_by_X_pow_order {f : PowerSeries K} (hf : f ≠ 0) : PowerSeries K :=
   (exists_eq_mul_right_of_dvd (X_pow_order_dvd (order_finite_iff_ne_zero.2 hf))).choose
 
--- `FAE` Is in PR #aaa
+-- `FAE` Is in PR #12160
 theorem self_eq_X_pow_order_mul_divided_by_X_pow_order {f : PowerSeries K} (hf : f ≠ 0) :
     X ^ f.order.get (order_finite_iff_ne_zero.mpr hf) * divided_by_X_pow_order hf = f :=
   haveI dvd := X_pow_order_dvd (order_finite_iff_ne_zero.mpr hf)
@@ -85,14 +85,14 @@ section Domain
 
 variable {K : Type _} [CommRing K] [Nontrivial K] [IsDomain K]
 
--- `FAE` Is in PR #aaa
+-- `FAE` Is in PR #12160
 @[simp]
 theorem divided_by_X_pow_order_of_X_eq_one : divided_by_X_pow_order X_ne_zero = (1 : K⟦X⟧) := by
   rw [← mul_eq_left₀ X_ne_zero]
   simpa only [order_X, X_ne_zero, PartENat.get_one, pow_one,/-  mul_eq_left₀, -/ Ne.def,
     not_false_iff] using self_eq_X_pow_order_mul_divided_by_X_pow_order (@X_ne_zero K _ _)
 
--- `FAE` Is in PR #aaa
+-- `FAE` Is in PR #12160
 theorem divided_by_X_pow_orderMul {f g : PowerSeries K} (hf : f ≠ 0) (hg : g ≠ 0) :
     divided_by_X_pow_order hf * divided_by_X_pow_order hg = divided_by_X_pow_order (mul_ne_zero hf hg) := by
   set df := f.order.get (order_finite_iff_ne_zero.mpr hf)
@@ -118,7 +118,7 @@ section Field
 
 variable {K : Type _} [Field K]
 
--- `FAE` Is in PR #aaa
+-- `FAE` Is in PR #12160
 /-- `first_unit_coeff` is the non-zero coefficient whose index is `f.order`, seen as a unit of the
   field.-/
 def firstUnitCoeff {f : PowerSeries K} (hf : f ≠ 0) : Kˣ := by
@@ -136,18 +136,18 @@ def firstUnitCoeff {f : PowerSeries K} (hf : f ≠ 0) : Kˣ := by
       exact (@self_eq_X_pow_order_mul_divided_by_X_pow_order K _ f hf).symm
   exact unitOfInvertible (constantCoeff K (divided_by_X_pow_order hf))
 
--- `FAE` Is in PR #aaa
+-- `FAE` Is in PR #12160
 /-- `divided_by_X_pow_orderInv` is the inverse of the element obtained by diving a non-zero power series
 by the largest power of `X` dividing it. Useful to create a term of type `units` -/
 def divided_by_X_pow_orderInv {f : PowerSeries K} (hf : f ≠ 0) : PowerSeries K :=
   invOfUnit (divided_by_X_pow_order hf) (firstUnitCoeff hf)
 
--- `FAE` Is in PR #aaa
+-- `FAE` Is in PR #12160
 theorem divided_by_X_pow_orderInv_right_inv {f : PowerSeries K} (hf : f ≠ 0) :
     divided_by_X_pow_order hf * divided_by_X_pow_orderInv hf = 1 :=
   mul_invOfUnit (divided_by_X_pow_order hf) (firstUnitCoeff hf) rfl
 
--- `FAE` Is in PR #aaa
+-- `FAE` Is in PR #12160
 theorem divided_by_X_pow_orderInv_left_inv {f : PowerSeries K} (hf : f ≠ 0) :
     divided_by_X_pow_orderInv hf * divided_by_X_pow_order hf = 1 := by
   rw [mul_comm]
@@ -155,7 +155,7 @@ theorem divided_by_X_pow_orderInv_left_inv {f : PowerSeries K} (hf : f ≠ 0) :
 
 
 open Classical
--- `FAE` Is in PR #aaa
+-- `FAE` Is in PR #12160
 /-- `unit_of_divided_by_X_pow_order` is the unit of power series obtained by dividing a non-zero power
 series by the largest power of `X` that divides it. -/
 def unit_of_divided_by_X_pow_order (f : PowerSeries K) : (PowerSeries K)ˣ :=
@@ -166,20 +166,20 @@ def unit_of_divided_by_X_pow_order (f : PowerSeries K) : (PowerSeries K)ˣ :=
       val_inv := divided_by_X_pow_orderInv_right_inv hf
       inv_val := divided_by_X_pow_orderInv_left_inv hf }
 
--- `FAE` Is in PR #aaa
+-- `FAE` Is in PR #12160
 theorem isUnit_divided_by_X_pow_order {f : PowerSeries K} (hf : f ≠ 0) : IsUnit (divided_by_X_pow_order hf) :=
   ⟨unit_of_divided_by_X_pow_order f, by simp only [unit_of_divided_by_X_pow_order, dif_neg hf, Units.val_mk]⟩
 
--- `FAE` Is in PR #aaa
+-- `FAE` Is in PR #12160
 theorem unit_of_divided_by_X_pow_order_nonzero {f : PowerSeries K} (hf : f ≠ 0) :
     ↑(unit_of_divided_by_X_pow_order f) = divided_by_X_pow_order hf := by
   simp only [unit_of_divided_by_X_pow_order, dif_neg hf, Units.val_mk]
 
--- `FAE` Is in PR #aaa
+-- `FAE` Is in PR #12160
 theorem unit_of_divided_by_X_pow_order_zero : unit_of_divided_by_X_pow_order (0 : PowerSeries K) = 1 := by
   simp only [unit_of_divided_by_X_pow_order, dif_pos]
 
--- `FAE` Is in PR #aaa
+-- `FAE` Is in PR #12160
 theorem eq_divided_by_X_iff_unit {f : PowerSeries K} (hf : f ≠ 0) :
     f = divided_by_X_pow_order hf ↔ IsUnit f :=
   ⟨fun h => by rw [h]; exact isUnit_divided_by_X_pow_order hf, fun h => by
@@ -188,7 +188,7 @@ theorem eq_divided_by_X_iff_unit {f : PowerSeries K} (hf : f ≠ 0) :
     convert (self_eq_X_pow_order_mul_divided_by_X_pow_order hf).symm
     simp only [this, pow_zero, one_mul]⟩
 
--- `FAE` Is in PR #aaa
+-- `FAE` Is in PR #12160
 theorem hasUnitMulPowIrreducibleFactorization :
     HasUnitMulPowIrreducibleFactorization (PowerSeries K) :=
   ⟨X,
@@ -200,24 +200,24 @@ theorem hasUnitMulPowIrreducibleFactorization :
         simp only [unit_of_divided_by_X_pow_order_nonzero hf]
         exact self_eq_X_pow_order_mul_divided_by_X_pow_order hf)⟩
 
--- `FAE` Is in PR #aaa
+-- `FAE` Is in PR #12160
 instance : UniqueFactorizationMonoid (PowerSeries K) :=
   hasUnitMulPowIrreducibleFactorization.toUniqueFactorizationMonoid
 
--- `FAE` Is in PR #aaa
+-- `FAE` Is in PR #12160
 instance : DiscreteValuationRing (PowerSeries K) :=
   ofHasUnitMulPowIrreducibleFactorization hasUnitMulPowIrreducibleFactorization
 
--- `FAE` Is in PR #aaa
+-- `FAE` Is in PR #12160
 instance : IsPrincipalIdealRing (PowerSeries K) :=
   inferInstance
 
--- `FAE` Is in PR #aaa
+-- `FAE` Is in PR #12160
 instance isNoetherianRing : IsNoetherianRing (PowerSeries K) :=
   PrincipalIdealRing.isNoetherianRing
 
 -- variable (K)
--- `FAE` Is in PR #aaa
+-- `FAE` Is in PR #12160
 theorem maximalIdeal_eq_span_x :
     LocalRing.maximalIdeal (PowerSeries K) = Ideal.span {X} := by
   have hX : (Ideal.span {(X : PowerSeries K)}).IsMaximal := by
@@ -239,7 +239,7 @@ theorem maximalIdeal_eq_span_x :
     apply Ideal.eq_top_of_isUnit_mem I hfI0 (IsUnit.map (C K) (Ne.isUnit hfX))
   rw [LocalRing.eq_maximalIdeal hX]
 
--- `FAE` Is in PR #aaa
+-- `FAE` Is in PR #12160
 theorem not_isField (R : Type _) [CommRing R] [Nontrivial R] : ¬IsField (PowerSeries R) := by
   nontriviality R
   rw [Ring.not_isField_iff_exists_ideal_bot_lt_and_lt_top]
@@ -251,11 +251,11 @@ theorem not_isField (R : Type _) [CommRing R] [Nontrivial R] : ¬IsField (PowerS
       X_dvd_iff, constantCoeff_one]
     exact one_ne_zero
 
--- `FAE` Is in PR #aaa
+-- `FAE` Is in PR #12160
 instance isDedekindDomain : IsDedekindDomain (PowerSeries K) :=
   IsPrincipalIdealRing.isDedekindDomain (PowerSeries K)
 
--- `FAE` Is in PR #aaa
+-- `FAE` Is in PR #12160
 instance : NormalizationMonoid (PowerSeries K)
     where
   normUnit f := (unit_of_divided_by_X_pow_order f)⁻¹
@@ -274,16 +274,16 @@ instance : NormalizationMonoid (PowerSeries K)
 
 open LocalRing
 
--- `FAE` Is in PR #aaa
+-- `FAE` Is in PR #12160
 theorem constantCoeff_surj (R : Type _) [CommRing R] : Function.Surjective (constantCoeff R) :=
   fun r => ⟨(C R) r, constantCoeff_C r⟩
 
--- `FAE` Is in PR #aaa
+-- `FAE` Is in PR #12160
 theorem ker_constantCoeff_eq_max_ideal : RingHom.ker (constantCoeff K) = maximalIdeal _ :=
   Ideal.ext fun _ => by
     rw [RingHom.mem_ker, maximalIdeal_eq_span_x, Ideal.mem_span_singleton, X_dvd_iff]
 
--- `FAE` Is in PR #aaa
+-- `FAE` Is in PR #12160
 /-- The ring isomorphism between the residue field of the ring of power series valued in a field `K`
 and `K` itself. -/
 def residueFieldOfPowerSeries : ResidueField (PowerSeries K) ≃+* K :=
@@ -293,7 +293,7 @@ def residueFieldOfPowerSeries : ResidueField (PowerSeries K) ≃+* K :=
 end Field
 
 end PowerSeries
--- `FAE` Stopped here while creating PR #aaa
+-- `FAE` Stopped here while creating PR #12160
 
 variable {K : Type _} [Field K]
 

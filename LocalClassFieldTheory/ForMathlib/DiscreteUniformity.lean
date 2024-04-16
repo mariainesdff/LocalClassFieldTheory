@@ -19,7 +19,7 @@ contain a non-trivial filter coincide
 
 namespace Set
 
-
+-- `FAE` in PR #bbb
 theorem prod_subset_diag_singleton_left {X : Type _} {S T : Set X} (hS : S.Nonempty)
     (hT : T.Nonempty) (h_diag : S ×ˢ T ⊆ idRel) : ∃ x, S = {x} := by
   rcases hS, hT with ⟨⟨s, hs⟩, ⟨t, ht⟩⟩
@@ -30,20 +30,22 @@ theorem prod_subset_diag_singleton_left {X : Type _} {S T : Set X} (hS : S.Nonem
   simp only [idRel, mem_setOf_eq] at hx hs
   rwa [← hs] at hx
 
+-- `FAE` in PR #bbb
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-theorem prod_subset_diag_singleton_right {X : Type _} {S T : Set X} (hS : S.Nonempty)
+theorem prod_subset_idRel_Eq_singleton_right {X : Type _} {S T : Set X} (hS : S.Nonempty)
     (hT : T.Nonempty) (h_diag : S ×ˢ T ⊆ idRel) : ∃ x, T = {x} :=
   by
   rw [Set.prod_subset_iff] at h_diag
   replace h_diag := fun x hx y hy => (h_diag y hy x hx).symm
   exact prod_subset_diag_singleton_left hT hS (prod_subset_iff.mpr h_diag)
 
+-- `FAE` in PR #bbb
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-theorem prod_subset_diag_singleton_eq {X : Type _} {S T : Set X} (hS : S.Nonempty) (hT : T.Nonempty)
+theorem prod_subset_idRel_Eq_singleton {X : Type _} {S T : Set X} (hS : S.Nonempty) (hT : T.Nonempty)
     (h_diag : S ×ˢ T ⊆ idRel) : ∃ x, S = {x} ∧ T = {x} :=
   by
   obtain ⟨⟨x, hx⟩, ⟨y, hy⟩⟩ := prod_subset_diag_singleton_left hS hT h_diag,
-    prod_subset_diag_singleton_right hS hT h_diag
+    prod_subset_idRel_Eq_singleton_right hS hT h_diag
   refine' ⟨x, ⟨hx, _⟩⟩
   rw [hy, Set.singleton_eq_singleton_iff]
   exact
