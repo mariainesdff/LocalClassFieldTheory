@@ -133,7 +133,7 @@ instance : Valued (LaurentSeries K) ℤₘ₀ :=
 
 theorem normUnit_x : normUnit (PowerSeries.X : PowerSeries K) = 1 := by
   dsimp only [normUnit];
-  rw [inv_eq_one, ← Units.val_eq_one, unit_of_divided_by_X_pow_order_nonzero,
+  rw [inv_eq_one, ← Units.val_eq_one, Unit_of_divided_by_X_pow_order_nonzero,
     divided_by_X_pow_order_of_X_eq_one]
 
 theorem x_eq_normalize : (PowerSeries.X : PowerSeries K) = normalize PowerSeries.X := by
@@ -157,10 +157,10 @@ theorem factors_in_pol_eq_powerSeries (P : Polynomial K) (hP : P ≠ 0) :
       PowerSeries.X_ne_zero (PowerSeries.normUnit_x K) PowerSeries.X_prime
   erw [← for_pow]
   have aux_pol :=
-    @multiplicity_eq_count_normalizedFactors (Polynomial K) _ _ _ _ _ _ Polynomial.X P
+    @multiplicity_eq_count_normalizedFactors (Polynomial K) _ _ _ _ _ Polynomial.X P
       Polynomial.irreducible_X hP
   have aux_pow_series :=
-    @multiplicity_eq_count_normalizedFactors (PowerSeries K) _ _ _ _ _ _ PowerSeries.X (↑P)
+    @multiplicity_eq_count_normalizedFactors (PowerSeries K) _ _ _ _ _ PowerSeries.X (↑P)
       (Prime.irreducible PowerSeries.X_prime) (coe_ne_zero hP)
   apply Nat.le_antisymm
   · rw [X_eq_normalize, PowerSeries.x_eq_normalize, ← PartENat.coe_le_coe, ← aux_pol, ←

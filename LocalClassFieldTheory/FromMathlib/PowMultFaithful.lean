@@ -71,7 +71,7 @@ theorem contraction_of_is_pm_wrt {F : Type _} {α : outParam (Type _)} [Ring α]
   intro n hn
   have h : (C ^ (1 / n : ℝ)) ^ n = C := by
     have hn0 : (n : ℝ) ≠ 0 := Nat.cast_ne_zero.mpr (ne_of_gt hn)
-    rw [← Real.rpow_nat_cast, ← Real.rpow_mul (le_of_lt hC0), one_div, inv_mul_cancel hn0,
+    rw [← Real.rpow_natCast, ← Real.rpow_mul (le_of_lt hC0), one_div, inv_mul_cancel hn0,
       Real.rpow_one]
   apply le_of_pow_le_pow_left (ne_of_gt hn)
     (mul_nonneg (Real.rpow_nonneg (le_of_lt hC0) _) (apply_nonneg _ _))

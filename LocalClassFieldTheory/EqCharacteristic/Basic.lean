@@ -221,7 +221,7 @@ theorem norm_X : ‖X p‖ = 1 / (p : ℝ) := by
   simp only [withZeroMultIntToNNReal, MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk,
     withZeroMultIntToNNRealDef, WithZero.coe_ne_zero, ↓reduceDite, WithZero.unzero_coe, toAdd_ofAdd,
     zpow_one]
-  rw [valuation_base_eq_char, NNReal.coe_nat_cast]
+  rw [valuation_base_eq_char, NNReal.coe_natCast]
 
 variable {p}
 

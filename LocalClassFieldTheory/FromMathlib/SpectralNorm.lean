@@ -582,8 +582,8 @@ theorem root_norm_le_spectralValue {f : AlgebraNorm K L} (hf_pm : IsPowMul f)
       intro n hn
       have hexp : (‖p.coeff n‖ ^ (1 / (p.natDegree - n : ℝ))) ^ (p.natDegree - n) =
         ‖p.coeff n‖ := by
-        rw [← Real.rpow_nat_cast, ← Real.rpow_mul (norm_nonneg _), mul_comm,
-          Real.rpow_mul (norm_nonneg _), Real.rpow_nat_cast, ← Nat.cast_sub (le_of_lt hn), one_div,
+        rw [← Real.rpow_natCast, ← Real.rpow_mul (norm_nonneg _), mul_comm,
+          Real.rpow_mul (norm_nonneg _), Real.rpow_natCast, ← Nat.cast_sub (le_of_lt hn), one_div,
           Real.pow_rpow_inv_natCast (norm_nonneg _) (ne_of_gt (tsub_pos_of_lt hn))]
       have h_base : ‖p.coeff n‖ ^ (1 / (p.natDegree - n : ℝ)) < f x := by
         rw [spectralValue, iSup, not_le, Set.Finite.csSup_lt_iff (spectralValueTerms_finite_range p)
@@ -591,7 +591,7 @@ theorem root_norm_le_spectralValue {f : AlgebraNorm K L} (hf_pm : IsPowMul f)
         have h_rg : ‖p.coeff n‖ ^ (1 / (p.natDegree - n : ℝ)) ∈ Set.range (spectralValueTerms p) :=
           by use n; simp only [spectralValueTerms, if_pos hn]
         exact h_ge (‖p.coeff n‖₊ ^ (1 / (p.natDegree - n : ℝ))) h_rg
-      rw [← hexp, ← Real.rpow_nat_cast, ← Real.rpow_nat_cast]
+      rw [← hexp, ← Real.rpow_natCast, ← Real.rpow_natCast]
       exact Real.rpow_lt_rpow (Real.rpow_nonneg (norm_nonneg _) _) h_base
         (Nat.cast_pos.mpr (tsub_pos_of_lt hn))
     have h_deg : 0 < p.natDegree := Polynomial.natDegree_pos_of_monic_of_root hp hx
@@ -659,7 +659,7 @@ theorem max_root_norm_eq_spectralValue {f : AlgebraNorm K L} (hf_pm : IsPowMul f
       have h : 0 < (p.natDegree - m : ℝ) := by rw [sub_pos, Nat.cast_lt]; exact hm
       rw [← Real.rpow_le_rpow_iff (Real.rpow_nonneg (norm_nonneg _) _) h_supr h, ←
         Real.rpow_mul (norm_nonneg _), one_div_mul_cancel (ne_of_gt h), Real.rpow_one, ←
-        Nat.cast_sub (le_of_lt hm), Real.rpow_nat_cast]
+        Nat.cast_sub (le_of_lt hm), Real.rpow_natCast]
       have hpn : n = p.natDegree := by
         rw [← natDegree_map (algebraMap K L), ← mapAlg_eq_map, hp, finprod_eq_prod_of_fintype,
           Polynomial.prod_x_add_c_natDegree]
@@ -730,7 +730,7 @@ theorem max_root_norm_eq_spectral_value' {f : AlgebraNorm K L} (hf_pm : IsPowMul
       have h : 0 < (p.natDegree - m : ℝ) := by rw [sub_pos, Nat.cast_lt]; exact hm
       rw [← Real.rpow_le_rpow_iff (Real.rpow_nonneg (norm_nonneg _) _) h_le h, ←
         Real.rpow_mul (norm_nonneg _), one_div_mul_cancel (ne_of_gt h), Real.rpow_one, ←
-        Nat.cast_sub (le_of_lt hm), Real.rpow_nat_cast]
+        Nat.cast_sub (le_of_lt hm), Real.rpow_natCast]
       have hps : card s = p.natDegree := by
         rw [← natDegree_map (algebraMap K L), ← mapAlg_eq_map, hp,
           natDegree_multiset_prod_X_sub_C_eq_card]
@@ -831,7 +831,7 @@ def spectralNorm (y : L) : ℝ :=
 variable {K L}
 
 /-- If `L/E/K` is a tower of fields, then the spectral norm of `x : E` equals its spectral norm
-  when regarded as an element of `L`. -/
+  when regarding `x` as an element of `L`. -/
 theorem spectralValue.eq_of_tower {E : Type _} [Field E] [Algebra K E] [Algebra E L]
     [IsScalarTower K E L] (x : E) :
     spectralNorm K E x = spectralNorm K L (algebraMap E L x) := by
@@ -842,7 +842,7 @@ theorem spectralValue.eq_of_tower {E : Type _} [Field E] [Algebra K E] [Algebra 
 variable (E : IntermediateField K L)
 
 /-- If `L/E/K` is a tower of fields, then the spectral norm of `x : E` when regarded as an element
-  of the normal closure of `E` equals its spectral norm when regarded as an element of `L`. -/
+  of the normal closure of `E` equals its spectral norm when regarding `x` as an element of `L`. -/
 theorem spectralValue.eq_normal (x : E) :
     spectralNorm K (normalClosure K E (AlgebraicClosure E))
         (algebraMap E (normalClosure K E (AlgebraicClosure E)) x) =
@@ -1198,7 +1198,9 @@ def Adjoin.algebraNorm (f : AlgebraNorm K L) (x : L) : AlgebraNorm K K⟮x⟯ wh
     simp only [Function.comp_apply, Algebra.smul_def]
     rw [map_mul, ← RingHom.comp_apply, ← IsScalarTower.algebraMap_eq, ← Algebra.smul_def,
       map_smul_eq_mul _ _]
-  neg' a := by simp only [Function.comp_apply, map_neg, map_neg_eq_map]
+  neg' a := by
+    have : AddMonoidHomClass (K⟮x⟯ →+* L) (K⟮x⟯) L := RingHomClass.toAddMonoidHomClass
+    simp only [Function.comp_apply, map_neg, map_neg_eq_map]
   eq_zero_of_map_eq_zero' a ha := by
     simp only [Function.comp_apply, IntermediateField.algebraMap_apply, map_eq_zero_iff_eq_zero,
       ZeroMemClass.coe_eq_zero] at ha

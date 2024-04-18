@@ -145,7 +145,7 @@ theorem expExtensionOnUnits_ne_zero [FiniteDimensional K L] : expExtensionOnUnit
   set z : Lˣ := Units.map (algebraMap K L).toMonoidHom (IsUnit.unit hx_unit) with hz
   by_contra h0
   have h := expExtensionOnUnits_generates_range' (K := K) (L := L)
-  rw [h0, ZMod.nat_cast_self, closure_singleton_zero, _root_.map_eq_bot_iff,
+  rw [h0, ZMod.natCast_self, closure_singleton_zero, _root_.map_eq_bot_iff,
     Subgroup.map_eq_bot_iff, top_le_iff] at h
   have hz1 : powExtensionOnUnits K L z = 1 := by rw [← MonoidHom.mem_ker, h]; exact mem_top _
   have hzne1 : powExtensionOnUnits K L z ≠ 1 := by
@@ -156,8 +156,8 @@ theorem expExtensionOnUnits_ne_zero [FiniteDimensional K L] : expExtensionOnUnit
         Valuation.coeff_zero]
     rw [hz, powExtensionOnUnits_apply, Ne.def, ← WithZero.coe_inj, coe_unzero, hv, hx, ←
       ofAdd_neg_nat, ← ofAdd_zero, WithZero.coe_inj, RingHom.toMonoidHom_eq_coe, Units.coe_map,
-        IsUnit.unit_spec, MonoidHom.coe_coe, Int.coe_nat_div, ofAdd_neg, ofAdd_zero, inv_eq_one,
-        ofAdd_eq_one, ← Int.coe_nat_div, Int.coe_nat_eq_zero,
+        IsUnit.unit_spec, MonoidHom.coe_coe, Int.natCast_div, ofAdd_neg, ofAdd_zero, inv_eq_one,
+        ofAdd_eq_one, ← Int.natCast_div, Int.natCast_eq_zero,
         Nat.div_eq_zero_iff (minpoly.natDegree_pos (isAlgebraic_iff_isIntegral.mp (h_alg _)))]
     exact not_lt.mpr (minpoly.natDegree_le z.1)
   exact hzne1 hz1
@@ -221,7 +221,7 @@ theorem expExtensionOnUnits_dvd [FiniteDimensional K L] :
     rw [Nat.cast_ne_zero, ← pos_iff_ne_zero]
     exact minpoly.natDegree_pos (isAlgebraic_iff_isIntegral.mp (h_alg _))
   have h_dvd : ((minpoly K ((algebraMap K L) ↑π)).natDegree : ℤ) ∣ finrank K L :=
-    Int.coe_nat_dvd.mpr (minpoly.degree_dvd (isAlgebraic_iff_isIntegral.mp (h_alg _)))
+    Int.natCast_dvd.mpr (minpoly.degree_dvd (isAlgebraic_iff_isIntegral.mp (h_alg _)))
   rw [hu, hu_def, Valuation.coeff_zero, IsUniformizer_iff.mp hπ, ← WithZero.coe_pow, ←
     WithZero.coe_zpow, ← WithZero.coe_pow, WithZero.coe_inj, ← zpow_natCast, ← zpow_mul, ← zpow_natCast,
     ofAdd_pow_comm, ofAdd_pow_comm (-1)] at hn
@@ -231,7 +231,7 @@ theorem expExtensionOnUnits_dvd [FiniteDimensional K L] :
     refine' nonneg_of_mul_nonneg_left _ (Nat.cast_pos.mpr (expExtensionOnUnits_pos K L))
     rw [hn]
     exact Nat.cast_nonneg _
-  rw [Int.coe_nat_div, eq_comm, Int.ediv_eq_iff_eq_mul_right hne_zero h_dvd] at hn
+  rw [Int.natCast_div, eq_comm, Int.ediv_eq_iff_eq_mul_right hne_zero h_dvd] at hn
   use(minpoly K ((algebraMap K L) ↑π)).natDegree * n.toNat
   rw [mul_comm, ← @Nat.cast_inj ℤ _, hn, Nat.cast_mul, Nat.cast_mul, Int.toNat_of_nonneg hn0,
     mul_assoc]
@@ -315,7 +315,7 @@ theorem extensionDef_add [FiniteDimensional K L] (x y : L) :
         rw [_root_.le_max_iff]
         simp only [← WithZero.coe_zpow, WithZero.coe_le_coe]
         have hd : 0 < (expExtensionOnUnits K L : ℤ) := by
-          rw [Int.coe_nat_pos]
+          rw [Int.natCast_pos]
           exact Nat.pos_of_ne_zero (expExtensionOnUnits_ne_zero K L)
         rw [← zpow_le_zpow_iff' hd, zpow_natCast, zpow_natCast, ← WithZero.coe_le_coe, WithZero.coe_pow,
            WithZero.coe_zpow]
@@ -331,14 +331,14 @@ theorem extensionDef_add [FiniteDimensional K L] (x y : L) :
           (exists_mul_expExtensionOnUnits K (isUnit_iff_ne_zero.mpr hy).unit).choose_spec]
         simp_all only [← (withZeroMultIntToNNReal_strictMono (one_lt_base K hv.v)).le_iff_le, ←
           NNReal.coe_le_coe]
-        rw [_root_.map_pow, NNReal.coe_pow, ← Real.rpow_nat_cast, Nat.cast_div,
+        rw [_root_.map_pow, NNReal.coe_pow, ← Real.rpow_natCast, Nat.cast_div,
           ← pow_eq_pow_root_zero_coeff' h_alg]
         --x + y
-        rw [_root_.map_pow, NNReal.coe_pow, ← Real.rpow_nat_cast _
+        rw [_root_.map_pow, NNReal.coe_pow, ← Real.rpow_natCast _
           (finrank K L / (minpoly K _).natDegree), Nat.cast_div,
           ← pow_eq_pow_root_zero_coeff' h_alg]
         -- x
-        rw [_root_.map_pow, NNReal.coe_pow, ← Real.rpow_nat_cast _
+        rw [_root_.map_pow, NNReal.coe_pow, ← Real.rpow_natCast _
           (finrank K L / (minpoly K _).natDegree), Nat.cast_div,
           ← pow_eq_pow_root_zero_coeff' h_alg]
         -- y
@@ -527,17 +527,17 @@ def valued [FiniteDimensional K L] : Valued L ℤₘ₀ :=
           rw [← hn_def] at hx
           have hx' := Real.rpow_lt_rpow (NNReal.coe_nonneg _)
               ((withZeroMultIntToNNReal_strictMono (one_lt_base K hv.v)) hx) hpos
-          rw [Real.rpow_nat_cast, ← NNReal.coe_pow, ← _root_.map_pow, hn, _root_.map_pow,
+          rw [Real.rpow_natCast, ← NNReal.coe_pow, ← _root_.map_pow, hn, _root_.map_pow,
             NNReal.coe_pow, ← DiscreteNormExtension.pow_eq_pow_root_zero_coeff h_alg _
               (minpoly.degree_dvd
                 (isAlgebraic_iff_isIntegral.mp (h_alg ↑(isUnit_iff_ne_zero.mpr h0).unit)))]
             at hx'
-          rw [← Real.rpow_lt_rpow_iff (norm_nonneg _) (le_of_lt hε) hpos', Real.rpow_nat_cast]
+          rw [← Real.rpow_lt_rpow_iff (norm_nonneg _) (le_of_lt hε) hpos', Real.rpow_natCast]
           apply lt_trans hx'
           simp only [Units.val_pow_eq_pow_val, _root_.map_pow, val_eq_coe, NNReal.coe_pow,
-            Real.rpow_nat_cast]
-          rw [← pow_mul, Nat.div_mul_cancel (expExtensionOnUnits_dvd K L), ← Real.rpow_nat_cast,
-            ← Real.rpow_nat_cast, Real.rpow_lt_rpow_iff (NNReal.coe_nonneg _) (le_of_lt hε) hpos']
+            Real.rpow_natCast]
+          rw [← pow_mul, Nat.div_mul_cancel (expExtensionOnUnits_dvd K L), ← Real.rpow_natCast,
+            ← Real.rpow_natCast, Real.rpow_lt_rpow_iff (NNReal.coe_nonneg _) (le_of_lt hε) hpos']
           exact hδ
       · obtain ⟨ε, hε⟩ := h
         have hε_pos : 0 < (withZeroMultIntToNNReal (base_ne_zero K hv.v) ε : ℝ) ^
@@ -560,14 +560,14 @@ def valued [FiniteDimensional K L] : Valued L ℤₘ₀ :=
           set hn := (exists_mul_expExtensionOnUnits K (isUnit_iff_ne_zero.mpr h0).unit).choose_spec
           simp only [IsUnit.unit_spec, ← hn_def] at hn
           rw [← (withZeroMultIntToNNReal_strictMono (one_lt_base K hv.v)).lt_iff_lt, ←
-            rpow_lt_rpow_iff hpos, rpow_nat_cast, ← _root_.map_pow]
+            rpow_lt_rpow_iff hpos, rpow_natCast, ← _root_.map_pow]
           simp only [(isUnit_iff_ne_zero.mpr h0).choose_spec]
           rw [hn, ← NNReal.coe_lt_coe, _root_.map_pow, NNReal.coe_pow,
             ← pow_eq_pow_root_zero_coeff h_alg _
               (minpoly.degree_dvd (isAlgebraic_iff_isIntegral.mp (h_alg _))),
             ← Real.rpow_lt_rpow_iff (pow_nonneg (DiscreteNormExtension.nonneg h_alg _) _)
                 (coe_nonneg _) (inv_pos.mpr hpos'),
-            ← Real.rpow_nat_cast, ← Real.rpow_mul (DiscreteNormExtension.nonneg h_alg _),
+            ← Real.rpow_natCast, ← Real.rpow_mul (DiscreteNormExtension.nonneg h_alg _),
             mul_inv_cancel (ne_of_gt hpos'), Real.rpow_one, coe_rpow,
             ← Real.rpow_mul (coe_nonneg _)]
           exact hx }
