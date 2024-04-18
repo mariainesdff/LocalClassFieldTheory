@@ -28,10 +28,13 @@ namespace LocalField
 
 open scoped DiscreteValuationRing
 
+open Valued
 
-variable (K : Type*) [Field K] [hv : Valued K ℤₘ₀] [LocalField K] {n : ℕ} (hn : 0 < n)
+variable (K : Type*) [Field K] [LocalField K] {n : ℕ} (hn : 0 < n)
 
-local notation "K₀" => hv.v.valuationSubring
+local notation "v" => (@Valued.v K _ ℤₘ₀ _ _)
+
+local notation "K₀" => v.valuationSubring
 
 /-- The unique unramified extension of `K` of degree `n`. -/
 def Kn (K : Type*) [Field K] [hv : Valued K ℤₘ₀] [LocalField K] {n : ℕ} (hn : 0 < n) : Type* := sorry
