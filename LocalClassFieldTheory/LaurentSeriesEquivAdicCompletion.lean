@@ -133,8 +133,8 @@ instance : Valued (LaurentSeries K) ℤₘ₀ :=
 
 theorem normUnit_x : normUnit (PowerSeries.X : PowerSeries K) = 1 := by
   dsimp only [normUnit];
-  rw [inv_eq_one, ← Units.val_eq_one, unit_of_divided_by_X_pow_nonzero,
-    divided_by_X_pow_of_X_eq_one]
+  rw [inv_eq_one, ← Units.val_eq_one, unit_of_divided_by_X_pow_order_nonzero,
+    divided_by_X_pow_order_of_X_eq_one]
 
 theorem x_eq_normalize : (PowerSeries.X : PowerSeries K) = normalize PowerSeries.X := by
   simp only [normalize_apply, PowerSeries.normUnit_x, Units.val_one, mul_one]
