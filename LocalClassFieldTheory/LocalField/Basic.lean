@@ -35,16 +35,16 @@ class LocalField (K : Type*) [Field K] extends Valued K ℤₘ₀ where
   isDiscrete : IsDiscrete (@Valued.v K _ ℤₘ₀ _ _)
   finiteResidueField : Finite (LocalRing.ResidueField (@Valued.v K _ ℤₘ₀ _ _).valuationSubring)
 
--- attribute [instance] LocalField.complete LocalField.isDiscrete LocalField.finiteResidueField
+attribute [instance] LocalField.complete LocalField.isDiscrete LocalField.finiteResidueField
 -- NOTE: instances added on 15/4/24
-instance (K : Type*) [Field K] [LocalField K] : Valuation.IsDiscrete (@Valued.v K _ ℤₘ₀ _ _) :=
-  LocalField.isDiscrete
+-- instance (K : Type*) [Field K] [LocalField K] : Valuation.IsDiscrete (@Valued.v K _ ℤₘ₀ _ _) :=
+--   LocalField.isDiscrete
 
-instance (K : Type*) [Field K] [LocalField K] : CompleteSpace K := LocalField.complete
+-- instance (K : Type*) [Field K] [LocalField K] : CompleteSpace K := LocalField.complete
 
-instance (K : Type*) [Field K] [LocalField K] :
-    Finite (LocalRing.ResidueField (@Valued.v K _ ℤₘ₀ _ _).valuationSubring) :=
-  LocalField.finiteResidueField
+-- instance (K : Type*) [Field K] [LocalField K] :
+--     Finite (LocalRing.ResidueField (@Valued.v K _ ℤₘ₀ _ _).valuationSubring) :=
+--   LocalField.finiteResidueField
 
 namespace EqCharLocalField
 
