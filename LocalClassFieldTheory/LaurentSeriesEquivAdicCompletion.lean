@@ -140,7 +140,7 @@ theorem x_eq_normalize : (PowerSeries.X : PowerSeries K) = normalize PowerSeries
   simp only [normalize_apply, PowerSeries.normUnit_x, Units.val_one, mul_one]
 
 open IsDedekindDomain.HeightOneSpectrum Polynomial PowerSeries multiplicity
-  UniqueFactorizationMonoid
+  UniqueFactorizationMonoid RatFunc
 
 open scoped Classical
 
@@ -256,7 +256,7 @@ theorem valuation_eq_LaurentSeries_valuation (P : RatFunc K) :
         LaurentSeries K) := by
     simp only [IsFractionRing.mk'_eq_div, coe_div]
     congr
-    exacts [(Polynomial.coe_coe f).symm, (Polynomial.coe_coe g).symm]
+    exacts [(RatFunc.coe_coe f).symm, (RatFunc.coe_coe g).symm]
   rw [aux]
   convert @valuation_of_mk' (PowerSeries K) _ _ (LaurentSeries K) _ _ _ (PowerSeries.idealX K) f
         ⟨g, mem_nonZeroDivisors_iff_ne_zero.2 <| coe_ne_zero h⟩ <;>
@@ -672,7 +672,7 @@ theorem exists_ratFunc_val_lt (f : LaurentSeries K) (γ : ℤₘ₀ˣ) :
     erw [hs, ← F_mul, PowerSeries.coe_pow, PowerSeries.coe_X, RatFunc.coe_mul, zpow_neg, zpow_ofNat,
       inv_eq_one_div (RatFunc.X ^ s), RatFunc.coe_div, RatFunc.coe_pow, RatFunc.coe_X,
       RatFunc.coe_one, ← inv_eq_one_div, ← mul_sub, map_mul, map_inv₀, ← PowerSeries.coe_X,
-      valuation_of_X_zpow, ← hs, ← Polynomial.coe_coe, ← coe_sub, LaurentSeries.coe_powerSeries, ←
+      valuation_of_X_zpow, ← hs, ← RatFunc.coe_coe, ← coe_sub, LaurentSeries.coe_powerSeries, ←
       LaurentSeries.coe_algebraMap, valuation_of_algebraMap, ← Units.val_mk0 h₀, ← hη]
     apply inv_mul_lt_of_lt_mul₀
     rwa [← Units.val_mul]
@@ -686,7 +686,7 @@ theorem exists_ratFunc_val_lt (f : LaurentSeries K) (γ : ℤₘ₀ˣ) :
     rw [← hf_coe]
     obtain ⟨P, hP⟩ := exists_pol_int_val_lt K (PowerSeries.X ^ s * F) γ
     use ↑P
-    erw [← Polynomial.coe_coe, ← coe_sub, LaurentSeries.coe_powerSeries, ←
+    erw [← RatFunc.coe_coe, ← coe_sub, LaurentSeries.coe_powerSeries, ←
       LaurentSeries.coe_algebraMap, valuation_of_algebraMap]
     exact hP
 
