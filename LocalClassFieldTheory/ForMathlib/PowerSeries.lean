@@ -295,11 +295,23 @@ noncomputable section
 -- end PowerSeries
 -- `FAE` Stopped here while creating PR #12160
 
+-- `FAE` What follows is in PR #12245
+/-
+In this final section, we prove
+* `single_pow`
+* `single_inv`
+* `single_zpow`
+relating the powers and the inverse of the Hahn series `single 1 1` with the Hahn series
+`single n 1` for `n : ℤ`.
+-/
+
+section Polynomial
+
 variable {K : Type _} [Field K]
 
-namespace Polynomial
+namespace RatFunc
 
-open RatFunc PowerSeries
+open PowerSeries Polynomial
 
 -- Porting note: I added this
 instance : Coe (Polynomial K) (RatFunc K) := ⟨algebraMap _ _⟩
@@ -312,7 +324,11 @@ theorem coe_coe (P : Polynomial K) : (P : LaurentSeries K) = (P : RatFunc K) := 
 theorem coe_ne_zero {f : Polynomial K} : f ≠ 0 → (↑f : PowerSeries K) ≠ 0 := by
   simp only [Ne.def, coe_eq_zero_iff, imp_self]
 
+end RatFunc
+
 end Polynomial
+
+section HahnSeries
 
 namespace HahnSeries
 
@@ -323,6 +339,8 @@ theorem single_pow {R : Type _} [Ring R] (n : ℕ) :
     rfl
   · rw [← Int.ofNat_add_one_out, pow_succ', ← h_ind, HahnSeries.single_mul_single, one_mul,
       add_comm]
+
+variable {K : Type _} [Field K]
 
 theorem single_inv (d : ℤ) (α : K) (hα : α ≠ 0) :
     (HahnSeries.single (d : ℤ) (α : K))⁻¹ = HahnSeries.single (-d) (α⁻¹ : K) := by
@@ -337,5 +355,8 @@ theorem single_zpow (n : ℤ) :
   · rw [Int.negSucc_coe, Int.ofNat_add, Nat.cast_one, ← inv_one, ←
       single_inv (n_neg + 1 : ℤ) (1 : K) one_ne_zero, zpow_neg, ← Nat.cast_one, ← Int.ofNat_add,
       Nat.cast_one, inv_inj, zpow_natCast, single_pow, inv_one]
+
+
+end HahnSeries
 
 end HahnSeries

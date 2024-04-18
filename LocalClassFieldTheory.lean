@@ -30,7 +30,7 @@ import LocalClassFieldTheory.ForMathlib.Topology.UniformSpace.AbstractCompletion
 import LocalClassFieldTheory.ForMathlib.DiscreteUniformity -- In PR #12179
 import LocalClassFieldTheory.ForMathlib.DiscreteValuationRing
 import LocalClassFieldTheory.ForMathlib.Polynomial
-import LocalClassFieldTheory.ForMathlib.PowerSeries -- In PR #12160 (to be cont'd)
+import LocalClassFieldTheory.ForMathlib.PowerSeries -- In PR #12160 and #12245
 import LocalClassFieldTheory.ForMathlib.RankOneValuation
 import LocalClassFieldTheory.ForMathlib.WithZero
 -- FromMathlib folder *complete*
