@@ -74,7 +74,7 @@ theorem one_lt_zpow' {α : Type _} [LinearOrderedCommGroupWithZero α] {a : α} 
     (hk : 0 < k) : 1 < a ^ k := by
   lift k to ℕ using Int.le_of_lt hk
   rw [zpow_natCast]
-  exact one_lt_pow' ha (Int.coe_nat_pos.mp hk).ne'
+  exact one_lt_pow' ha (Int.natCast_pos.mp hk).ne'
 
 theorem mul_lt_mul_right₀ {α : Type _} {a b c : α} [LinearOrderedCommGroupWithZero α]
     (hc : 0 < c) : a * c < b * c ↔ a < b :=
