@@ -1,3 +1,9 @@
+/-
+Copyright (c) 2024 María Inés de Frutos-Fernández, Filippo A. E. Nuccio. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: María Inés de Frutos-Fernández, Filippo A. E. Nuccio
+-/
+
 -- This file is PR'd in PR #12247
 
 import Mathlib.RingTheory.Valuation.Integers

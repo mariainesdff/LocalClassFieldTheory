@@ -1,3 +1,9 @@
+/-
+Copyright (c) 2024 María Inés de Frutos-Fernández, Filippo A. E. Nuccio. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: María Inés de Frutos-Fernández, Filippo A. E. Nuccio
+-/
+
 -- `FAE` the whole file is in PR #12179
 
 import Mathlib.Order.Filter.Basic
