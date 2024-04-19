@@ -12,12 +12,16 @@ open BigOperators DiscreteValuation
 /- Note: I was trying to set up a ramification index notation for local fields, but I get errors. -/
 namespace LocalField
 
-variable (K : Type*) [Field K] [hv : Valued K ℤₘ₀] [LocalField K]
-  (L : Type*) [Field L] [hw : Valued L ℤₘ₀] [LocalField L] [Algebra K L]
+variable (K : Type*) [Field K] [LocalField K]
+  (L : Type*) [Field L] [LocalField L] [Algebra K L]
 
-local notation "K₀" => hv.v.valuationSubring
+local notation "v" => (@Valued.v K _ ℤₘ₀ _ _)
 
-local notation "L₀" => hw.v.valuationSubring
+--local notation "K₀" => v.valuationSubring -- This gives an error here, but works in line 41 (?)
+
+local notation "w" => (@Valued.v K _ ℤₘ₀ _ _)
+
+--local notation "L₀" => w.valuationSubring -- Same error
 
 /- local notation "e("L","K")" => Ideal.ramificationIdx (algebraMap K₀ L₀)
   (LocalRing.maximalIdeal K₀) (LocalRing.maximalIdeal L₀) -/
@@ -32,12 +36,22 @@ open Valued
 
 variable (K : Type*) [Field K] [LocalField K] {n : ℕ} (hn : 0 < n)
 
+local instance hv : Valued K ℤₘ₀ := inferInstance
+
+set_option quotPrecheck false
+local notation "K₀" => (hv K).v.valuationSubring
+
+/-
 local notation "v" => (@Valued.v K _ ℤₘ₀ _ _)
 
 local notation "K₀" => v.valuationSubring
 
+#check K₀ -- Valuation.valuationSubring v : ValuationSubring ?m.5083 (doesn't remember K)
+
+-/
+
 /-- The unique unramified extension of `K` of degree `n`. -/
-def Kn (K : Type*) [Field K] [hv : Valued K ℤₘ₀] [LocalField K] {n : ℕ} (hn : 0 < n) : Type* := sorry
+def Kn (K : Type*) [Field K] [LocalField K] {n : ℕ} (hn : 0 < n) : Type* := sorry
 
 instance Kn_field : Field (Kn K hn) := sorry
 
@@ -53,7 +67,7 @@ lemma Kn_unramified : e((Kn_valued K hn).v.valuationSubring, K₀) = 1 := sorry
 
 local instance (L : Type*) [Field L] [Algebra K L] [FiniteDimensional K L] :
     Algebra K₀ (extendedValuation K L).valuationSubring := by
-  convert ValuationSubring.algebra hv.v L
+  convert ValuationSubring.algebra (hv K).v L
   sorry
   sorry
 
