@@ -123,7 +123,7 @@ def maxIdealOfCompletion : HeightOneSpectrum R_v where
     exact adicCompletionIntegers_not_isField R v K
 
 local notation "v_adic_of_compl" =>
-  @IsDedekindDomain.HeightOneSpectrum.valuation R_v _ _ K_v _ _ _ (maxIdealOfCompletion R v K)
+  IsDedekindDomain.HeightOneSpectrum.valuation (K := K_v) (maxIdealOfCompletion R v K)
 
 local notation "v_compl_of_adic" => (Valued.v : Valuation K_v ℤₘ₀)
 

@@ -19,7 +19,7 @@ open IsDedekindDomain IsDedekindDomain.HeightOneSpectrum Valuation DiscreteValua
 
 open scoped DiscreteValuation
 
-variable (R : Type _) [CommRing R] [IsDomain R] [IsDedekindDomain R] (K : Type _) [Field K]
+variable (R : Type*) [CommRing R] [IsDomain R] [IsDedekindDomain R] (K : Type*) [Field K]
   [Algebra R K] [IsFractionRing R K] (v : HeightOneSpectrum R)
 
 theorem adicValuedIsDiscrete : IsDiscrete (@adicValued R _ _ K _ _ _ v).v := by
@@ -56,6 +56,6 @@ instance isDiscrete : IsDiscrete (@Valued.v K_v _ ℤₘ₀ _ _) :=
 
 /-- The unit ball `R_v` of `K_v` is a discrete valuation ring. -/
 instance discreteValuationRing : DiscreteValuationRing R_v :=
-  DiscreteValuation.dvr_of_isDiscrete (@Valued.v K_v _ ℤₘ₀ _ _)
+  DiscreteValuation.dvr_of_isDiscrete (Valued.v  (R := K_v))
 
 end IsDedekindDomain.HeightOneSpectrum

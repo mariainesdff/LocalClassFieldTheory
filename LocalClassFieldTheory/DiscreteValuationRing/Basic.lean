@@ -289,7 +289,7 @@ theorem pow_Uniformizer {r : K₀} (hr : r ≠ 0) (π : Uniformizer v) :
 /-- This proof of the lemma does not need the valuation to be discrete, although the fact that a
 uniformizer exists forces the condition.-/
 theorem Uniformizer_is_generator (π : Uniformizer v) :
-    maximalIdeal (Valuation.valuationSubring v) = Ideal.span {π.1} := by
+    maximalIdeal v.valuationSubring = Ideal.span {π.1} := by
   apply (maximalIdeal.isMaximal _).eq_of_le
   · intro h
     rw [Ideal.span_singleton_eq_top] at h
@@ -425,8 +425,8 @@ theorem integer_isPrincipalIdealRing : IsPrincipalIdealRing K₀ :=
 /-- This is Chapter I, Section 1, Proposition 1 in Serre's Local Fields -/
 instance dvr_of_isDiscrete : DiscreteValuationRing K₀
     where
-  __ : IsPrincipalIdealRing _ := integer_isPrincipalIdealRing v
-  __ : LocalRing _ := inferInstance
+  toIsPrincipalIdealRing := integer_isPrincipalIdealRing v
+  toLocalRing  := inferInstance
   not_a_field' := by rw [Ne.def, ← isField_iff_maximalIdeal_eq]; exact not_isField v
 
 variable (A : Type w₁) [CommRing A] [IsDomain A] [DiscreteValuationRing A]
