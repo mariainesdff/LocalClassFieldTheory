@@ -50,7 +50,7 @@ theorem map_pow_div [FiniteDimensional K L] (x : Lˣ) :
           (1 / ((minpoly K (x : L)).natDegree : ℝ))) ^
         (finrank K L : ℝ) := by
   have h_alg : Algebra.IsAlgebraic K L := Algebra.IsAlgebraic.of_finite K L
-  rw [_root_.map_pow, ← NNReal.rpow_nat_cast,
+  rw [_root_.map_pow, ← NNReal.rpow_natCast,
     Nat.cast_div (minpoly.degree_dvd (isAlgebraic_iff_isIntegral.mp (h_alg ↑x)))
       (Nat.cast_ne_zero.mpr
         (ne_of_gt (minpoly.natDegree_pos (isAlgebraic_iff_isIntegral.mp (h_alg ↑x))))),
@@ -142,13 +142,13 @@ theorem pow_eq_pow_root_zero_coeff' (h_alg : Algebra.IsAlgebraic K L) (x : L) (n
       withZeroMultIntToNNReal (base_ne_zero K hv.v) (Valued.v ((minpoly K x).coeff 0)) ^
         (n / (minpoly K x).natDegree : ℝ) := by
   rw [div_eq_inv_mul, Real.rpow_mul NNReal.zero_le_coe, eq_root_zero_coeff, inv_eq_one_div,
-    Real.rpow_nat_cast]
+    Real.rpow_natCast]
 
 theorem pow_eq_pow_root_zero_coeff (h_alg : Algebra.IsAlgebraic K L) (x : L) {n : ℕ}
     (hn : (minpoly K x).natDegree ∣ n) : discreteNormExtension h_alg x ^ n =
       withZeroMultIntToNNReal (base_ne_zero K hv.v) (Valued.v ((minpoly K x).coeff 0)) ^
         (n / (minpoly K x).natDegree) := by
-  nth_rw 2 [← Real.rpow_nat_cast]
+  nth_rw 2 [← Real.rpow_natCast]
   rw [Nat.cast_div hn (Nat.cast_ne_zero.mpr
     (ne_of_gt (minpoly.natDegree_pos (isAlgebraic_iff_isIntegral.mp (h_alg x)))))]
   exact pow_eq_pow_root_zero_coeff' h_alg x n

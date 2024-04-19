@@ -1,3 +1,5 @@
+-- `FAE` the whole file is in PR #12179
+
 import Mathlib.Order.Filter.Basic
 import Mathlib.Topology.UniformSpace.Cauchy
 
@@ -19,13 +21,10 @@ contain a non-trivial filter coincide
 
 namespace Set
 
-
 theorem prod_subset_diag_singleton_left {X : Type _} {S T : Set X} (hS : S.Nonempty)
-    (hT : T.Nonempty) (h_diag : S ×ˢ T ⊆ idRel) : ∃ x, S = {x} :=
-  by
+    (hT : T.Nonempty) (h_diag : S ×ˢ T ⊆ idRel) : ∃ x, S = {x} := by
   rcases hS, hT with ⟨⟨s, hs⟩, ⟨t, ht⟩⟩
-  refine' ⟨s, eq_singleton_iff_nonempty_unique_mem.mpr ⟨⟨s, hs⟩, _⟩⟩
-  intro x hx
+  refine' ⟨s, eq_singleton_iff_nonempty_unique_mem.mpr ⟨⟨s, hs⟩, fun x hx ↦ ?_⟩⟩
   rw [prod_subset_iff] at h_diag
   replace hs := h_diag s hs t ht
   replace hx := h_diag x hx t ht
@@ -33,7 +32,7 @@ theorem prod_subset_diag_singleton_left {X : Type _} {S T : Set X} (hS : S.Nonem
   rwa [← hs] at hx
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-theorem prod_subset_diag_singleton_right {X : Type _} {S T : Set X} (hS : S.Nonempty)
+theorem prod_subset_idRel_Eq_singleton_right {X : Type _} {S T : Set X} (hS : S.Nonempty)
     (hT : T.Nonempty) (h_diag : S ×ˢ T ⊆ idRel) : ∃ x, T = {x} :=
   by
   rw [Set.prod_subset_iff] at h_diag
@@ -41,11 +40,11 @@ theorem prod_subset_diag_singleton_right {X : Type _} {S T : Set X} (hS : S.None
   exact prod_subset_diag_singleton_left hT hS (prod_subset_iff.mpr h_diag)
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-theorem prod_subset_diag_singleton_eq {X : Type _} {S T : Set X} (hS : S.Nonempty) (hT : T.Nonempty)
+theorem prod_subset_idRel_Eq_singleton {X : Type _} {S T : Set X} (hS : S.Nonempty) (hT : T.Nonempty)
     (h_diag : S ×ˢ T ⊆ idRel) : ∃ x, S = {x} ∧ T = {x} :=
   by
   obtain ⟨⟨x, hx⟩, ⟨y, hy⟩⟩ := prod_subset_diag_singleton_left hS hT h_diag,
-    prod_subset_diag_singleton_right hS hT h_diag
+    prod_subset_idRel_Eq_singleton_right hS hT h_diag
   refine' ⟨x, ⟨hx, _⟩⟩
   rw [hy, Set.singleton_eq_singleton_iff]
   exact
@@ -59,6 +58,7 @@ section CauchyDiscrete
 open Filter Set
 
 open scoped Filter Topology
+
 
 theorem cauchy_discrete_le_principal {X : Type _} {uX : UniformSpace X}
     (hX : uniformity X = 𝓟 idRel) {α : Filter X} (hα : Cauchy α) : ∃ x : X, α ≤ 𝓟 {x} := by

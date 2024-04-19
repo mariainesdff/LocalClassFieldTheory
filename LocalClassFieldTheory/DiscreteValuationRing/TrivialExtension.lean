@@ -47,7 +47,7 @@ theorem trivial_expExtensionOnUnits_eq_one : expExtensionOnUnits K K = 1 := by
     obtain ⟨u, hu⟩ := hz
     use u
     rw [trivial_powExtensionOnUnits_eq_valuation, ← WithZero.coe_inj, ← hu, coe_unzero]
-  rw [← Int.coe_nat_inj', Nat.cast_one]
+  rw [← Int.natCast_inj, Nat.cast_one]
   apply Int.eq_one_of_dvd_one (Nat.cast_nonneg _)
   rw [← Int.mem_zmultiples_iff, h]
   exact AddSubgroup.mem_top _

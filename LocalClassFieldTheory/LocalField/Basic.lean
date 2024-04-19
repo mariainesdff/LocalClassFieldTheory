@@ -30,21 +30,21 @@ open scoped DiscreteValuation
 
 /-- The class `local_field`, extending `valued K ℤₘ₀` by requiring that `K` is complete, that the
 valuation is discrete, and that the residue field of the unit ball is finite. -/
-class LocalField (K : Type _) [Field K] [hv : Valued K ℤₘ₀] : Prop where
+class LocalField (K : Type*) [Field K] extends Valued K ℤₘ₀ where
   complete : CompleteSpace K
-  isDiscrete : IsDiscrete hv.v
-  finiteResidueField : Finite (LocalRing.ResidueField hv.v.valuationSubring)
-  -- porting note: we used to have `Fintype` here.
+  isDiscrete : IsDiscrete (@Valued.v K _ ℤₘ₀ _ _)
+  finiteResidueField : Finite (LocalRing.ResidueField (@Valued.v K _ ℤₘ₀ _ _).valuationSubring)
 
+attribute [instance] LocalField.complete LocalField.isDiscrete LocalField.finiteResidueField
 -- NOTE: instances added on 15/4/24
-instance (K : Type _) [Field K] [hv : Valued K ℤₘ₀] [LocalField K] :
-  Valuation.IsDiscrete hv.v := LocalField.isDiscrete
+-- instance (K : Type*) [Field K] [LocalField K] : Valuation.IsDiscrete (@Valued.v K _ ℤₘ₀ _ _) :=
+--   LocalField.isDiscrete
 
-instance (K : Type _) [Field K] [Valued K ℤₘ₀] [LocalField K] :
-  CompleteSpace K := LocalField.complete
+-- instance (K : Type*) [Field K] [LocalField K] : CompleteSpace K := LocalField.complete
 
-instance (K : Type _) [Field K] [hv : Valued K ℤₘ₀] [LocalField K] :
-  Finite (LocalRing.ResidueField hv.v.valuationSubring) := LocalField.finiteResidueField
+-- instance (K : Type*) [Field K] [LocalField K] :
+--     Finite (LocalRing.ResidueField (@Valued.v K _ ℤₘ₀ _ _).valuationSubring) :=
+--   LocalField.finiteResidueField
 
 namespace EqCharLocalField
 

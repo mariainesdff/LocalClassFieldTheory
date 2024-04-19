@@ -1,3 +1,5 @@
+-- This file is PR'd in PR #12247
+
 import Mathlib.RingTheory.Valuation.Integers
 
 #align_import for_mathlib.ring_theory.valuation.integers
@@ -17,7 +19,7 @@ variable {R : Type _} {Γ₀ : Type _} [CommRing R] [LinearOrderedCommGroupWithZ
 
 variable {v : Valuation R Γ₀} {O : Type _} [CommRing O] [Algebra O R]
 
-theorem valuation_one_of_isUnit {x : O} (hx : IsUnit x) (hv : ∀ x, v (algebraMap O R x) ≤ 1) :
+theorem one_of_isUnit' {x : O} (hx : IsUnit x) (hv : ∀ x, v (algebraMap O R x) ≤ 1) :
     v (algebraMap O R x) = 1 :=
   let ⟨u, hu⟩ := hx
   le_antisymm (hv _) <|

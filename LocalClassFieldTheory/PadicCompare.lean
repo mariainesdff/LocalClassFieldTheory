@@ -78,8 +78,8 @@ open Valuation Int
 
 open scoped DiscreteValuation
 
-attribute [-instance] Rat.instMetricSpaceRat Rat.normedField Rat.denselyNormedField Rat.divisionRing
-  Rat.normedAddCommGroup
+attribute [-instance] Rat.instMetricSpaceRat Rat.normedField Rat.denselyNormedField
+  Rat.instDivisionRing Rat.normedAddCommGroup
 
 instance : T0Space ℚ_[p] := inferInstance
 
@@ -121,8 +121,8 @@ open NNReal Polynomial Int NormalizationMonoid Multiplicative Padic Valuation
 
 open scoped Classical NNReal DiscreteValuation
 
-attribute [-instance] Rat.instMetricSpaceRat Rat.normedField Rat.denselyNormedField Rat.divisionRing
-  Rat.normedAddCommGroup
+attribute [-instance] Rat.instMetricSpaceRat Rat.normedField Rat.denselyNormedField
+  Rat.instDivisionRing Rat.normedAddCommGroup
 
 /-- This is the valued structure on `ℚ` induced from the `p`-adic valuation. -/
 def padicValued : Valued ℚ ℤₘ₀ :=
@@ -214,7 +214,7 @@ theorem uniformInducing_cast : letI := ((@padicValued p _))
   · rw [(Valued.hasBasis_uniformity ℚ ℤₘ₀).mem_iff]
     rintro ⟨T, ⟨ε, ⟨hε, H⟩⟩, h⟩
     obtain ⟨M, hM⟩ := Real.exists_strictMono_lt (withZeroMultIntToNNReal_strictMono hp_one) hε
-    refine' ⟨M, by triv, fun q hq => _⟩
+    refine' ⟨M, by trivial, fun q hq => _⟩
     simp only [Set.mem_setOf_eq, dist] at H hq
     have : (↑q.fst, ↑q.snd) ∈ T := by
       apply H

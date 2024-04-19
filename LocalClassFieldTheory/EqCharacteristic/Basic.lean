@@ -1,4 +1,5 @@
 import Mathlib.Algebra.CharP.Subring
+import Mathlib.FieldTheory.Finite.GaloisField
 import LocalClassFieldTheory.DiscreteValuationRing.Complete
 import LocalClassFieldTheory.LaurentSeriesEquivAdicCompletion
 import LocalClassFieldTheory.ForMathlib.RingTheory.Valuation.AlgebraInstances
@@ -54,10 +55,10 @@ def FpXCompletion :=
 def FpXIntCompletion :=
   (idealX 𝔽_[p]).adicCompletionIntegers (RatFunc 𝔽_[p])
 
-open PowerSeries
+open PowerSeries GaloisField
 
 instance : Fintype (LocalRing.ResidueField (PowerSeries 𝔽_[p])) :=
-  Fintype.ofEquiv _ (residueFieldOfPowerSeries 𝔽_[p]).toEquiv.symm
+  Fintype.ofEquiv _ (residueFieldOfPowerSeries).toEquiv.symm
 
 instance RatFunc.charP : CharP (RatFunc 𝔽_[p]) p :=
   charP_of_injective_algebraMap (algebraMap 𝔽_[p] (RatFunc 𝔽_[p])).injective p
@@ -124,7 +125,7 @@ noncomputable def integers_equiv_powerSeries : PowerSeries 𝔽_[p] ≃+* FpXInt
 
 theorem residueField_powerSeries_card :
     Fintype.card (LocalRing.ResidueField (PowerSeries 𝔽_[p])) = p := by
-  convert Fintype.ofEquiv_card (residueFieldOfPowerSeries 𝔽_[p]).toEquiv.symm
+  convert Fintype.ofEquiv_card (residueFieldOfPowerSeries).toEquiv.symm
   rw [GaloisField.card p 1 one_ne_zero, pow_one]
 
 variable {p}
@@ -220,7 +221,7 @@ theorem norm_X : ‖X p‖ = 1 / (p : ℝ) := by
   simp only [withZeroMultIntToNNReal, MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk,
     withZeroMultIntToNNRealDef, WithZero.coe_ne_zero, ↓reduceDite, WithZero.unzero_coe, toAdd_ofAdd,
     zpow_one]
-  rw [valuation_base_eq_char, NNReal.coe_nat_cast]
+  rw [valuation_base_eq_char, NNReal.coe_natCast]
 
 variable {p}
 

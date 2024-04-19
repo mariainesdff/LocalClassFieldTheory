@@ -102,7 +102,7 @@ theorem valuation_p (p : ℕ) [Fact p.Prime] : Valued.v (p : QPAlg p) = 1 / (p :
   rw [← map_natCast (algebraMap ℚ_[p] (QPAlg p))]
   ext
   rw [v_def_coe,  spectralNorm_extends, padicNormE.norm_p, one_div, NNReal.coe_inv,
-    NNReal.coe_nat_cast]
+    NNReal.coe_natCast]
 
 end QPAlg
 
