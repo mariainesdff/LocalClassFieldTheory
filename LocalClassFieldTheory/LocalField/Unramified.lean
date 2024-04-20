@@ -17,7 +17,8 @@ variable (K : Type*) [Field K] [LocalField K]
 
 local notation "v" => (@Valued.v K _ ℤₘ₀ _ _)
 
---local notation "K₀" => v.valuationSubring -- This gives an error here, but works in line 41 (?)
+local notation "K₀" => @Valued.v.valuationSubring -- This gives an error here, but works in line 41 (?)
+-- `FAE` One needs to open `Valued`, which I kind of did above.
 
 local notation "w" => (@Valued.v K _ ℤₘ₀ _ _)
 
