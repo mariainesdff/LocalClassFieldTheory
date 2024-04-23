@@ -9,6 +9,8 @@ import Mathlib.Algebra.Algebra.Equiv
 
 open BigOperators DiscreteValuation
 
+open Valued
+
 /- Note: I was trying to set up a ramification index notation for local fields, but I get errors. -/
 namespace LocalField
 
@@ -19,6 +21,8 @@ local notation "v" => (@Valued.v K _ ℤₘ₀ _ _)
 
 local notation "K₀" => @Valued.v.valuationSubring -- This gives an error here, but works in line 41 (?)
 -- `FAE` One needs to open `Valued`, which I kind of did above.
+
+--#check K₀ -- invalid use of field notation with `@` modifier
 
 local notation "w" => (@Valued.v K _ ℤₘ₀ _ _)
 
