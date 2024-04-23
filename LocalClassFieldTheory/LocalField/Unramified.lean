@@ -19,17 +19,15 @@ variable (K : Type*) [Field K] [LocalField K]
 
 local notation "v" => (@Valued.v K _ ℤₘ₀ _ _)
 
-local notation "K₀" => @Valued.v.valuationSubring -- This gives an error here, but works in line 41 (?)
--- `FAE` One needs to open `Valued`, which I kind of did above.
+local notation "K₀" => Valuation.valuationSubring v
 
---#check K₀ -- invalid use of field notation with `@` modifier
+local notation "w" => (@Valued.v L _ ℤₘ₀ _ _)
 
-local notation "w" => (@Valued.v K _ ℤₘ₀ _ _)
+local notation "L₀" => Valuation.valuationSubring w
 
---local notation "L₀" => w.valuationSubring -- Same error
 
 /- local notation "e("L","K")" => Ideal.ramificationIdx (algebraMap K₀ L₀)
-  (LocalRing.maximalIdeal K₀) (LocalRing.maximalIdeal L₀) -/
+  (LocalRing.maximalIdeal K₀) (LocalRing.maximalIdeal L₀)  -/
 
 end LocalField
 
@@ -41,19 +39,14 @@ open Valued
 
 variable (K : Type*) [Field K] [LocalField K] {n : ℕ} (hn : 0 < n)
 
-local instance hv : Valued K ℤₘ₀ := inferInstance
+/- local instance hv : Valued K ℤₘ₀ := inferInstance
 
 set_option quotPrecheck false
-local notation "K₀" => (hv K).v.valuationSubring
+local notation "K₀" => (hv K).v.valuationSubring -/
 
-/-
 local notation "v" => (@Valued.v K _ ℤₘ₀ _ _)
 
-local notation "K₀" => v.valuationSubring
-
-#check K₀ -- Valuation.valuationSubring v : ValuationSubring ?m.5083 (doesn't remember K)
-
--/
+local notation "K₀" => Valuation.valuationSubring v
 
 /-- The unique unramified extension of `K` of degree `n`. -/
 def Kn (K : Type*) [Field K] [LocalField K] {n : ℕ} (hn : 0 < n) : Type* := sorry
@@ -72,7 +65,7 @@ lemma Kn_unramified : e((Kn_valued K hn).v.valuationSubring, K₀) = 1 := sorry
 
 local instance (L : Type*) [Field L] [Algebra K L] [FiniteDimensional K L] :
     Algebra K₀ (extendedValuation K L).valuationSubring := by
-  convert ValuationSubring.algebra (hv K).v L
+  convert ValuationSubring.algebra v L
   sorry
   sorry
 
