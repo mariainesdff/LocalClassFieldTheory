@@ -37,6 +37,7 @@ theorem mult_withTop_R_zero :
     Multiplicative.ofAdd (OrderDual.toDual ⊤) = (0 : Multiplicative (WithTop ℝ)ᵒᵈ) :=
   rfl
 
+/-
 section IsRankOne
 
 /-- A valuation has rank one if it is nontrivial and its image is contained in `ℝ≥0`. -/
@@ -72,6 +73,8 @@ theorem isRankOneUnit_ne_one (v : Valuation R Γ₀) [hv : IsRankOne v] : isRank
   exact (Classical.choose_spec hv.nontrivial).2
 
 end IsRankOne
+
+-/
 
 -- In this section, we develop some API for `with_zero`, to be PR'd to mathlib.
 namespace WithZero

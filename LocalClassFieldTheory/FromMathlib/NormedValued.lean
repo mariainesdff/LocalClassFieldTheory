@@ -3,8 +3,8 @@ Copyright (c) 2023 María Inés de Frutos-Fernández. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: María Inés de Frutos-Fernández
 -/
-import LocalClassFieldTheory.FromMathlib.RankOneValuation
 import LocalClassFieldTheory.FromMathlib.RingSeminorm
+import Mathlib.RingTheory.Valuation.RankOne
 import Mathlib.Topology.Algebra.Valuation
 
 #align_import from_mathlib.normed_valued
@@ -30,6 +30,8 @@ norm, nonarchimedean, nontrivial, valuation, rank one
 
 
 noncomputable section
+
+open Filter Set Valuation
 
 open scoped NNReal
 
@@ -65,7 +67,7 @@ def NormedField.toValued (h : IsNonarchimedean (norm : K → ℝ)) : Valued K �
         exact hε (mem_ball_zero_iff.mp hx) }
 
 variable {L : Type _} [hL : Field L] {Γ₀ : Type _} [LinearOrderedCommGroupWithZero Γ₀]
-  [val : Valued L Γ₀] [hv : IsRankOne val.v]
+  [val : Valued L Γ₀] [hv : RankOne val.v]
 
 /-- If `Γ₀ˣ` is nontrivial and `f : Γ₀ →*₀ ℝ≥0` is a strict monomorphism, then for any positive
   `r : ℝ≥0`, there exists `d : Γ₀ˣ` with `f d < r`. -/
@@ -76,16 +78,16 @@ theorem NNReal.exists_strictMono_lt [h : Nontrivial Γ₀ˣ] {f : Γ₀ →*₀ 
   have hfu : f u < 1 := by
     rw [hu]
     split_ifs with hu1
-    · rw [← map_one f]; exact hf hu1
+    · rw [← _root_.map_one f]; exact hf hu1
     · have hfg0 : f g ≠ 0 := by
         intro h0
         exact (Units.ne_zero g) ((map_eq_zero f).mp h0)
       have hg1' : 1 < g := lt_of_le_of_ne (not_lt.mp hu1) hg1.symm
-      rw [Units.val_inv_eq_inv_val, map_inv₀, NNReal.inv_lt_one_iff hfg0, ← map_one f]
+      rw [Units.val_inv_eq_inv_val, map_inv₀, NNReal.inv_lt_one_iff hfg0, ← _root_.map_one f]
       exact hf hg1'
   obtain ⟨n, hn⟩ := NNReal.exists_pow_lt_of_lt_one hr hfu
   use u ^ n
-  rw [Units.val_pow_eq_pow_val, map_pow]
+  rw [Units.val_pow_eq_pow_val, _root_.map_pow]
   exact hn
 
 /-- If `Γ₀ˣ` is nontrivial and `f : Γ₀ →*₀ ℝ≥0` is a strict monomorphism, then for any positive
@@ -109,7 +111,7 @@ theorem normDef_add_le (x y : L) : normDef (x + y) ≤ max (normDef x) (normDef 
   exact le_max_iff.mp (Valuation.map_add_le_max' val.v _ _)
 
 theorem normDef_eq_zero {x : L} (hx : normDef x = 0) : x = 0 := by
-  simpa [normDef, NNReal.coe_eq_zero, isRankOne_hom_eq_zero_iff, Valuation.zero_iff] using hx
+  simpa [normDef, NNReal.coe_eq_zero, RankOne.hom_eq_zero_iff, zero_iff] using hx
 
 variable (L) (Γ₀)
 
@@ -128,44 +130,41 @@ def ValuedField.toNormedField : NormedField L :=
     edist_dist := fun x y => by simp only [ENNReal.ofReal_eq_coe_nnreal (normDef_nonneg _)]
     eq_of_dist_eq_zero := fun hxy => eq_of_sub_eq_zero (normDef_eq_zero hxy)
     dist_eq := fun x y => rfl
-    norm_mul' := fun x y => by simp only [normDef, ← NNReal.coe_mul, map_mul]
+    norm_mul' := fun x y => by simp only [normDef, ← NNReal.coe_mul, _root_.map_mul]
     toUniformSpace := Valued.toUniformSpace
     uniformity_dist := by
-      letI : Nonempty { ε : ℝ // ε > 0 } := Set.nonempty_Ioi_subtype
+      letI : Nonempty { ε : ℝ // ε > 0 } := nonempty_Ioi_subtype
       ext U
-      rw [Filter.hasBasis_iff.mp (Valued.hasBasis_uniformity L Γ₀), iInf_subtype',
-        Filter.mem_iInf_of_directed]
-      · simp only [exists_true_left, Filter.mem_principal, Subtype.exists, gt_iff_lt,
+      rw [hasBasis_iff.mp (Valued.hasBasis_uniformity L Γ₀), iInf_subtype', mem_iInf_of_directed]
+      · simp only [exists_true_left, mem_principal, Subtype.exists, gt_iff_lt,
           Subtype.coe_mk, exists_prop, true_and_iff]
-        refine' ⟨fun h => _, fun h => _⟩
+        refine ⟨fun h => ?_, fun h => ?_⟩
         · obtain ⟨ε, hε⟩ := h
           set δ : ℝ≥0 := hv.hom ε with hδ
           have hδ_pos : 0 < δ := by
-            rw [hδ, ← map_zero hv.hom]
+            rw [hδ, ← _root_.map_zero hv.hom]
             exact hv.strictMono (Units.zero_lt ε)
           use δ, hδ_pos
           apply subset_trans _ hε
           intro x hx
-          simp only [Set.mem_setOf_eq, normDef, hδ, NNReal.val_eq_coe, NNReal.coe_lt_coe] at hx
-          rw [Set.mem_setOf, ← neg_sub, Valuation.map_neg]
-          exact hv.strictMono.lt_iff_lt.mp hx
-        · letI : Nontrivial Γ₀ˣ :=
-            (nontrivial_iff_exists_ne (1 : Γ₀ˣ)).mpr
-              ⟨isRankOneUnit val.v, isRankOneUnit_ne_one val.v⟩
+          simp only [mem_setOf_eq, normDef, hδ, NNReal.val_eq_coe, NNReal.coe_lt_coe] at hx
+          rw [mem_setOf, ← neg_sub, Valuation.map_neg]
+          exact (RankOne.strictMono Valued.v).lt_iff_lt.mp hx
+        · letI : Nontrivial Γ₀ˣ := (nontrivial_iff_exists_ne (1 : Γ₀ˣ)).mpr
+            ⟨RankOne.unit val.v, RankOne.unit_ne_one val.v⟩
           obtain ⟨r, hr_pos, hr⟩ := h
           obtain ⟨u, hu⟩ := Real.exists_strictMono_lt hv.strictMono hr_pos
           use u
           apply subset_trans _ hr
           intro x hx
-          simp only [normDef, Set.mem_setOf_eq]
+          simp only [normDef, mem_setOf_eq]
           apply lt_trans _ hu
           rw [NNReal.coe_lt_coe, ← neg_sub, Valuation.map_neg]
-          exact hv.strictMono.lt_iff_lt.mpr hx
+          exact (RankOne.strictMono Valued.v).lt_iff_lt.mpr hx
       · simp only [gt_iff_lt, ge_iff_le, Directed]
         intro x y
         use min x y
-        simp only [Filter.le_principal_iff, Filter.mem_principal, Set.setOf_subset_setOf,
-          Prod.forall]
+        simp only [le_principal_iff, mem_principal, setOf_subset_setOf, Prod.forall]
         exact ⟨fun a b hab => lt_of_lt_of_le hab (min_le_left _ _), fun a b hab =>
             lt_of_lt_of_le hab (min_le_right _ _)⟩ }
 
