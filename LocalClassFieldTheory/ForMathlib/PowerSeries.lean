@@ -314,7 +314,8 @@ section Polynomial
 
 variable {K : Type _} [Field K]
 
-namespace RatFunc
+-- Done in #12245
+/- namespace RatFunc
 
 open PowerSeries Polynomial
 
@@ -329,7 +330,7 @@ theorem coe_coe (P : Polynomial K) : (P : LaurentSeries K) = (P : RatFunc K) := 
 theorem coe_ne_zero {f : Polynomial K} : f ≠ 0 → (↑f : PowerSeries K) ≠ 0 := by
   simp only [Ne.def, coe_eq_zero_iff, imp_self]
 
-end RatFunc
+end RatFunc -/
 
 end Polynomial
 

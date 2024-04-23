@@ -83,8 +83,8 @@ open Valuation Int
 
 open scoped DiscreteValuation
 
-attribute [-instance] Rat.instMetricSpaceRat Rat.normedField Rat.denselyNormedField
-  Rat.instDivisionRing Rat.normedAddCommGroup
+attribute [-instance] Rat.instMetricSpaceRat Rat.instNormedField Rat.instDenselyNormedField
+  Rat.instDivisionRing Rat.instNormedAddCommGroup
 
 instance : T0Space ℚ_[p] := inferInstance
 
@@ -126,8 +126,9 @@ open NNReal Polynomial Int NormalizationMonoid Multiplicative Padic Valuation
 
 open scoped Classical NNReal DiscreteValuation
 
-attribute [-instance] Rat.instMetricSpaceRat Rat.normedField Rat.denselyNormedField
-  Rat.instDivisionRing Rat.normedAddCommGroup
+
+attribute [-instance] Rat.instMetricSpaceRat Rat.instNormedField  Rat.instDenselyNormedField
+  Rat.instDivisionRing Rat.instNormedAddCommGroup
 
 /-- This is the valued structure on `ℚ` induced from the `p`-adic valuation. -/
 def padicValued : Valued ℚ ℤₘ₀ :=

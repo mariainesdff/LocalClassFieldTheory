@@ -9,6 +9,7 @@ import LocalClassFieldTheory.DiscreteValuationRing.Complete
 import LocalClassFieldTheory.LaurentSeriesEquivAdicCompletion
 import LocalClassFieldTheory.ForMathlib.RingTheory.Valuation.AlgebraInstances
 import Mathlib.RingTheory.DedekindDomain.AdicValuation
+import Mathlib.RingTheory.Valuation.RankOne
 
 #align_import eq_characteristic.basic
 
@@ -43,7 +44,7 @@ noncomputable section
 open scoped DiscreteValuation
 
 open Polynomial Multiplicative RatFunc IsDedekindDomain IsDedekindDomain.HeightOneSpectrum
-  RankOneValuation ValuationSubring
+  RankOneValuation Valuation ValuationSubring
 
 variable (p : ℕ) [Fact (Nat.Prime p)]
 
@@ -104,8 +105,8 @@ theorem X_mem_FpXIntCompletion : algebraMap (RatFunc 𝔽_[p]) _ X ∈ FpXIntCom
 instance : Inhabited (FpXCompletion p) :=
   ⟨(0 : FpXCompletion p)⟩
 
-instance : IsRankOne (@FpXCompletion.WithZero.valued p _).v :=
-  DiscreteValuation.isRankOne Valued.v
+instance : RankOne (@FpXCompletion.WithZero.valued p _).v :=
+  DiscreteValuation.rankOne Valued.v
 
 instance : NormedField (FpXCompletion p) :=
   ValuedField.toNormedField (FpXCompletion p) ℤₘ₀
@@ -219,8 +220,8 @@ theorem norm_X : ‖X p‖ = 1 / (p : ℝ) := by
       FpXCompletion.X_eq_coe]
     erw [Valued.extension_extends]
     rfl
-  have hX : ‖X p‖ = IsRankOne.hom _ (Valued.v (X p)) := rfl
-  rw [hX, hv, DiscreteValuation.isRankOne_hom_def]
+  have hX : ‖X p‖ = RankOne.hom _ (Valued.v (X p)) := rfl
+  rw [hX, hv, DiscreteValuation.rankOne_hom_def]
   simp only [Int.reduceNeg, ofAdd_neg, WithZero.coe_inv, map_inv₀, NNReal.coe_inv, one_div, inv_inj]
   --simp only [ofAdd_neg, WithZero.coe_inv, map_inv₀, Nonneg.coe_inv, one_div, inv_inj]
   simp only [withZeroMultIntToNNReal, MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk,
@@ -282,7 +283,7 @@ theorem dvd_of_norm_lt_one {F : FpXIntCompletion p} :
     use C
   apply_fun algebraMap (FpXIntCompletion p) (FpXCompletion p) using Subtype.val_injective
   apply_fun ratfuncAdicComplRingEquiv 𝔽_[p]
-  erw [algebraMap_eq_coe, algebraMap_eq_coe, ← h_Ff, ← h_fg, ← h_Gg, map_mul]
+  erw [algebraMap_eq_coe, algebraMap_eq_coe, ← h_Ff, ← h_fg, ← h_Gg, _root_.map_mul]
   rw [PowerSeries.coe_mul, RingEquiv.apply_symm_apply, ← coe_X_compare 𝔽_[p]]
   rfl
 
@@ -302,7 +303,7 @@ theorem norm_lt_one_of_dvd {F : FpXIntCompletion p} :
   rw [PowerSeries.coeff_zero_eq_constantCoeff, ← PowerSeries.X_dvd_iff]
   replace h_fy : f = y * FpXCompletion.X p := by
     apply_fun algebraMap (FpXIntCompletion p) (FpXCompletion p) at h
-    rw [map_mul, algebraMap_eq_coe, algebraMap_eq_coe, algebraMap_eq_coe, mul_comm,
+    rw [_root_.map_mul, algebraMap_eq_coe, algebraMap_eq_coe, algebraMap_eq_coe, mul_comm,
       ← Subring.coe_mul] at h
     exact h
   obtain ⟨Z, hZ⟩ := exists_powerSeries_of_memIntegers 𝔽_[p] y_mem
@@ -310,7 +311,7 @@ theorem norm_lt_one_of_dvd {F : FpXIntCompletion p} :
   apply_fun HahnSeries.ofPowerSeries ℤ 𝔽_[p] using HahnSeries.ofPowerSeries_injective
   apply_fun LaurentSeriesRingEquiv 𝔽_[p]
   rw [← LaurentSeries.coe_powerSeries]
-  erw [PowerSeries.coe_mul, map_mul, hZ, h_fG, ← coe_X_compare 𝔽_[p], h_fy,
+  erw [PowerSeries.coe_mul, _root_.map_mul, hZ, h_fG, ← coe_X_compare 𝔽_[p], h_fy,
     RingEquiv.symm_apply_apply]
   rfl
 

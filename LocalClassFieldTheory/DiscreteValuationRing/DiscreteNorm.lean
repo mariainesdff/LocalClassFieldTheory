@@ -76,7 +76,7 @@ def discretelyNormedField : NormedField K :=
 /-- The nontrivially normed field structure on `K` induced by its discrete valuation. -/
 @[reducible]
 def nontriviallyDiscretelyNormedField : NontriviallyNormedField K :=
-  { @RankOneValuation.ValuedField.toNormedField K _ ℤₘ₀ _ _ (DiscreteValuation.isRankOne _) with
+  { @RankOneValuation.ValuedField.toNormedField K _ ℤₘ₀ _ _ (DiscreteValuation.rankOne _) with
     non_trivial := by
       obtain ⟨x, hx⟩ := exists_Uniformizer_ofDiscrete hv.v
       use x.1⁻¹

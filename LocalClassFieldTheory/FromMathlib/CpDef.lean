@@ -5,6 +5,7 @@ Authors: María Inés de Frutos-Fernández
 -/
 import Mathlib.NumberTheory.Padics.PadicNumbers
 import Mathlib.RingTheory.Valuation.Integers
+import Mathlib.RingTheory.Valuation.RankOne
 import Mathlib.Topology.MetricSpace.CauSeqFilter
 import Mathlib.Topology.Algebra.ValuedField
 import LocalClassFieldTheory.FromMathlib.SpectralNormUnique
@@ -44,7 +45,7 @@ p-adic, p adic, padic, norm, valuation, cauchy, completion, p-adic completion
 
 noncomputable section
 
-open RankOneValuation
+open RankOneValuation Valuation
 
 open scoped NNReal
 
@@ -152,11 +153,10 @@ theorem valuation_p (p : ℕ) [Fact p.Prime] : Valued.v (p : ℂ_[p]) = 1 / (p :
   erw [← map_natCast (algebraMap (QPAlg p) ℂ_[p]), ← coe_eq, valuation_extends, QPAlg.valuation_p]
 
 /-- The valuation on `ℂ_[p]` has rank one. -/
-instance : IsRankOne (PadicComplex.valuedField p).v
-    where
-  hom := MonoidWithZeroHom.id ℝ≥0
-  strictMono := strictMono_id
-  nontrivial := by
+instance : RankOne (PadicComplex.valuedField p).v where
+  hom         := MonoidWithZeroHom.id ℝ≥0
+  strictMono' := strictMono_id
+  nontrivial' := by
     use p
     haveI hp : Nat.Prime p := hp.1
     simp only [valuation_p, one_div, Ne.def, inv_eq_zero, Nat.cast_eq_zero, inv_eq_one,
@@ -171,8 +171,7 @@ instance C_p.NormedField : NormedField ℂ_[p] :=
 instance : NormedField (UniformSpace.Completion (QPAlg p)) := C_p.NormedField p
 
 /-- The norm on `ℂ_[p]` agrees with the valuation. -/
-theorem normDef : (norm : ℂ_[p] → ℝ) = RankOneValuation.normDef :=
-  rfl
+theorem normDef : (norm : ℂ_[p] → ℝ) = RankOneValuation.normDef := rfl
 
 /-- The norm on `ℂ_[p]` extends the norm on `Q_p_alg p`. -/
 theorem norm_extends (x : QPAlg p) : ‖(x : ℂ_[p])‖ = ‖x‖ := by

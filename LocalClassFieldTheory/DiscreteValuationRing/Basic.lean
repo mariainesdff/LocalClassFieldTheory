@@ -7,6 +7,7 @@ import Mathlib.RingTheory.DedekindDomain.AdicValuation
 import Mathlib.RingTheory.DedekindDomain.PID
 import Mathlib.RingTheory.DiscreteValuationRing.Basic
 import Mathlib.RingTheory.Ideal.Basic
+import Mathlib.RingTheory.Valuation.RankOne
 import Mathlib.RingTheory.Valuation.ValuationSubring
 import Mathlib.Topology.Algebra.ValuedField
 import Mathlib.Topology.Algebra.WithZeroTopology
@@ -389,17 +390,17 @@ theorem val_le_iff_dvd (L : Type w₁) [Field L] {w : Valuation L ℤₘ₀} [Is
 
 section RankOne
 
-open IsRankOne
+open Valuation
 
-noncomputable instance isRankOne : IsRankOne v where
+noncomputable instance rankOne : RankOne v where
   hom := withZeroMultIntToNNReal (base_ne_zero K v)
-  strictMono := withZeroMultIntToNNReal_strictMono (one_lt_base K v)
-  nontrivial := by
+  strictMono' := withZeroMultIntToNNReal_strictMono (one_lt_base K v)
+  nontrivial' := by
     obtain ⟨π, hπ⟩ := exists_Uniformizer_ofDiscrete v
     exact
       ⟨π, ne_of_gt (Uniformizer_valuation_pos v hπ), ne_of_lt (Uniformizer_valuation_lt_one v hπ)⟩
 
-theorem isRankOne_hom_def : IsRankOne.hom v = withZeroMultIntToNNReal (base_ne_zero K v) := rfl
+theorem rankOne_hom_def : RankOne.hom v = withZeroMultIntToNNReal (base_ne_zero K v) := rfl
 
 end RankOne
 
