@@ -13,7 +13,6 @@ import Mathlib.Topology.Algebra.ValuedField
 import Mathlib.Topology.Algebra.WithZeroTopology
 import LocalClassFieldTheory.ForMathlib.RankOneValuation
 import LocalClassFieldTheory.ForMathlib.WithZero
-import LocalClassFieldTheory.ForMathlib.RingTheory.Valuation.Integers
 
 #align_import discrete_valuation_ring.basic
 
@@ -469,10 +468,10 @@ theorem exists_of_le_one {x : FractionRing A} (H : Valued.v x ≤ (1 : ℤₘ₀
     obtain ⟨m, w, rfl⟩ := eq_unit_mul_pow_irreducible (nonZeroDivisors.ne_zero hb) hπ
     replace hb := (mul_mem_nonZeroDivisors.mp hb).2
     rw [mul_comm (w : A) _, _root_.map_mul _ (u : A) _, _root_.map_mul _ _ (w : A),
-      div_eq_mul_inv, mul_assoc, Valuation.map_mul, Valuation.one_of_isUnit' u.isUnit,
+      div_eq_mul_inv, mul_assoc, Valuation.map_mul, Integers.one_of_isUnit' u.isUnit,
       one_mul, mul_inv, ← mul_assoc, Valuation.map_mul, _root_.map_mul] at H
     simp only [map_inv₀] at H
-    rw [Valuation.one_of_isUnit' w.isUnit, inv_one, mul_one, ← div_eq_mul_inv, ← map_div₀,
+    rw [Integers.one_of_isUnit' w.isUnit, inv_one, mul_one, ← div_eq_mul_inv, ← map_div₀,
       ← @IsFractionRing.mk'_mk_eq_div _ _ _ (FractionRing A) _ _ _ (π ^ n) _ hb] at H
     erw [@valuation_of_mk' A _ _ (FractionRing A) _ _ _ (maximalIdeal A) (π ^ n) ⟨π ^ m, hb⟩,
       _root_.map_pow, _root_.map_pow] at H
