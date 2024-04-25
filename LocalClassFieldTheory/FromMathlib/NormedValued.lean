@@ -7,6 +7,8 @@ import LocalClassFieldTheory.FromMathlib.RingSeminorm
 import Mathlib.RingTheory.Valuation.RankOne
 import Mathlib.Topology.Algebra.Valuation
 
+import Mathlib
+
 #align_import from_mathlib.normed_valued
 
 /-!
@@ -28,6 +30,7 @@ Nontrivial nonarchimedean norms correspond to rank one valuations.
 norm, nonarchimedean, nontrivial, valuation, rank one
 -/
 
+-- In PR #12432
 
 noncomputable section
 
@@ -97,6 +100,8 @@ theorem Real.exists_strictMono_lt [h : Nontrivial Γ₀ˣ] {f : Γ₀ →*₀ �
   set s : NNReal := ⟨r, le_of_lt hr⟩
   have hs : 0 < s := hr
   exact NNReal.exists_strictMono_lt hf hs
+
+#find_home Real.exists_strictMono_lt
 
 namespace RankOneValuation
 

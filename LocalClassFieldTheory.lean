@@ -36,12 +36,12 @@ import LocalClassFieldTheory.ForMathlib.WithZero
 -- FromMathlib folder *complete*
 import LocalClassFieldTheory.FromMathlib.AlgNormOfGalois
 import LocalClassFieldTheory.FromMathlib.CpDef
-import LocalClassFieldTheory.FromMathlib.Filter
+import LocalClassFieldTheory.FromMathlib.Filter -- In PR #12430
 import LocalClassFieldTheory.FromMathlib.Limsup
 import LocalClassFieldTheory.FromMathlib.Minpoly
 import LocalClassFieldTheory.FromMathlib.NormalClosure
 import LocalClassFieldTheory.FromMathlib.NormedSpace
-import LocalClassFieldTheory.FromMathlib.NormedValued
+import LocalClassFieldTheory.FromMathlib.NormedValued -- In PR #12432
 import LocalClassFieldTheory.FromMathlib.PowMultFaithful
 -- import LocalClassFieldTheory.FromMathlib.RankOneValuation -- PRs #12156 and #12159
 import LocalClassFieldTheory.FromMathlib.RingSeminorm

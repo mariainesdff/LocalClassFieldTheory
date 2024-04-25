@@ -23,6 +23,8 @@ We prove some auxiliary results about limits of `ℝ`-valued and `ℝ≥0`-value
 glb, monotone, antitone, tendsto
 -/
 
+-- In PR #12430
+
 
 open scoped Filter Topology
 
@@ -36,7 +38,7 @@ theorem Real.exists_isGLB {S : Set ℝ} (hne : S.Nonempty) (hbdd : BddBelow S) :
   exact Classical.choose_spec (Real.exists_isLUB T hT_ne hT_bdd)
 
 /-- An monotone, bounded above sequence `f : ℕ → ℝ` has a finite limit. -/
-theorem Filter.tendsto_of_is_bounded_monotone {f : ℕ → ℝ} (h_bdd : BddAbove (Set.range f))
+theorem Real.tendsto_of_is_bounded_monotone {f : ℕ → ℝ} (h_bdd : BddAbove (Set.range f))
     (h_mon : Monotone f) : ∃ r : ℝ, Filter.Tendsto f Filter.atTop (𝓝 r) := by
   obtain ⟨B, hB⟩ := Real.exists_isLUB (Set.range f) (Set.range_nonempty f) h_bdd
   exact ⟨B, tendsto_atTop_isLUB h_mon hB⟩
@@ -48,7 +50,7 @@ theorem Real.tendsto_of_is_bounded_antitone {f : ℕ → ℝ} (h_bdd : BddBelow 
   exact ⟨B, tendsto_atTop_isGLB h_ant hB⟩
 
 /-- An antitone sequence `f : ℕ → ℝ≥0` has a finite limit. -/
-theorem NNReal.tendsto_of_is_bounded_antitone {f : ℕ → NNReal} (h_ant : Antitone f) :
+theorem NNReal.tendsto_of_antitone {f : ℕ → NNReal} (h_ant : Antitone f) :
     ∃ r : NNReal, Filter.Tendsto f Filter.atTop (𝓝 r) := by
   have h_bdd_0 : (0 : ℝ) ∈ lowerBounds (Set.range fun n : ℕ => (f n : ℝ)) :=
     by
