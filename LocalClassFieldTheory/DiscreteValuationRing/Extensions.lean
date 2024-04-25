@@ -653,7 +653,7 @@ local notation "L₀" => (extendedValuation K L).valuationSubring
 
 /-- The valuation subring of `L` with respect to `extendedValuation K L` is an algebra over the
   valuation subring of `K`. -/
-def ValuationSubring.algebra : Algebra K₀ L₀ :=
+instance ValuationSubring.algebra : Algebra K₀ L₀ :=
   haveI h : Algebra hv.v.valuationSubring (extendedValuation K L).valuationSubring.toSubring := by
     rw [← integralClosure_eq_integer]
     exact (integralClosure (↥Valued.v.valuationSubring) L).algebra

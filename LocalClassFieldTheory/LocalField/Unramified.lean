@@ -3,13 +3,14 @@ Copyright (c) 2024 María Inés de Frutos-Fernández, Filippo A. E. Nuccio. All 
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: María Inés de Frutos-Fernández, Filippo A. E. Nuccio
 -/
+import LocalClassFieldTheory.DiscreteValuationRing.Extensions
 import LocalClassFieldTheory.DiscreteValuationRing.Ramification
 import LocalClassFieldTheory.LocalField.Basic
 import Mathlib.Algebra.Algebra.Equiv
 
 open BigOperators DiscreteValuation
 
-open Valued
+open Valued Valuation Extension
 
 /- Note: I was trying to set up a ramification index notation for local fields, but I get errors. -/
 namespace LocalField
@@ -25,9 +26,27 @@ local notation "w" => (@Valued.v L _ ℤₘ₀ _ _)
 
 local notation "L₀" => Valuation.valuationSubring w
 
+instance : Algebra K₀ L₀ := by sorry -- Why the proof below taken from `DVR.Extensions` broken?
+  -- convert @ValuationSubring.algebra K _ v L _ _
+  -- by
+--     haveI h : Algebra hv.v.valuationSubring (extendedValuation K L).valuationSubring.toSubring := by
+  -- rw [← integralClosure_eq_integer] at this
+--       exact (integralClosure (↥Valued.v.valuationSubring) L).algebra
+--   h--- cannot be found
 
-/- local notation "e("L","K")" => Ideal.ramificationIdx (algebraMap K₀ L₀)
-  (LocalRing.maximalIdeal K₀) (LocalRing.maximalIdeal L₀)  -/
+local notation "ee(" L "," K ")" => (⟨(1 : L), (1 : K)⟩ : L × K)
+
+#check ee(L, K) -- this shows that the syntax of the notation is OK
+
+example : Ideal.ramificationIdx (algebraMap K₀ L₀)
+  (LocalRing.maximalIdeal K₀) (LocalRing.maximalIdeal L₀) = Ideal.ramificationIdx (algebraMap K₀ L₀)
+  (LocalRing.maximalIdeal K₀) (LocalRing.maximalIdeal L₀) := by rfl
+  -- this shows that the ramificationIdx seems OK with the above instance
+
+-- notation "e(" L "," K ")" => Ideal.ramificationIdx (algebraMap K₀ L₀)
+--   (LocalRing.maximalIdeal K₀) (LocalRing.maximalIdeal L₀)
+
+-- #check
 
 end LocalField
 
