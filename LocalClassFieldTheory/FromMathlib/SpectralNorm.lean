@@ -906,9 +906,9 @@ theorem spectralNorm_ge_norm (h_alg : Algebra.IsAlgebraic K L) {f : AlgebraNorm 
   rw [minpoly.aeval]
 
 /-- The `K`-algebra automorphisms of `L` are isometries with respect to the spectral norm. -/
-theorem spectralNorm_aut_isom (h_alg : Algebra.IsAlgebraic K L) (σ : L ≃ₐ[K] L) (x : L) :
+theorem spectralNorm_aut_isom (σ : L ≃ₐ[K] L) (x : L) :
     spectralNorm K L x = spectralNorm K L (σ x) := by
-  simp only [spectralNorm, minpoly.eq_of_conj h_alg]
+  simp only [spectralNorm, minpoly.algEquiv_eq]
 
 -- We first assume that the extension is finite and normal
 section Finite
@@ -940,7 +940,7 @@ theorem spectralNorm_max_of_fd_normal (h_alg : Algebra.IsAlgebraic K L)
     intro y
     split_ifs with h
     · have hy : ∃ σ : L ≃ₐ[K] L, σ x = y :=
-        minpoly.conj_of_root' h_alg hn (Polynomial.aeval_root s h hs)
+        minpoly.exists_algEquiv_of_root' h_alg hn (Polynomial.aeval_root s h hs)
       obtain ⟨σ, hσ⟩ := hy
       rw [← hσ]
       convert le_ciSup (Finite.bddAbove_range _) σ using 1
