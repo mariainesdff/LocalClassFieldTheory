@@ -7,8 +7,6 @@ import LocalClassFieldTheory.FromMathlib.RingSeminorm
 import Mathlib.RingTheory.Valuation.RankOne
 import Mathlib.Topology.Algebra.Valuation
 
-import Mathlib
-
 #align_import from_mathlib.normed_valued
 
 /-!
