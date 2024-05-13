@@ -134,7 +134,7 @@ theorem spectral_norm_pow_degree_eq_prof_roots (hna : IsNonarchimedean (norm : K
   split_ifs with hr
   · have h : ∀ s : ℝ, s ∈ Multiset.map (spectralMulAlgNorm h_alg_E hna) ((mapAlg K E) (minpoly K x)).roots → r = s := by
       intro s hs
-      simp only [Multiset.mem_map, mem_roots', Ne.def, IsRoot.def] at hs
+      simp only [Multiset.mem_map, mem_roots', ne_eq, IsRoot.def] at hs
       obtain ⟨a, ha_root, has⟩ := hs
       rw [hr, ← has]
       change spectralNorm K E (algebraMap L E x) = spectralNorm K E a
@@ -146,7 +146,7 @@ theorem spectral_norm_pow_degree_eq_prof_roots (hna : IsNonarchimedean (norm : K
     exact h_deg
   · rw [Multiset.count_eq_zero_of_not_mem]
     intro hr_mem
-    simp only [Multiset.mem_map, mem_roots', Ne.def, IsRoot.def] at hr_mem
+    simp only [Multiset.mem_map, mem_roots', ne_eq, IsRoot.def] at hr_mem
     obtain ⟨e, he_root, her⟩ := hr_mem
     have heq : (spectralMulAlgNorm h_alg_E hna) e =
       (spectralMulAlgNorm h_alg_E hna) ((algebraMap L E) x) := by
@@ -166,7 +166,7 @@ theorem spectralNorm_eq_root_zero_coeff (h_alg : Algebra.IsAlgebraic K L)
   by
   by_cases hx0 : x = 0
   · simp only [hx0, minpoly.zero, coeff_X_zero, norm_zero, natDegree_X, algebraMap.coe_one,
-      div_self, Ne.def, one_ne_zero, not_false_iff, Real.rpow_one, spectralNorm_zero, Nat.cast_one,
+      div_self, ne_eq, one_ne_zero, not_false_iff, Real.rpow_one, spectralNorm_zero, Nat.cast_one,
       ne_eq, one_ne_zero, not_false_eq_true, div_self, Real.rpow_one]
   · set E := (mapAlg K L (minpoly K x)).SplittingField
     have h_alg_E : Algebra.IsAlgebraic K E := IsScalarTower.isAlgebraic x h_alg
@@ -185,7 +185,7 @@ theorem spectralNorm_eq_root_zero_coeff (h_alg : Algebra.IsAlgebraic K L)
       simp only [mapAlg_eq_map, Monic, leadingCoeff, coeff_map, natDegree_map]
       -- merging the `simp only` below with the previous one makes `lean` crash.
       simp only [coeff_natDegree, h_monic, map_one]
-    · rw [Ne.def, Nat.cast_eq_zero]
+    · rw [ne_eq, Nat.cast_eq_zero]
       exact ne_of_gt (minpoly.natDegree_pos (isAlgebraic_iff_isIntegral.mp (h_alg x)))
 
 theorem spectral_value_term_le (h_alg : Algebra.IsAlgebraic K L)
