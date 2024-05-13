@@ -36,7 +36,6 @@ import LocalClassFieldTheory.ForMathlib.WithZero
 -- FromMathlib folder *complete*
 import LocalClassFieldTheory.FromMathlib.AlgNormOfGalois
 import LocalClassFieldTheory.FromMathlib.CpDef
-import LocalClassFieldTheory.FromMathlib.Filter -- In PR #12430
 import LocalClassFieldTheory.FromMathlib.Limsup
 import LocalClassFieldTheory.FromMathlib.Minpoly -- In PR #12450
 import LocalClassFieldTheory.FromMathlib.NormalClosure
