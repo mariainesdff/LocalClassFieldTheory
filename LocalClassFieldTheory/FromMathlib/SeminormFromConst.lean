@@ -3,7 +3,6 @@ Copyright (c) 2023 María Inés de Frutos-Fernández. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: María Inés de Frutos-Fernández
 -/
-import LocalClassFieldTheory.FromMathlib.Filter
 import LocalClassFieldTheory.FromMathlib.RingSeminorm
 
 #align_import from_mathlib.seminorm_from_const
@@ -101,7 +100,7 @@ theorem seminormFromConst_seq_antitone (x : R) : Antitone (seminormFromConst_seq
     exact mul_le_mul_of_nonneg_left hf1 (apply_nonneg f _)
   · have h1 : 1 ≤ n - m :=
       by
-      rw [Nat.one_le_iff_ne_zero, Ne.def, Nat.sub_eq_zero_iff_le, not_le]
+      rw [Nat.one_le_iff_ne_zero, ne_eq, Nat.sub_eq_zero_iff_le, not_le]
       exact lt_of_le_of_ne hmn heq
     rw [hpm c h1, mul_div_assoc, div_eq_mul_inv, pow_sub₀ _ (Ne.symm hc) hmn, mul_assoc,
       mul_comm (f c ^ m)⁻¹, ← mul_assoc (f c ^ n), mul_inv_cancel (pow_ne_zero n (Ne.symm hc)),
@@ -109,7 +108,7 @@ theorem seminormFromConst_seq_antitone (x : R) : Antitone (seminormFromConst_seq
 
 /-- The real-valued function sending `x ∈ R` to the limit of `(f (x * c^n))/((f c)^n)`. -/
 def seminormFromConst' (x : R) : ℝ := Classical.choose
-  (Real.tendsto_of_is_bounded_antitone (seminorm_from_const_is_bounded c f x)
+  (Real.tendsto_of_bddBelow_antitone (seminorm_from_const_is_bounded c f x)
     (seminormFromConst_seq_antitone hf1 hc hpm x))
 
 /-- We prove that `seminorm_from_const' hf1 hc hpm x` is the limit of the sequence
@@ -118,7 +117,7 @@ theorem seminorm_from_const_is_limit (x : R) :
     Filter.Tendsto (seminormFromConst_seq c f x) Filter.atTop
       (𝓝 (seminormFromConst' hf1 hc hpm x)) :=
   Classical.choose_spec
-    (Real.tendsto_of_is_bounded_antitone (seminorm_from_const_is_bounded c f x)
+    (Real.tendsto_of_bddBelow_antitone (seminorm_from_const_is_bounded c f x)
       (seminormFromConst_seq_antitone hf1 hc hpm x))
 
 /-- `seminorm_from_const' hf1 hc hpm 0 = 0`. -/
