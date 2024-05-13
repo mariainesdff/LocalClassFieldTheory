@@ -218,7 +218,7 @@ theorem isNonarchimedean_add_pow {F α : Type _} [CommRing α] [FunLike F α ℝ
   obtain ⟨m, hm_lt, hM⟩ :=
     isNonarchimedean_finset_image_add hna (fun m : ℕ => a ^ m * b ^ (n - m) * ↑(n.choose m))
       (Finset.range (n + 1))
-  simp only [Finset.nonempty_range_iff, Ne.def, Nat.succ_ne_zero, not_false_iff, Finset.mem_range,
+  simp only [Finset.nonempty_range_iff, ne_eq, Nat.succ_ne_zero, not_false_iff, Finset.mem_range,
     if_true, forall_true_left] at hm_lt
   refine' ⟨m, List.mem_range.mpr hm_lt, _⟩
   simp only [← add_pow] at hM
