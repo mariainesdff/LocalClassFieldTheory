@@ -117,7 +117,7 @@ namespace ENNReal
 theorem le_iInf_hMul_iInf {ι : Sort _} [hι : Nonempty ι] {a : ℝ≥0∞} {f g : ι → ℝ≥0∞}
     (hf : ∀ x, f x ≠ ⊤) (hg : ∀ x, g x ≠ ⊤) (H : ∀ i j : ι, a ≤ f i * g j) :
     a ≤ iInf f * iInf g := by
-  have hg' : iInf g ≠ ⊤ := by rw [Ne.def, iInf_eq_top, not_forall]; exact ⟨hι.some, hg hι.some⟩
+  have hg' : iInf g ≠ ⊤ := by rw [ne_eq, iInf_eq_top, not_forall]; exact ⟨hι.some, hg hι.some⟩
   rw [iInf_mul hg']
   refine' le_iInf _
   intro i
