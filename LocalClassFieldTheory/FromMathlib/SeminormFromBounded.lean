@@ -81,12 +81,12 @@ theorem continuous_inv_of_bijective_bounded {V : Type _} {W : Type _} [Seminorme
       map_add' := fun x y => by
         rw [← (Classical.choose_spec (((bijective_iff_existsUnique _).mp h_bij) x)).1, ←
           (Classical.choose_spec (((bijective_iff_existsUnique _).mp h_bij) y)).1, ← map_add]
-        simp only [← (invFun f).comp_apply, invFun_comp h_bij.injective, id.def]
+        simp only [← (invFun f).comp_apply, invFun_comp h_bij.injective, id_eq]
       bound' := by
         use Classical.choose h_bdd
         intro w
         rw [← (Classical.choose_spec (((bijective_iff_existsUnique _).mp h_bij) w)).1]
-        simp only [← (invFun f).comp_apply, invFun_comp h_bij.injective, id.def]
+        simp only [← (invFun f).comp_apply, invFun_comp h_bij.injective, id_eq]
         exact Classical.choose_spec h_bdd _ }
   change Continuous g
   apply NormedAddGroupHom.continuous
@@ -421,7 +421,7 @@ theorem seminorm_from_bounded_ne_zero (f_ne_zero : ∃ x : R, f x ≠ 0) (f_nonn
   by
   obtain ⟨x, hx⟩ := f_ne_zero
   use x
-  rw [Ne.def, seminorm_from_bounded_eq_zero_iff f_nonneg f_mul x]
+  rw [ne_eq, seminorm_from_bounded_eq_zero_iff f_nonneg f_mul x]
   exact hx
 
 /-- If `f : R → ℝ` is a nonnegative, multiplicatively bounded function, then the kernel of
