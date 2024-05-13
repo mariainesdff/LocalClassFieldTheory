@@ -39,7 +39,7 @@ theorem coeff_zero (x : K) : v ((minpoly K (algebraMap K L x)).coeff 0) = v x :=
   rw [minpoly.eq_X_sub_C, coeff_sub, coeff_X_zero, coeff_C_zero, zero_sub, Valuation.map_neg]
 
 theorem unit_ne_zero (x : Kˣ) : v x ≠ (0 : Γ₀) := by
-  simp only [Ne.def, Valuation.zero_iff, Units.ne_zero x, not_false_iff]
+  simp only [ne_eq, Valuation.zero_iff, Units.ne_zero x, not_false_iff]
 
 /- For any unit `x : Lˣ`, we prove that a certain power of the valuation of
   zeroth coefficient of the minimal polynomial of `x` over `K` is nonzero. This lemma is helpful
@@ -49,7 +49,7 @@ theorem unit_pow_ne_zero [FiniteDimensional K L] (x : Lˣ) :
   have h_alg : Algebra.IsAlgebraic K L := Algebra.IsAlgebraic.of_finite K L
   have hdeg := Nat.div_pos (natDegree_le x.val)
     (natDegree_pos (isAlgebraic_iff_isIntegral.mp (h_alg x.val)))
-  rw [Ne.def, pow_eq_zero_iff hdeg.ne.symm, Valuation.zero_iff]
+  rw [ne_eq, pow_eq_zero_iff hdeg.ne.symm, Valuation.zero_iff]
   exact coeff_zero_ne_zero (isAlgebraic_iff_isIntegral.mp (h_alg x.val)) (Units.ne_zero x)
 
 end Valuation
