@@ -43,9 +43,9 @@ theorem count_normalizedFactors_eq_count_normalizedFactors_span {R : Type _} [Co
   rw [← PartENat.natCast_inj, hX₁, ← multiplicity_eq_count_normalizedFactors hX.irreducible hr,
     this, ← multiplicity_eq_multiplicity_span, ← multiplicity_eq_count_normalizedFactors]
   refine' Prime.irreducible (Ideal.prime_of_isPrime _ _)
-  · rwa [Ne.def, Ideal.span_singleton_eq_bot]
+  · rwa [ne_eq, Ideal.span_singleton_eq_bot]
   · rwa [Ideal.span_singleton_prime hX₀]
-  · rwa [Ne.def, Ideal.zero_eq_bot, Ideal.span_singleton_eq_bot]
+  · rwa [ne_eq, Ideal.zero_eq_bot, Ideal.span_singleton_eq_bot]
 
 theorem count_normalizedFactors_eq_associates_count (R : Type _) [CommRing R] [IsDomain R]
     [IsPrincipalIdealRing R] (I J : Ideal R) (hI : I ≠ 0) (hJ : J.IsPrime) (hJ₀ : J ≠ ⊥) :
