@@ -39,7 +39,7 @@ def intPolynomial {P : K[X]} (hP : ∀ n : ℕ, P.coeff n ∈ v.valuationSubring
     { support := P.support
       toFun := fun n => ⟨P.coeff n, hP n⟩
       mem_support_toFun := fun n => by
-        rw [Ne.def, ← Subring.coe_eq_zero_iff, mem_support_iff] }
+        rw [ne_eq, ← Subring.coe_eq_zero_iff, mem_support_iff] }
 
 namespace IntPolynomial
 
