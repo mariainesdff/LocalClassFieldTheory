@@ -55,7 +55,7 @@ theorem spectral_norm_unique' [CompleteSpace K] {f : AlgebraNorm K L} (hf_pm : I
   apply eq_of_pow_mult_faithful f hf_pm _ (spectralAlgNorm_isPowMul h_alg hna)
   intro x
   set E : Type _ := id K⟮x⟯ with hEdef
-  letI hE : Field E := by rw [hEdef, id.def]; infer_instance
+  letI hE : Field E := by rw [hEdef, id_eq]; infer_instance
   letI : Algebra K E := K⟮x⟯.algebra
   letI hidE : ZeroHomClass (id ↥K⟮x⟯ →ₗ[K] ↥K⟮x⟯) _ _ := AddMonoidHomClass.toZeroHomClass
   set id1 : K⟮x⟯ →ₗ[K] E :=
