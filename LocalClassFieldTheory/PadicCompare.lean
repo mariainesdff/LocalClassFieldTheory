@@ -72,7 +72,7 @@ def Int.pHeightOneIdeal (p : semiOutParam ℕ) [hp : Fact p.Prime] : HeightOneSp
     rw [Ideal.span_singleton_prime]
     exacts [Nat.prime_iff_prime_int.mp hp.1, NeZero.natCast_ne p ℤ]
   ne_bot := by
-    simp only [Ne.def, Ideal.span_singleton_eq_bot, Nat.cast_eq_zero]
+    simp only [ne_eq, Ideal.span_singleton_eq_bot, Nat.cast_eq_zero]
     exact NeZero.ne p
 
 variable (p : outParam ℕ) [Fact p.Prime]
@@ -83,7 +83,7 @@ open Valuation Int
 
 open scoped DiscreteValuation
 
-attribute [-instance] Rat.instMetricSpaceRat Rat.instNormedField Rat.instDenselyNormedField
+attribute [-instance] Rat.instMetricSpace Rat.instNormedField Rat.instDenselyNormedField
   Rat.instDivisionRing Rat.instNormedAddCommGroup
 
 instance : T0Space ℚ_[p] := inferInstance
@@ -127,7 +127,7 @@ open NNReal Polynomial Int NormalizationMonoid Multiplicative Padic Valuation
 open scoped Classical NNReal DiscreteValuation
 
 
-attribute [-instance] Rat.instMetricSpaceRat Rat.instNormedField  Rat.instDenselyNormedField
+attribute [-instance] Rat.instMetricSpace Rat.instNormedField  Rat.instDenselyNormedField
   Rat.instDivisionRing Rat.instNormedAddCommGroup
 
 /-- This is the valued structure on `ℚ` induced from the `p`-adic valuation. -/
@@ -151,7 +151,7 @@ theorem padicNorm_of_Int_eq_val_norm (x : ℤ) : (padicNorm p x : ℝ) =
   · simp only [hx, padicNorm.zero, algebraMap.coe_zero, _root_.map_zero, cast_zero, padicNorm.zero,
       Rat.cast_zero, _root_.map_zero, NNReal.coe_zero]
   · have hx0 : ¬(x : ℚ) = 0 := cast_ne_zero.mpr hx
-    have hv0 : ((@padicValued p _).v x) ≠ (0 : ℤₘ₀) := by rw [Ne.def, zero_iff]; exact hx0
+    have hv0 : ((@padicValued p _).v x) ≠ (0 : ℤₘ₀) := by rw [ne_eq, zero_iff]; exact hx0
     have heq : Multiplicative.ofAdd (-(Associates.mk (pHeightOneIdeal p).asIdeal).count
       (Associates.mk (Ideal.span {x} : Ideal ℤ)).factors : ℤ) = WithZero.unzero hv0 := by
       erw [← WithZero.coe_inj, ← intValuationDef_if_neg _ hx, WithZero.coe_unzero,
@@ -165,11 +165,11 @@ theorem padicNorm_of_Int_eq_val_norm (x : ℤ) : (padicNorm p x : ℝ) =
         (Nat.prime_iff_prime_int.mp Fact.out).irreducible hx, normalize_apply,
           PartENat.get_natCast']
     have h_x_span : (Ideal.span {x} : Ideal ℤ) ≠ 0 := by
-      rwa [Ideal.zero_eq_bot, Ne.def, Ideal.span_singleton_eq_bot]
+      rwa [Ideal.zero_eq_bot, ne_eq, Ideal.span_singleton_eq_bot]
     have h_p_span : (Ideal.span {(p : ℤ)} : Ideal ℤ).IsPrime := by
       simp only [Ideal.span_singleton_prime (NeZero.ne (p : ℤ)), Nat.prime_iff_prime_int.mp Fact.out]
     have h_p_span_ne : (Ideal.span {(p : ℤ)} : Ideal ℤ) ≠ ⊥ := by
-      rw [Ne.def, Ideal.span_singleton_eq_bot]
+      rw [ne_eq, Ideal.span_singleton_eq_bot]
       exact NeZero.ne (p : ℤ)
     erw [count_normalizedFactors_eq_count_normalizedFactors_span hx _ (by rfl),
       ← NormalizationMonoid.count_normalizedFactors_eq_associates_count _ _ _ h_x_span h_p_span
@@ -370,7 +370,7 @@ instance : CharZero (Z_p p) where cast_injective m n h := by
 def Padic'Int.heightOneIdeal : HeightOneSpectrum (Z_p p) where
   asIdeal := LocalRing.maximalIdeal (Z_p p)
   isPrime := Ideal.IsMaximal.isPrime (LocalRing.maximalIdeal.isMaximal _)
-  ne_bot := by simpa [Ne.def, ← LocalRing.isField_iff_maximalIdeal_eq] using
+  ne_bot := by simpa [ne_eq, ← LocalRing.isField_iff_maximalIdeal_eq] using
     DiscreteValuation.not_isField _
 
 theorem Padic'Int.heightOneIdeal_is_principal :
