@@ -11,57 +11,48 @@ import Mathlib.Algebra.Algebra.Equiv
 open BigOperators DiscreteValuation
 
 open Valued Valuation Extension
-
-/- Note: I was trying to set up a ramification index notation for local fields, but I get errors. -/
 namespace LocalField
 
 variable (K : Type*) [Field K] [LocalField K]
   (L : Type*) [Field L] [LocalField L] [Algebra K L]
 
 local notation "v" => (@Valued.v K _ ℤₘ₀ _ _)
-
 local notation "K₀" => Valuation.valuationSubring v
-
 local notation "w" => (@Valued.v L _ ℤₘ₀ _ _)
-
 local notation "L₀" => Valuation.valuationSubring w
 
-instance : Algebra K₀ L₀ := by sorry -- Why the proof below taken from `DVR.Extensions` broken?
-  -- convert @ValuationSubring.algebra K _ v L _ _
-  -- by
---     haveI h : Algebra hv.v.valuationSubring (extendedValuation K L).valuationSubring.toSubring := by
-  -- rw [← integralClosure_eq_integer] at this
---       exact (integralClosure (↥Valued.v.valuationSubring) L).algebra
---   h--- cannot be found
 
-local notation "ee(" L "," K ")" => (⟨(1 : L), (1 : K)⟩ : L × K)
+instance : FiniteDimensional K L := by
+  sorry
 
-#check ee(L, K) -- this shows that the syntax of the notation is OK
+lemma foo : L₀ = (extendedValuation K L).valuationSubring := by
+  sorry
 
-example : Ideal.ramificationIdx (algebraMap K₀ L₀)
-  (LocalRing.maximalIdeal K₀) (LocalRing.maximalIdeal L₀) = Ideal.ramificationIdx (algebraMap K₀ L₀)
-  (LocalRing.maximalIdeal K₀) (LocalRing.maximalIdeal L₀) := by rfl
-  -- this shows that the ramificationIdx seems OK with the above instance
+-- Why the proof below taken from `DVR.Extensions` broken?
+-- MI: It is because the `L₀` in `DVR.Extensions` is defined as
+-- `(extendedValuation K L).valuationSubring`
+instance : Algebra K₀ L₀ := by
+  rw [foo K L]
+  haveI h : Algebra v.valuationSubring (extendedValuation K L).valuationSubring.toSubring := by
+    rw [← integralClosure_eq_integer]
+    exact (integralClosure (↥Valued.v.valuationSubring) L).algebra
+  exact h
 
--- notation "e(" L "," K ")" => Ideal.ramificationIdx (algebraMap K₀ L₀)
---   (LocalRing.maximalIdeal K₀) (LocalRing.maximalIdeal L₀)
-
--- #check
+scoped notation "e("L","K")" => Ideal.ramificationIdx
+  (algebraMap (Valuation.valuationSubring (@Valued.v K _ ℤₘ₀ _ _))
+    (Valuation.valuationSubring (@Valued.v L _ ℤₘ₀ _ _)))
+  (LocalRing.maximalIdeal (Valuation.valuationSubring (@Valued.v K _ ℤₘ₀ _ _)))
+  (LocalRing.maximalIdeal (Valuation.valuationSubring (@Valued.v L _ ℤₘ₀ _ _)))
 
 end LocalField
 
 namespace LocalField
 
-open scoped DiscreteValuationRing
+open scoped LocalField
 
 open Valued
 
 variable (K : Type*) [Field K] [LocalField K] {n : ℕ} (hn : 0 < n)
-
-/- local instance hv : Valued K ℤₘ₀ := inferInstance
-
-set_option quotPrecheck false
-local notation "K₀" => (hv K).v.valuationSubring -/
 
 local notation "v" => (@Valued.v K _ ℤₘ₀ _ _)
 
@@ -80,7 +71,8 @@ instance Kn_algebra : Algebra K (Kn K hn) := sorry
 
 instance Kn_algebra' : Algebra K₀ (Kn_valued K hn).v.valuationSubring := sorry
 
-lemma Kn_unramified : e((Kn_valued K hn).v.valuationSubring, K₀) = 1 := sorry
+#check e(K, K)
+lemma Kn_unramified : e(Kn K hn, K) = 1 /- e((Kn_valued K hn).v.valuationSubring, K₀) -/  := sorry
 
 local instance (L : Type*) [Field L] [Algebra K L] [FiniteDimensional K L] :
     Algebra K₀ (extendedValuation K L).valuationSubring := by
@@ -89,9 +81,11 @@ local instance (L : Type*) [Field L] [Algebra K L] [FiniteDimensional K L] :
   sorry
 
 /-- The extension `Kn K hn` of `K` is the unique unramified extension of degree `n`. -/
-def Kn_unique (L : Type*) [Field L] [Algebra K L] [FiniteDimensional K L]
+def Kn_unique (L : Type*) [Field L] [LocalField L] [Algebra K L]
+  --[FiniteDimensional K L] replaced by `LocalField L`
   (hn' : FiniteDimensional.finrank K L = n)
-  (he : e((extendedValuation K L).valuationSubring, K₀) = 1)  :
+  (he : e(L, K) = 1) :
+  --(he : e((extendedValuation K L).valuationSubring, K₀) = 1)  :
     (Kn K hn) ≃ₐ[K] L  :=
   sorry
 
