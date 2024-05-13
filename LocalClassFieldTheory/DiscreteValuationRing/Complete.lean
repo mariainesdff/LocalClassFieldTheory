@@ -104,7 +104,7 @@ theorem adicCompletionIntegers_not_isField :
   rw [Ring.not_isField_iff_exists_ideal_bot_lt_and_lt_top]
   use maxIdealOfCompletionDef R v K
   constructor
-  · rw [bot_lt_iff_ne_bot, Ne.def]
+  · rw [bot_lt_iff_ne_bot, ne_eq]
     by_contra h
     obtain ⟨π, hπ⟩ :=
       IsDedekindDomain.HeightOneSpectrum.valuation_completion_integers_exists_uniformizer R v K
@@ -115,7 +115,7 @@ theorem adicCompletionIntegers_not_isField :
     rw [h, Ideal.mem_bot] at h1
     simp only [h1, ZeroMemClass.coe_zero, _root_.map_zero, ofAdd_neg, WithZero.coe_inv,
       zero_eq_inv, WithZero.zero_ne_coe] at hπ
-  · simp only [lt_top_iff_ne_top, Ne.def, Ideal.eq_top_iff_one, maxIdealOfCompletionDef,
+  · simp only [lt_top_iff_ne_top, ne_eq, Ideal.eq_top_iff_one, maxIdealOfCompletionDef,
       LocalRing.mem_maximalIdeal, one_not_mem_nonunits, not_false_iff]
 
 /-- The maximal ideal of `R_v`, as a term of the `height_one_spectrum` of `R_v`.
@@ -124,7 +124,7 @@ def maxIdealOfCompletion : HeightOneSpectrum R_v where
   asIdeal := maxIdealOfCompletionDef R v K
   isPrime := Ideal.IsMaximal.isPrime (LocalRing.maximalIdeal.isMaximal R_v)
   ne_bot := by
-    rw [Ne.def, maxIdealOfCompletionDef, ← LocalRing.isField_iff_maximalIdeal_eq]
+    rw [ne_eq, maxIdealOfCompletionDef, ← LocalRing.isField_iff_maximalIdeal_eq]
     exact adicCompletionIntegers_not_isField R v K
 
 local notation "v_adic_of_compl" =>
@@ -145,7 +145,7 @@ theorem int_adic_of_compl_eq_int_compl_of_adic (a : R_v) :
   · rw [intValuation_apply]
     apply le_antisymm
     · obtain ⟨n, hn⟩ : ∃ n : ℕ, v_compl_of_adic a = ofAdd (-n : ℤ)
-      replace ha : v_compl_of_adic a ≠ 0 := by rwa [Valuation.ne_zero_iff, Ne.def,
+      replace ha : v_compl_of_adic a ≠ 0 := by rwa [Valuation.ne_zero_iff, ne_eq,
         Subring.coe_eq_zero_iff]
       have := (mem_integer v_compl_of_adic ↑a).mp a.2
       obtain ⟨α, hα⟩ := WithZero.ne_zero_iff_exists.mp ha
@@ -158,7 +158,7 @@ theorem int_adic_of_compl_eq_int_compl_of_adic (a : R_v) :
       apply (DiscreteValuation.val_le_iff_dvd K_v _ n).mp (le_of_eq hn)
     · obtain ⟨m, hm⟩ : ∃ m : ℕ, v_adic_of_compl a = ofAdd (-m : ℤ)
       · replace ha : v_adic_of_compl a ≠ 0 := by
-          rwa [Valuation.ne_zero_iff, Ne.def, Subring.coe_eq_zero_iff]
+          rwa [Valuation.ne_zero_iff, ne_eq, Subring.coe_eq_zero_iff]
         have : (maxIdealOfCompletion R v K).valuation (algebraMap _ K_v a) ≤ 1 := by
           exact valuation_le_one _ _
         obtain ⟨α, hα⟩ := WithZero.ne_zero_iff_exists.mp ha
