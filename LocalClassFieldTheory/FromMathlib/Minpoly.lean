@@ -53,11 +53,11 @@ def id_algEquiv {p q : K[X]} (hp : p ≠ 0) (hq : q ≠ 0) (h_eq : p = q) :
     (PowerBasis.algHom_ext (powerBasis hq)
       (by
         rw [powerBasis_gen hq, AlgHom.coe_comp, Function.comp_apply, liftHom_root, liftHom_root,
-          AlgHom.coe_id, id.def]))
+          AlgHom.coe_id, id_eq]))
     (PowerBasis.algHom_ext (powerBasis hp)
       (by
         rw [powerBasis_gen hp, AlgHom.coe_comp, Function.comp_apply, liftHom_root, liftHom_root,
-          AlgHom.coe_id, id.def]))
+          AlgHom.coe_id, id_eq]))
 
 
 
