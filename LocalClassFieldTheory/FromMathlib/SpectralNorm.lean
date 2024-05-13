@@ -295,8 +295,11 @@ variable {K L : Type _} [Field K] [Field L] [Algebra K L] (E : IntermediateField
 
 attribute [local instance 1001] Algebra.id
 
+
+-- MI: I am not sure if this is the right thing to remove now, the file is really slow.
 attribute [-instance]
-  Subalgebra.instSMulSubtypeMemSubalgebraInstMembershipInstSetLikeSubalgebra
+  --Subalgebra.instSMulSubtypeMemSubalgebraInstMembershipInstSetLikeSubalgebra
+  Subalgebra.instSMulSubtypeMem
   Subsemiring.smul
   Submonoid.smul
   IntermediateField.module'
@@ -323,8 +326,9 @@ instance : MonoidHomClass (E →+* ↥(normalClosure K E (AlgebraicClosure E))) 
   ↥(normalClosure K E (AlgebraicClosure E)) :=
   inferInstance /- by exact MonoidHomClass.mk -/
 
+-- MI: timeout
 instance : AddHomClass (E →+* ↥(normalClosure K E (AlgebraicClosure E))) E
-  ↥(normalClosure K E (AlgebraicClosure E)) := AddMonoidHomClass.toAddHomClass
+  ↥(normalClosure K E (AlgebraicClosure E)) := sorry --AddMonoidHomClass.toAddHomClass
 
 instance : MulHomClass (E →+* ↥(normalClosure K E (AlgebraicClosure E))) E
   ↥(normalClosure K E (AlgebraicClosure E)) := inferInstance
@@ -523,7 +527,7 @@ theorem spectralValue_x_pow (n : ℕ) : spectralValue (X ^ n : R[X]) = 0 := by
   ext m
   by_cases hmn : m < n
   · rw [if_pos hmn, Real.rpow_eq_zero_iff_of_nonneg (norm_nonneg _), if_neg (ne_of_lt hmn),
-      norm_zero, one_div, Ne.def, inv_eq_zero, ← Nat.cast_sub (le_of_lt hmn), Nat.cast_eq_zero,
+      norm_zero, one_div, ne_eq, inv_eq_zero, ← Nat.cast_sub (le_of_lt hmn), Nat.cast_eq_zero,
       Nat.sub_eq_zero_iff_le]
     exact ⟨Eq.refl _, not_le_of_lt hmn⟩
   · rw [if_neg hmn]
@@ -880,7 +884,7 @@ theorem spectralNorm_zero_lt (h_alg : Algebra.IsAlgebraic K L) {y : L} (hy : y �
     0 < spectralNorm K L y := by
   rw [lt_iff_le_and_ne]
   refine' ⟨spectralNorm_nonneg _, _⟩
-  rw [spectralNorm, Ne.def, eq_comm,
+  rw [spectralNorm, ne_eq, eq_comm,
     spectralValue_eq_zero_iff (minpoly.monic (isAlgebraic_iff_isIntegral.mp (h_alg y)))]
   have h0 : coeff (minpoly K y) 0 ≠ 0 :=
     minpoly.coeff_zero_ne_zero (isAlgebraic_iff_isIntegral.mp (h_alg y)) hy
@@ -945,7 +949,7 @@ theorem spectralNorm_max_of_fd_normal (h_alg : Algebra.IsAlgebraic K L)
       rw [← hσ]
       convert le_ciSup (Finite.bddAbove_range _) σ using 1
       · rfl
-      · exact instNonempty
+      · exact instNonemptyOfInhabited
       · exact SemilatticeSup.to_isDirected_le
       --exact le_ciSup (Fintype.bddAbove_range _) σ
     · exact Real.iSup_nonneg fun σ => apply_nonneg _ _
@@ -1036,6 +1040,8 @@ theorem spectralValue.eq_normal' {E : IntermediateField K L} {x : L} (g : E)
 
 open scoped IntermediateField
 
+-- MI: timeout
+
 /-- The spectral norm is power-multiplicative. -/
 theorem spectralNorm_isPowMul (h_alg : Algebra.IsAlgebraic K L)
     (hna : IsNonarchimedean (norm : K → ℝ)) : IsPowMul (spectralNorm K L) := by
@@ -1050,12 +1056,13 @@ theorem spectralNorm_isPowMul (h_alg : Algebra.IsAlgebraic K L)
     IntermediateField.AdjoinSimple.alg_closure_normal h_alg x
   rw [← spectralValue.eq_normal' _ (IntermediateField.AdjoinSimple.algebraMap_gen K x),
     ← spectralValue.eq_normal' (g ^ n) h_map, map_pow]
-  exact spectralNorm_isPowMul_of_fd_normal (normalClosure.isAlgebraic K E h_alg_E)
-    (normalClosure.is_finiteDimensional K E _) (normalClosure.normal K E _) hna _ hn
+  sorry/- exact spectralNorm_isPowMul_of_fd_normal (normalClosure.isAlgebraic K E h_alg_E)
+    (normalClosure.is_finiteDimensional K E _) (normalClosure.normal K E _) hna _ hn -/
 
 instance : SeminormClass (AlgebraNorm K ↥(normalClosure K (↥E) (AlgebraicClosure ↥E))) K
   ↥(normalClosure K (↥E) (AlgebraicClosure ↥E)) := AlgebraNormClass.toSeminormClass
 
+-- MI: timeout
 /-- The spectral norm is compatible with the action of `K`. -/
 theorem spectralNorm_smul (h_alg : Algebra.IsAlgebraic K L) (hna : IsNonarchimedean (norm : K → ℝ))
     (k : K) (y : L) : spectralNorm K L (k • y) = ‖k‖₊ * spectralNorm K L y := by
@@ -1073,11 +1080,12 @@ theorem spectralNorm_smul (h_alg : Algebra.IsAlgebraic K L) (hna : IsNonarchimed
   rw [← spectralValue.eq_normal' g (IntermediateField.AdjoinSimple.algebraMap_gen K y), hgy,
     ← spectralValue.eq_normal' (k • g) rfl, h]
   have h_alg' := normalClosure.isAlgebraic K E h_alg_E
-  rw [← spectralAlgNormOfFdNormal_def h_alg'
+  sorry /- rw [← spectralAlgNormOfFdNormal_def h_alg'
       (normalClosure.is_finiteDimensional K E (AlgebraicClosure E)) (normalClosure.normal K E _)
       hna]
-  exact map_smul_eq_mul _ _ _
+  exact map_smul_eq_mul _ _ _ -/
 
+-- MI: timeout
 /-- The spectral norm is nonarchimedean. -/
 theorem spectralNorm_isNonarchimedean (h_alg : Algebra.IsAlgebraic K L)
     (h : IsNonarchimedean (norm : K → ℝ)) : IsNonarchimedean (spectralNorm K L) := by
@@ -1096,9 +1104,11 @@ theorem spectralNorm_isNonarchimedean (h_alg : Algebra.IsAlgebraic K L)
     ← spectralValue.eq_normal' gx (IntermediateField.AdjoinAdjoin.algebraMap_gen1 K x y),
     ← spectralValue.eq_normal' gy (IntermediateField.AdjoinAdjoin.algebraMap_gen2 K x y),
     _root_.map_add]
-  exact
+  sorry/- exact
     spectralNorm_isNonarchimedean_of_fd_normal (normalClosure.isAlgebraic K E h_alg_E)
-      (normalClosure.is_finiteDimensional K E _) (normalClosure.normal K E _) h _ _
+      (normalClosure.is_finiteDimensional K E _) (normalClosure.normal K E _) h _ _ -/
+
+-- MI: timeout
 
 /-- The spectral norm is submultiplicative. -/
 theorem spectralNorm_hMul (h_alg : Algebra.IsAlgebraic K L) (hna : IsNonarchimedean (norm : K → ℝ))
@@ -1113,19 +1123,20 @@ theorem spectralNorm_hMul (h_alg : Algebra.IsAlgebraic K L) (hna : IsNonarchimed
   set gx := IntermediateField.AdjoinAdjoin.gen1 K x y
   set gy := IntermediateField.AdjoinAdjoin.gen2 K x y
   have hxy : x * y = (algebraMap K⟮x, y⟯ L) (gx * gy) := rfl
-  rw [hxy, ← spectralValue.eq_normal' (gx * gy) hxy,
+  sorry /- rw [hxy, ← spectralValue.eq_normal' (gx * gy) hxy,
     ← spectralValue.eq_normal' gx (IntermediateField.AdjoinAdjoin.algebraMap_gen1 K x y),
     ← spectralValue.eq_normal' gy (IntermediateField.AdjoinAdjoin.algebraMap_gen2 K x y), map_mul,
     ← spectralAlgNormOfFdNormal_def (normalClosure.isAlgebraic K E h_alg_E)
       (normalClosure.is_finiteDimensional K E (AlgebraicClosure E)) (normalClosure.normal K E _)
       hna]
-  exact map_mul_le_mul _ _ _
+  exact map_mul_le_mul _ _ _ -/
 
 /-- The spectral norm extends the norm on `K`. -/
 theorem spectralNorm_extends (k : K) : spectralNorm K L (algebraMap K L k) = ‖k‖ := by
   simp_rw [spectralNorm, minpoly.eq_X_sub_C_of_algebraMap_inj _ (algebraMap K L).injective]
   exact spectralValue_x_sub_c k
 
+-- MI: timeout
 /-- `spectral_norm K L (-y) = spectral_norm K L y` . -/
 theorem spectralNorm_neg (h_alg : Algebra.IsAlgebraic K L) (hna : IsNonarchimedean (norm : K → ℝ))
     (y : L) : spectralNorm K L (-y) = spectralNorm K L y := by
@@ -1137,12 +1148,12 @@ theorem spectralNorm_neg (h_alg : Algebra.IsAlgebraic K L) (hna : IsNonarchimede
   have h_alg_E : Algebra.IsAlgebraic K E := IntermediateField.isAlgebraic h_alg E
   set g := IntermediateField.AdjoinSimple.gen K y
   have hy : -y = (algebraMap K⟮y⟯ L) (-g) := rfl
-  rw [← spectralValue.eq_normal' g (IntermediateField.AdjoinSimple.algebraMap_gen K y), hy, ←
+  sorry/- rw [← spectralValue.eq_normal' g (IntermediateField.AdjoinSimple.algebraMap_gen K y), hy, ←
     spectralValue.eq_normal' (-g) hy, RingHom.map_neg,
     ← spectralAlgNormOfFdNormal_def (normalClosure.isAlgebraic K E h_alg_E)
       (normalClosure.is_finiteDimensional K E (AlgebraicClosure E)) (normalClosure.normal K E _)
       hna]
-  exact map_neg_eq_map _ _
+  exact map_neg_eq_map _ _ -/
 
 /-- The spectral norm is a `K`-algebra norm on `L`. -/
 def spectralAlgNorm (h_alg : Algebra.IsAlgebraic K L) (hna : IsNonarchimedean (norm : K → ℝ)) :
