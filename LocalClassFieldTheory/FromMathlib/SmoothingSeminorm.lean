@@ -201,7 +201,7 @@ theorem smoothing_seminorm_seq_has_limit_aux {L : ℝ} (hL : 0 ≤ L) {ε : ℝ}
       rw [← neg_zero]; exact Tendsto.neg h_exp
     rw [← rpow_zero (L + ε)]
     apply Tendsto.rpow tendsto_const_nhds h0
-    rw [Ne.def, add_eq_zero_iff' hL (le_of_lt hε)]
+    rw [ne_eq, add_eq_zero_iff' hL (le_of_lt hε)]
     exact Or.inl (not_and_of_not_right _ (ne_of_gt hε))
   · simp_rw [mul_one, ← rpow_natCast, ← rpow_mul (apply_nonneg f x), ← mul_div_assoc, mul_one, ←
       rpow_zero (f x)]
