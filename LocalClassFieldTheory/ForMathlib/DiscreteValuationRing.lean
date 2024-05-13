@@ -29,4 +29,4 @@ theorem RingEquiv.discreteValuationRing {A B : Type _} [CommRing A] [IsDomain A]
         LocalRing.mem_maximalIdeal]
       exact a.2
     · apply (@map_ne_zero_iff _ _ _ _ e a).2
-      simp only [Ne.def, Submodule.coe_eq_zero]; exact ha
+      simp only [ne_eq, Submodule.coe_eq_zero]; exact ha
