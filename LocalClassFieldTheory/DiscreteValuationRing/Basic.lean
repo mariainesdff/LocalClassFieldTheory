@@ -190,10 +190,9 @@ theorem Uniformizer_ne_zero' (π : Uniformizer vR) : π.1.1 ≠ 0 :=
   Uniformizer_ne_zero vR π.2
 
 theorem Uniformizer_valuation_pos {π : R} (hπ : IsUniformizer vR π) : 0 < vR π := by
-  rw [IsUniformizer_iff] at hπ ; simp only [zero_lt_iff, Ne.def, hπ, coe_ne_zero, not_false_iff]
+  rw [IsUniformizer_iff] at hπ ; simp only [zero_lt_iff, ne_eq, hπ, coe_ne_zero, not_false_iff]
 
-theorem Uniformizer_not_isUnit {π : vR.integer} (hπ : IsUniformizer vR π) : ¬IsUnit π :=
-  by
+theorem Uniformizer_not_isUnit {π : vR.integer} (hπ : IsUniformizer vR π) : ¬IsUnit π := by
   intro h
   have h1 :=
     @Valuation.Integers.one_of_isUnit R ℤₘ₀ _ _ vR vR.integer _ _ (Valuation.integer.integers vR) π
@@ -213,8 +212,7 @@ noncomputable def base (K : Type w₁) [Field K] (v : Valuation K ℤₘ₀) : �
     Nat.card (LocalRing.ResidueField v.valuationSubring)
   else 6
 
-theorem one_lt_base (K : Type w₁) [Field K] (v : Valuation K ℤₘ₀) : 1 < base K v :=
-  by
+theorem one_lt_base (K : Type w₁) [Field K] (v : Valuation K ℤₘ₀) : 1 < base K v := by
   rw [base]
   split_ifs with hlt
   · rw [Nat.one_lt_cast]; exact hlt
@@ -247,7 +245,7 @@ theorem UniformizerOfAssociated {π₁ π₂ : K₀} (h1 : IsUniformizer v π₁
 theorem associatedOfUniformizer {π₁ π₂ : Uniformizer v} : Associated π₁.1 π₂.1 := by
   have hval : v ((π₁.1 : K)⁻¹ * π₂.1) = 1 := by
     simp only [Valuation.map_mul, map_inv₀, IsUniformizer_iff.mp π₁.2,
-    IsUniformizer_iff.mp π₂.2, ofAdd_neg, coe_inv, inv_inv, mul_inv_cancel, Ne.def, coe_ne_zero,
+    IsUniformizer_iff.mp π₂.2, ofAdd_neg, coe_inv, inv_inv, mul_inv_cancel, ne_eq, coe_ne_zero,
     not_false_iff]
   let p : v.integer := ⟨(π₁.1 : K)⁻¹ * π₂.1, (Valuation.mem_integer v _).mpr (le_of_eq hval)⟩
   use ((Integer.isUnit_iff_valuation_eq_one p).mpr hval).unit
@@ -258,10 +256,9 @@ theorem associatedOfUniformizer {π₁ π₂ : Uniformizer v} : Associated π₁
 
 theorem pow_Uniformizer {r : K₀} (hr : r ≠ 0) (π : Uniformizer v) :
     ∃ n : ℕ, ∃ u : K₀ˣ, r = (π.1 ^ n).1  * u.1 := by
-  have hr₀ : v r ≠ 0 := by rw [Ne.def, zero_iff, Subring.coe_eq_zero_iff]; exact hr
+  have hr₀ : v r ≠ 0 := by rw [ne_eq, zero_iff, Subring.coe_eq_zero_iff]; exact hr
   set m := -(Multiplicative.toAdd (unzero hr₀)) with hm
-  have hm₀ : 0 ≤ m :=
-    by
+  have hm₀ : 0 ≤ m := by
     rw [hm, Right.nonneg_neg_iff, ← toAdd_one, toAdd_le, ← coe_le_coe, coe_unzero]
     exact r.2
   obtain ⟨n, hn⟩ := Int.eq_ofNat_of_zero_le hm₀
@@ -271,17 +268,16 @@ theorem pow_Uniformizer {r : K₀} (hr : r ≠ 0) (π : Uniformizer v) :
       neg_neg, ← WithZero.coe_zpow, ← Int.ofAdd_mul, one_mul, ofAdd_neg, ofAdd_toAdd, coe_inv,
       coe_unzero, inv_mul_cancel hr₀]
   set a : K₀ := ⟨π.1.1 ^ (-m) * r, by apply le_of_eq hpow⟩ with ha
-  have ha₀ : (↑a : K) ≠ 0 :=
-    by
-    simp only [ha, neg_neg, Ne.def]
+  have ha₀ : (↑a : K) ≠ 0 := by
+    simp only [ha, neg_neg, ne_eq]
     by_cases h0 : toAdd (unzero hr₀) = 0
     · simp_all only [ne_eq, neg_zero, Nat.cast_eq_zero, CharP.cast_eq_zero, le_refl, zpow_zero,
       one_mul, Subtype.coe_eta, ZeroMemClass.coe_eq_zero, not_false_eq_true]
     · apply mul_ne_zero
-      · rw [Ne.def, zpow_eq_zero_iff]
+      · rw [ne_eq, zpow_eq_zero_iff]
         · exact Uniformizer_ne_zero' v π
         · rwa [hm, neg_neg]
-      · rw [Ne.def, Subring.coe_eq_zero_iff]; exact hr
+      · rw [ne_eq, Subring.coe_eq_zero_iff]; exact hr
   have h_unit_a : IsUnit a :=
     Integers.isUnit_of_one (integer.integers v) (isUnit_iff_ne_zero.mpr ha₀) hpow
   use h_unit_a.unit
@@ -337,20 +333,18 @@ theorem not_isField : ¬IsField K₀ := by
   obtain ⟨π, hπ⟩ := exists_Uniformizer_ofDiscrete v
   rintro ⟨-, -, h⟩
   have := Uniformizer_ne_zero v hπ
-  simp only [Ne.def, Subring.coe_eq_zero_iff] at this
+  simp only [ne_eq, Subring.coe_eq_zero_iff] at this
   specialize h this
   rw [← isUnit_iff_exists_inv] at h
   exact Uniformizer_not_isUnit v hπ h
 
 theorem IsUniformizerOfGenerator {r : K₀} (hr : maximalIdeal v.valuationSubring = Ideal.span {r}) :
-    IsUniformizer v r :=
-  by
+    IsUniformizer v r := by
   have hr₀ : r ≠ 0 := by
     intro h
     rw [h, Set.singleton_zero, span_zero] at hr
-    exact
-      Ring.ne_bot_of_isMaximal_of_not_isField (maximalIdeal.isMaximal v.valuationSubring)
-        (not_isField v) hr
+    exact Ring.ne_bot_of_isMaximal_of_not_isField (maximalIdeal.isMaximal v.valuationSubring)
+      (not_isField v) hr
   obtain ⟨π, hπ⟩ := exists_Uniformizer_ofDiscrete v
   obtain ⟨n, u, hu⟩ := pow_Uniformizer v hr₀ ⟨π, hπ⟩
   rw [Uniformizer_is_generator v ⟨π, hπ⟩, span_singleton_eq_span_singleton] at hr
@@ -432,7 +426,7 @@ instance dvr_of_isDiscrete : DiscreteValuationRing K₀
     where
   toIsPrincipalIdealRing := integer_isPrincipalIdealRing v
   toLocalRing  := inferInstance
-  not_a_field' := by rw [Ne.def, ← isField_iff_maximalIdeal_eq]; exact not_isField v
+  not_a_field' := by rw [ne_eq, ← isField_iff_maximalIdeal_eq]; exact not_isField v
 
 variable (A : Type w₁) [CommRing A] [IsDomain A] [DiscreteValuationRing A]
 
@@ -444,7 +438,7 @@ def maximalIdeal : HeightOneSpectrum A
   asIdeal := LocalRing.maximalIdeal A
   isPrime := Ideal.IsMaximal.isPrime (maximalIdeal.isMaximal A)
   ne_bot := by
-    simpa [Ne.def, ← isField_iff_maximalIdeal_eq] using DiscreteValuationRing.not_isField A
+    simpa [ne_eq, ← isField_iff_maximalIdeal_eq] using DiscreteValuationRing.not_isField A
 
 variable {A}
 
