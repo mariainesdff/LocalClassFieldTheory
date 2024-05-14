@@ -194,7 +194,7 @@ instance isFractionRing : IsFractionRing (FpXIntCompletion p) (FpXCompletion p) 
 variable (p)
 
 instance : IsIntegralClosure (FpXIntCompletion p) (FpXIntCompletion p) (FpXCompletion p) :=
-  IsIntegrallyClosed.instIsIntegralClosureToCommSemiring
+  IsIntegrallyClosed.instIsIntegralClosure
 
 /-- `FpX_int_completions.X` is the polynomial variable `X : ratfunc 𝔽_[p]`, first coerced to the
 completion `FpX_completion` and then regarded as an integral element using the bound on its norm.-/
@@ -257,7 +257,7 @@ namespace FpXIntCompletion
 
 theorem X_ne_zero : FpXIntCompletion.X p ≠ 0 := by
   have h0 : (0 : FpXIntCompletion p) = ⟨(0 : FpXCompletion p), Subring.zero_mem _⟩ := by rfl
-  rw [FpXIntCompletion.X, Ne.def, h0, Subtype.mk_eq_mk, _root_.map_eq_zero]
+  rw [FpXIntCompletion.X, ne_eq, h0, Subtype.mk_eq_mk, _root_.map_eq_zero]
   exact RatFunc.X_ne_zero
 
 open CompletionLaurentSeries LaurentSeries
