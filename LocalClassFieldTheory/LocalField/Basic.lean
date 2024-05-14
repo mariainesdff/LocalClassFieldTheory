@@ -62,7 +62,7 @@ variable (K : Type _) [Field K] [EqCharLocalField p K]
 /-- An `eq_char_local_field p K` that is separable over `FpX_completion` is a local field.
   The separability assumption is required to use some result in mathlib concerning
   the finiteness of the ring of integers.-/
-lemma localField [Fact (IsSeparable (FpXCompletion p) K)] : LocalField K :=
+noncomputable def localField [Fact (IsSeparable (FpXCompletion p) K)] : LocalField K :=
   { EqCharLocalField.WithZero.valued p K with
     complete := EqCharLocalField.completeSpace p K
     isDiscrete := valuation.IsDiscrete p K
@@ -82,7 +82,7 @@ variable (p : outParam ℕ) [Fact (Nat.Prime p)]
 variable (K : Type _) [Field K] [MixedCharLocalField p K]
 
 /-- A `mixed_char_local_field` is a local field. -/
-lemma localField : LocalField K :=
+noncomputable def localField : LocalField K :=
   { MixedCharLocalField.WithZero.valued p K with
     complete := MixedCharLocalField.completeSpace p K
     isDiscrete := valuation.IsDiscrete p K
