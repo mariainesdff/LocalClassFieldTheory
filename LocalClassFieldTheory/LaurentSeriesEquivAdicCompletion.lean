@@ -131,7 +131,7 @@ def idealX (K : Type _) [Field K] : IsDedekindDomain.HeightOneSpectrum (PowerSer
     where
   asIdeal := Ideal.span {X}
   isPrime := PowerSeries.span_X_isPrime
-  ne_bot := by rw [Ne.def, Ideal.span_singleton_eq_bot]; exact X_ne_zero
+  ne_bot  := by rw [ne_eq, Ideal.span_singleton_eq_bot]; exact X_ne_zero
 
 instance : Valued (LaurentSeries K) ℤₘ₀ :=
   Valued.mk' (PowerSeries.idealX K).valuation
@@ -196,7 +196,7 @@ theorem pol_intValuation_eq_powerSeries (P : Polynomial K) :
       (Ideal.span {P} : Ideal (Polynomial K)) ≠ 0 ∧
         (Ideal.span {Polynomial.X} : Ideal (Polynomial K)) ≠ 0 :=
       by
-      simp only [Ideal.zero_eq_bot, Ne.def, Ideal.span_singleton_eq_bot, hP, Polynomial.X_ne_zero,
+      simp only [Ideal.zero_eq_bot, ne_eq, Ideal.span_singleton_eq_bot, hP, Polynomial.X_ne_zero,
         not_false_iff, and_self_iff]
     have := NormalizationMonoid.count_normalizedFactors_eq_associates_count (Polynomial K)
         (Ideal.span {P}) (Ideal.span {Polynomial.X}) span_ne_zero.1
@@ -307,7 +307,7 @@ theorem valuation_of_single_zpow (s : ℤ) :
     · simp only [Int.negSucc_coe, neg_neg, ← HahnSeries.ofPowerSeries_X_pow, ← coe_powerSeries,
         PowerSeries.coe_pow, valuation_of_X_zpow, ofAdd_neg, WithZero.coe_inv, inv_inv]
   · rw [Valuation.ne_zero_iff]
-    simp only [Ne.def, one_ne_zero, not_false_iff, HahnSeries.single_ne_zero]
+    simp only [ne_eq, one_ne_zero, not_false_iff, HahnSeries.single_ne_zero]
 
 theorem coeff_zero_of_lt_int_valuation {n d : ℕ} {f : PowerSeries K}
     (H : Valued.v (f : LaurentSeries K) ≤ ↑(Multiplicative.ofAdd (-d : ℤ))) :
@@ -354,7 +354,7 @@ theorem coeff_zero_of_lt_valuation {n D : ℤ} {f : LaurentSeries K}
         coe_powerSeries] at F_mul
       rwa [F_mul, map_mul, ← hd, PowerSeries.coe_pow, neg_add_rev, ofAdd_add, WithZero.coe_mul,
         valuation_of_X_zpow K s, mul_le_mul_left₀]
-      simp only [Ne.def, WithZero.coe_ne_zero, not_false_iff]
+      simp only [ne_eq, WithZero.coe_ne_zero, not_false_iff]
     · rw [not_le] at ord_nonpos
       obtain ⟨s, hs⟩ := Int.exists_eq_neg_ofNat (Int.neg_nonpos_of_nonneg (le_of_lt ord_nonpos))
       rw [neg_inj] at hs
@@ -371,7 +371,7 @@ theorem coeff_zero_of_lt_valuation {n D : ℤ} {f : LaurentSeries K}
       rw [← hF, ← coe_powerSeries] at F_mul
       rwa [F_mul, map_mul, ← hd, hs, neg_sub, sub_eq_add_neg, ofAdd_add, valuation_of_single_zpow,
         neg_neg, WithZero.coe_mul, mul_le_mul_left₀]
-      simp only [Ne.def, WithZero.coe_ne_zero, not_false_iff]
+      simp only [ne_eq, WithZero.coe_ne_zero, not_false_iff]
 
 theorem valuation_le_iff_coeff_zero_of_lt {D : ℤ} {f : LaurentSeries K} :
     Valued.v f ≤ ↑(Multiplicative.ofAdd (-D : ℤ)) ↔ ∀ n : ℤ, n < D → f.coeff n = 0 := by
@@ -396,7 +396,7 @@ theorem valuation_le_iff_coeff_zero_of_lt {D : ℤ} {f : LaurentSeries K} :
       rw [powerSeriesPart_coeff f n, hs]
       apply h_val_f
       linarith
-    simp only [Ne.def, WithZero.coe_ne_zero, not_false_iff]
+    simp only [ne_eq, WithZero.coe_ne_zero, not_false_iff]
   · rw [not_le] at ord_nonpos
     obtain ⟨s, hs⟩ := Int.exists_eq_neg_ofNat (Int.neg_nonpos_of_nonneg (le_of_lt ord_nonpos))
     rw [neg_inj] at hs
@@ -420,7 +420,7 @@ theorem valuation_le_iff_coeff_zero_of_lt {D : ℤ} {f : LaurentSeries K} :
       rw [powerSeriesPart_coeff f n, hs]
       apply h_val_f (s + n)
       linarith
-    simp only [Ne.def, WithZero.coe_ne_zero, not_false_iff]
+    simp only [ne_eq, WithZero.coe_ne_zero, not_false_iff]
 
 theorem valuation_le_of_coeff_eventually_eq {f g : LaurentSeries K} {D : ℤ}
     (H : ∀ d, d < D → g.coeff d = f.coeff d) : Valued.v (f - g) ≤ ↑(Multiplicative.ofAdd (-D)) := by
@@ -681,13 +681,13 @@ theorem exists_ratFunc_val_lt (f : LaurentSeries K) (γ : ℤₘ₀ˣ) :
       LaurentSeries.coe_algebraMap, valuation_of_algebraMap, ← Units.val_mk0 h₀, ← hη]
     apply inv_mul_lt_of_lt_mul₀
     rwa [← Units.val_mul]
-    · simp only [PowerSeries.coe_pow, pow_ne_zero, PowerSeries.coe_X, Ne.def,
+    · simp only [PowerSeries.coe_pow, pow_ne_zero, PowerSeries.coe_X, ne_eq,
         HahnSeries.single_eq_zero_iff, one_ne_zero, not_false_iff]
   · obtain ⟨s, hs⟩ := Int.exists_eq_neg_ofNat (Int.neg_nonpos_of_nonneg (not_lt.mp ord_nonpos))
     simp only [neg_inj] at hs
     have hf_coe : (PowerSeries.X ^ s * F : PowerSeries K) = f := by
       rw [← f.single_order_mul_powerSeriesPart, hs, hF, PowerSeries.coe_mul, PowerSeries.coe_pow,
-        PowerSeries.coe_X, ← single_pow]
+        PowerSeries.coe_X, single_pow, nsmul_eq_mul, mul_one, one_pow]
     rw [← hf_coe]
     obtain ⟨P, hP⟩ := exists_pol_int_val_lt K (PowerSeries.X ^ s * F) γ
     use ↑P
@@ -879,7 +879,7 @@ theorem tendsto_valuation (a : (Polynomial.idealX K).adicCompletion (RatFunc K))
     simp only [Set.setOf_subset_setOf]
     set γ := Valued.v a / (↑(Multiplicative.ofAdd (1 : ℤ)) : ℤₘ₀) with h_aγ
     have γ_ne_zero : γ ≠ 0 := by
-      rw [Ne.def, _root_.div_eq_zero_iff, Valuation.zero_iff]
+      rw [ne_eq, _root_.div_eq_zero_iff, Valuation.zero_iff]
       simpa only [WithZero.coe_ne_zero, or_false]
     use Units.mk0 γ γ_ne_zero
     intro y val_y b diff_b_y
