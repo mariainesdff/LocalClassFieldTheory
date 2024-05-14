@@ -47,7 +47,7 @@ theorem trivial_expExtensionOnUnits_eq_one : expExtensionOnUnits K K = 1 := by
     have hz : ∃ u : Kˣ, Valued.v (u : K) = (z : ℤₘ₀) := by
       have hd : IsDiscrete hv.v := inferInstance
       obtain ⟨k, hk⟩ := hd.surj z
-      have hk0 : k ≠ 0 := by rw [Ne.def, ← Valuation.zero_iff hv.v, hk]; exact coe_ne_zero
+      have hk0 : k ≠ 0 := by rw [ne_eq, ← Valuation.zero_iff hv.v, hk]; exact coe_ne_zero
       exact ⟨IsUnit.unit (isUnit_iff_ne_zero.mpr hk0), hk⟩
     obtain ⟨u, hu⟩ := hz
     use u
