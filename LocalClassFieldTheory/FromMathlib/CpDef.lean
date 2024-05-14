@@ -159,7 +159,7 @@ instance : RankOne (PadicComplex.valuedField p).v where
   nontrivial' := by
     use p
     haveI hp : Nat.Prime p := hp.1
-    simp only [valuation_p, one_div, Ne.def, inv_eq_zero, Nat.cast_eq_zero, inv_eq_one,
+    simp only [valuation_p, one_div, ne_eq, inv_eq_zero, Nat.cast_eq_zero, inv_eq_one,
       Nat.cast_eq_one]
     exact ⟨hp.ne_zero, hp.ne_one⟩
 
