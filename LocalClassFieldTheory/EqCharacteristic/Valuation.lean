@@ -72,7 +72,7 @@ instance : DiscreteValuationRing (𝓞 p K) :=
 variable {p}
 
 theorem valuation_X_ne_zero : Valued.v (algebraMap (RatFunc 𝔽_[p]) K X) ≠ (0 : ℤₘ₀) := by
-  simp only [Ne.def, _root_.map_eq_zero, RatFunc.X_ne_zero, not_false_iff]
+  simp only [ne_eq, _root_.map_eq_zero, RatFunc.X_ne_zero, not_false_iff]
 
 /-- The ramification index of an equal characteristic local field `K` is given by the
   additive valuation of the element `(X : K)`. -/
