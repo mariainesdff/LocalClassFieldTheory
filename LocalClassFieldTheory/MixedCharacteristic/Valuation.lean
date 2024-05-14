@@ -82,7 +82,7 @@ instance : DiscreteValuationRing (𝓞 p K) :=
 variable {p}
 
 theorem valuation_p_ne_zero : Valued.v (p : K) ≠ (0 : ℤₘ₀) := by
-  simp only [Ne.def, Valuation.zero_iff, Nat.cast_eq_zero, hp.1.ne_zero, not_false_iff]
+  simp only [ne_eq, Valuation.zero_iff, Nat.cast_eq_zero, hp.1.ne_zero, not_false_iff]
 
 /-- The ramification index of a mixed characteristic local field `K` is given by the
   additive valuation of the element `(p : K)`. -/
@@ -94,8 +94,7 @@ scoped notation "e" => MixedCharLocalField.ramificationIndex
 variable (p)
 
 /-- The local field `Q_p p` is unramified. -/
-theorem is_unramified_qP : e (Q_p p) = 1 :=
-  by
+theorem is_unramified_qP : e (Q_p p) = 1 := by
   rw [ramificationIndex, neg_eq_iff_eq_neg, ← toAdd_ofAdd (-1 : ℤ)]
   apply congr_arg
   rw [← WithZero.coe_inj, ← Padic'.valuation_p p, WithZero.coe_unzero, ←
@@ -105,22 +104,19 @@ theorem is_unramified_qP : e (Q_p p) = 1 :=
 /-- A ring equivalence between `Z_p p` and the valuation subring of `Q_p p` viewed as a mixed
   characteristic local field. -/
 noncomputable def PadicInt.equivValuationSubring :
-    Z_p p ≃+* ↥(MixedCharLocalField.WithZero.valued p (Q_p p)).v.valuationSubring
-    where
+    Z_p p ≃+* ↥(MixedCharLocalField.WithZero.valued p (Q_p p)).v.valuationSubring where
   toFun x := by
     use x.1
-    have heq :
-      (MixedCharLocalField.WithZero.valued p (Q_p p)).v x.val =
-        extendedValuation (Q_p p) (Q_p p) x.val :=
-      by rfl
+    have heq : (MixedCharLocalField.WithZero.valued p (Q_p p)).v x.val =
+        extendedValuation (Q_p p) (Q_p p) x.val := by rfl
     rw [Valuation.mem_valuationSubring_iff, heq, trivial_extension_eq_valuation (Q_p p)]
     exact x.2
   invFun x := by
     use x.1
     rw [Valuation.mem_valuationSubring_iff, ← trivial_extension_eq_valuation (Q_p p)]
     exact x.2
-  left_inv x := by simp only [SetLike.eta]
-  right_inv x := by simp only [SetLike.eta]
+  left_inv x   := by simp only [SetLike.eta]
+  right_inv x  := by simp only [SetLike.eta]
   map_mul' x y := by simp only [Submonoid.coe_mul, Subsemiring.coe_toSubmonoid, Submonoid.mk_mul_mk]
   map_add' x y := by simp only [Subsemiring.coe_add, AddMemClass.mk_add_mk]
 
