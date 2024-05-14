@@ -159,7 +159,7 @@ theorem expExtensionOnUnits_ne_zero [FiniteDimensional K L] : expExtensionOnUnit
         Valued.v (x : K) := by
       rw [RingHom.toMonoidHom_eq_coe, Units.coe_map, IsUnit.unit_spec, MonoidHom.coe_coe,
         Valuation.coeff_zero]
-    rw [hz, powExtensionOnUnits_apply, Ne.def, ← WithZero.coe_inj, coe_unzero, hv, hx, ←
+    rw [hz, powExtensionOnUnits_apply, ne_eq, ← WithZero.coe_inj, coe_unzero, hv, hx, ←
       ofAdd_neg_nat, ← ofAdd_zero, WithZero.coe_inj, RingHom.toMonoidHom_eq_coe, Units.coe_map,
         IsUnit.unit_spec, MonoidHom.coe_coe, Int.natCast_div, ofAdd_neg, ofAdd_zero, inv_eq_one,
         ofAdd_eq_one, ← Int.natCast_div, Int.natCast_eq_zero,
@@ -218,7 +218,7 @@ theorem expExtensionOnUnits_dvd [FiniteDimensional K L] :
   obtain ⟨π, hπ⟩ := exists_Uniformizer_ofDiscrete hv.v
   set u : L := algebraMap K L (π : K) with hu_def
   have hu0 : u ≠ 0 := by
-    rw [hu_def, Ne.def, _root_.map_eq_zero]
+    rw [hu_def, ne_eq, _root_.map_eq_zero]
     exact Uniformizer_ne_zero hv.v hπ
   obtain ⟨n, hn⟩ := exists_mul_expExtensionOnUnits K (isUnit_iff_ne_zero.mpr hu0).choose
   have hu := (isUnit_iff_ne_zero.mpr hu0).choose_spec
