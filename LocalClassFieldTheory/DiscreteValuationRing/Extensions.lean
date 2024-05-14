@@ -629,6 +629,11 @@ open Extension
 
 namespace integralClosure
 
+
+--MI : Otherwise the next instance times out.
+instance :  Add (integralClosure hv.v.valuationSubring L) :=
+  @AddMemClass.add _ _ _ _ _ (integralClosure (↥Valued.v.valuationSubring) L)
+
 /-- The integral closure of the the valuation subring of `K` in `L` is a discrete valuation ring.
   (Chapter 2, Section 2, Proposition 3 in Serre's Local Fields) -/
 instance discreteValuationRing_of_finite_extension [FiniteDimensional K L] :
