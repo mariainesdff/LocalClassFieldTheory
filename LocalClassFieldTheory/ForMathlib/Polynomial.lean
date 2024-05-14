@@ -61,7 +61,7 @@ def idealX : IsDedekindDomain.HeightOneSpectrum (Polynomial K)
     where
   asIdeal := Ideal.span {X}
   isPrime := by rw [Ideal.span_singleton_prime]; exacts [prime_X, X_ne_zero]
-  ne_bot := by rw [Ne.def, Ideal.span_singleton_eq_bot]; exact X_ne_zero
+  ne_bot  := by rw [ne_eq, Ideal.span_singleton_eq_bot]; exact X_ne_zero
 
 @[simp]
 theorem idealX_span : (idealX K).asIdeal = Ideal.span {Polynomial.X} :=
