@@ -338,13 +338,15 @@ section HahnSeries
 
 namespace HahnSeries
 
-theorem single_pow {R : Type _} [Ring R] (n : ℕ) :
+/-MI : There is now a lemma `single_pow` in Mathlib that is a generalization of this one. -/
+
+/- theorem single_pow {R : Type _} [Ring R] (n : ℕ) :
     HahnSeries.single (n : ℤ) (1 : R) = HahnSeries.single (1 : ℤ) 1 ^ n := by
   induction' n with n h_ind
   · simp only [Nat.zero_eq, Int.ofNat_eq_coe, ZMod.natCast_self, zpow_zero]
     rfl
   · rw [← Int.ofNat_add_one_out, pow_succ', ← h_ind, HahnSeries.single_mul_single, one_mul,
-      add_comm]
+      add_comm] -/
 
 variable {K : Type _} [Field K]
 
@@ -357,10 +359,11 @@ theorem single_inv (d : ℤ) (α : K) (hα : α ≠ 0) :
 theorem single_zpow (n : ℤ) :
     HahnSeries.single (n : ℤ) (1 : K) = HahnSeries.single (1 : ℤ) 1 ^ n := by
   induction' n with n_pos n_neg
-  · apply single_pow
+  · simp only [Int.ofNat_eq_coe, zpow_natCast, single_pow, nsmul_eq_mul, mul_one, one_pow]
   · rw [Int.negSucc_coe, Int.ofNat_add, Nat.cast_one, ← inv_one, ←
       single_inv (n_neg + 1 : ℤ) (1 : K) one_ne_zero, zpow_neg, ← Nat.cast_one, ← Int.ofNat_add,
-      Nat.cast_one, inv_inj, zpow_natCast, single_pow, inv_one]
+      Nat.cast_one, inv_inj, zpow_natCast]
+    simp only [Nat.cast_add, Nat.cast_one, inv_one, single_pow, nsmul_eq_mul, mul_one, one_pow]
 
 
 end HahnSeries
