@@ -310,9 +310,9 @@ relating the powers and the inverse of the Hahn series `single 1 1` with the Hah
 `single n 1` for `n : ℤ`.
 -/
 
-section Polynomial
+-- section Polynomial
 
-variable {K : Type _} [Field K]
+-- variable {K : Type _} [Field K]
 
 -- Done in #12245
 /- namespace RatFunc
@@ -348,24 +348,26 @@ namespace HahnSeries
   · rw [← Int.ofNat_add_one_out, pow_succ', ← h_ind, HahnSeries.single_mul_single, one_mul,
       add_comm] -/
 
-variable {K : Type _} [Field K]
+-- variable {K : Type _} [Field K]
 
-theorem single_inv (d : ℤ) (α : K) (hα : α ≠ 0) :
-    (HahnSeries.single (d : ℤ) (α : K))⁻¹ = HahnSeries.single (-d) (α⁻¹ : K) := by
-  rw [inv_eq_of_mul_eq_one_left];
-  simp only [HahnSeries.single_mul_single, add_left_neg, inv_mul_cancel hα]
-  rfl
+-- theorem single_inv (d : ℤ) (α : K) (hα : α ≠ 0) :
+--     (HahnSeries.single (d : ℤ) (α : K))⁻¹ = HahnSeries.single (-d) (α⁻¹ : K) := by
+--     exact?
+--   -- rw [inv_eq_of_mul_eq_one_left];
+--   -- simp only [HahnSeries.single_mul_single, add_left_neg, inv_mul_cancel hα]
+--   -- rfl
 
-theorem single_zpow (n : ℤ) :
-    HahnSeries.single (n : ℤ) (1 : K) = HahnSeries.single (1 : ℤ) 1 ^ n := by
-  induction' n with n_pos n_neg
-  · simp only [Int.ofNat_eq_coe, zpow_natCast, single_pow, nsmul_eq_mul, mul_one, one_pow]
-  · rw [Int.negSucc_coe, Int.ofNat_add, Nat.cast_one, ← inv_one, ←
-      single_inv (n_neg + 1 : ℤ) (1 : K) one_ne_zero, zpow_neg, ← Nat.cast_one, ← Int.ofNat_add,
-      Nat.cast_one, inv_inj, zpow_natCast]
-    simp only [Nat.cast_add, Nat.cast_one, inv_one, single_pow, nsmul_eq_mul, mul_one, one_pow]
+-- theorem single_zpow (n : ℤ) :
+--     HahnSeries.single (n : ℤ) (1 : K) = HahnSeries.single (1 : ℤ) 1 ^ n := by
+--     exact?
+--   -- induction' n with n_pos n_neg
+--   -- · simp only [Int.ofNat_eq_coe, zpow_natCast, single_pow, nsmul_eq_mul, mul_one, one_pow]
+--   -- · rw [Int.negSucc_coe, Int.ofNat_add, Nat.cast_one, ← inv_one, ←
+--   --     single_inv (n_neg + 1 : ℤ) (1 : K) one_ne_zero, zpow_neg, ← Nat.cast_one, ← Int.ofNat_add,
+--   --     Nat.cast_one, inv_inj, zpow_natCast]
+--   --   simp only [Nat.cast_add, Nat.cast_one, inv_one, single_pow, nsmul_eq_mul, mul_one, one_pow]
 
 
-end HahnSeries
+-- end HahnSeries
 
-end HahnSeries
+-- end HahnSeries
