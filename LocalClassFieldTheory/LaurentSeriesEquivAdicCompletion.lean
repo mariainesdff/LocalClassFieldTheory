@@ -5,7 +5,6 @@ Authors: María Inés de Frutos-Fernández, Filippo A. E. Nuccio
 -/
 import Mathlib.Algebra.GroupWithZero.WithZero
 import LocalClassFieldTheory.DiscreteValuationRing.Basic
-import LocalClassFieldTheory.ForMathlib.Data.Set.Lattice
 import LocalClassFieldTheory.ForMathlib.RingTheory.DedekindDomain.Ideal
 import LocalClassFieldTheory.ForMathlib.Topology.UniformSpace.AbstractCompletion
 import Mathlib.RingTheory.PowerSeries.Inverse
@@ -574,6 +573,8 @@ but valued in the discrete space `K`. That sufficiently negative coefficients va
 def Cauchy.mk_LaurentSeries {ℱ : Filter (LaurentSeries K)} (hℱ : Cauchy ℱ) : LaurentSeries K :=
   HahnSeries.mk (fun d => coeff hℱ d) (Set.IsWF.isPWO (coeff_support_bdd hℱ).wellFoundedOn_lt)
 
+set_option pp.proofs true
+
 theorem Cauchy.coeff_eventually_equal {ℱ : Filter (LaurentSeries K)} (hℱ : Cauchy ℱ) :
     ∀ D : ℤ, ∀ᶠ f : LaurentSeries K in ℱ, ∀ d, d < D → (coeff hℱ) d = f.coeff d := by
   intro D
@@ -592,18 +593,23 @@ theorem Cauchy.coeff_eventually_equal {ℱ : Filter (LaurentSeries K)} (hℱ : C
     simp only [Set.mem_Iio, Set.subset_iInter₂_iff, Set.setOf_subset_setOf]
     intro m hm f hd
     exact hd _ (lt_trans hm H)
-  · rw [sInterIio_eq_sInterIio_inter_Ico (min_le_right N D),
-      Filter.inter_mem_iff, min_eq_left (min_le_right _ _), ← hN₀]
+  · rw [← Set.Iio_union_Ico_eq_Iio (le_of_not_gt H)]
+    rw [Set.biInter_union]
+    simp only [Set.mem_Iio, Set.mem_Ico, inter_mem_iff]
     constructor
-    · rw [hN₀, min_eq_left (not_lt.mp H), hX]
-      convert (exists_lb_coeff_ne hℱ).choose_spec using 1
+    · convert (exists_lb_coeff_ne hℱ).choose_spec using 1
       ext f
       simp only [Set.mem_Iio, Set.mem_iInter, Set.mem_setOf_eq]
       rfl
-    · have : (⋂ (n : ℤ) (_ : n ∈ Set.Ico N D), X n) = ⋂ n : (Finset.Ico N D : Set ℤ), X n := by
-        simp only [Set.mem_Ico, Set.iInter_coe_set, Finset.mem_coe, Finset.mem_Ico, Subtype.coe_mk]
-      simp only [this, Filter.iInter_mem]
-      intro d
+    · have : ⋂ x, ⋂ (_ : (exists_lb_coeff_ne hℱ).choose ≤ x ∧ x < D), X x =
+        (⋂ (n : ℤ) (_ : n ∈ Set.Ico N D), X n) := by
+        simp only [Set.mem_Ico]
+        apply Set.iInter_congr
+        intro
+        refine Set.iInter_congr_Prop ?h.pq (congrFun rfl)
+        omega
+      rw [this, biInter_mem (Set.finite_Ico N D)]
+      intro d _
       apply coeff_tendso hℱ
       simp only [principal_singleton, mem_pure]
       rfl
