@@ -592,8 +592,8 @@ theorem Cauchy.coeff_eventually_equal {ℱ : Filter (LaurentSeries K)} (hℱ : C
     simp only [Set.mem_Iio, Set.subset_iInter₂_iff, Set.setOf_subset_setOf]
     intro m hm f hd
     exact hd _ (lt_trans hm H)
-  · rw [set_inter_Iio (min_le_right N D), Filter.inter_mem_iff, min_eq_left (min_le_right _ _), ←
-      hN₀]
+  · rw [sInterIio_eq_sInterIio_inter_Ico (min_le_right N D),
+      Filter.inter_mem_iff, min_eq_left (min_le_right _ _), ← hN₀]
     constructor
     · rw [hN₀, min_eq_left (not_lt.mp H), hX]
       convert (exists_lb_coeff_ne hℱ).choose_spec using 1

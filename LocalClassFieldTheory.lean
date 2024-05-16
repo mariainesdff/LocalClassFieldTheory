@@ -16,7 +16,7 @@ import LocalClassFieldTheory.DiscreteValuationRing.TrivialExtension
 import LocalClassFieldTheory.EqCharacteristic.Basic
 import LocalClassFieldTheory.EqCharacteristic.Valuation
 -- ForMathlib folder *complete*
-import LocalClassFieldTheory.ForMathlib.Data.Set.Lattice
+import LocalClassFieldTheory.ForMathlib.Data.Set.Lattice -- In PR #12961
 import LocalClassFieldTheory.ForMathlib.FieldTheory.Minpoly.IsIntegrallyClosed
 import LocalClassFieldTheory.ForMathlib.NumberTheory.Padics.PadicIntegers
 import LocalClassFieldTheory.ForMathlib.RingTheory.DedekindDomain.Ideal
