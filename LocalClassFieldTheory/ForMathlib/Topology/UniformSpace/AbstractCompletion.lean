@@ -25,28 +25,21 @@ variable {α β : Type _} [UniformSpace α] [TopologicalSpace β]
 
 variable (pkg : AbstractCompletion α) (pkg' : AbstractCompletion α)
 
-/-- The topological space underlying a uniform space -/
-def top_pkg : TopologicalSpace pkg.space :=
-  pkg.uniformStruct.toTopologicalSpace
-
-attribute [local instance] top_pkg
-
-theorem extend_compare_extend [T3Space β] (f : α → β) (cont_f : Continuous f)
-    (hf :
-      ∀ a : pkg.space,
-        Filter.Tendsto f (Filter.comap pkg.coe (𝓝 a)) (𝓝 ((pkg.denseInducing.extend f) a))) :
-    pkg.denseInducing.extend f ∘ pkg'.compare pkg = pkg'.denseInducing.extend f :=
-  by
-  have : ∀ x : α, (pkg.denseInducing.extend f ∘ pkg'.compare pkg) (pkg'.coe x) = f x :=
-    by
-    intro a
-    rw [Function.comp_apply, compare_coe]
-    apply DenseInducing.extend_eq _ cont_f
-  refine' (DenseInducing.extend_unique (AbstractCompletion.denseInducing _) this _).symm
-  letI := pkg'.uniformStruct
-  letI := pkg.uniformStruct
-  refine' Continuous.comp _ (uniformContinuous_compare pkg' pkg).continuous
+theorem extend_compare_extend
+  [T3Space β] (f : α → β) (cont_f : Continuous f) :
+  let _ := pkg.uniformStruct.toTopologicalSpace
+  let _ := pkg'.uniformStruct.toTopologicalSpace
+  (_ : ∀ a : pkg.space,
+    Filter.Tendsto f (Filter.comap pkg.coe (𝓝 a)) (𝓝 ((pkg.denseInducing.extend f) a))) →
+    pkg.denseInducing.extend f ∘ pkg'.compare pkg = pkg'.denseInducing.extend f := by
+  let _ := pkg'.uniformStruct
+  let _ := pkg.uniformStruct
+  intro _ _ h
+  have : ∀ x : α, (pkg.denseInducing.extend f ∘ pkg'.compare pkg) (pkg'.coe x) = f x := by
+    simp only [Function.comp_apply, compare_coe, DenseInducing.extend_eq _ cont_f, implies_true]
+  apply (DenseInducing.extend_unique (AbstractCompletion.denseInducing _) this
+    (Continuous.comp _ (uniformContinuous_compare pkg' pkg).continuous )).symm
   apply DenseInducing.continuous_extend
-  use fun a => ⟨(pkg.denseInducing.extend f) a, hf a⟩
+  exact fun a => ⟨(pkg.denseInducing.extend f) a, h a⟩
 
 end AbstractCompletion
