@@ -16,6 +16,7 @@ the preimage in `α` of `𝓝 a` tends to `𝓝 (f.extend a : β)`, then the com
 between `pkg` and `pkg'` composed with the extension of `f` to `pkg`` coincides with the
 extension of `f` to `pkg'` -/
 
+-- **FE** This is being PR'd in #12979
 
 namespace AbstractCompletion
 
