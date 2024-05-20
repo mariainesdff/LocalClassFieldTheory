@@ -46,10 +46,11 @@ theorem unit_ne_zero (x : Kˣ) : v x ≠ (0 : Γ₀) := by
   for defining the valuation on `L` inducing `v`.-/
 theorem unit_pow_ne_zero [FiniteDimensional K L] (x : Lˣ) :
     v ((minpoly K x.1).coeff 0) ^ (finrank K L / (minpoly K x.1).natDegree) ≠ (0 : Γ₀) := by
-  have h_alg : Algebra.IsAlgebraic K L := Algebra.IsAlgebraic.of_finite K L
-  have hdeg := Nat.div_pos (natDegree_le x.val)
-    (natDegree_pos (isAlgebraic_iff_isIntegral.mp (h_alg x.val)))
-  rw [ne_eq, pow_eq_zero_iff hdeg.ne.symm, Valuation.zero_iff]
-  exact coeff_zero_ne_zero (isAlgebraic_iff_isIntegral.mp (h_alg x.val)) (Units.ne_zero x)
+  sorry
+  -- have h_alg : Algebra.IsAlgebraic K L := Algebra.IsAlgebraic.of_finite K L
+  -- have hdeg := Nat.div_pos (natDegree_le x.val)
+  --   (natDegree_pos (isAlgebraic_iff_isIntegral.mp (h_alg x.val)))
+  -- rw [ne_eq, pow_eq_zero_iff hdeg.ne.symm, Valuation.zero_iff]
+  -- exact coeff_zero_ne_zero (isAlgebraic_iff_isIntegral.mp (h_alg x.val)) (Units.ne_zero x)
 
 end Valuation

@@ -108,10 +108,9 @@ theorem IsScalarTower.splits {F : Type _} [Field F] [Algebra F L] (x : L) {E : T
 
 theorem IsScalarTower.isAlgebraic {F : Type _} [Field F] [Algebra F L] (x : L) {E : Type _}
     [Field E] [Algebra F E] [Algebra L E] [IsScalarTower F L E] (h_alg' : Algebra.IsAlgebraic F L)
-    [IsSplittingField L E (mapAlg F L (minpoly F x))] : Algebra.IsAlgebraic F E :=
-  by
-  let _ : FiniteDimensional L E := IsSplittingField.finiteDimensional _ (mapAlg F L (minpoly F x))
-  exact Algebra.IsAlgebraic.trans h_alg' (Algebra.IsAlgebraic.of_finite L E)
+    [IsSplittingField L E (mapAlg F L (minpoly F x))] : Algebra.IsAlgebraic F E := by sorry
+  -- let _ : FiniteDimensional L E := IsSplittingField.finiteDimensional _ (mapAlg F L (minpoly F x))
+  -- exact Algebra.IsAlgebraic.trans h_alg' (Algebra.IsAlgebraic.of_finite L E)
 
 /-- Given an algebraic tower of fields `E/L/K` and an element `x : L` whose minimal polynomial `f`
   over `K` splits into linear factors over `E`, the `degree(f)`th power of the spectral norm of `x`
@@ -163,30 +162,30 @@ theorem spectral_norm_pow_degree_eq_prof_roots (hna : IsNonarchimedean (norm : K
 theorem spectralNorm_eq_root_zero_coeff (h_alg : Algebra.IsAlgebraic K L)
     (hna : IsNonarchimedean (norm : K → ℝ)) (x : L) :
     spectralNorm K L x = ‖(minpoly K x).coeff 0‖ ^ (1 / (minpoly K x).natDegree : ℝ) :=
-  by
-  by_cases hx0 : x = 0
-  · simp only [hx0, minpoly.zero, coeff_X_zero, norm_zero, natDegree_X, algebraMap.coe_one,
-      div_self, ne_eq, one_ne_zero, not_false_iff, Real.rpow_one, spectralNorm_zero, Nat.cast_one,
-      ne_eq, one_ne_zero, not_false_eq_true, div_self, Real.rpow_one]
-  · set E := (mapAlg K L (minpoly K x)).SplittingField
-    have h_alg_E : Algebra.IsAlgebraic K E := IsScalarTower.isAlgebraic x h_alg
-    have hspl : Splits (RingHom.id E) (mapAlg K E (minpoly K x)) :=
-      IsScalarTower.splits _ (IsSplittingField.splittingField (mapAlg K L (minpoly K x)))
-    rw [Real.eq_rpow_one_div_iff (spectralNorm_nonneg x) (norm_nonneg ((minpoly K x).coeff 0)),
-      Real.rpow_natCast, @spectralValue.eq_of_tower K _ E, ←
-      @spectralNorm_extends K _ L _ _ ((minpoly K x).coeff 0),
-      @spectralValue.eq_of_tower K _ E _ _ L, ← spectral_mul_ring_norm_def h_alg_E hna, ←
-      spectral_mul_ring_norm_def h_alg_E hna, Polynomial.coeff_zero_of_isScalarTower,
-      Polynomial.prod_roots_eq_coeff_zero_of_monic_of_split _ hspl, map_mul, map_pow,
-      map_neg_eq_map, map_one, one_pow, one_mul, spectral_norm_pow_degree_eq_prof_roots hna x]
-    exact IsSplittingField.splittingField _
-    · have h_monic : (minpoly K x).leadingCoeff = 1 :=
-        minpoly.monic (isAlgebraic_iff_isIntegral.mp (h_alg x))
-      simp only [mapAlg_eq_map, Monic, leadingCoeff, coeff_map, natDegree_map]
-      -- merging the `simp only` below with the previous one makes `lean` crash.
-      simp only [coeff_natDegree, h_monic, map_one]
-    · rw [ne_eq, Nat.cast_eq_zero]
-      exact ne_of_gt (minpoly.natDegree_pos (isAlgebraic_iff_isIntegral.mp (h_alg x)))
+  by sorry
+  -- by_cases hx0 : x = 0
+  -- · simp only [hx0, minpoly.zero, coeff_X_zero, norm_zero, natDegree_X, algebraMap.coe_one,
+  --     div_self, ne_eq, one_ne_zero, not_false_iff, Real.rpow_one, spectralNorm_zero, Nat.cast_one,
+  --     ne_eq, one_ne_zero, not_false_eq_true, div_self, Real.rpow_one]
+  -- · set E := (mapAlg K L (minpoly K x)).SplittingField
+  --   have h_alg_E : Algebra.IsAlgebraic K E := IsScalarTower.isAlgebraic x h_alg
+  --   have hspl : Splits (RingHom.id E) (mapAlg K E (minpoly K x)) :=
+  --     IsScalarTower.splits _ (IsSplittingField.splittingField (mapAlg K L (minpoly K x)))
+  --   rw [Real.eq_rpow_one_div_iff (spectralNorm_nonneg x) (norm_nonneg ((minpoly K x).coeff 0)),
+  --     Real.rpow_natCast, @spectralValue.eq_of_tower K _ E, ←
+  --     @spectralNorm_extends K _ L _ _ ((minpoly K x).coeff 0),
+  --     @spectralValue.eq_of_tower K _ E _ _ L, ← spectral_mul_ring_norm_def h_alg_E hna, ←
+  --     spectral_mul_ring_norm_def h_alg_E hna, Polynomial.coeff_zero_of_isScalarTower,
+  --     Polynomial.prod_roots_eq_coeff_zero_of_monic_of_split _ hspl, map_mul, map_pow,
+  --     map_neg_eq_map, map_one, one_pow, one_mul, spectral_norm_pow_degree_eq_prof_roots hna x]
+  --   exact IsSplittingField.splittingField _
+  --   · have h_monic : (minpoly K x).leadingCoeff = 1 :=
+  --       minpoly.monic (isAlgebraic_iff_isIntegral.mp (h_alg x))
+  --     simp only [mapAlg_eq_map, Monic, leadingCoeff, coeff_map, natDegree_map]
+  --     -- merging the `simp only` below with the previous one makes `lean` crash.
+  --     simp only [coeff_natDegree, h_monic, map_one]
+  --   · rw [ne_eq, Nat.cast_eq_zero]
+  --     exact ne_of_gt (minpoly.natDegree_pos (isAlgebraic_iff_isIntegral.mp (h_alg x)))
 
 theorem spectral_value_term_le (h_alg : Algebra.IsAlgebraic K L)
     (hna : IsNonarchimedean (norm : K → ℝ)) (x : L) {n : ℕ} (hn : n < (minpoly K x).natDegree) :

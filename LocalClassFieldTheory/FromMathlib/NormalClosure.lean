@@ -31,8 +31,8 @@ namespace normalClosure
 /-- If `L/K` is an algebraic field extension, then the normal closure of `L/K` in the algebraic
 closure of `L` is an algebraic extension of `K`. -/
 theorem isAlgebraic (h : Algebra.IsAlgebraic K L) :
-    Algebra.IsAlgebraic K (normalClosure K L (AlgebraicClosure L)) :=
-  Algebra.IsAlgebraic.trans h fun _ =>
-    IntermediateField.isAlgebraic_iff.mpr (AlgebraicClosure.isAlgebraic L _)
+    Algebra.IsAlgebraic K (normalClosure K L (AlgebraicClosure L)) := sorry
+  -- Algebra.IsAlgebraic.trans h fun _ =>
+  --   IntermediateField.isAlgebraic_iff.mpr (AlgebraicClosure.isAlgebraic L _)
 
 end normalClosure

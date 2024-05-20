@@ -9,6 +9,7 @@ import LocalClassFieldTheory.ForMathlib.RingTheory.DedekindDomain.Ideal
 import LocalClassFieldTheory.ForMathlib.Topology.UniformSpace.AbstractCompletion
 import Mathlib.RingTheory.PowerSeries.Inverse
 import Mathlib.RingTheory.PowerSeries.Trunc
+import Mathlib.RingTheory.LaurentSeries
 import Mathlib.Topology.UniformSpace.AbstractCompletion
 
 import LocalClassFieldTheory.ForMathlib.DiscreteUniformity -- Porting note : added
@@ -124,6 +125,8 @@ variable (K : Type _) [Field K]
 -- end Polynomial
 ---`*1` to here is in PR #11720
 namespace PowerSeries
+
+open LaurentSeries
 
 /-- The prime ideal `(X)` of of `power_series K`, as a term of the `height_one_spectrum`. -/
 def idealX (K : Type _) [Field K] : IsDedekindDomain.HeightOneSpectrum (PowerSeries K)

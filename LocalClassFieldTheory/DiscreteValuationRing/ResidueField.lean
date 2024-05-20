@@ -79,11 +79,8 @@ instance [IsSeparable K L] : IsNoetherian K₀ S := IsIntegralClosure.isNoetheri
 instance : IsLocalRingHom (algebraMap K₀ S) := by
   constructor
   intro _ ha
-  have h : RingHom.ker (algebraMap K₀ S) ≤ LocalRing.maximalIdeal K₀ :=
-    LocalRing.le_maximalIdeal (RingHom.ker_ne_top _)
-  obtain ⟨Q, hQ_max, hQ⟩ :=
-    exists_ideal_over_maximal_of_isIntegral (le_integralClosure_iff_isIntegral.mp (le_refl _))
-      (LocalRing.maximalIdeal K₀) h
+  obtain ⟨Q, hQ_max, hQ⟩ := exists_ideal_over_maximal_of_isIntegral _
+    (le_maximalIdeal (RingHom.ker_ne_top (algebraMap K₀ S)))
   rw [← @not_not (IsUnit _), ← mem_nonunits_iff, ← mem_maximalIdeal] at ha ⊢
   rwa [← hQ, mem_comap, eq_maximalIdeal hQ_max]
 
