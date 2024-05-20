@@ -25,6 +25,7 @@ open UniqueFactorizationMonoid
 
 open scoped Classical
 
+-- *FAE* Both lemmas are in #13065
 namespace NormalizationMonoid
 
 theorem count_normalizedFactors_eq_count_normalizedFactors_span {R : Type _} [CommRing R]
