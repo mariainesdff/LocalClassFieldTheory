@@ -125,13 +125,7 @@ variable (K : Type _) [Field K]
 -- end Polynomial
 ---`*1` to here is in PR #11720
 namespace PowerSeries
-
-/-- The prime ideal `(X)` of `PowerSeries K`, as a term of the `HeightOneSpectrum`. -/
-def idealX (K : Type _) [Field K] : IsDedekindDomain.HeightOneSpectrum (PowerSeries K) where
-  asIdeal := Ideal.span {X}
-  isPrime := PowerSeries.span_X_isPrime
-  ne_bot  := by rw [ne_eq, Ideal.span_singleton_eq_bot]; exact X_ne_zero
-
+--from here `*2`...
 theorem normUnit_X : normUnit (PowerSeries.X : PowerSeries K) = 1 := by
   dsimp only [normUnit];
   rw [inv_eq_one, ← Units.val_eq_one, Unit_of_divided_by_X_pow_order_nonzero,
@@ -139,7 +133,14 @@ theorem normUnit_X : normUnit (PowerSeries.X : PowerSeries K) = 1 := by
 
 theorem X_eq_normalizeX : (PowerSeries.X : PowerSeries K) = normalize PowerSeries.X := by
   simp only [normalize_apply, PowerSeries.normUnit_X, Units.val_one, mul_one]
-#where
+---`*1` to here is in PR #13063
+
+/-- The prime ideal `(X)` of `PowerSeries K`, as a term of the `HeightOneSpectrum`. -/
+def idealX (K : Type _) [Field K] : IsDedekindDomain.HeightOneSpectrum (PowerSeries K) where
+  asIdeal := Ideal.span {X}
+  isPrime := PowerSeries.span_X_isPrime
+  ne_bot  := by rw [ne_eq, Ideal.span_singleton_eq_bot]; exact X_ne_zero
+
 open multiplicity UniqueFactorizationMonoid RatFunc Classical
 
 theorem factors_in_pol_eq_powerSeries (P : Polynomial K) (hP : P ≠ 0) :
