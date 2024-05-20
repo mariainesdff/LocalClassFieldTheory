@@ -133,8 +133,9 @@ theorem normUnit_X : normUnit (PowerSeries.X : PowerSeries K) = 1 := by
 
 theorem X_eq_normalizeX : (PowerSeries.X : PowerSeries K) = normalize PowerSeries.X := by
   simp only [normalize_apply, PowerSeries.normUnit_X, Units.val_one, mul_one]
----`*1` to here is in PR #13063
+---`*2` to here is in PR #13063
 
+--from here `*3`...
 /-- The prime ideal `(X)` of `PowerSeries K`, as a term of the `HeightOneSpectrum`. -/
 def idealX (K : Type _) [Field K] : IsDedekindDomain.HeightOneSpectrum (PowerSeries K) where
   asIdeal := Ideal.span {X}
@@ -223,7 +224,7 @@ theorem intValuation_of_X :
   convert Associates.count_self hX
 
 end PowerSeries
-
+---`*3` to here is in PR #13064
 namespace LaurentSeries
 
 section Valuation
