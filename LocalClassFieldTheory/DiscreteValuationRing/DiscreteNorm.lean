@@ -137,7 +137,7 @@ theorem eq_root_zero_coeff (h_alg : Algebra.IsAlgebraic K L) (x : L) :
     discreteNormExtension h_alg x =
       withZeroMultIntToNNReal (base_ne_zero K hv.v) (Valued.v ((minpoly K x).coeff 0)) ^
         (1 / (minpoly K x).natDegree : ℝ) :=
-  @spectralNorm_eq_root_zero_coeff K (nontriviallyDiscretelyNormedField K) L _ _ h_alg
+  @spectralNorm_eq_root_zero_coeff K (nontriviallyDiscretelyNormedField K) _ L _ _ h_alg
     (norm_isNonarchimedean K) x
 
 theorem pow_eq_pow_root_zero_coeff' (h_alg : Algebra.IsAlgebraic K L) (x : L) (n : ℕ) :
