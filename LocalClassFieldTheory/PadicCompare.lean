@@ -101,8 +101,7 @@ def Q_p : Type _ :=
 instance : IsDiscrete (@Valued.v (Q_p p) _ ℤₘ₀ _ _) :=
   Completion.isDiscrete _ _ _
 
-instance : NormedField (Q_p p) :=
-  RankOneValuation.ValuedField.toNormedField (Q_p p) ℤₘ₀
+instance : NormedField (Q_p p) := Valued.toNormedField (Q_p p) ℤₘ₀
 
 /-- The abstract completion of `ℚ` whose underlying space is `Q_p`. -/
 def padicPkg' :
@@ -219,7 +218,7 @@ theorem uniformInducing_cast : letI := ((@padicValued p _))
         (withZeroMultIntToNNReal_strictMono hp_one), ← neg_sub, Valuation.map_neg] at h
   · rw [(Valued.hasBasis_uniformity ℚ ℤₘ₀).mem_iff]
     rintro ⟨T, ⟨ε, ⟨hε, H⟩⟩, h⟩
-    obtain ⟨M, hM⟩ := Real.exists_strictMono_lt (withZeroMultIntToNNReal_strictMono hp_one) hε
+    obtain ⟨M, hM⟩ := Real.exists_lt_of_strictMono (withZeroMultIntToNNReal_strictMono hp_one) hε
     refine' ⟨M, by trivial, fun q hq => _⟩
     simp only [Set.mem_setOf_eq, dist] at H hq
     have : (↑q.fst, ↑q.snd) ∈ T := by
