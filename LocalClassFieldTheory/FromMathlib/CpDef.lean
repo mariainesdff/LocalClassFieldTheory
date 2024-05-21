@@ -7,9 +7,9 @@ import Mathlib.NumberTheory.Padics.PadicNumbers
 import Mathlib.RingTheory.Valuation.Integers
 import Mathlib.RingTheory.Valuation.RankOne
 import Mathlib.Topology.MetricSpace.CauSeqFilter
+import Mathlib.Topology.Algebra.NormedValued
 import Mathlib.Topology.Algebra.ValuedField
 import LocalClassFieldTheory.FromMathlib.SpectralNormUnique
-import LocalClassFieldTheory.FromMathlib.NormedValued
 
 #align_import from_mathlib.Cp_def
 
@@ -45,7 +45,7 @@ p-adic, p adic, padic, norm, valuation, cauchy, completion, p-adic completion
 
 noncomputable section
 
-open RankOneValuation Valuation
+open Valued Valuation
 
 open scoped NNReal
 
@@ -166,25 +166,25 @@ instance : RankOne (PadicComplex.valuedField p).v where
 /-- `ℂ_[p]` is a normed field, where the norm corresponds to the extension of the `p`-adic
   valuation.-/
 instance C_p.NormedField : NormedField ℂ_[p] :=
-  ValuedField.toNormedField _ _
+  Valued.toNormedField _ _
 
 instance : NormedField (UniformSpace.Completion (QPAlg p)) := C_p.NormedField p
 
 /-- The norm on `ℂ_[p]` agrees with the valuation. -/
-theorem normDef : (norm : ℂ_[p] → ℝ) = RankOneValuation.normDef := rfl
+theorem normDef : (Norm.norm : ℂ_[p] → ℝ) = Valued.norm := rfl
 
 /-- The norm on `ℂ_[p]` extends the norm on `Q_p_alg p`. -/
 theorem norm_extends (x : QPAlg p) : ‖(x : ℂ_[p])‖ = ‖x‖ := by
   by_cases hx : x = 0
   · rw [hx, coe_zero, norm_zero, norm_zero]
-  · erw [normDef, RankOneValuation.normDef, valuation_extends, MonoidWithZeroHom.coe_mk]
+  · erw [normDef, Valued.norm, valuation_extends, MonoidWithZeroHom.coe_mk]
     rfl
 
 /-- The `ℝ≥0`-valued norm on `ℂ_[p]` extends that on `Q_p_alg p`. -/
 theorem nnnorm_extends (x : QPAlg p) : ‖(x : ℂ_[p])‖₊ = ‖x‖₊ := by ext; exact norm_extends p x
 
 /-- The norm on `ℂ_[p]` is nonarchimedean. -/
-theorem isNonarchimedean : IsNonarchimedean (norm : ℂ_[p] → ℝ) := by
+theorem isNonarchimedean : IsNonarchimedean (Norm.norm : ℂ_[p] → ℝ) := by
   intro x y
   refine' UniformSpace.Completion.induction_on₂ x y _ _
   · exact
