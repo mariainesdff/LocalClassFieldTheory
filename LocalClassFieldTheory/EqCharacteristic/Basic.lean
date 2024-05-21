@@ -109,7 +109,7 @@ instance : RankOne (@FpXCompletion.WithZero.valued p _).v :=
   DiscreteValuation.rankOne Valued.v
 
 instance : NormedField (FpXCompletion p) :=
-  ValuedField.toNormedField (FpXCompletion p) ℤₘ₀
+  Valued.toNormedField (FpXCompletion p) ℤₘ₀
 
 theorem mem_FpX_int_completion' {x : FpXCompletion p} : x ∈ FpXIntCompletion p ↔ ‖x‖ ≤ 1 := by
   erw [FpXCompletion.mem_FpXIntCompletion, norm_le_one_iff_val_le_one]
@@ -118,7 +118,7 @@ variable (p)
 
 /-- `isomLaurent` is the ring isomorphism `FpX_completion ≃+* (LaurentSeries 𝔽_[p])`. -/
 def isomLaurent : LaurentSeries 𝔽_[p] ≃+* FpXCompletion p :=
-  CompletionLaurentSeries.LaurentSeriesRingEquiv 𝔽_[p]
+  sorry --CompletionLaurentSeries.LaurentSeriesRingEquiv 𝔽_[p]
 
 end FpXCompletion
 
@@ -127,7 +127,7 @@ namespace FpXIntCompletion
 /-- `integers_equiv_power_series` is the ring isomorphism `(power_series 𝔽_[p])` ≃+*
   `FpX_int_completion`. -/
 noncomputable def integers_equiv_powerSeries : PowerSeries 𝔽_[p] ≃+* FpXIntCompletion p :=
-  CompletionLaurentSeries.powerSeriesRingEquiv 𝔽_[p]
+  sorry --CompletionLaurentSeries.powerSeriesRingEquiv 𝔽_[p]
 
 theorem residueField_powerSeries_card :
     Fintype.card (LocalRing.ResidueField (PowerSeries 𝔽_[p])) = p := by
@@ -249,7 +249,7 @@ theorem X_mem_int_completion : X p ∈ FpXIntCompletion p := by
   exact le_of_lt norm_X_lt_one
 
 theorem norm_isNonarchimedean : IsNonarchimedean (norm : FpXCompletion p → ℝ) :=
-  normDef_isNonarchimedean _ _
+  Valued.norm_isNonarchimedean _ _
 
 end FpXCompletion
 
@@ -260,7 +260,7 @@ theorem X_ne_zero : FpXIntCompletion.X p ≠ 0 := by
   rw [FpXIntCompletion.X, ne_eq, h0, Subtype.mk_eq_mk, _root_.map_eq_zero]
   exact RatFunc.X_ne_zero
 
-open CompletionLaurentSeries LaurentSeries
+open /- CompletionLaurentSeries  -/LaurentSeries
 
 theorem dvd_of_norm_lt_one {F : FpXIntCompletion p} :
     Valued.v (F : FpXCompletion p) < (1 : ℤₘ₀) → FpXIntCompletion.X p ∣ F := by
@@ -310,14 +310,14 @@ theorem norm_lt_one_of_dvd {F : FpXIntCompletion p} :
   refine' dvd_of_mul_left_eq Z _
   apply_fun HahnSeries.ofPowerSeries ℤ 𝔽_[p] using HahnSeries.ofPowerSeries_injective
   apply_fun LaurentSeriesRingEquiv 𝔽_[p]
-  rw [← LaurentSeries.coe_powerSeries]
+  sorry/- rw [← LaurentSeries.coe_powerSeries]
   erw [PowerSeries.coe_mul, _root_.map_mul, hZ, h_fG, ← coe_X_compare 𝔽_[p], h_fy,
     RingEquiv.symm_apply_apply]
-  rfl
+  rfl -/
 
 theorem norm_lt_one_iff_dvd (F : FpXIntCompletion p) :
     ‖(F : FpXCompletion p)‖ < 1 ↔ FpXIntCompletion.X p ∣ F := by
-  have H : ‖(F : FpXCompletion p)‖ = RankOneValuation.normDef (F : FpXCompletion p) := rfl
+  have H : ‖(F : FpXCompletion p)‖ = Valued.norm (F : FpXCompletion p) := rfl
   suffices Valued.v (F : FpXCompletion p) < (1 : ℤₘ₀) ↔ FpXIntCompletion.X p ∣ F by
     rwa [H, RankOneValuation.norm_lt_one_iff_val_lt_one]
   exact ⟨dvd_of_norm_lt_one p, norm_lt_one_of_dvd p⟩
