@@ -87,21 +87,19 @@ theorem aeval_conj (σ : L ≃ₐ[K] L) (x : L) : (Polynomial.aeval (σ x)) (min
 
 /-- If `y : L` is a root of `minpoly K x`, then `minpoly K y = minpoly K x`. -/
 theorem eq_of_root (h_alg : Algebra.IsAlgebraic K L) {x y : L}
-    (h_ev : (Polynomial.aeval y) (minpoly K x) = 0) : minpoly K y = minpoly K x := sorry
-  -- Polynomial.eq_of_monic_of_associated (monic (isAlgebraic_iff_isIntegral.mp (h_alg _)))
-  --   (monic (isAlgebraic_iff_isIntegral.mp (h_alg _)))
-  --   (Irreducible.associated_of_dvd (irreducible (isAlgebraic_iff_isIntegral.mp (h_alg _)))
-  --     (irreducible (isAlgebraic_iff_isIntegral.mp (h_alg _))) (dvd K y h_ev))
+    (h_ev : (Polynomial.aeval y) (minpoly K x) = 0) : minpoly K y = minpoly K x :=
+  Polynomial.eq_of_monic_of_associated (monic (h_alg.isAlgebraic _).isIntegral)
+    (monic (h_alg.isAlgebraic _).isIntegral)
+    (Irreducible.associated_of_dvd (irreducible (h_alg.isAlgebraic _).isIntegral)
+      (irreducible (h_alg.isAlgebraic _).isIntegral) (dvd K y h_ev))
 
 
 -- This is now `minpoly.algEquiv_eq` in Mathlib
 /- For any `σ : L ≃ₐ[K] L` and `x : L`, the minimal polynomials of `x` and `σ x` are equal. -/
-/- @[simp]
-theorem eq_of_conj (h_alg : Algebra.IsAlgebraic K L) (σ : L ≃ₐ[K] L) (x : L) :
-    minpoly K (σ x) = minpoly K x :=
-  by
-  exact minpoly.algEquiv_eq σ x
-  /have h_dvd : minpoly K x ∣ minpoly K (σ x) :=
+@[simp]
+theorem eq_of_conj (σ : L ≃ₐ[K] L) (x : L) : minpoly K (σ x) = minpoly K x :=
+  minpoly.algEquiv_eq σ x
+  /- have h_dvd : minpoly K x ∣ minpoly K (σ x) :=
     by
     apply dvd
     have hx : σ.symm (σ x) = x := σ.left_inv x
@@ -109,33 +107,29 @@ theorem eq_of_conj (h_alg : Algebra.IsAlgebraic K L) (σ : L ≃ₐ[K] L) (x : L
     rw [Polynomial.aeval_algEquiv, AlgHom.coe_comp, Function.comp_apply, aeval, map_zero]
   have h_deg : (minpoly K (σ x)).natDegree ≤ (minpoly K x).natDegree := by
     apply Polynomial.natDegree_le_natDegree
-        (degree_le_of_ne_zero K _ (ne_zero (isAlgebraic_iff_isIntegral.mp (h_alg _)))
+        (degree_le_of_ne_zero K _ (ne_zero (h_alg.isAlgebraic _).isIntegral)
           (aeval_conj σ x))
   exact Polynomial.eq_of_monic_of_dvd_of_natDegree_le
-      (monic (isAlgebraic_iff_isIntegral.mp (h_alg _)))
-      (monic (isAlgebraic_iff_isIntegral.mp (h_alg _))) h_dvd h_deg -/
+      (monic (h_alg.isAlgebraic _).isIntegral)
+      (monic (h_alg.isAlgebraic _).isIntegral) h_dvd h_deg -/
 
 /-- The canonical `algEquiv` between `K⟮x⟯`and `K⟮y⟯`, sending `x` to `y`, where `x` and `y` have
   the same minimal polynomial over `K`. -/
 def algEquiv (h_alg : Algebra.IsAlgebraic K L) {x y : L} (h_mp : minpoly K x = minpoly K y) :
-    K⟮x⟯ ≃ₐ[K] K⟮y⟯ := sorry
-  -- AlgEquiv.trans (adjoinRootEquivAdjoin K (isAlgebraic_iff_isIntegral.mp (h_alg _))).symm
-  --   (AlgEquiv.trans
-  --     (AdjoinRoot.id_algEquiv (ne_zero (isAlgebraic_iff_isIntegral.mp (h_alg _)))
-  --       (ne_zero (isAlgebraic_iff_isIntegral.mp (h_alg _))) h_mp)
-  --     (adjoinRootEquivAdjoin K (isAlgebraic_iff_isIntegral.mp (h_alg _))))
-
-
+    K⟮x⟯ ≃ₐ[K] K⟮y⟯ :=
+  AlgEquiv.trans (adjoinRootEquivAdjoin K (h_alg.isAlgebraic _).isIntegral).symm
+    (AlgEquiv.trans (AdjoinRoot.id_algEquiv (ne_zero (h_alg.isAlgebraic _).isIntegral)
+        (ne_zero (h_alg.isAlgebraic _).isIntegral) h_mp)
+     (adjoinRootEquivAdjoin K (h_alg.isAlgebraic _).isIntegral))
 
 /-- `minpoly.algEquiv` sends the generator of `K⟮x⟯` to the generator of `K⟮y⟯`. -/
 theorem algEquiv_apply (h_alg : Algebra.IsAlgebraic K L) {x y : L}
     (h_mp : minpoly K x = minpoly K y) :
-    algEquiv h_alg h_mp (AdjoinSimple.gen K x) = AdjoinSimple.gen K y := by sorry
-  -- simp only [algEquiv]
-  -- rw [trans_apply, ←
-  --   adjoinRootEquivAdjoin_apply_root K (isAlgebraic_iff_isIntegral.mp (h_alg _)),
-  --   symm_apply_apply, trans_apply, AdjoinRoot.id_algEquiv_apply_root,
-  --   adjoinRootEquivAdjoin_apply_root K (isAlgebraic_iff_isIntegral.mp (h_alg _))]
+    algEquiv h_alg h_mp (AdjoinSimple.gen K x) = AdjoinSimple.gen K y := by
+  simp only [algEquiv]
+  rw [trans_apply, ← adjoinRootEquivAdjoin_apply_root K (h_alg.isAlgebraic _).isIntegral,
+     symm_apply_apply, trans_apply, AdjoinRoot.id_algEquiv_apply_root,
+     adjoinRootEquivAdjoin_apply_root K (h_alg.isAlgebraic _).isIntegral]
 
 /-- If `y : L` is a root of `minpoly K x`, then we can find `σ : L ≃ₐ[K] L)` with `σ x = y`.
   That is, `x` and `y` are Galois conjugates. -/
