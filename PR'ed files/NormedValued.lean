@@ -99,8 +99,6 @@ theorem Real.exists_strictMono_lt [h : Nontrivial Γ₀ˣ] {f : Γ₀ →*₀ �
   have hs : 0 < s := hr
   exact NNReal.exists_strictMono_lt hf hs
 
-#find_home Real.exists_strictMono_lt
-
 namespace RankOneValuation
 
 /-- The norm function determined by a rank one valuation on a field `L`. -/

@@ -41,7 +41,7 @@ import LocalClassFieldTheory.FromMathlib.Limsup
 import LocalClassFieldTheory.FromMathlib.Minpoly -- In PR #12450
 import LocalClassFieldTheory.FromMathlib.NormalClosure
 import LocalClassFieldTheory.FromMathlib.NormedSpace
-import LocalClassFieldTheory.FromMathlib.NormedValued -- In PR #12432
+--import LocalClassFieldTheory.FromMathlib.NormedValued -- In PR #12432
 import LocalClassFieldTheory.FromMathlib.PowMultFaithful
 -- import LocalClassFieldTheory.FromMathlib.RankOneValuation -- PRs #12156 and #12159
 import LocalClassFieldTheory.FromMathlib.RingSeminorm
