@@ -337,30 +337,34 @@ instance : AddHomClass (E →+* L) E L := inferInstance
 
 -- End of auxiliary instances
 
-instance : Normal K (AlgebraicClosure K) := sorry
-  -- normal_iff.mpr fun x =>
-  --   ⟨isAlgebraic_iff_isIntegral.mp (AlgebraicClosure.isAlgebraic K x),
-  --     IsAlgClosed.splits_codomain (minpoly K x)⟩
+instance : Normal K (AlgebraicClosure K) :=
+  normal_iff.mpr fun x =>
+    ⟨isAlgebraic_iff_isIntegral.mp ((AlgebraicClosure.isAlgebraic K).isAlgebraic x),
+      IsAlgClosed.splits_codomain (minpoly K x)⟩
 
 theorem isAlgebraic (h_alg_L : Algebra.IsAlgebraic K L) (E : IntermediateField K L) :
-    Algebra.IsAlgebraic K E := sorry --fun y => by
-  -- obtain ⟨p, hp0, hp⟩ := h_alg_L ↑y
-  -- rw [Subalgebra.aeval_coe, Subalgebra.coe_eq_zero] at hp
-  -- exact ⟨p, hp0, hp⟩
+    Algebra.IsAlgebraic K E := by
+  rw [Algebra.isAlgebraic_def]
+  intro y
+  obtain ⟨p, hp0, hp⟩ := h_alg_L.isAlgebraic (↑y : L)
+  rw [Subalgebra.aeval_coe, Subalgebra.coe_eq_zero] at hp
+  exact ⟨p, hp0, hp⟩
 
-theorem AdjoinSimple.alg_closure_normal (h_alg : Algebra.IsAlgebraic K L) (x : L) :
-    Normal K (AlgebraicClosure K⟮x⟯) := by sorry
-  -- exact normal_iff.mpr fun y =>
-  --   ⟨isAlgebraic_iff_isIntegral.mp
-  --       (Algebra.IsAlgebraic.trans (isAlgebraic h_alg K⟮x⟯) (AlgebraicClosure.isAlgebraic K⟮x⟯) y),
-  --     IsAlgClosed.splits_codomain (minpoly K y)⟩
+theorem AdjoinSimple.alg_closure_normal [h_alg: Algebra.IsAlgebraic K L] (x : L) :
+    Normal K (AlgebraicClosure K⟮x⟯) :=
+  haveI h_alg' : Algebra.IsAlgebraic K (AlgebraicClosure ↥K⟮x⟯) :=
+   @Algebra.IsAlgebraic.trans K K⟮x⟯ (AlgebraicClosure ↥K⟮x⟯) _ _ _ _ _ _ _
+     (isAlgebraic h_alg K⟮x⟯) (AlgebraicClosure.isAlgebraic K⟮x⟯)
+  normal_iff.mpr fun y => ⟨(h_alg'.isAlgebraic _).isIntegral,
+    IsAlgClosed.splits_codomain (minpoly K y)⟩
 
 theorem AdjoinDouble.alg_closure_normal (h_alg : Algebra.IsAlgebraic K L) (x y : L) :
-    Normal K (AlgebraicClosure K⟮x, y⟯) := sorry
-  -- normal_iff.mpr fun z =>
-  --   ⟨isAlgebraic_iff_isIntegral.mp
-  --       (Algebra.IsAlgebraic.trans (isAlgebraic h_alg K⟮x, y⟯) (AlgebraicClosure.isAlgebraic K⟮x, y⟯) z),
-  --     IsAlgClosed.splits_codomain (minpoly K z)⟩
+    Normal K (AlgebraicClosure K⟮x, y⟯) :=
+  haveI h_alg' : Algebra.IsAlgebraic K (AlgebraicClosure ↥K⟮x, y⟯) :=
+   @Algebra.IsAlgebraic.trans K K⟮x, y⟯ (AlgebraicClosure ↥K⟮x, y⟯) _ _ _ _ _ _ _
+     (isAlgebraic h_alg K⟮x, y⟯) (AlgebraicClosure.isAlgebraic K⟮x, y⟯)
+  normal_iff.mpr fun y => ⟨(h_alg'.isAlgebraic _).isIntegral,
+    IsAlgClosed.splits_codomain (minpoly K y)⟩
 
 theorem AdjoinAdjoin.finiteDimensional {x y : L} (hx : IsIntegral K x) (hy : IsIntegral K y) :
     FiniteDimensional K K⟮x, y⟯ := by
