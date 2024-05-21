@@ -64,7 +64,7 @@ variable (K : Type _) [Field K] [MixedCharLocalField p K]
 
 /-- The valued instance in a mixed characteristic local field, induced by the extension of the
   `p`-adic valuation. -/
-instance (priority := 100) WithZero.valued: Valued K ℤₘ₀ :=
+instance (priority := 100) WithZero.valued : Valued K ℤₘ₀ :=
   Extension.valued (Q_p p) K
 
 /-- A mixed characteristic local field is a complete space. -/
