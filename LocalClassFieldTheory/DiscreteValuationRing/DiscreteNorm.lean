@@ -53,13 +53,12 @@ theorem map_pow_div [FiniteDimensional K L] (x : Lˣ) :
         (v ((minpoly K (x : L)).coeff 0) ^ (finrank K L / (minpoly K (x : L)).natDegree)) =
       ((withZeroMultIntToNNReal (base_ne_zero K v)) (v ((minpoly K (x : L)).coeff 0)) ^
           (1 / ((minpoly K (x : L)).natDegree : ℝ))) ^
-        (finrank K L : ℝ) := by sorry
-  -- have h_alg : Algebra.IsAlgebraic K L := Algebra.IsAlgebraic.of_finite K L
-  -- rw [_root_.map_pow, ← NNReal.rpow_natCast,
-  --   Nat.cast_div (minpoly.degree_dvd (isAlgebraic_iff_isIntegral.mp (h_alg ↑x)))
-  --     (Nat.cast_ne_zero.mpr
-  --       (ne_of_gt (minpoly.natDegree_pos (isAlgebraic_iff_isIntegral.mp (h_alg ↑x))))),
-  --   div_eq_mul_inv, mul_comm (finrank K L : ℝ), NNReal.rpow_mul, ← one_div]
+        (finrank K L : ℝ) := by
+  have h_alg : Algebra.IsAlgebraic K L := Algebra.IsAlgebraic.of_finite K L
+  rw [_root_.map_pow, ← NNReal.rpow_natCast,
+    Nat.cast_div (minpoly.degree_dvd (h_alg.isAlgebraic _).isIntegral)
+      (Nat.cast_ne_zero.mpr (ne_of_gt (minpoly.natDegree_pos (h_alg.isAlgebraic _).isIntegral))),
+    div_eq_mul_inv, mul_comm (finrank K L : ℝ), NNReal.rpow_mul, ← one_div]
 
 end AuxLemma
 
@@ -151,11 +150,11 @@ theorem pow_eq_pow_root_zero_coeff' (h_alg : Algebra.IsAlgebraic K L) (x : L) (n
 theorem pow_eq_pow_root_zero_coeff (h_alg : Algebra.IsAlgebraic K L) (x : L) {n : ℕ}
     (hn : (minpoly K x).natDegree ∣ n) : discreteNormExtension h_alg x ^ n =
       withZeroMultIntToNNReal (base_ne_zero K hv.v) (Valued.v ((minpoly K x).coeff 0)) ^
-        (n / (minpoly K x).natDegree) := by sorry
-  -- nth_rw 2 [← Real.rpow_natCast]
-  -- rw [Nat.cast_div hn (Nat.cast_ne_zero.mpr
-  --   (ne_of_gt (minpoly.natDegree_pos (isAlgebraic_iff_isIntegral.mp (h_alg x)))))]
-  -- exact pow_eq_pow_root_zero_coeff' h_alg x n
+        (n / (minpoly K x).natDegree) := by
+  nth_rw 2 [← Real.rpow_natCast]
+  rw [Nat.cast_div hn (Nat.cast_ne_zero.mpr
+    (ne_of_gt (minpoly.natDegree_pos (h_alg.isAlgebraic _).isIntegral)))]
+  exact pow_eq_pow_root_zero_coeff' h_alg x n
 
 theorem nonneg (h_alg : Algebra.IsAlgebraic K L) (x : L) : 0 ≤ discreteNormExtension h_alg x :=
   @spectralNorm_nonneg K (discretelyNormedField K) L _ _ _
@@ -171,13 +170,13 @@ theorem mul (h_alg : Algebra.IsAlgebraic K L) (x y : L) :
     (norm_isNonarchimedean K) x y
 
 theorem le_one_iff_integral_minpoly (h_alg : Algebra.IsAlgebraic K L) (x : L) :
-    discreteNormExtension h_alg x ≤ 1 ↔ ∀ n : ℕ, hv.v ((minpoly K x).coeff n) ≤ 1 := by sorry
-  -- let _ := nontriviallyDiscretelyNormedField K
-  -- have h : spectralMulAlgNorm h_alg (norm_isNonarchimedean _) x = spectralNorm K L x := by
-  --   rfl
-  -- rw [discreteNormExtension, h, spectralNorm,
-  --   spectralValue_le_one_iff (minpoly.monic (isAlgebraic_iff_isIntegral.mp (h_alg x)))]
-  -- simp_rw [norm_le_one_iff_val_le_one]
+    discreteNormExtension h_alg x ≤ 1 ↔ ∀ n : ℕ, hv.v ((minpoly K x).coeff n) ≤ 1 := by
+  let _ := nontriviallyDiscretelyNormedField K
+  have h : spectralMulAlgNorm h_alg (norm_isNonarchimedean _) x = spectralNorm K L x := by
+    rfl
+  rw [discreteNormExtension, h, spectralNorm,
+    spectralValue_le_one_iff (minpoly.monic (h_alg.isAlgebraic _).isIntegral)]
+  simp_rw [norm_le_one_iff_val_le_one]
 
 theorem of_integer [fr : IsFractionRing hv.v.valuationSubring.toSubring K]
   (h_alg : Algebra.IsAlgebraic K L) (x : integralClosure hv.v.valuationSubring.toSubring L) :
