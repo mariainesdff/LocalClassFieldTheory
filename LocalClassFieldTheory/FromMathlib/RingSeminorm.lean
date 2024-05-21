@@ -71,6 +71,7 @@ def FunctionExtends {α : Type _} [CommRing α] (g : α → ℝ) {β : Type _} [
     (f : β → ℝ) : Prop :=
   ∀ x : α, f (algebraMap α β x) = g x
 
+-- In PR #12432
 /- A function `f : R → ℝ≥0` is nonarchimedean if it satisfies the strong triangle inequality
   `f (r + s) ≤ max (f r) (f s)` for all `r s : R`.
 -- def IsNonarchimedean {R : Type _} [AddGroup R] (f : R → ℝ) : Prop :=
