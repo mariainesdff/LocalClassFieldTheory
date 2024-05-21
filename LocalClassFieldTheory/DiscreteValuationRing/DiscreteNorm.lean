@@ -70,13 +70,12 @@ variable (K : Type _) [Field K] [hv : Valued K ℤₘ₀] [IsDiscrete hv.v]
 section DiscreteNorm
 
 /-- The normed field structure on `K` induced by its discrete valuation. -/
-def discretelyNormedField : NormedField K :=
-  RankOneValuation.ValuedField.toNormedField K ℤₘ₀
+def discretelyNormedField : NormedField K := Valued.toNormedField K ℤₘ₀
 
 /-- The nontrivially normed field structure on `K` induced by its discrete valuation. -/
 @[reducible]
 def nontriviallyDiscretelyNormedField : NontriviallyNormedField K :=
-  { @RankOneValuation.ValuedField.toNormedField K _ ℤₘ₀ _ _ (DiscreteValuation.rankOne _) with
+  { @Valued.toNormedField K _ ℤₘ₀ _ _ (DiscreteValuation.rankOne _) with
     non_trivial := by
       obtain ⟨x, hx⟩ := exists_Uniformizer_ofDiscrete hv.v
       use x.1⁻¹
@@ -101,7 +100,7 @@ def discretelySemiNormedRing : SeminormedRing K := by
   infer_instance
 
 theorem norm_isNonarchimedean : IsNonarchimedean (@norm K (hasDiscreteNorm K)) := fun x y =>
-  RankOneValuation.normDef_add_le x y
+  Valued.norm_add_le x y
 
 theorem norm_le_one_iff_val_le_one (x : K) :
     (@norm K (hasDiscreteNorm K)) x ≤ 1 ↔ Valued.v x ≤ (1 : ℤₘ₀) :=
