@@ -107,17 +107,17 @@ theorem IsScalarTower.splits {F : Type _} [Field F] [Algebra F L] (x : L) {E : T
   exact IsSplittingField.splits _ _
 
 theorem IsScalarTower.isAlgebraic {F : Type _} [Field F] [Algebra F L] (x : L) {E : Type _}
-    [Field E] [Algebra F E] [Algebra L E] [IsScalarTower F L E] (h_alg' : Algebra.IsAlgebraic F L)
+    [Field E] [Algebra F E] [Algebra L E] [IsScalarTower F L E] [Algebra.IsAlgebraic F L]
     [IsSplittingField L E (mapAlg F L (minpoly F x))] : Algebra.IsAlgebraic F E := by
   let _ : FiniteDimensional L E := IsSplittingField.finiteDimensional _ (mapAlg F L (minpoly F x))
-  exact @Algebra.IsAlgebraic.trans _ _ _ _ _ _ _ _ _ _ h_alg' (Algebra.IsAlgebraic.of_finite L E)
+  exact @Algebra.IsAlgebraic.trans _ _ _ _ _ _ _ _ _ _ _ (Algebra.IsAlgebraic.of_finite L E)
 
 /-- Given an algebraic tower of fields `E/L/K` and an element `x : L` whose minimal polynomial `f`
   over `K` splits into linear factors over `E`, the `degree(f)`th power of the spectral norm of `x`
   is equal to the product of the `E`-valued roots of `f`. -/
 theorem spectral_norm_pow_degree_eq_prof_roots (hna : IsNonarchimedean (norm : K → ℝ)) (x : L)
   {E : Type _} [Field E] [Algebra K E] [Algebra L E] [IsScalarTower K L E]
-  (hE : IsSplittingField L E (mapAlg K L (minpoly K x))) (h_alg_E : Algebra.IsAlgebraic K E) :
+  (hE : IsSplittingField L E (mapAlg K L (minpoly K x))) [Algebra.IsAlgebraic K E] :
     (spectralMulAlgNorm h_alg_E hna) ((algebraMap L E) x) ^ (minpoly K x).natDegree =
     (spectralMulAlgNorm h_alg_E hna) ((mapAlg K E) (minpoly K x)).roots.prod := by
   classical

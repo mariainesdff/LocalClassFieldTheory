@@ -117,8 +117,7 @@ theorem mem_FpX_int_completion' {x : FpXCompletion p} : x ∈ FpXIntCompletion p
 variable (p)
 
 /-- `isomLaurent` is the ring isomorphism `FpX_completion ≃+* (LaurentSeries 𝔽_[p])`. -/
-def isomLaurent : LaurentSeries 𝔽_[p] ≃+* FpXCompletion p :=
-  sorry --CompletionLaurentSeries.LaurentSeriesRingEquiv 𝔽_[p]
+def isomLaurent : LaurentSeries 𝔽_[p] ≃+* FpXCompletion p := LaurentSeriesRingEquiv 𝔽_[p]
 
 end FpXCompletion
 
@@ -127,7 +126,7 @@ namespace FpXIntCompletion
 /-- `integers_equiv_power_series` is the ring isomorphism `(power_series 𝔽_[p])` ≃+*
   `FpX_int_completion`. -/
 noncomputable def integers_equiv_powerSeries : PowerSeries 𝔽_[p] ≃+* FpXIntCompletion p :=
-  sorry --CompletionLaurentSeries.powerSeriesRingEquiv 𝔽_[p]
+  powerSeriesRingEquiv 𝔽_[p]
 
 theorem residueField_powerSeries_card :
     Fintype.card (LocalRing.ResidueField (PowerSeries 𝔽_[p])) = p := by

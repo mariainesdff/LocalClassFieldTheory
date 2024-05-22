@@ -126,13 +126,13 @@ variable (K : Type _) [Field K]
 ---`*1` to here is in PR #11720
 namespace PowerSeries
 --from here `*2`...
-theorem normUnit_X : normUnit (PowerSeries.X : PowerSeries K) = 1 := by
-  dsimp only [normUnit];
-  rw [inv_eq_one, ← Units.val_eq_one, Unit_of_divided_by_X_pow_order_nonzero,
-    divided_by_X_pow_order_of_X_eq_one]
+-- theorem normUnit_X : normUnit (PowerSeries.X : PowerSeries K) = 1 := by
+--   dsimp only [normUnit];
+--   rw [inv_eq_one, ← Units.val_eq_one, Unit_of_divided_by_X_pow_order_nonzero,
+--     divided_by_X_pow_order_of_X_eq_one]
 
-theorem X_eq_normalizeX : (PowerSeries.X : PowerSeries K) = normalize PowerSeries.X := by
-  simp only [normalize_apply, PowerSeries.normUnit_X, Units.val_one, mul_one]
+-- theorem X_eq_normalizeX : (PowerSeries.X : PowerSeries K) = normalize PowerSeries.X := by
+--   simp only [normalize_apply, PowerSeries.normUnit_X, Units.val_one, mul_one]
 ---`*2` to here is in PR #13063
 
 --from here `*3`...
@@ -154,7 +154,7 @@ theorem factors_in_pol_eq_powerSeries (P : Polynomial K) (hP : P ≠ 0) :
   rw [← for_pol]
   have for_pow :=
     NormalizationMonoid.count_normalizedFactors_eq_count_normalizedFactors_span (coe_ne_zero hP)
-      PowerSeries.X_ne_zero (PowerSeries.normUnit_X K) PowerSeries.X_prime
+      PowerSeries.X_ne_zero (PowerSeries.normUnit_X) PowerSeries.X_prime
   erw [← for_pow]
   have aux_pol :=
     @multiplicity_eq_count_normalizedFactors (Polynomial K) _ _ _ _ _ Polynomial.X P
