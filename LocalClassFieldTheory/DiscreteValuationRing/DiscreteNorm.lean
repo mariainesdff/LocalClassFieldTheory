@@ -105,83 +105,78 @@ theorem norm_le_one_iff_val_le_one (x : K) :
     (@norm K (hasDiscreteNorm K)) x ≤ 1 ↔ Valued.v x ≤ (1 : ℤₘ₀) :=
   RankOneValuation.norm_le_one_iff_val_le_one x
 
-variable [CompleteSpace K] {L : Type _} [Field L] [Algebra K L]
+variable [CompleteSpace K] {L : Type _} [Field L] [Algebra K L] [Algebra.IsAlgebraic K L]
 
 variable {K}
 /-- The unique norm on `L` extending the norm on `K`. -/
-def discreteNormExtension (h_alg : Algebra.IsAlgebraic K L) :
-    @MulAlgebraNorm K (discretelySemiNormedCommRing K) L _ _ :=
-  @spectralMulAlgNorm K (nontriviallyDiscretelyNormedField K) L _ _ h_alg _
-    (norm_isNonarchimedean K)
+def discreteNormExtension : @MulAlgebraNorm K (discretelySemiNormedCommRing K) L _ _ :=
+  @spectralMulAlgNorm K (nontriviallyDiscretelyNormedField K) L _ _ _ _ (norm_isNonarchimedean K)
 
 /-- The `normed_field` structure on `L` induced by `discrete_norm_extension h_alg` -/
-def discretelyNormedFieldExtension (h_alg : Algebra.IsAlgebraic K L) : NormedField L :=
-  @spectralNormToNormedField K (nontriviallyDiscretelyNormedField K) L _ _ _ h_alg
+def discretelyNormedFieldExtension : NormedField L :=
+  @spectralNormToNormedField K (nontriviallyDiscretelyNormedField K) L _ _ _ _
     (norm_isNonarchimedean K)
 
 /-- The `uniform_space` structure on `L` induced by `discrete_norm_extension h_alg` -/
-def discretelyNormedFieldExtensionUniformSpace (h_alg : Algebra.IsAlgebraic K L) :
-  UniformSpace L := by
-  have := discretelyNormedFieldExtension h_alg
+def discretelyNormedFieldExtensionUniformSpace :
+    UniformSpace L := by
+  have := @discretelyNormedFieldExtension K _ _ _ _ L _ _ _
   infer_instance
 
 namespace DiscreteNormExtension
 
-theorem zero (h_alg : Algebra.IsAlgebraic K L) : discreteNormExtension h_alg 0 = 0 :=
+theorem zero : discreteNormExtension (K := K) (L := L) 0 = 0 :=
   @spectralNorm_zero K (discretelyNormedField K) L _ _
 
 /-- For any `x : L`, `discrete_norm_extension h_alg x` is equal to the norm of the zeroth
   coefficient of the minimal polynomial of `x` over `K`, raised to the
   `(1/(minpoly K x).nat_degree` power. -/
-theorem eq_root_zero_coeff (h_alg : Algebra.IsAlgebraic K L) (x : L) :
-    discreteNormExtension h_alg x =
+theorem eq_root_zero_coeff (x : L) : discreteNormExtension (K := K) (L := L) x =
       withZeroMultIntToNNReal (base_ne_zero K hv.v) (Valued.v ((minpoly K x).coeff 0)) ^
         (1 / (minpoly K x).natDegree : ℝ) :=
-  @spectralNorm_eq_root_zero_coeff K (nontriviallyDiscretelyNormedField K) _ L _ _ h_alg
+  @spectralNorm_eq_root_zero_coeff K (nontriviallyDiscretelyNormedField K) _ L _ _ _
     (norm_isNonarchimedean K) x
 
-theorem pow_eq_pow_root_zero_coeff' (h_alg : Algebra.IsAlgebraic K L) (x : L) (n : ℕ) :
-    discreteNormExtension h_alg x ^ n =
+theorem pow_eq_pow_root_zero_coeff' (x : L) (n : ℕ) :
+    discreteNormExtension (K := K) (L := L) x ^ n =
       withZeroMultIntToNNReal (base_ne_zero K hv.v) (Valued.v ((minpoly K x).coeff 0)) ^
         (n / (minpoly K x).natDegree : ℝ) := by
   rw [div_eq_inv_mul, Real.rpow_mul NNReal.zero_le_coe, eq_root_zero_coeff, inv_eq_one_div,
     Real.rpow_natCast]
 
-theorem pow_eq_pow_root_zero_coeff (h_alg : Algebra.IsAlgebraic K L) (x : L) {n : ℕ}
-    (hn : (minpoly K x).natDegree ∣ n) : discreteNormExtension h_alg x ^ n =
+theorem pow_eq_pow_root_zero_coeff (x : L) {n : ℕ} (hn : (minpoly K x).natDegree ∣ n) :
+    discreteNormExtension (K := K) (L := L) x ^ n =
       withZeroMultIntToNNReal (base_ne_zero K hv.v) (Valued.v ((minpoly K x).coeff 0)) ^
         (n / (minpoly K x).natDegree) := by
   nth_rw 2 [← Real.rpow_natCast]
   rw [Nat.cast_div hn (Nat.cast_ne_zero.mpr
-    (ne_of_gt (minpoly.natDegree_pos (h_alg.isAlgebraic _).isIntegral)))]
-  exact pow_eq_pow_root_zero_coeff' h_alg x n
+    (ne_of_gt (minpoly.natDegree_pos (Algebra.IsAlgebraic.isAlgebraic x).isIntegral)))]
+  exact pow_eq_pow_root_zero_coeff' x n
 
-theorem nonneg (h_alg : Algebra.IsAlgebraic K L) (x : L) : 0 ≤ discreteNormExtension h_alg x :=
+theorem nonneg (x : L) : 0 ≤ discreteNormExtension (K := K) (L := L) x :=
   @spectralNorm_nonneg K (discretelyNormedField K) L _ _ _
 
-theorem isNonarchimedean (h_alg : Algebra.IsAlgebraic K L) :
-    IsNonarchimedean (discreteNormExtension h_alg) :=
-  @spectralNorm_isNonarchimedean K (discretelyNormedField K) L _ _ h_alg (norm_isNonarchimedean K)
+theorem isNonarchimedean : IsNonarchimedean (discreteNormExtension (K := K) (L := L)) :=
+  @spectralNorm_isNonarchimedean K (discretelyNormedField K) L _ _ _ (norm_isNonarchimedean K)
 
-theorem mul (h_alg : Algebra.IsAlgebraic K L) (x y : L) :
-    discreteNormExtension h_alg (x * y) =
-      discreteNormExtension h_alg x * discreteNormExtension h_alg y :=
-  @spectral_norm_is_mul K (nontriviallyDiscretelyNormedField K) L _ _ h_alg _
+theorem mul (x y : L) : discreteNormExtension (K := K) (x * y) =
+      discreteNormExtension (K := K) x * discreteNormExtension (K := K) y :=
+  @spectral_norm_is_mul K (nontriviallyDiscretelyNormedField K) L _ _ _ _
     (norm_isNonarchimedean K) x y
 
-theorem le_one_iff_integral_minpoly (h_alg : Algebra.IsAlgebraic K L) (x : L) :
-    discreteNormExtension h_alg x ≤ 1 ↔ ∀ n : ℕ, hv.v ((minpoly K x).coeff n) ≤ 1 := by
+theorem le_one_iff_integral_minpoly (x : L) :
+    discreteNormExtension (K := K) x ≤ 1 ↔ ∀ n : ℕ, hv.v ((minpoly K x).coeff n) ≤ 1 := by
   let _ := nontriviallyDiscretelyNormedField K
-  have h : spectralMulAlgNorm h_alg (norm_isNonarchimedean _) x = spectralNorm K L x := by
+  have h : spectralMulAlgNorm (norm_isNonarchimedean _) x = spectralNorm K L x := by
     rfl
   rw [discreteNormExtension, h, spectralNorm,
-    spectralValue_le_one_iff (minpoly.monic (h_alg.isAlgebraic _).isIntegral)]
+    spectralValue_le_one_iff (minpoly.monic (Algebra.IsAlgebraic.isAlgebraic x).isIntegral)]
   simp_rw [norm_le_one_iff_val_le_one]
 
 theorem of_integer [fr : IsFractionRing hv.v.valuationSubring.toSubring K]
-  (h_alg : Algebra.IsAlgebraic K L) (x : integralClosure hv.v.valuationSubring.toSubring L) :
-  discreteNormExtension h_alg x =
-  @spectralValue K (discretelySemiNormedRing K)
+    (x : integralClosure hv.v.valuationSubring.toSubring L) :
+    discreteNormExtension (K := K) (L := L) x =
+    @spectralValue K (discretelySemiNormedRing K)
     (Polynomial.map (algebraMap hv.v.valuationSubring.toSubring K)
       (minpoly hv.v.valuationSubring.toSubring x)) := by
   letI := nontriviallyDiscretelyNormedField K
@@ -194,8 +189,8 @@ theorem of_integer [fr : IsFractionRing hv.v.valuationSubring.toSubring K]
   rfl
 
 theorem le_one_of_integer [fr : IsFractionRing hv.v.valuationSubring.toSubring K]
-    (h_alg : Algebra.IsAlgebraic K L) (x : integralClosure hv.v.valuationSubring.toSubring L) :
-    discreteNormExtension h_alg x ≤ 1 := by
+    (x : integralClosure hv.v.valuationSubring.toSubring L) :
+    discreteNormExtension (K := K) (L := L) x ≤ 1 := by
   letI := nontriviallyDiscretelyNormedField K
   let min_int := minpoly hv.v.valuationSubring.toSubring x
   let min_x : Polynomial K := Polynomial.map (algebraMap _ _) min_int

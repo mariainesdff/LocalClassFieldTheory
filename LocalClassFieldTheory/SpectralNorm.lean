@@ -118,8 +118,8 @@ theorem IsScalarTower.isAlgebraic {F : Type _} [Field F] [Algebra F L] (x : L) {
 theorem spectral_norm_pow_degree_eq_prof_roots (hna : IsNonarchimedean (norm : K → ℝ)) (x : L)
   {E : Type _} [Field E] [Algebra K E] [Algebra L E] [IsScalarTower K L E]
   (hE : IsSplittingField L E (mapAlg K L (minpoly K x))) [Algebra.IsAlgebraic K E] :
-    (spectralMulAlgNorm h_alg_E hna) ((algebraMap L E) x) ^ (minpoly K x).natDegree =
-    (spectralMulAlgNorm h_alg_E hna) ((mapAlg K E) (minpoly K x)).roots.prod := by
+    (spectralMulAlgNorm hna) ((algebraMap L E) x) ^ (minpoly K x).natDegree =
+    (spectralMulAlgNorm hna) ((mapAlg K E) (minpoly K x)).roots.prod := by
   classical
   have h_deg' : (minpoly K x).natDegree = (mapAlg K E (minpoly K x)).natDegree := by
     rw [mapAlg_eq_map, natDegree_map]
@@ -131,7 +131,7 @@ theorem spectral_norm_pow_degree_eq_prof_roots (hna : IsNonarchimedean (norm : K
   ext r
   rw [Multiset.count_replicate]
   split_ifs with hr
-  · have h : ∀ s : ℝ, s ∈ Multiset.map (spectralMulAlgNorm h_alg_E hna)
+  · have h : ∀ s : ℝ, s ∈ Multiset.map (spectralMulAlgNorm hna)
         ((mapAlg K E) (minpoly K x)).roots → r = s := by
       intro s hs
       simp only [Multiset.mem_map, mem_roots', ne_eq, IsRoot.def] at hs
@@ -139,7 +139,7 @@ theorem spectral_norm_pow_degree_eq_prof_roots (hna : IsNonarchimedean (norm : K
       rw [hr, ← has]
       change spectralNorm K E (algebraMap L E x) = spectralNorm K E a
       simp only [spectralNorm]
-      rw [← minpoly.eq_of_root h_alg_E]
+      rwa [← minpoly.eq_of_root]
       rw [← ha_root.2, mapAlg_eq_map, minpoly.algebraMap_eq (algebraMap L E).injective, aeval_def,
         eval_map]
     rw [Multiset.count_eq_card.mpr h, Multiset.card_map]
@@ -148,11 +148,11 @@ theorem spectral_norm_pow_degree_eq_prof_roots (hna : IsNonarchimedean (norm : K
     intro hr_mem
     simp only [Multiset.mem_map, mem_roots', ne_eq, IsRoot.def] at hr_mem
     obtain ⟨e, he_root, her⟩ := hr_mem
-    have heq : (spectralMulAlgNorm h_alg_E hna) e =
-      (spectralMulAlgNorm h_alg_E hna) ((algebraMap L E) x) := by
+    have heq : (spectralMulAlgNorm hna) e =
+      (spectralMulAlgNorm hna) ((algebraMap L E) x) := by
       change spectralNorm K E e = spectralNorm K E (algebraMap L E x)
       simp only [spectralNorm]
-      rw [minpoly.eq_of_root h_alg_E]
+      rwa [minpoly.eq_of_root]
       rw [← he_root.2, mapAlg_eq_map, minpoly.algebraMap_eq (algebraMap L E).injective, aeval_def,
         eval_map]
     rw [heq] at her
@@ -160,7 +160,7 @@ theorem spectral_norm_pow_degree_eq_prof_roots (hna : IsNonarchimedean (norm : K
 
 /-- For `x : L` with minimal polynomial `f(X) := X^n + a_{n-1}X^{n-1} + ... + a_0` over `K`,
   the spectral norm of `x` is equal to `‖ a_0 ‖^(1/(degree(f(X))))`. -/
-theorem spectralNorm_eq_root_zero_coeff (h_alg : Algebra.IsAlgebraic K L)
+theorem spectralNorm_eq_root_zero_coeff [Algebra.IsAlgebraic K L]
     (hna : IsNonarchimedean (norm : K → ℝ)) (x : L) :
     spectralNorm K L x = ‖(minpoly K x).coeff 0‖ ^ (1 / (minpoly K x).natDegree : ℝ) := by
   by_cases hx0 : x = 0
@@ -168,30 +168,30 @@ theorem spectralNorm_eq_root_zero_coeff (h_alg : Algebra.IsAlgebraic K L)
       div_self, ne_eq, one_ne_zero, not_false_iff, Real.rpow_one, spectralNorm_zero, Nat.cast_one,
       ne_eq, one_ne_zero, not_false_eq_true, div_self, Real.rpow_one]
   · set E := (mapAlg K L (minpoly K x)).SplittingField
-    have h_alg_E : Algebra.IsAlgebraic K E := IsScalarTower.isAlgebraic x h_alg
+    have h_alg_E : Algebra.IsAlgebraic K E := sorry
     have hspl : Splits (RingHom.id E) (mapAlg K E (minpoly K x)) :=
       IsScalarTower.splits _ (IsSplittingField.splittingField (mapAlg K L (minpoly K x)))
     rw [Real.eq_rpow_one_div_iff (spectralNorm_nonneg x) (norm_nonneg ((minpoly K x).coeff 0)),
       Real.rpow_natCast, @spectralValue.eq_of_tower K _ E, ←
       @spectralNorm_extends K _ L _ _ ((minpoly K x).coeff 0),
-      @spectralValue.eq_of_tower K _ E _ _ L, ← spectral_mul_ring_norm_def h_alg_E hna, ←
-      spectral_mul_ring_norm_def h_alg_E hna, Polynomial.coeff_zero_of_isScalarTower,
+      @spectralValue.eq_of_tower K _ E _ _ L, ← spectral_mul_ring_norm_def hna, ←
+      spectral_mul_ring_norm_def hna, Polynomial.coeff_zero_of_isScalarTower,
       Polynomial.prod_roots_eq_coeff_zero_of_monic_of_split _ hspl, map_mul, map_pow,
       map_neg_eq_map, map_one, one_pow, one_mul, spectral_norm_pow_degree_eq_prof_roots hna x]
     exact IsSplittingField.splittingField _
-    · have h_monic : (minpoly K x).leadingCoeff = 1 :=
-        minpoly.monic (h_alg.isAlgebraic _).isIntegral
+    · have h_monic : (minpoly K x).leadingCoeff = 1 := by
+        exact minpoly.monic (Algebra.IsAlgebraic.isAlgebraic x).isIntegral
       simp only [mapAlg_eq_map, Monic, leadingCoeff, coeff_map, natDegree_map]
       -- merging the `simp only` below with the previous one makes `lean` crash.
       simp only [coeff_natDegree, h_monic, map_one]
     · rw [ne_eq, Nat.cast_eq_zero]
-      exact ne_of_gt (minpoly.natDegree_pos (h_alg.isAlgebraic _).isIntegral)
+      exact ne_of_gt (minpoly.natDegree_pos (Algebra.IsIntegral.isIntegral x))
 
-theorem spectral_value_term_le (h_alg : Algebra.IsAlgebraic K L)
+theorem spectral_value_term_le [Algebra.IsAlgebraic K L]
     (hna : IsNonarchimedean (norm : K → ℝ)) (x : L) {n : ℕ} (hn : n < (minpoly K x).natDegree) :
     ‖(minpoly K x).coeff n‖ ^ (1 / (((minpoly K x).natDegree : ℝ) - n)) ≤
       ‖(minpoly K x).coeff 0‖ ^ (1 / ((minpoly K x).natDegree : ℝ)) := by
-  rw [← spectralNorm_eq_root_zero_coeff h_alg hna]
+  rw [← spectralNorm_eq_root_zero_coeff hna]
   simp only [spectralNorm, spectralValue, spectralValueTerms]
   apply le_ciSup_of_le (spectralValueTerms_bddAbove (minpoly K x)) n
   simp only [spectralValueTerms, if_pos hn, one_div, le_refl]

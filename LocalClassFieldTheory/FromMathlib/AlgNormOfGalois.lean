@@ -181,7 +181,7 @@ theorem Real.iSup_pow {ι : Type _} [Nonempty ι] [Finite ι] {f : ι → ℝ} (
 end iSup
 
 variable {K : Type _} [NormedField K] {L : Type _} [Field L] [Algebra K L]
-  (h_alg : Algebra.IsAlgebraic K L) (h_fin : FiniteDimensional K L)
+  (h_fin : FiniteDimensional K L)
 
 section algNormOfAuto
 

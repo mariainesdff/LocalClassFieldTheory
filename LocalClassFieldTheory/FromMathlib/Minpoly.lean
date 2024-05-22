@@ -84,14 +84,13 @@ namespace minpoly
 theorem aeval_conj (σ : L ≃ₐ[K] L) (x : L) : (Polynomial.aeval (σ x)) (minpoly K x) = 0 := by
   rw [Polynomial.aeval_algEquiv, AlgHom.coe_comp, Function.comp_apply, aeval, map_zero]
 
-
 /-- If `y : L` is a root of `minpoly K x`, then `minpoly K y = minpoly K x`. -/
-theorem eq_of_root (h_alg : Algebra.IsAlgebraic K L) {x y : L}
+theorem eq_of_root [Algebra.IsAlgebraic K L] {x y : L}
     (h_ev : (Polynomial.aeval y) (minpoly K x) = 0) : minpoly K y = minpoly K x :=
-  Polynomial.eq_of_monic_of_associated (monic (h_alg.isAlgebraic _).isIntegral)
-    (monic (h_alg.isAlgebraic _).isIntegral)
-    (Irreducible.associated_of_dvd (irreducible (h_alg.isAlgebraic _).isIntegral)
-      (irreducible (h_alg.isAlgebraic _).isIntegral) (dvd K y h_ev))
+  Polynomial.eq_of_monic_of_associated (monic (Algebra.IsAlgebraic.isAlgebraic _).isIntegral)
+    (monic (Algebra.IsAlgebraic.isAlgebraic x).isIntegral)
+    (Irreducible.associated_of_dvd (irreducible (Algebra.IsAlgebraic.isAlgebraic _).isIntegral)
+      (irreducible (Algebra.IsAlgebraic.isAlgebraic _).isIntegral) (dvd K y h_ev))
 
 
 -- This is now `minpoly.algEquiv_eq` in Mathlib
@@ -115,37 +114,38 @@ theorem eq_of_conj (σ : L ≃ₐ[K] L) (x : L) : minpoly K (σ x) = minpoly K x
 
 /-- The canonical `algEquiv` between `K⟮x⟯`and `K⟮y⟯`, sending `x` to `y`, where `x` and `y` have
   the same minimal polynomial over `K`. -/
-def algEquiv (h_alg : Algebra.IsAlgebraic K L) {x y : L} (h_mp : minpoly K x = minpoly K y) :
+def algEquiv [Algebra.IsAlgebraic K L] {x y : L} (h_mp : minpoly K x = minpoly K y) :
     K⟮x⟯ ≃ₐ[K] K⟮y⟯ :=
-  AlgEquiv.trans (adjoinRootEquivAdjoin K (h_alg.isAlgebraic _).isIntegral).symm
-    (AlgEquiv.trans (AdjoinRoot.id_algEquiv (ne_zero (h_alg.isAlgebraic _).isIntegral)
-        (ne_zero (h_alg.isAlgebraic _).isIntegral) h_mp)
-     (adjoinRootEquivAdjoin K (h_alg.isAlgebraic _).isIntegral))
+  AlgEquiv.trans (adjoinRootEquivAdjoin K (Algebra.IsAlgebraic.isAlgebraic _).isIntegral).symm
+    (AlgEquiv.trans (AdjoinRoot.id_algEquiv (ne_zero (Algebra.IsAlgebraic.isAlgebraic _).isIntegral)
+        (ne_zero (Algebra.IsAlgebraic.isAlgebraic _).isIntegral) h_mp)
+     (adjoinRootEquivAdjoin K (Algebra.IsAlgebraic.isAlgebraic _).isIntegral))
 
 /-- `minpoly.algEquiv` sends the generator of `K⟮x⟯` to the generator of `K⟮y⟯`. -/
-theorem algEquiv_apply (h_alg : Algebra.IsAlgebraic K L) {x y : L}
+theorem algEquiv_apply [Algebra.IsAlgebraic K L] {x y : L}
     (h_mp : minpoly K x = minpoly K y) :
-    algEquiv h_alg h_mp (AdjoinSimple.gen K x) = AdjoinSimple.gen K y := by
+    algEquiv h_mp (AdjoinSimple.gen K x) = AdjoinSimple.gen K y := by
   simp only [algEquiv]
-  rw [trans_apply, ← adjoinRootEquivAdjoin_apply_root K (h_alg.isAlgebraic _).isIntegral,
-     symm_apply_apply, trans_apply, AdjoinRoot.id_algEquiv_apply_root,
-     adjoinRootEquivAdjoin_apply_root K (h_alg.isAlgebraic _).isIntegral]
+  rw [trans_apply, ← adjoinRootEquivAdjoin_apply_root K
+    (Algebra.IsAlgebraic.isAlgebraic _).isIntegral, symm_apply_apply, trans_apply,
+      AdjoinRoot.id_algEquiv_apply_root,
+      adjoinRootEquivAdjoin_apply_root K (Algebra.IsAlgebraic.isAlgebraic _).isIntegral]
 
 /-- If `y : L` is a root of `minpoly K x`, then we can find `σ : L ≃ₐ[K] L)` with `σ x = y`.
   That is, `x` and `y` are Galois conjugates. -/
-theorem exists_algEquiv_of_root (h_alg : Algebra.IsAlgebraic K L) (hn : Normal K L) {x y : L}
+theorem exists_algEquiv_of_root [Algebra.IsAlgebraic K L] (hn : Normal K L) {x y : L}
     (h_ev : (Polynomial.aeval x) (minpoly K y) = 0) : ∃ σ : L ≃ₐ[K] L, σ x = y := by
-  set f : K⟮x⟯ ≃ₐ[K] K⟮y⟯ := algEquiv h_alg (eq_of_root h_alg h_ev)
+  set f : K⟮x⟯ ≃ₐ[K] K⟮y⟯ := algEquiv (eq_of_root h_ev)
   have hxy : (liftNormal f L) ((algebraMap (↥K⟮x⟯) L) (AdjoinSimple.gen K x)) = y := by
     rw [liftNormal_commutes f L, algEquiv_apply, AdjoinSimple.algebraMap_gen K y]
   exact ⟨(liftNormal f L), hxy⟩
 
 /-- If `y : L` is a root of `minpoly K x`, then we can find `σ : L ≃ₐ[K] L)` with `σ y = x`.
   That is, `x` and `y` are Galois conjugates. -/
-theorem exists_algEquiv_of_root' (h_alg : Algebra.IsAlgebraic K L) (hn : Normal K L) {x y : L}
+theorem exists_algEquiv_of_root' [Algebra.IsAlgebraic K L] (hn : Normal K L) {x y : L}
     (h_ev : (Polynomial.aeval x) (minpoly K y) = 0) : ∃ σ : L ≃ₐ[K] L, σ y = x :=
   by
-  obtain ⟨σ, hσ⟩ := exists_algEquiv_of_root h_alg hn h_ev
+  obtain ⟨σ, hσ⟩ := exists_algEquiv_of_root hn h_ev
   use σ.symm
   rw [← hσ, symm_apply_apply]
 
