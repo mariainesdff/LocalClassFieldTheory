@@ -126,8 +126,8 @@ theorem spectral_norm_unique' [CompleteSpace K] {f : AlgebraNorm K L} (hf_pm : I
           simp only [IntermediateField.algebraMap_apply]
           rfl
         rw [this, map_smul_eq_mul] }
-  haveI hKx_fin : FiniteDimensional K ↥K⟮x⟯ := sorry
-    -- IntermediateField.adjoin.finiteDimensional IsAlgebraic.isIntegral
+  haveI hKx_fin : FiniteDimensional K ↥K⟮x⟯ :=
+  IntermediateField.adjoin.finiteDimensional (Algebra.IsAlgebraic.isAlgebraic x).isIntegral
   haveI : FiniteDimensional K E := hKx_fin
   set Id1 : K⟮x⟯ →L[K] E := ⟨id1, id1.continuous_of_finiteDimensional⟩
   set Id2 : E →L[K] K⟮x⟯ := ⟨id2, id2.continuous_of_finiteDimensional⟩
@@ -200,8 +200,8 @@ theorem spectral_norm_is_mul [CompleteSpace K] (hna : IsNonarchimedean (norm : K
   · rw [hx, MulZeroClass.zero_mul]
     rw [map_eq_zero_iff_eq_zero] at hx ⊢
     rw [hx, MulZeroClass.zero_mul]
-  · have hf1 : (spectralAlgNorm (L := L) hna).toRingSeminorm 1 ≤ 1 := sorry
-      -- spectralAlgNorm_is_norm_le_one_class hna
+  · have hf1 : (spectralAlgNorm (L := L) hna) 1 ≤ 1 :=
+      sorry --spectralAlgNorm_is_norm_le_one_class hna
     set f : AlgebraNorm K L := algNormFromConst hna hf1 (Ne.symm hx) with hf
     have hf_pow : IsPowMul f :=
       seminorm_from_const_isPowMul hf1 (Ne.symm hx) (spectralNorm_isPowMul hna)
