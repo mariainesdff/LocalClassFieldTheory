@@ -71,11 +71,11 @@ namespace QPAlg
 /-- `Q_p_alg p` is a normed field, where the norm is the `p`-adic norm, that is, the spectral norm
 induced by the `p`-adic norm on `ℚ_[p]`. -/
 instance normedField : NormedField (QPAlg p) :=
-  spectralNormToNormedField (QPAlg.isAlgebraic p) padicNormE.nonarchimedean
+  spectralNormToNormedField (K := ℚ_[p]) (L := QPAlg p) padicNormE.nonarchimedean
 
 /-- The norm on `Q_p_alg p` is nonarchimedean. -/
 theorem isNonarchimedean : IsNonarchimedean (norm : QPAlg p → ℝ) :=
-  spectralNorm_isNonarchimedean (QPAlg.isAlgebraic p) padicNormE.nonarchimedean
+  spectralNorm_isNonarchimedean (K := ℚ_[p]) (L := QPAlg p) padicNormE.nonarchimedean
 
 /-- The norm on `Q_p_alg p` is the spectral norm induced by the `p`-adic norm on `ℚ_[p]`. -/
 theorem norm_def (x : QPAlg p) : ‖x‖ = spectralNorm ℚ_[p] (QPAlg p) x :=
@@ -83,7 +83,7 @@ theorem norm_def (x : QPAlg p) : ‖x‖ = spectralNorm ℚ_[p] (QPAlg p) x :=
 
 /-- The norm on `Q_p_alg p` extends the `p`-adic norm on `ℚ_[p]`. -/
 theorem QP.norm_extends (x : ℚ_[p]) : ‖(x : QPAlg p)‖ = ‖x‖ :=
-  spectralAlgNorm_extends (QPAlg.isAlgebraic p) _ padicNormE.nonarchimedean
+  spectralAlgNorm_extends (K := ℚ_[p]) (L := QPAlg p) _ padicNormE.nonarchimedean
 
 /-- `Q_p_alg p` is a valued field, with the valuation corresponding to the `p`-adic norm. -/
 instance valuedField : Valued (QPAlg p) ℝ≥0 :=

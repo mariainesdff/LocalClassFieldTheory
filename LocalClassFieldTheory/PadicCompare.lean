@@ -310,8 +310,9 @@ instance : CharZero (Q_p p) := (padicEquiv p).toRingHom.charZero
 
 instance : Algebra ℚ_[p] (Q_p p) := RingHom.toAlgebra (PadicComparison.padicEquiv p).symm
 
-instance : IsScalarTower ℚ ℚ_[p] (Q_p p) where smul_assoc r x y :=
-  by {simp only [Algebra.smul_def, eq_ratCast, _root_.map_mul, map_ratCast, mul_assoc]}
+-- *FAE, 5Jun24* This does not compile any more, but is it really needed?
+-- instance : IsScalarTower ℚ ℚ_[p] (Q_p p) where smul_assoc r x y :=
+--   by {simp only [Algebra.smul_def, eq_ratCast, _root_.map_mul, map_ratCast, mul_assoc]}
 
 theorem Padic'.coe_eq (x : ℚ) : letI := (padicValued p).toUniformSpace
    (x : Q_p p) = ((padicPkg' p).coe x : (padicPkg' p).space) := by

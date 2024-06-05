@@ -139,7 +139,7 @@ theorem spectral_norm_pow_degree_eq_prof_roots (hna : IsNonarchimedean (norm : K
       rw [hr, ← has]
       change spectralNorm K E (algebraMap L E x) = spectralNorm K E a
       simp only [spectralNorm]
-      rwa [← minpoly.eq_of_root]
+      rw [← minpoly.eq_of_root]
       rw [← ha_root.2, mapAlg_eq_map, minpoly.algebraMap_eq (algebraMap L E).injective, aeval_def,
         eval_map]
     rw [Multiset.count_eq_card.mpr h, Multiset.card_map]
@@ -152,7 +152,7 @@ theorem spectral_norm_pow_degree_eq_prof_roots (hna : IsNonarchimedean (norm : K
       (spectralMulAlgNorm hna) ((algebraMap L E) x) := by
       change spectralNorm K E e = spectralNorm K E (algebraMap L E x)
       simp only [spectralNorm]
-      rwa [minpoly.eq_of_root]
+      rw [minpoly.eq_of_root]
       rw [← he_root.2, mapAlg_eq_map, minpoly.algebraMap_eq (algebraMap L E).injective, aeval_def,
         eval_map]
     rw [heq] at her
