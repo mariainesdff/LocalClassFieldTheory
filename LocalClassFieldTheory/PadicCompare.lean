@@ -7,8 +7,8 @@ import LocalClassFieldTheory.DiscreteValuationRing.Complete
 import Mathlib.Analysis.SpecificLimits.Basic
 import Mathlib.NumberTheory.Padics.PadicIntegers
 import Mathlib.RingTheory.DedekindDomain.AdicValuation
+import Mathlib.RingTheory.DedekindDomain.Ideal
 import LocalClassFieldTheory.ForMathlib.NumberTheory.Padics.PadicIntegers
-import LocalClassFieldTheory.ForMathlib.RingTheory.DedekindDomain.Ideal
 import LocalClassFieldTheory.FromMathlib.SpecificLimits
 
 /-!
@@ -170,13 +170,11 @@ theorem padicNorm_of_Int_eq_val_norm (x : ℤ) : (padicNorm p x : ℝ) =
     have h_p_span_ne : (Ideal.span {(p : ℤ)} : Ideal ℤ) ≠ ⊥ := by
       rw [ne_eq, Ideal.span_singleton_eq_bot]
       exact NeZero.ne (p : ℤ)
-    erw [count_normalizedFactors_eq_count_normalizedFactors_span hx _ (by rfl),
-      ← NormalizationMonoid.count_normalizedFactors_eq_associates_count _ _ _ h_x_span h_p_span
-      h_p_span_ne]
+    erw [count_associates_factors_eq (Ideal.span {x}) (pHeightOneIdeal p).asIdeal h_x_span h_p_span
+      h_p_span_ne, count_span_normalizedFactors_eq (r := x) (X := p) hx ?_]
     congr
-    · exact mul_right_eq_self₀.mpr (Or.inl rfl)
-    · exact prime_mul_iff.mpr (Or.inl ⟨Nat.prime_iff_prime_int.mp Fact.out, Units.isUnit _⟩)
-    · exact mul_ne_zero (NeZero.ne (p : ℤ)) (Units.ne_zero _)
+    rw [← Nat.prime_iff_prime_int]
+    exact Fact.out
 
 
 theorem padicNorm_eq_val_norm (z : ℚ) : (padicNorm p z : ℝ) =

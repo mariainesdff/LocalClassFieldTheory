@@ -2,7 +2,6 @@
 Copyright (c) 2024 María Inés de Frutos-Fernández, Filippo A. E. Nuccio. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: María Inés de Frutos-Fernández, Filippo A. E. Nuccio
--/
 import Mathlib.RingTheory.DedekindDomain.Ideal
 
 #align_import for_mathlib.ring_theory.dedekind_domain.ideal
@@ -63,3 +62,4 @@ theorem count_normalizedFactors_eq_associates_count (R : Type _) [CommRing R] [I
   linarith
 
 end NormalizationMonoid
+-/
