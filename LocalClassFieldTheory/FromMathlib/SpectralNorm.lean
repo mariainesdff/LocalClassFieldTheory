@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: María Inés de Frutos-Fernández
 -/
 import Mathlib.RingTheory.Polynomial.Vieta
-import LocalClassFieldTheory.FromMathlib.Minpoly
+import Mathlib.FieldTheory.Minpoly.Basic
 import LocalClassFieldTheory.FromMathlib.NormalClosure
 import LocalClassFieldTheory.FromMathlib.AlgNormOfGalois
 
@@ -183,7 +183,7 @@ variable {α : Type _} [DecidableEq α]
 theorem max (f : α → ℝ) {s : Multiset α} (hs : s.toFinset.Nonempty) :
     ∃ y : α, y ∈ s ∧ ∀ z : α, z ∈ s → f z ≤ f y := by
   have hsf : (map f s).toFinset.Nonempty := by
-    obtain ⟨x, hx⟩ := hs.bex
+    obtain ⟨x, hx⟩ := hs.exists_mem
     exact ⟨f x, mem_toFinset.mpr (mem_map.mpr ⟨x, mem_toFinset.mp hx, rfl⟩)⟩
   have h := (s.map f).toFinset.max'_mem hsf
   rw [mem_toFinset, mem_map] at h
@@ -236,15 +236,13 @@ theorem powersetCard_nonempty' {α : Type _} {n : ℕ} {s : Finset α} (h : n �
     · simp
     · rw [Finset.card_insert_of_not_mem hx, Nat.succ_le_succ_iff] at h
       rw [Finset.powersetCard_succ_insert hx]
-      refine' Finset.Nonempty.mono _ ((IH h).image (insert x))
-      convert Finset.subset_union_right _ _
+      exact Finset.Nonempty.mono Finset.subset_union_right ((IH h).image (insert x))
 
 theorem le_prod_of_submultiplicative' {ι M N : Type _} [CommMonoid M] [OrderedCommRing N]
     (f : M → N) (h_nonneg : ∀ a, 0 ≤ f a) (h_one : f 1 = 1)
     (h_mul : ∀ x y : M, f (x * y) ≤ f x * f y) (s : Finset ι) (g : ι → M) :
-    f (s.prod fun i : ι => g i) ≤ s.prod fun i : ι => f (g i) :=
-  by
-  refine' le_trans (Multiset.le_prod_of_submultiplicative' f h_nonneg h_one h_mul _) _
+    f (s.prod fun i : ι => g i) ≤ s.prod fun i : ι => f (g i) := by
+  refine le_trans (Multiset.le_prod_of_submultiplicative' f h_nonneg h_one h_mul _) ?_
   rw [Multiset.map_map]
   rfl
 
@@ -931,7 +929,7 @@ theorem spectralNorm_max_of_fd_normal (h_fin : FiniteDimensional K L) (hn : Norm
     spectralNorm K L x = iSup fun σ : L ≃ₐ[K] L => f (σ x) := by
   refine' le_antisymm _ (ciSup_le fun σ =>
     root_norm_le_spectralValue hf_pm hf_na (extends_is_norm_le_one_class hf_ext)
-      (minpoly.monic (Normal.isIntegral hn x)) (minpoly.aeval_conj _ _))
+      (minpoly.monic (Normal.isIntegral hn x)) (minpoly.aeval_algHom _ σ.toAlgHom _))
   · set p := minpoly K x
     have hp_sp : Splits (algebraMap K L) (minpoly K x) := hn.splits x
     obtain ⟨s, hs⟩ := (splits_iff_exists_multiset _).mp hp_sp
@@ -948,7 +946,8 @@ theorem spectralNorm_max_of_fd_normal (h_fin : FiniteDimensional K L) (hn : Norm
     intro y
     split_ifs with h
     · have hy : ∃ σ : L ≃ₐ[K] L, σ x = y :=
-        minpoly.exists_algEquiv_of_root' hn (Polynomial.aeval_root s h hs)
+        minpoly.exists_algEquiv_of_root' (Algebra.IsAlgebraic.isAlgebraic x)
+          (Polynomial.aeval_root s h hs)
       obtain ⟨σ, hσ⟩ := hy
       rw [← hσ]
       convert le_ciSup (Finite.bddAbove_range _) σ using 1
@@ -1086,7 +1085,7 @@ theorem spectralNorm_smul (hna : IsNonarchimedean (norm : K → ℝ)) (k : K) (y
   /- nth_rewrite 2 [← @spectralAlgNormOfFdNormal_def K _ _ _ _ h_alg'
       (normalClosure.is_finiteDimensional K E (AlgebraicClosure E)) (normalClosure.normal K E _)
       hna] -/
-  rw [← @spectralAlgNormOfFdNormal_def K _ _ _ _ h_alg'
+  rw [← @spectralAlgNormOfFdNormal_def K _ _ _ _ _
       (normalClosure.is_finiteDimensional K E (AlgebraicClosure E)) (normalClosure.normal K E _)
       hna]
   sorry --apply map_smul_eq_mul

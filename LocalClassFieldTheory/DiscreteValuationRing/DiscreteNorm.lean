@@ -167,7 +167,7 @@ theorem mul (x y : L) : discreteNormExtension (K := K) (x * y) =
 theorem le_one_iff_integral_minpoly (x : L) :
     discreteNormExtension (K := K) x ≤ 1 ↔ ∀ n : ℕ, hv.v ((minpoly K x).coeff n) ≤ 1 := by
   let _ := nontriviallyDiscretelyNormedField K
-  have h : spectralMulAlgNorm (norm_isNonarchimedean _) x = spectralNorm K L x := by
+  have h : spectralMulAlgNorm (K := K) (norm_isNonarchimedean _) x = spectralNorm K L x := by
     rfl
   rw [discreteNormExtension, h, spectralNorm,
     spectralValue_le_one_iff (minpoly.monic (Algebra.IsAlgebraic.isAlgebraic x).isIntegral)]

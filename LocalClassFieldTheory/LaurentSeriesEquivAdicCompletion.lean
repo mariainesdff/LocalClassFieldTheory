@@ -505,13 +505,12 @@ theorem Cauchy.exists_lb_eventual_support {ℱ : Filter (LaurentSeries K)} (hℱ
   apply mem_of_superset (inter_mem hS hT)
   suffices (S ∩ T) ×ˢ (S ∩ T) ⊆ entourage by
     intro g hg
-    have h_prod : (f, g) ∈ entourage :=
-      by
+    have h_prod : (f, g) ∈ entourage := by
       refine' this (Set.mem_prod.mpr _)
       exact ⟨hf, hg⟩
     exact fun _ hn => hN g (le_of_lt h_prod) _ hn
-  have := (Set.prod_mono (Set.inter_subset_left S T) (Set.inter_subset_right S T)).trans H
-  convert this
+  exact (Set.prod_mono (Set.inter_subset_left (s :=S) (t := T))
+    (Set.inter_subset_right (s :=S) (t := T))).trans H
 
 theorem Cauchy.exists_lb_gt_principal {ℱ : Filter (LaurentSeries K)} (hℱ : Cauchy ℱ) :
     ∃ N, ∀ n < N, (ℱ.map fun f : LaurentSeries K => f.coeff n) ≤ Filter.principal {0} := by

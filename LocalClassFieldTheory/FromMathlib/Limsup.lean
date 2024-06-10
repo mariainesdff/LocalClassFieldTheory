@@ -62,13 +62,13 @@ open Filter
 
 open scoped Topology NNReal ENNReal
 
-theorem BddAbove.isBoundedUnder {α : Type _} [Preorder α] {u : α → ℝ}
+/- theorem BddAbove.isBoundedUnder {α : Type _} [Preorder α] {u : α → ℝ}
     (hu_bdd : BddAbove (Set.range u)) : IsBoundedUnder LE.le atTop u := by
   obtain ⟨b, hb⟩ := hu_bdd
   use b
   simp only [mem_upperBounds, Set.mem_range, forall_exists_index, forall_apply_eq_imp_iff] at hb
   exact eventually_map.mpr (eventually_of_forall hb)
-
+ -/
 namespace NNReal
 
 theorem coe_limsup {u : ℕ → ℝ} (hu : 0 ≤ u) :
