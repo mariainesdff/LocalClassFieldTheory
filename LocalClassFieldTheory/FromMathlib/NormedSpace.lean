@@ -7,6 +7,8 @@ import Mathlib.Analysis.NormedSpace.BoundedLinearMaps
 import LocalClassFieldTheory.FromMathlib.SeminormFromBounded
 import LocalClassFieldTheory.FromMathlib.SmoothingSeminorm
 
+import Mathlib.LinearAlgebra.FiniteDimensional
+
 #align_import from_mathlib.normed_space
 
 /-!
