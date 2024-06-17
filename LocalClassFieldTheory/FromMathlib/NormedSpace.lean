@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: María Inés de Frutos-Fernández
 -/
 import Mathlib.Analysis.NormedSpace.BoundedLinearMaps
+import Mathlib.LinearAlgebra.FiniteDimensional
 import LocalClassFieldTheory.FromMathlib.SeminormFromBounded
 import LocalClassFieldTheory.FromMathlib.SmoothingSeminorm
 
