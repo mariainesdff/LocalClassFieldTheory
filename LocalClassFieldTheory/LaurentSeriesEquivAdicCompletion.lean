@@ -144,21 +144,11 @@ def idealX (K : Type _) [Field K] : IsDedekindDomain.HeightOneSpectrum (PowerSer
 
 open multiplicity UniqueFactorizationMonoid RatFunc Classical
 
-theorem factors_in_pol_eq_powerSeries (P : Polynomial K) (hP : P ≠ 0) :
-    (normalizedFactors (Ideal.span {↑P})).count (PowerSeries.idealX K).asIdeal =
-      (normalizedFactors (Ideal.span {P})).count
-        (Ideal.span {Polynomial.X} : Ideal (Polynomial K)) := by
-  sorry
-  /-
-  erw [count_span_normalizedFactors_eq_of_normUnit hP (Polynomial.normUnit_X (R := K))
-    Polynomial.prime_X, count_span_normalizedFactors_eq_of_normUnit (coe_ne_zero hP)
-      (PowerSeries.normUnit_X) PowerSeries.X_prime]
-  -- have aux_pol :=
-  --   @multiplicity_eq_count_normalizedFactors (Polynomial K) _ _ _ _ _ Polynomial.X P
-  --     Polynomial.irreducible_X hP
-  -- have aux_pow_series :=
-  --   @multiplicity_eq_count_normalizedFactors (PowerSeries K) _ _ _ _ _ PowerSeries.X (↑P)
-  --     (Prime.irreducible PowerSeries.X_prime) (coe_ne_zero hP)
+variable {K}
+
+theorem foo {P : K[X]} (hP : P ≠ 0) :
+  Multiset.count PowerSeries.X (normalizedFactors (↑P : K⟦X⟧)) =
+    Multiset.count Polynomial.X (normalizedFactors P) := by
   apply Nat.le_antisymm
   · rw [X_eq_normalize, PowerSeries.X_eq_normalizeX]--, ← PartENat.coe_le_coe,
       -- ← multiplicity_eq_count_normalizedFactors _ hP, ← multiplicity_eq_count_normalizedFactors
@@ -178,7 +168,7 @@ theorem factors_in_pol_eq_powerSeries (P : Polynomial K) (hP : P ≠ 0) :
     -- rw [PowerSeries.X_pow_dvd_iff] at this
     -- intro d hd
     -- replace aux_pow_series := le_of_eq aux_pow_series.symm
-    rw [← multiplicity.pow_dvd_iff_le_multiplicity]/- , PowerSeries.X_pow_dvd_iff -/]-- at aux_pow_series
+    rw [← multiplicity.pow_dvd_iff_le_multiplicity]/- , PowerSeries.X_pow_dvd_iff -/---/]-- at aux_pow_series
     replace aux_pow_series := aux_pow_series d hd
     rwa [Polynomial.coeff_coe P d] at aux_pow_series
   · rw [X_eq_normalize, PowerSeries.X_eq_normalizeX, ← PartENat.coe_le_coe, ←
@@ -190,14 +180,61 @@ theorem factors_in_pol_eq_powerSeries (P : Polynomial K) (hP : P ≠ 0) :
     rw [← multiplicity.pow_dvd_iff_le_multiplicity, Polynomial.X_pow_dvd_iff] at aux_pol
     replace aux_pol := aux_pol d hd
     rwa [← Polynomial.coeff_coe P d] at aux_pol
-  -/
 
 
+-- theorem factors_in_pol_eq_powerSeries (P : Polynomial K) (hP : P ≠ 0) :
+--     (normalizedFactors (Ideal.span {↑P})).count (PowerSeries.idealX K).asIdeal =
+--       (normalizedFactors (Ideal.span {P})).count
+--         (Ideal.span {Polynomial.X} : Ideal (Polynomial K)) := by
+--   -- sorry
+
+--   erw [count_span_normalizedFactors_eq_of_normUnit hP (Polynomial.normUnit_X (R := K))
+--     Polynomial.prime_X, count_span_normalizedFactors_eq_of_normUnit (coe_ne_zero hP)
+--       (PowerSeries.normUnit_X) PowerSeries.X_prime]
+--   extract_goal
+--   -- have aux_pol :=
+--   --   @multiplicity_eq_count_normalizedFactors (Polynomial K) _ _ _ _ _ Polynomial.X P
+--   --     Polynomial.irreducible_X hP
+--   -- have aux_pow_series :=
+--   --   @multiplicity_eq_count_normalizedFactors (PowerSeries K) _ _ _ _ _ PowerSeries.X (↑P)
+--   --     (Prime.irreducible PowerSeries.X_prime) (coe_ne_zero hP)
+--   apply Nat.le_antisymm
+--   · rw [X_eq_normalize, PowerSeries.X_eq_normalizeX]--, ← PartENat.coe_le_coe,
+--       -- ← multiplicity_eq_count_normalizedFactors _ hP, ← multiplicity_eq_count_normalizedFactors
+--       --  _ (coe_ne_zero hP)]--, /- ← PartENat.coe_le_coe -/]--, ← multiplicity.pow_dvd_iff_le_multiplicity,
+--         -- Polynomial.X_pow_dvd_iff]
+--     have uno := @multiplicity.pow_dvd_iff_le_multiplicity _ _ _ (X : K⟦X⟧) (P : K⟦X⟧)
+--       (Multiset.count Polynomial.X (normalizedFactors P))
+--     have due := @multiplicity.pow_dvd_iff_le_multiplicity _ _ _ (Polynomial.X) P
+--       (Multiset.count X (normalizedFactors (P : K⟦X⟧)))
+--     rw [Polynomial.X_pow_dvd_iff] at due
+--     rw [PowerSeries.X_pow_dvd_iff] at uno
+--     simp_rw [Polynomial.coeff_coe P] at uno
+
+--     --rw [← multiplicity_eq_count_normalizedFactors _ hP, ← multiplicity_eq_count_normalizedFactors
+--       --  _ (coe_ne_zero hP)]
+--     -- convert uno
+--     -- rw [PowerSeries.X_pow_dvd_iff] at this
+--     -- intro d hd
+--     -- replace aux_pow_series := le_of_eq aux_pow_series.symm
+--     rw [← multiplicity.pow_dvd_iff_le_multiplicity]/- , PowerSeries.X_pow_dvd_iff -/---/]-- at aux_pow_series
+--     replace aux_pow_series := aux_pow_series d hd
+--     rwa [Polynomial.coeff_coe P d] at aux_pow_series
+--   · rw [X_eq_normalize, PowerSeries.X_eq_normalizeX, ← PartENat.coe_le_coe, ←
+--       multiplicity_eq_count_normalizedFactors _ hP]--, ← multiplicity.pow_dvd_iff_le_multiplicity, PowerSeries.X_pow_dvd_iff]
+
+
+--     intro d hd
+--     replace aux_pol := le_of_eq aux_pol.symm
+--     rw [← multiplicity.pow_dvd_iff_le_multiplicity, Polynomial.X_pow_dvd_iff] at aux_pol
+--     replace aux_pol := aux_pol d hd
+--     rwa [← Polynomial.coeff_coe P d] at aux_pol
+
+
+-- **FAE** To golf a bit
 theorem pol_intValuation_eq_powerSeries (P : Polynomial K) :
     (Polynomial.idealX K).intValuation P =
       (PowerSeries.idealX K).intValuation (↑P : PowerSeries K) := by
-      sorry
-      /-
   by_cases hP : P = 0
   · rw [hP, Valuation.map_zero, Polynomial.coe_zero, Valuation.map_zero]
   · simp only [intValuation_apply]
@@ -210,22 +247,26 @@ theorem pol_intValuation_eq_powerSeries (P : Polynomial K) :
       by
       simp only [Ideal.zero_eq_bot, ne_eq, Ideal.span_singleton_eq_bot, hP, Polynomial.X_ne_zero,
         not_false_iff, and_self_iff]
-    have := NormalizationMonoid.count_normalizedFactors_eq_associates_count (Polynomial K)
-        (Ideal.span {P}) (Ideal.span {Polynomial.X}) span_ne_zero.1
-        ((@Ideal.span_singleton_prime (Polynomial K) _ _ Polynomial.X_ne_zero).mpr prime_X)
-        span_ne_zero.2
-    convert this.symm
     have span_ne_zero' :
       (Ideal.span {↑P} : Ideal (PowerSeries K)) ≠ 0 ∧
         ((PowerSeries.idealX K).asIdeal : Ideal (PowerSeries K)) ≠ 0 := by
       rw [Ideal.zero_eq_bot, ne_eq, Ideal.span_singleton_eq_bot, coe_eq_zero_iff]
       exact ⟨hP, (PowerSeries.idealX K).3⟩
-    rw [← factors_in_pol_eq_powerSeries _ _ hP]
-    convert
-      (NormalizationMonoid.count_normalizedFactors_eq_associates_count (PowerSeries K)
-          (Ideal.span {↑P}) (PowerSeries.idealX K).asIdeal span_ne_zero'.1 (PowerSeries.idealX K).2
-          span_ne_zero'.2).symm
-      -/
+    have uno := foo hP
+    have due := count_associates_factors_eq (Ideal.span {P}) (Ideal.span {Polynomial.X})
+      (span_ne_zero).1 ?_ (span_ne_zero).2
+    have tre := count_associates_factors_eq (Ideal.span {↑(P : K⟦X⟧)}) (idealX K).asIdeal
+      ?_ ?_ ?_
+    rw [due, tre]
+    convert uno.symm
+    · exact count_span_normalizedFactors_eq_of_normUnit hP Polynomial.normUnit_X prime_X
+    · refine count_span_normalizedFactors_eq_of_normUnit (coe_ne_zero hP) PowerSeries.normUnit_X
+        X_prime
+    · exact span_ne_zero'.1
+    · exact (idealX K).isPrime
+    · exact span_ne_zero'.2
+    · exact Ideal.span_singleton_prime Polynomial.X_ne_zero|>.mpr prime_X
+
 
 
 theorem intValuation_of_X :
