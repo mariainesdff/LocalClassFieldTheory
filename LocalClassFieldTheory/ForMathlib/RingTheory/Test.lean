@@ -10,8 +10,8 @@ universe u v
 
 variable {A : Type u} [CommRing A] [IsDomain A] (I : Ideal A[X]) (J : Ideal A)
 
-instance : FunLike (A → A[X] ⧸ I) A (A[X] ⧸ I) := sorry
-instance : FunLike (A[X] → (A ⧸ J)[X]) A[X] (A ⧸ J)[X]  := sorry
+-- instance : FunLike (A → A[X] ⧸ I) A (A[X] ⧸ I) := sorry
+-- instance : FunLike (A[X] → (A ⧸ J)[X]) A[X] (A ⧸ J)[X]  := sorry
 
 /- example (I : Ideal A[X]) (J : Ideal A) : Ideal (A[X] ⧸ I) :=
   J.map (Ideal.Quotient.mk I ∘ Polynomial.C)
@@ -46,40 +46,54 @@ noncomputable def Polynomial.mapIntAlgHom  {R S : Type*} [Ring R] [Ring S]
 lemma Polynomial.mapIntAlgHom_eq {R S : Type*} [Ring R] [Ring S]  (f : R →+* S) :
     Polynomial.mapIntAlgHom f = Polynomial.map f := rfl
  -/
-noncomputable def foo' (I : Ideal A[X]) (J : Ideal A) :
-    (A[X] ⧸ I) ⧸ (J.map (Ideal.Quotient.mk I ∘ Polynomial.C)) →+*
-      A[X] ⧸  Ideal.span ((I : Set A[X]) ∪ (J.map Polynomial.C)) := by
-  apply Ideal.Quotient.lift (J.map (Ideal.Quotient.mk I ∘ Polynomial.C))
-    (Ideal.Quotient.factor _ _
-    (by simp only [Ideal.span_union, Ideal.span_eq, le_sup_left]))
-  · intro g hg
-    obtain ⟨c, hc⟩ := Ideal.Quotient.mk_surjective g
-    rw [← hc] at hg ⊢
-    rw [factor, lift_mk, ← map_zero ((mk (Ideal.span ((I : Set A[X]) ∪ (J.map Polynomial.C))))),
-      mk_eq_mk_iff_sub_mem, sub_zero, Ideal.span_union,Ideal.span_eq]
-    simp only [Ideal.map, Ideal.mem_span, Set.image_subset_iff] at hg
-    --exact Ideal.mem_sup_left hc
-    sorry
+-- noncomputable def foo' (I : Ideal A[X]) (J : Ideal A) :
+--     (A[X] ⧸ I) ⧸ (J.map (Ideal.Quotient.mk I ∘ Polynomial.C)) →+*
+--       A[X] ⧸  Ideal.span ((I : Set A[X]) ∪ (J.map Polynomial.C)) := by
+--   apply Ideal.Quotient.lift (J.map (Ideal.Quotient.mk I ∘ Polynomial.C))
+--     (Ideal.Quotient.factor _ _
+--     (by simp only [Ideal.span_union, Ideal.span_eq, le_sup_left]))
+--   · intro g hg
+--     obtain ⟨c, hc⟩ := Ideal.Quotient.mk_surjective g
+--     rw [← hc] at hg ⊢
+--     rw [factor, lift_mk, ← map_zero ((mk (Ideal.span ((I : Set A[X]) ∪ (J.map Polynomial.C))))),
+--       mk_eq_mk_iff_sub_mem, sub_zero, Ideal.span_union,Ideal.span_eq]
+--     simp only [Ideal.map, Ideal.mem_span, Set.image_subset_iff] at hg
+--     --exact Ideal.mem_sup_left hc
+--     sorry
 
 
-noncomputable def fae (I : Ideal A[X]) (f : A[X]) :
+noncomputable def fae_mem (I : Ideal A[X]) (f : A[X]) :
     (A[X] ⧸ I) ⧸ ((Ideal.span {f}).map (Ideal.Quotient.mk I)) ≃+*
     (A[X] ⧸ Ideal.span {f}) ⧸ (I.map (Ideal.Quotient.mk (Ideal.span {f}))) := by
   use @DoubleQuot.quotQuotEquivComm A[X] _ I (Ideal.span {f})
   · simp only [Equiv.toFun_as_coe, EquivLike.coe_coe, map_mul, implies_true]
   · simp only [Equiv.toFun_as_coe, EquivLike.coe_coe, map_add, implies_true]
 
-noncomputable def fae' (f : A[X]) (ϖ : A) :
+noncomputable def fae_ideal (I J : Ideal A[X]) :
+    (A[X] ⧸ I) ⧸ (J.map (Ideal.Quotient.mk I)) ≃+*
+    (A[X] ⧸ J) ⧸ (I.map (Ideal.Quotient.mk J)) := by
+  use @DoubleQuot.quotQuotEquivComm A[X] _ I J
+  · simp only [Equiv.toFun_as_coe, EquivLike.coe_coe, map_mul, implies_true]
+  · simp only [Equiv.toFun_as_coe, EquivLike.coe_coe, map_add, implies_true]
+
+noncomputable def fae'_mem (f : A[X]) (ϖ : A) :
   (A[X] ⧸ Ideal.span {Polynomial.C ϖ}) ⧸
     ((Ideal.span {f}).map (Ideal.Quotient.mk (Ideal.span {Polynomial.C ϖ}))) ≃+*
     (A [X]⧸ Ideal.span {f}) ⧸
       ((Ideal.span {Polynomial.C ϖ}).map (Ideal.Quotient.mk (Ideal.span {f}))) :=
-  fae (Ideal.span {Polynomial.C ϖ}) f
+  fae_mem (Ideal.span {Polynomial.C ϖ}) f
 
-noncomputable def fae'' [DiscreteValuationRing A] (ϖ : A) (h : Irreducible ϖ) :
+noncomputable def fae'_ideal (I : Ideal A[X]) (ϖ : A) :
+  (A[X] ⧸ Ideal.span {Polynomial.C ϖ}) ⧸
+    (I.map (Ideal.Quotient.mk (Ideal.span {Polynomial.C ϖ}))) ≃+*
+    (A [X]⧸ I) ⧸
+      ((Ideal.span {Polynomial.C ϖ}).map (Ideal.Quotient.mk I)) :=
+  fae_ideal (Ideal.span {Polynomial.C ϖ}) I
+
+noncomputable def fae_ResidueField [DiscreteValuationRing A] {ϖ : A} (h : Irreducible ϖ) :
     (A[X] ⧸ Ideal.span {Polynomial.C ϖ}) ≃+* (LocalRing.ResidueField A)[X] := by
   let α := (MvPolynomial.pUnitAlgEquiv A).toRingEquiv
-  let φ := (@MvPolynomial.quotientEquivQuotientMvPolynomial A PUnit _
+  let φ := (@MvPolynomial.quotientEquivQuotientMvPolynomial A Unit _
     (LocalRing.maximalIdeal A)).toRingEquiv.symm
   let β := Ideal.quotientEquiv (Ideal.map MvPolynomial.C (LocalRing.maximalIdeal A))
    ((Ideal.map Polynomial.C (LocalRing.maximalIdeal A))) α ?_
@@ -89,8 +103,24 @@ noncomputable def fae'' [DiscreteValuationRing A] (ϖ : A) (h : Irreducible ϖ) 
   convert ξ <;>
   · rw [Irreducible.maximalIdeal_eq h, Ideal.map_span]
     simp only [Set.image_singleton]
-  · sorry
+  · rw [Ideal.map_map]
+    congr
+    dsimp [α]
+    ext g n
+    simp only [RingHom.coe_comp, RingHom.coe_coe, Function.comp_apply,
+      MvPolynomial.pUnitAlgEquiv_apply, MvPolynomial.eval₂_C]
 
+noncomputable def MariaInes [DiscreteValuationRing A] (ϖ : A) (h : Irreducible ϖ) (I : Ideal A[X]):
+    (A[X] ⧸ Ideal.span {Polynomial.C ϖ}) ⧸
+      (I.map (Ideal.Quotient.mk (Ideal.span {Polynomial.C ϖ}))) ≃+*
+    (LocalRing.ResidueField A)[X] ⧸
+      (I.map (Ideal.Quotient.mk (Ideal.span {Polynomial.C ϖ}))).map (fae_ResidueField h) := by sorry
+
+noncomputable def MariaInes' [DiscreteValuationRing A] (ϖ : A) (h : Irreducible ϖ) (I : Ideal A[X]):
+    (A[X] ⧸ I) ⧸
+      ((Ideal.span {Polynomial.C ϖ}).map (Ideal.Quotient.mk I)) ≃+*
+    (LocalRing.ResidueField A)[X] ⧸
+      (I.map (Ideal.Quotient.mk (Ideal.span {Polynomial.C ϖ}))).map (fae_ResidueField h) := by sorry
 
 #exit
 noncomputable def foo (I : Ideal A[X]) (J : Ideal A) :
