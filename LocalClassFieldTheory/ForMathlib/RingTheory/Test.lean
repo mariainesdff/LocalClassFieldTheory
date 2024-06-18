@@ -10,7 +10,7 @@ variable {A : Type*} [CommRing A] [IsDomain A] (I : Ideal A[X]) (J : Ideal A)
 instance : FunLike (A → A[X] ⧸ I) A (A[X] ⧸ I) := sorry
 instance : FunLike (A[X] → (A ⧸ J)[X]) A[X] (A ⧸ J)[X]  := sorry
 
-example (I : Ideal A[X]) (J : Ideal A) : Ideal (A[X] ⧸ I) :=
+/- example (I : Ideal A[X]) (J : Ideal A) : Ideal (A[X] ⧸ I) :=
   J.map (Ideal.Quotient.mk I ∘ Polynomial.C)
 
 example (I : Ideal A[X]) (J : Ideal A) : Ideal (A ⧸ J)[X] :=
@@ -42,49 +42,65 @@ noncomputable def Polynomial.mapIntAlgHom  {R S : Type*} [Ring R] [Ring S]
 
 lemma Polynomial.mapIntAlgHom_eq {R S : Type*} [Ring R] [Ring S]  (f : R →+* S) :
     Polynomial.mapIntAlgHom f = Polynomial.map f := rfl
+ -/
+noncomputable def foo' (I : Ideal A[X]) (J : Ideal A) :
+    (A[X] ⧸ I) ⧸ (J.map (Ideal.Quotient.mk I ∘ Polynomial.C)) →+*
+      A[X] ⧸  Ideal.span ((I : Set A[X]) ∪ (J.map Polynomial.C)) := by
+  apply Ideal.Quotient.lift (J.map (Ideal.Quotient.mk I ∘ Polynomial.C))
+    (Ideal.Quotient.factor _ _
+    (by simp only [Ideal.span_union, Ideal.span_eq, le_sup_left]))
+  · intro g hg
+    obtain ⟨c, hc⟩ := Ideal.Quotient.mk_surjective g
+    rw [← hc] at hg ⊢
+    rw [factor, lift_mk, ← map_zero ((mk (Ideal.span ((I : Set A[X]) ∪ (J.map Polynomial.C))))),
+      mk_eq_mk_iff_sub_mem, sub_zero, Ideal.span_union,Ideal.span_eq]
+    simp only [Ideal.map, Ideal.mem_span, Set.image_subset_iff] at hg
+    --exact Ideal.mem_sup_left hc
+    sorry
 
-lemma foo_aux1  (I : Ideal A[X]) (J : Ideal A) :
-    ∀ a ∈ I, ((mkₐ ℤ (Ideal.map (map (mk J)) I)).comp (mapIntAlgHom (mk J))) a = 0 := by
-  intro a ha
-  simp only [AlgHom.coe_comp, mkₐ_eq_mk, Function.comp_apply]
-  rw [← map_zero (Ideal.Quotient.mk (Ideal.map (map (mk J)) I))]
-  rw [mk_eq_mk_iff_sub_mem, sub_zero, mapIntAlgHom_eq]
-  convert Ideal.mem_map_of_mem (map (mk J)) ha -- Why doesn't this unify?
-  sorry
-
-lemma foo_aux2  (I : Ideal A[X]) (J : Ideal A) :
-    ∀ a ∈ Ideal.map (⇑(mk I) ∘ ⇑C) J, (liftₐ I ((mkₐ ℤ (Ideal.map (map (mk J)) I)).comp
-      (mapIntAlgHom (mk J))) (foo_aux1 I J)) a = 0 :=  by
-  intro a ha
-  simp only [liftₐ_apply]
-  rw [← RingHom.mem_ker, Ideal.ker_quotient_lift]
-  rw [Ideal.map] at ha ⊢
-  have : ⇑(⇑(mk I) ∘ ⇑C) '' ↑J = ((mk I) ∘ C) '' ↑J := by
-    ext
-    simp only [Set.mem_image, SetLike.mem_coe, Function.comp_apply]
-    constructor <;> rintro ⟨y, hyJ, hy⟩
-    · use y, hyJ
-      convert hy using 1
-
-      sorry
-    · sorry
-  convert ha
-
-
-  sorry
-  /- constructor <;> intro hx
-  · sorry
-  · simp only [RingHom.coe_coe, AlgHom.coe_comp, mkₐ_eq_mk, Function.comp_apply]
-    sorry -/
 
 noncomputable def foo (I : Ideal A[X]) (J : Ideal A) :
     (A[X] ⧸ I) ⧸ (J.map (Ideal.Quotient.mk I ∘ Polynomial.C)) →+*
-      (A ⧸ J)[X] ⧸ I.map (Polynomial.map (Ideal.Quotient.mk J)) :=
-  (Ideal.Quotient.liftₐ (J.map (Ideal.Quotient.mk I ∘ Polynomial.C))
-    (Ideal.Quotient.liftₐ I
-      ((Ideal.Quotient.mkₐ ℤ (I.map (Polynomial.map (Ideal.Quotient.mk J)))).comp
-       (Polynomial.mapIntAlgHom (Ideal.Quotient.mk J))) (foo_aux1 I J))
-        (by sorry)).toRingHom
+      A[X] ⧸  Ideal.span ((I : Set A[X]) ∪ (J.map Polynomial.C)) := by
+  apply Ideal.Quotient.lift (J.map (Ideal.Quotient.mk I ∘ Polynomial.C))
+    (Ideal.Quotient.lift I (Ideal.Quotient.mk (Ideal.span (↑I ∪ ↑(Ideal.map C J)))) _)
+  · intro b hb
+    simp only [Ideal.map, Ideal.mem_span, Set.image_subset_iff] at hb
+    obtain ⟨c, hc⟩ := Ideal.Quotient.mk_surjective b
+    --rw [← hc]
+
+    sorry
+  · intro f hf
+    rw [← map_zero (Ideal.Quotient.mk (Ideal.span ((I : Set A[X]) ∪ (J.map Polynomial.C)))),
+      mk_eq_mk_iff_sub_mem, sub_zero, Ideal.span_union, Ideal.span_eq]
+    exact Ideal.mem_sup_left hf
+
+noncomputable def bar (I : Ideal A[X]) (J : Ideal A) :
+    A[X] ⧸  Ideal.span ((I : Set A[X]) ∪ (J.map Polynomial.C)) →+*
+      (A[X] ⧸ I) ⧸ (J.map (Ideal.Quotient.mk I ∘ Polynomial.C)) := by
+  apply Ideal.Quotient.lift _ ((Ideal.Quotient.mk (Ideal.map (⇑(mk I) ∘ ⇑C) J)).comp
+    (Ideal.Quotient.mk I))
+  · intro f hf
+    --simp only [Ideal.mem_span, Set.union_subset_iff, SetLike.coe_subset_coe, and_imp] at hf
+    --simp only [RingHom.coe_comp, Function.comp_apply]
+    rw [← map_zero (mk (Ideal.map (⇑(mk I) ∘ ⇑C) J)), RingHom.coe_comp, Function.comp_apply,
+      mk_eq_mk_iff_sub_mem, sub_zero, ← RingHom.coe_comp]
+    rw [Ideal.map]
+    simp only [Ideal.mem_span, Set.union_subset_iff, SetLike.coe_subset_coe, and_imp,
+      Set.image_subset_iff] at hf ⊢
+    intros B hB
+    obtain ⟨K, hK⟩ := Ideal.map_surjective_of_surjective (Ideal.Quotient.mk I)
+      Ideal.Quotient.mk_surjective B
+
+    have hIK : I ≤ K := sorry
+    have hJK : Ideal.map C J ≤ K := by
+      simp only [RingHom.coe_comp, ← hK] at hB
+      intros g hg
+      simp? [Ideal.map, Ideal.mem_span] at hg
+      sorry
+    specialize hf K hIK hJK
+    rw [← hK]
+    exact Ideal.mem_map_of_mem _ hf
 
 
   /- (Ideal.Quotient.liftₐ (Ideal.span {(AdjoinRoot.of f) π})
