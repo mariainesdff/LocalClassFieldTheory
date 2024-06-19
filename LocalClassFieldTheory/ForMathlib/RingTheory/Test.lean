@@ -1,8 +1,9 @@
 import Mathlib.Algebra.Field.Equiv
 import Mathlib.RingTheory.Polynomial.IrreducibleRing
-
 import Mathlib.RingTheory.Ideal.Maps
 import Mathlib.RingTheory.DiscreteValuationRing.Basic
+
+import Mathlib.Algebra.Polynomial.Induction
 
 open Ideal.Quotient Polynomial
 
@@ -10,71 +11,19 @@ universe u v
 
 variable {A : Type u} [CommRing A] [IsDomain A] (I : Ideal A[X]) (J : Ideal A)
 
--- instance : FunLike (A → A[X] ⧸ I) A (A[X] ⧸ I) := sorry
--- instance : FunLike (A[X] → (A ⧸ J)[X]) A[X] (A ⧸ J)[X]  := sorry
-
-/- example (I : Ideal A[X]) (J : Ideal A) : Ideal (A[X] ⧸ I) :=
-  J.map (Ideal.Quotient.mk I ∘ Polynomial.C)
-
-example (I : Ideal A[X]) (J : Ideal A) : Ideal (A ⧸ J)[X] :=
-  I.map (Polynomial.map (Ideal.Quotient.mk J))
-
-noncomputable def Polynomial.mapAlgHom  {A R S : Type*} [CommRing A] [Semiring R] [Algebra A R]
-    [Semiring S] [Algebra A S] (f : R →+* S)
-    (hf : ∀ a, f ((algebraMap A R) a) = (algebraMap A S) a) : R[X] →ₐ[A] S[X] where
-  toFun := Polynomial.map f
-  map_add' _ _ := Polynomial.map_add f
-  map_zero'    := Polynomial.map_zero f
-  map_mul' _ _ := Polynomial.map_mul f
-  map_one'     := Polynomial.map_one f
-  commutes' a  := by simp only [algebraMap_apply, map_C, hf]
-
-lemma Polynomial.mapAlgHom_eq {A R S : Type*} [CommRing A] [Semiring R] [Algebra A R]
-    [Semiring S] [Algebra A S] (f : R →+* S)
-    (hf : ∀ a, f ((algebraMap A R) a) = (algebraMap A S) a) :
-    Polynomial.mapAlgHom f hf = Polynomial.map f := rfl
-
-noncomputable def Polynomial.mapIntAlgHom  {R S : Type*} [Ring R] [Ring S]
-    (f : R →+* S) : R[X] →ₐ[ℤ] S[X] where
-  toFun := Polynomial.map f
-  map_add' _ _ := Polynomial.map_add f
-  map_zero'    := Polynomial.map_zero f
-  map_mul' _ _ := Polynomial.map_mul f
-  map_one'     := Polynomial.map_one f
-  commutes' a  := by simp only [algebraMap_int_eq, eq_intCast, Polynomial.map_intCast]
-
-lemma Polynomial.mapIntAlgHom_eq {R S : Type*} [Ring R] [Ring S]  (f : R →+* S) :
-    Polynomial.mapIntAlgHom f = Polynomial.map f := rfl
- -/
--- noncomputable def foo' (I : Ideal A[X]) (J : Ideal A) :
---     (A[X] ⧸ I) ⧸ (J.map (Ideal.Quotient.mk I ∘ Polynomial.C)) →+*
---       A[X] ⧸  Ideal.span ((I : Set A[X]) ∪ (J.map Polynomial.C)) := by
---   apply Ideal.Quotient.lift (J.map (Ideal.Quotient.mk I ∘ Polynomial.C))
---     (Ideal.Quotient.factor _ _
---     (by simp only [Ideal.span_union, Ideal.span_eq, le_sup_left]))
---   · intro g hg
---     obtain ⟨c, hc⟩ := Ideal.Quotient.mk_surjective g
---     rw [← hc] at hg ⊢
---     rw [factor, lift_mk, ← map_zero ((mk (Ideal.span ((I : Set A[X]) ∪ (J.map Polynomial.C))))),
---       mk_eq_mk_iff_sub_mem, sub_zero, Ideal.span_union,Ideal.span_eq]
---     simp only [Ideal.map, Ideal.mem_span, Set.image_subset_iff] at hg
---     --exact Ideal.mem_sup_left hc
---     sorry
-
-
 noncomputable def fae_mem (I : Ideal A[X]) (f : A[X]) :
     (A[X] ⧸ I) ⧸ ((Ideal.span {f}).map (Ideal.Quotient.mk I)) ≃+*
-    (A[X] ⧸ Ideal.span {f}) ⧸ (I.map (Ideal.Quotient.mk (Ideal.span {f}))) := by
-  use @DoubleQuot.quotQuotEquivComm A[X] _ I (Ideal.span {f})
+    (A[X] ⧸ Ideal.span {f}) ⧸ (I.map (Ideal.Quotient.mk (Ideal.span {f}))) :=
+  DoubleQuot.quotQuotEquivComm (R := A[X]) I (Ideal.span {f})
+  /-
   · simp only [Equiv.toFun_as_coe, EquivLike.coe_coe, map_mul, implies_true]
-  · simp only [Equiv.toFun_as_coe, EquivLike.coe_coe, map_add, implies_true]
+  · simp only [Equiv.toFun_as_coe, EquivLike.coe_coe, map_add, implies_true] -/
 
 noncomputable def fae_ideal (I J : Ideal A[X]) :
-    (A[X] ⧸ I) ⧸ (J.map (Ideal.Quotient.mk I)) ≃+*
-    (A[X] ⧸ J) ⧸ (I.map (Ideal.Quotient.mk J)) := by
-  use @DoubleQuot.quotQuotEquivComm A[X] _ I J
-  · simp only [Equiv.toFun_as_coe, EquivLike.coe_coe, map_mul, implies_true]
-  · simp only [Equiv.toFun_as_coe, EquivLike.coe_coe, map_add, implies_true]
+    (A[X] ⧸ I) ⧸ (J.map (Ideal.Quotient.mk I)) ≃+* (A[X] ⧸ J) ⧸ (I.map (Ideal.Quotient.mk J)) :=
+  @DoubleQuot.quotQuotEquivComm A[X] _ I J
+  /- · simp only [Equiv.toFun_as_coe, EquivLike.coe_coe, map_mul, implies_true]
+  · simp only [Equiv.toFun_as_coe, EquivLike.coe_coe, map_add, implies_true] -/
 
 noncomputable def fae'_mem (f : A[X]) (ϖ : A) :
   (A[X] ⧸ Ideal.span {Polynomial.C ϖ}) ⧸
@@ -89,6 +38,84 @@ noncomputable def fae'_ideal (I : Ideal A[X]) (ϖ : A) :
     (A [X]⧸ I) ⧸
       ((Ideal.span {Polynomial.C ϖ}).map (Ideal.Quotient.mk I)) :=
   fae_ideal (Ideal.span {Polynomial.C ϖ}) I
+
+noncomputable def fae'_ideal' (I : Ideal A[X]) (J : Ideal A) :
+  (A[X] ⧸ Ideal.map Polynomial.C J) ⧸
+    (I.map (Ideal.Quotient.mk (Ideal.map Polynomial.C J))) ≃+*
+    (A [X]⧸ I) ⧸ ((Ideal.map Polynomial.C J).map (Ideal.Quotient.mk I)) :=
+  fae_ideal (Ideal.map Polynomial.C J) I
+
+open Polynomial
+
+lemma quotientEquivQuotientMvPolynomial_rightInverse {R : Type*} [CommRing R] (I : Ideal R) :
+    Function.RightInverse ((Polynomial.eval₂AlgHom'
+      (Ideal.Quotient.liftₐ I ((Ideal.Quotient.mkₐ R (Ideal.map C I : Ideal R[X])).comp CAlgHom)
+      (fun _ ha ↦ Ideal.quotient_map_C_eq_zero _ ha))
+      (Ideal.Quotient.mk (Ideal.map C I : Ideal R[X]) X)
+      (fun a ↦ by rw [liftₐ_apply, commute_iff_eq, mul_comm])).toRingHom).toFun
+    (Ideal.Quotient.liftₐ (Ideal.map C I : Ideal R[X])
+        (eval₂AlgHom' (CAlgHom.comp (Ideal.Quotient.mkₐ R I)) X (fun a ↦ by simp  [commute_iff_eq]))
+        (fun _ ha ↦ Ideal.eval₂_C_mk_eq_zero _ ha)) := by
+  intro f
+  induction f using Polynomial.induction_on with
+  | h_C r =>
+      obtain ⟨r, rfl⟩ := Ideal.Quotient.mk_surjective r
+      simp only [AlgHom.toRingHom_eq_coe, RingHom.toMonoidHom_eq_coe, OneHom.toFun_eq_coe,
+        MonoidHom.toOneHom_coe, MonoidHom.coe_coe, RingHom.coe_coe, eval₂AlgHom'_apply, eval₂_C,
+        liftₐ_apply, lift_mk, AlgHom.coe_comp, mkₐ_eq_mk, Function.comp_apply, CAlgHom_apply]
+  | h_add p q hp hq =>
+      simp only [AlgHom.toRingHom_eq_coe, RingHom.toMonoidHom_eq_coe, OneHom.toFun_eq_coe,
+        MonoidHom.toOneHom_coe, MonoidHom.coe_coe, RingHom.coe_coe, eval₂AlgHom'_apply, liftₐ_apply,
+        map_add] at hp hq ⊢
+      rw [hp, hq]
+  | h_monomial p i hp =>
+      simp only [AlgHom.toRingHom_eq_coe, RingHom.toMonoidHom_eq_coe, OneHom.toFun_eq_coe,
+        MonoidHom.toOneHom_coe, map_mul, MonoidHom.coe_coe, RingHom.coe_coe, eval₂AlgHom'_apply,
+        eval₂_C, liftₐ_apply, map_pow, eval₂_X, lift_mk] at hp ⊢
+      rw [pow_succ, ← mul_assoc, hp, mul_assoc]
+
+lemma quotientEquivQuotientMvPolynomial_leftInverse {R : Type*} [CommRing R] (I : Ideal R) :
+    Function.LeftInverse ((Polynomial.eval₂AlgHom'
+      (Ideal.Quotient.liftₐ I ((Ideal.Quotient.mkₐ R (Ideal.map C I : Ideal R[X])).comp CAlgHom)
+      (fun _ ha ↦ Ideal.quotient_map_C_eq_zero _ ha))
+      (Ideal.Quotient.mk (Ideal.map C I : Ideal R[X]) X)
+      (fun a ↦ by rw [liftₐ_apply, commute_iff_eq, mul_comm])).toRingHom).toFun
+    (Ideal.Quotient.liftₐ (Ideal.map C I : Ideal R[X])
+        (eval₂AlgHom' (CAlgHom.comp (Ideal.Quotient.mkₐ R I)) X (fun a ↦ by simp  [commute_iff_eq]))
+        (fun _ ha ↦ Ideal.eval₂_C_mk_eq_zero _ ha))  := by
+  intro f
+  obtain ⟨f, rfl⟩ := Ideal.Quotient.mk_surjective f
+  induction f using Polynomial.induction_on with
+  | h_C r =>
+    simp only [AlgHom.toRingHom_eq_coe, RingHom.toMonoidHom_eq_coe, liftₐ_apply, lift_mk,
+      RingHom.coe_coe, eval₂AlgHom'_apply, eval₂_C, AlgHom.coe_comp, mkₐ_eq_mk, Function.comp_apply,
+      CAlgHom_apply, OneHom.toFun_eq_coe, MonoidHom.toOneHom_coe, MonoidHom.coe_coe]
+  | h_add p q hp hq =>
+    erw [Ideal.Quotient.lift_mk] at hp hq ⊢
+    simp only [AlgHom.toRingHom_eq_coe, RingHom.toMonoidHom_eq_coe, RingHom.coe_coe,
+      eval₂AlgHom'_apply, OneHom.toFun_eq_coe, MonoidHom.toOneHom_coe, MonoidHom.coe_coe,
+      map_add] at hp hq ⊢
+    rw [hp, hq]
+  | h_monomial p i hp =>
+    simp only [AlgHom.toRingHom_eq_coe, RingHom.toMonoidHom_eq_coe, map_mul, map_pow, liftₐ_apply,
+      lift_mk, RingHom.coe_coe, eval₂AlgHom'_apply, eval₂_C, AlgHom.coe_comp, mkₐ_eq_mk,
+      Function.comp_apply, CAlgHom_apply, eval₂_X, OneHom.toFun_eq_coe, MonoidHom.toOneHom_coe,
+      MonoidHom.coe_coe] at hp ⊢
+
+noncomputable def _root_.Polynomial.quotientEquivQuotientPolynomial {R : Type*} [CommRing R]
+    (I : Ideal R) : (R ⧸ I)[X] ≃ₐ[R] R[X] ⧸ Ideal.map Polynomial.C I := by
+  let e : (R ⧸ I)[X] →ₐ[R] R[X] ⧸ (Ideal.map C I : Ideal R[X]) :=
+    Polynomial.eval₂AlgHom'
+      (Ideal.Quotient.liftₐ I ((Ideal.Quotient.mkₐ R (Ideal.map C I : Ideal R[X])).comp CAlgHom)
+      (fun _ ha ↦ Ideal.quotient_map_C_eq_zero _ ha))
+      (Ideal.Quotient.mk (Ideal.map C I : Ideal R[X]) X)
+      (fun a ↦ by rw [liftₐ_apply, commute_iff_eq, mul_comm])
+  exact { e with
+    invFun   := Ideal.Quotient.liftₐ (Ideal.map C I : Ideal R[X])
+        (eval₂AlgHom' (CAlgHom.comp (Ideal.Quotient.mkₐ R I)) X (fun a ↦ by simp  [commute_iff_eq]))
+        (fun _ ha ↦ Ideal.eval₂_C_mk_eq_zero _ ha)
+    left_inv  := quotientEquivQuotientMvPolynomial_rightInverse I
+    right_inv := quotientEquivQuotientMvPolynomial_leftInverse I }
 
 noncomputable def fae_ResidueField [DiscreteValuationRing A] {ϖ : A} (h : Irreducible ϖ) :
     (A[X] ⧸ Ideal.span {Polynomial.C ϖ}) ≃+* (LocalRing.ResidueField A)[X] := by
@@ -110,141 +137,27 @@ noncomputable def fae_ResidueField [DiscreteValuationRing A] {ϖ : A} (h : Irred
     simp only [RingHom.coe_comp, RingHom.coe_coe, Function.comp_apply,
       MvPolynomial.pUnitAlgEquiv_apply, MvPolynomial.eval₂_C]
 
-noncomputable def MariaInes [DiscreteValuationRing A] (ϖ : A) (h : Irreducible ϖ) (I : Ideal A[X]):
+noncomputable def fae_ResidueField' [DiscreteValuationRing A] {ϖ : A} (h : Irreducible ϖ) :
+    (A[X] ⧸ Ideal.span {Polynomial.C ϖ}) ≃+* (LocalRing.ResidueField A)[X] := by
+  let φ := (Polynomial.quotientEquivQuotientPolynomial (LocalRing.maximalIdeal A)).toRingEquiv.symm
+  let β := Ideal.quotientEquiv (Ideal.map Polynomial.C (LocalRing.maximalIdeal A))
+   ((Ideal.map Polynomial.C (LocalRing.maximalIdeal A))) (RingEquiv.refl A[X])
+   (by rw [Ideal.map_map]; rfl)
+  convert (β.symm).trans φ <;>
+  · rw [Irreducible.maximalIdeal_eq h, Ideal.map_span]
+    simp only [Set.image_singleton]
+
+noncomputable def MariaInes [DiscreteValuationRing A] (ϖ : A) (h : Irreducible ϖ) (I : Ideal A[X]) :
     (A[X] ⧸ Ideal.span {Polynomial.C ϖ}) ⧸
       (I.map (Ideal.Quotient.mk (Ideal.span {Polynomial.C ϖ}))) ≃+*
     (LocalRing.ResidueField A)[X] ⧸
-      (I.map (Ideal.Quotient.mk (Ideal.span {Polynomial.C ϖ}))).map (fae_ResidueField h) := by sorry
+      (I.map (Ideal.Quotient.mk (Ideal.span {Polynomial.C ϖ}))).map (fae_ResidueField' h) := by
+  apply Ideal.quotientEquiv _ _ (fae_ResidueField' h)
+  sorry
 
-noncomputable def MariaInes' [DiscreteValuationRing A] (ϖ : A) (h : Irreducible ϖ) (I : Ideal A[X]):
+noncomputable def MariaInes' [DiscreteValuationRing A] (ϖ : A) (h : Irreducible ϖ) (I : Ideal A[X]) :
     (A[X] ⧸ I) ⧸
       ((Ideal.span {Polynomial.C ϖ}).map (Ideal.Quotient.mk I)) ≃+*
     (LocalRing.ResidueField A)[X] ⧸
-      (I.map (Ideal.Quotient.mk (Ideal.span {Polynomial.C ϖ}))).map (fae_ResidueField h) := by sorry
-
-#exit
-noncomputable def foo (I : Ideal A[X]) (J : Ideal A) :
-    (A[X] ⧸ I) ⧸ (J.map (Ideal.Quotient.mk I ∘ Polynomial.C)) →+*
-      A[X] ⧸  Ideal.span ((I : Set A[X]) ∪ (J.map Polynomial.C)) := by
-  apply Ideal.Quotient.lift (J.map (Ideal.Quotient.mk I ∘ Polynomial.C))
-    (Ideal.Quotient.lift I (Ideal.Quotient.mk (Ideal.span (↑I ∪ ↑(Ideal.map C J)))) _)
-  · intro b hb
-    simp only [Ideal.map, Ideal.mem_span, Set.image_subset_iff] at hb
-    obtain ⟨c, hc⟩ := Ideal.Quotient.mk_surjective b
-    --rw [← hc]
-
-    sorry
-  · intro f hf
-    rw [← map_zero (Ideal.Quotient.mk (Ideal.span ((I : Set A[X]) ∪ (J.map Polynomial.C)))),
-      mk_eq_mk_iff_sub_mem, sub_zero, Ideal.span_union, Ideal.span_eq]
-    exact Ideal.mem_sup_left hf
-
-noncomputable def bar (I : Ideal A[X]) (J : Ideal A) :
-    A[X] ⧸  Ideal.span ((I : Set A[X]) ∪ (J.map Polynomial.C)) →+*
-      (A[X] ⧸ I) ⧸ (J.map (Ideal.Quotient.mk I ∘ Polynomial.C)) := by
-  apply Ideal.Quotient.lift _ ((Ideal.Quotient.mk (Ideal.map (⇑(mk I) ∘ ⇑C) J)).comp
-    (Ideal.Quotient.mk I))
-  · intro f hf
-    --simp only [Ideal.mem_span, Set.union_subset_iff, SetLike.coe_subset_coe, and_imp] at hf
-    --simp only [RingHom.coe_comp, Function.comp_apply]
-    rw [← map_zero (mk (Ideal.map (⇑(mk I) ∘ ⇑C) J)), RingHom.coe_comp, Function.comp_apply,
-      mk_eq_mk_iff_sub_mem, sub_zero, ← RingHom.coe_comp]
-    rw [Ideal.map]
-    simp only [Ideal.mem_span, Set.union_subset_iff, SetLike.coe_subset_coe, and_imp,
-      Set.image_subset_iff] at hf ⊢
-    intros B hB
-    obtain ⟨K, hK⟩ := Ideal.map_surjective_of_surjective (Ideal.Quotient.mk I)
-      Ideal.Quotient.mk_surjective B
-
-    have hIK : I ≤ K := sorry
-    have hJK : Ideal.map C J ≤ K := by
-      simp only [RingHom.coe_comp, ← hK] at hB
-      intros g hg
-      simp? [Ideal.map, Ideal.mem_span] at hg
-      sorry
-    specialize hf K hIK hJK
-    rw [← hK]
-    exact Ideal.mem_map_of_mem _ hf
-
-
-  /- (Ideal.Quotient.liftₐ (Ideal.span {(AdjoinRoot.of f) π})
-  (Ideal.Quotient.liftₐ (Ideal.span {f})
-    ((Ideal.Quotient.mkₐ ℤ (Ideal.span {(Polynomial.map (LocalRing.residue A) f)})).comp
-      (Polynomial.mapAlgHom (Ideal.Quotient.mk (LocalRing.maximalIdeal A))
-        (fun _ ↦ by simp only [algebraMap_int_eq, eq_intCast, map_intCast]))) (by sorry))
-        (by sorry)).toRingHom -/
-
-#exit
-
-
-lemma foo_aux1 (f : A[X]) : ∀ a ∈ Ideal.span {f},
-    ((Ideal.Quotient.mkₐ ℤ (Ideal.span {map (LocalRing.residue A) f})).comp
-      (mapAlgHom (Ideal.Quotient.mk (LocalRing.maximalIdeal A))
-        (fun _ ↦ by simp only [algebraMap_int_eq, eq_intCast, map_intCast]))) a = 0 := by
-  sorry/- intro a ha
-  rw [Ideal.mem_span_singleton, dvd_iff_exists_eq_mul_left] at ha
-  obtain ⟨c, hac⟩ := ha
-  rw [hac, map_mul]
-  apply mul_eq_zero_of_right
-  rw [AlgHom.comp_apply, Ideal.Quotient.mkₐ_eq_mk, ← map_zero (Ideal.Quotient.mk
-    (Ideal.span {map (LocalRing.residue A) f})), mk_eq_mk_iff_sub_mem, sub_zero] -/
-  --exact Ideal.mem_span_singleton_self _
-
-lemma foo_aux2 (f : A[X]) (π : A) (hπ : Irreducible π) : ∀ a ∈ Ideal.span {(AdjoinRoot.of f) π},
-    (liftₐ (Ideal.span {f}) ((mkₐ ℤ (Ideal.span {map (LocalRing.residue A) f})).comp
-      (mapAlgHom (Ideal.Quotient.mk (LocalRing.maximalIdeal A))
-    (fun _ ↦ by simp only [algebraMap_int_eq, eq_intCast, map_intCast]))) (foo_aux1 f)) a = 0 := by
-  intro a ha
-  rw [Ideal.mem_span_singleton, dvd_iff_exists_eq_mul_left] at ha
-  obtain ⟨c, hac⟩ := ha
-  rw [hac, map_mul]
-  apply mul_eq_zero_of_right
-
-  have hC : C ((Ideal.Quotient.mk (LocalRing.maximalIdeal A)) π) = 0 := sorry
-
-  have : ((mkₐ ℤ (Ideal.span {map (LocalRing.residue A) f})).comp
-        (mapAlgHom (Ideal.Quotient.mk (LocalRing.maximalIdeal A))
-        (fun _ ↦ by simp only [algebraMap_int_eq, eq_intCast, map_intCast]))) (C π) = 0 := by
-
-    simp only [AlgHom.coe_comp, mkₐ_eq_mk, Function.comp_apply]
-    rw [Polynomial.mapAlgHom_eq]
-    simp only [map_C]
-    rw [← map_zero ((Ideal.Quotient.mk (Ideal.span {map (LocalRing.residue A) f})))]
-    rw [Ideal.Quotient.mk_eq_mk_iff_sub_mem, sub_zero, Ideal.mem_span_singleton]
-
-
-    sorry
-
-  rw [← AdjoinRoot.mk_C]
-  rw [Ideal.Quotient.liftₐ_apply]
-  erw [Ideal.Quotient.lift_mk]
-  exact this
-  /- have : (↑((mkₐ ℤ (Ideal.span {map (LocalRing.residue A) f})).comp
-          (mapAlgHom (Ideal.Quotient.mk (LocalRing.maximalIdeal A))
-          (fun _ ↦ by simp only [algebraMap_int_eq, eq_intCast, map_intCast]))) : RingHom _ _) =
-        ((mkₐ ℤ (Ideal.span {map (LocalRing.residue A) f})).toRingHom.comp
-          (mapRingHom (Ideal.Quotient.mk (LocalRing.maximalIdeal A)))) := rfl
-  simp_rw [this]
-
-  rw [lift]
-  simp only [AlgHom.toRingHom_eq_coe, RingHom.toAddMonoidHom_eq_coe, ZeroHom.toFun_eq_coe,
-    AddMonoidHom.toZeroHom_coe, RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk] -/
-  --rw [Ideal.Quotient.lift_mk]
-  --erw [this]
-  --rw [Ideal.Quotient.lift_mk]
-  /- rw [← map_zero (liftₐ (Ideal.span {f}) _ (foo_aux1 f))]
-  rw [← mk_singleton_self]
-  simp only [liftₐ_apply]
-  rw [lift_mk]
-  --simp_rw [AlgHom.comp_apply]
-  simp only [RingHom.coe_coe, AlgHom.coe_comp, mkₐ_eq_mk, Function.comp_apply]
-  simp only [mapAlgHom, AlgHom.coe_mk, RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk] -/
-  --rw [Ideal.Quotient.lift_mk]
-
-noncomputable def foo' (f : A[X]) (π : A) : AdjoinRoot f ⧸ Ideal.span {(AdjoinRoot.of f) π} →+*
-    AdjoinRoot (map (LocalRing.residue A) f) :=
-  (Ideal.Quotient.liftₐ (Ideal.span {(AdjoinRoot.of f) π}) (Ideal.Quotient.liftₐ (Ideal.span {f})
-    ((Ideal.Quotient.mkₐ ℤ (Ideal.span {(Polynomial.map (LocalRing.residue A) f)})).comp
-      (Polynomial.mapAlgHom (Ideal.Quotient.mk (LocalRing.maximalIdeal A))
-        (fun _ ↦ by simp only [algebraMap_int_eq, eq_intCast, map_intCast]))) (foo_aux1 f))
-        (foo_aux2 f π)).toRingHom
+      (I.map (Ideal.Quotient.mk (Ideal.span {Polynomial.C ϖ}))).map (fae_ResidueField h) :=
+  RingEquiv.trans (DoubleQuot.quotQuotEquivComm I (Ideal.span {Polynomial.C ϖ})) (MariaInes ϖ h I)
