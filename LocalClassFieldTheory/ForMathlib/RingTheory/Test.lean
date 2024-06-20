@@ -147,13 +147,17 @@ noncomputable def fae_ResidueField' [DiscreteValuationRing A] {ϖ : A} (h : Irre
   · rw [Irreducible.maximalIdeal_eq h, Ideal.map_span]
     simp only [Set.image_singleton]
 
+set_option profiler true
+
 noncomputable def MariaInes [DiscreteValuationRing A] (ϖ : A) (h : Irreducible ϖ) (I : Ideal A[X]) :
     (A[X] ⧸ Ideal.span {Polynomial.C ϖ}) ⧸
       (I.map (Ideal.Quotient.mk (Ideal.span {Polynomial.C ϖ}))) ≃+*
     (LocalRing.ResidueField A)[X] ⧸
       (I.map (Ideal.Quotient.mk (Ideal.span {Polynomial.C ϖ}))).map (fae_ResidueField' h) := by
   apply Ideal.quotientEquiv _ _ (fae_ResidueField' h)
-  sorry
+  norm_cast
+
+#exit
 
 noncomputable def MariaInes' [DiscreteValuationRing A] (ϖ : A) (h : Irreducible ϖ) (I : Ideal A[X]) :
     (A[X] ⧸ I) ⧸
