@@ -146,9 +146,9 @@ open multiplicity UniqueFactorizationMonoid RatFunc Classical
 
 variable {K}
 
-theorem foo {P : K[X]} (hP : P ≠ 0) :
-  Multiset.count PowerSeries.X (normalizedFactors (↑P : K⟦X⟧)) =
-    Multiset.count Polynomial.X (normalizedFactors P) := by
+theorem normalized_count_X_eq_of_coe {P : K[X]} (hP : P ≠ 0) :
+    Multiset.count PowerSeries.X (normalizedFactors (↑P : K⟦X⟧)) =
+      Multiset.count Polynomial.X (normalizedFactors P) := by
   apply eq_of_forall_le_iff
   simp only [← PartENat.coe_le_coe]
   rw [X_eq_normalize, PowerSeries.X_eq_normalizeX, ← multiplicity_eq_count_normalizedFactors
@@ -156,43 +156,30 @@ theorem foo {P : K[X]} (hP : P ≠ 0) :
   simp only [← multiplicity.pow_dvd_iff_le_multiplicity, Polynomial.X_pow_dvd_iff,
     PowerSeries.X_pow_dvd_iff, Polynomial.coeff_coe P, implies_true]
 
-
--- **FAE** To golf a bit
-theorem pol_intValuation_eq_powerSeries (P : Polynomial K) :
-    (Polynomial.idealX K).intValuation P =
-      (PowerSeries.idealX K).intValuation (↑P : PowerSeries K) := by
+/- The `X`-adic valuation of a polynomial equals the `X`-adic valuation of its coercion to `K⟦X⟧`-/
+theorem intValuation_eq_of_coe (P : K[X]) :
+    (Polynomial.idealX K).intValuation P = (idealX K).intValuation (↑P : K⟦X⟧) := by
   by_cases hP : P = 0
   · rw [hP, Valuation.map_zero, Polynomial.coe_zero, Valuation.map_zero]
-  · simp only [intValuation_apply]
-    rw [intValuationDef_if_neg _ hP, intValuationDef_if_neg _ <| coe_ne_zero hP]
-    simp only [idealX_span, ofAdd_neg, inv_inj, WithZero.coe_inj, EmbeddingLike.apply_eq_iff_eq,
-      Nat.cast_inj]
-    have span_ne_zero :
-      (Ideal.span {P} : Ideal (Polynomial K)) ≠ 0 ∧
-        (Ideal.span {Polynomial.X} : Ideal (Polynomial K)) ≠ 0 :=
-      by
-      simp only [Ideal.zero_eq_bot, ne_eq, Ideal.span_singleton_eq_bot, hP, Polynomial.X_ne_zero,
-        not_false_iff, and_self_iff]
-    have span_ne_zero' :
-      (Ideal.span {↑P} : Ideal (PowerSeries K)) ≠ 0 ∧
-        ((PowerSeries.idealX K).asIdeal : Ideal (PowerSeries K)) ≠ 0 := by
-      rw [Ideal.zero_eq_bot, ne_eq, Ideal.span_singleton_eq_bot, coe_eq_zero_iff]
-      exact ⟨hP, (PowerSeries.idealX K).3⟩
-    have uno := foo hP
-    have due := count_associates_factors_eq (Ideal.span {P}) (Ideal.span {Polynomial.X})
-      (span_ne_zero).1 ?_ (span_ne_zero).2
-    have tre := count_associates_factors_eq (Ideal.span {↑(P : K⟦X⟧)}) (idealX K).asIdeal
-      ?_ ?_ ?_
-    rw [due, tre]
-    convert uno.symm
-    · exact count_span_normalizedFactors_eq_of_normUnit hP Polynomial.normUnit_X prime_X
-    · refine count_span_normalizedFactors_eq_of_normUnit (coe_ne_zero hP) PowerSeries.normUnit_X
-        X_prime
-    · exact span_ne_zero'.1
-    · exact (idealX K).isPrime
-    · exact span_ne_zero'.2
-    · exact Ideal.span_singleton_prime Polynomial.X_ne_zero|>.mpr prime_X
-
+  simp only [intValuation_apply]
+  rw [intValuationDef_if_neg _ hP, intValuationDef_if_neg _ <| coe_ne_zero hP]
+  simp only [idealX_span, ofAdd_neg, inv_inj, WithZero.coe_inj, EmbeddingLike.apply_eq_iff_eq,
+    Nat.cast_inj]
+  have span_ne_zero :
+    (Ideal.span {P} : Ideal K[X]) ≠ 0 ∧ (Ideal.span {Polynomial.X} : Ideal K[X]) ≠ 0 := by
+    simp only [Ideal.zero_eq_bot, ne_eq, Ideal.span_singleton_eq_bot, hP, Polynomial.X_ne_zero,
+      not_false_iff, and_self_iff]
+  have span_ne_zero' :
+    (Ideal.span {↑P} : Ideal K⟦X⟧) ≠ 0 ∧ ((idealX K).asIdeal : Ideal K⟦X⟧) ≠ 0 := by
+    simp only [Ideal.zero_eq_bot, ne_eq, Ideal.span_singleton_eq_bot, coe_eq_zero_iff, hP,
+      not_false_eq_true, true_and, (idealX K).3]
+  rw [count_associates_factors_eq (Ideal.span {P}) (Ideal.span {Polynomial.X}) (span_ne_zero).1
+    (Ideal.span_singleton_prime Polynomial.X_ne_zero|>.mpr prime_X) (span_ne_zero).2,
+    count_associates_factors_eq (Ideal.span {↑(P : K⟦X⟧)}) (idealX K).asIdeal]
+  convert (normalized_count_X_eq_of_coe hP).symm
+  exacts [count_span_normalizedFactors_eq_of_normUnit hP Polynomial.normUnit_X prime_X,
+    count_span_normalizedFactors_eq_of_normUnit (coe_ne_zero hP) normUnit_X X_prime,
+    span_ne_zero'.1, (idealX K).isPrime, span_ne_zero'.2]
 
 
 theorem intValuation_of_X :
