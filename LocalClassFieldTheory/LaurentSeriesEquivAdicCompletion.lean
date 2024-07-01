@@ -149,86 +149,12 @@ variable {K}
 theorem foo {P : K[X]} (hP : P ≠ 0) :
   Multiset.count PowerSeries.X (normalizedFactors (↑P : K⟦X⟧)) =
     Multiset.count Polynomial.X (normalizedFactors P) := by
-  apply Nat.le_antisymm
-  · rw [X_eq_normalize, PowerSeries.X_eq_normalizeX]--, ← PartENat.coe_le_coe,
-      -- ← multiplicity_eq_count_normalizedFactors _ hP, ← multiplicity_eq_count_normalizedFactors
-      --  _ (coe_ne_zero hP)]--, /- ← PartENat.coe_le_coe -/]--, ← multiplicity.pow_dvd_iff_le_multiplicity,
-        -- Polynomial.X_pow_dvd_iff]
-    have uno := @multiplicity.pow_dvd_iff_le_multiplicity _ _ _ (X : K⟦X⟧) (P : K⟦X⟧)
-      (Multiset.count Polynomial.X (normalizedFactors P))
-    have due := @multiplicity.pow_dvd_iff_le_multiplicity _ _ _ (Polynomial.X) P
-      (Multiset.count X (normalizedFactors (P : K⟦X⟧)))
-    rw [Polynomial.X_pow_dvd_iff] at due
-    rw [PowerSeries.X_pow_dvd_iff] at uno
-    simp_rw [Polynomial.coeff_coe P] at uno
-
-    --rw [← multiplicity_eq_count_normalizedFactors _ hP, ← multiplicity_eq_count_normalizedFactors
-      --  _ (coe_ne_zero hP)]
-    -- convert uno
-    -- rw [PowerSeries.X_pow_dvd_iff] at this
-    -- intro d hd
-    -- replace aux_pow_series := le_of_eq aux_pow_series.symm
-    rw [← multiplicity.pow_dvd_iff_le_multiplicity]/- , PowerSeries.X_pow_dvd_iff -/---/]-- at aux_pow_series
-    replace aux_pow_series := aux_pow_series d hd
-    rwa [Polynomial.coeff_coe P d] at aux_pow_series
-  · rw [X_eq_normalize, PowerSeries.X_eq_normalizeX, ← PartENat.coe_le_coe, ←
-      multiplicity_eq_count_normalizedFactors _ hP]--, ← multiplicity.pow_dvd_iff_le_multiplicity, PowerSeries.X_pow_dvd_iff]
-
-
-    intro d hd
-    replace aux_pol := le_of_eq aux_pol.symm
-    rw [← multiplicity.pow_dvd_iff_le_multiplicity, Polynomial.X_pow_dvd_iff] at aux_pol
-    replace aux_pol := aux_pol d hd
-    rwa [← Polynomial.coeff_coe P d] at aux_pol
-
-
--- theorem factors_in_pol_eq_powerSeries (P : Polynomial K) (hP : P ≠ 0) :
---     (normalizedFactors (Ideal.span {↑P})).count (PowerSeries.idealX K).asIdeal =
---       (normalizedFactors (Ideal.span {P})).count
---         (Ideal.span {Polynomial.X} : Ideal (Polynomial K)) := by
---   -- sorry
-
---   erw [count_span_normalizedFactors_eq_of_normUnit hP (Polynomial.normUnit_X (R := K))
---     Polynomial.prime_X, count_span_normalizedFactors_eq_of_normUnit (coe_ne_zero hP)
---       (PowerSeries.normUnit_X) PowerSeries.X_prime]
---   extract_goal
---   -- have aux_pol :=
---   --   @multiplicity_eq_count_normalizedFactors (Polynomial K) _ _ _ _ _ Polynomial.X P
---   --     Polynomial.irreducible_X hP
---   -- have aux_pow_series :=
---   --   @multiplicity_eq_count_normalizedFactors (PowerSeries K) _ _ _ _ _ PowerSeries.X (↑P)
---   --     (Prime.irreducible PowerSeries.X_prime) (coe_ne_zero hP)
---   apply Nat.le_antisymm
---   · rw [X_eq_normalize, PowerSeries.X_eq_normalizeX]--, ← PartENat.coe_le_coe,
---       -- ← multiplicity_eq_count_normalizedFactors _ hP, ← multiplicity_eq_count_normalizedFactors
---       --  _ (coe_ne_zero hP)]--, /- ← PartENat.coe_le_coe -/]--, ← multiplicity.pow_dvd_iff_le_multiplicity,
---         -- Polynomial.X_pow_dvd_iff]
---     have uno := @multiplicity.pow_dvd_iff_le_multiplicity _ _ _ (X : K⟦X⟧) (P : K⟦X⟧)
---       (Multiset.count Polynomial.X (normalizedFactors P))
---     have due := @multiplicity.pow_dvd_iff_le_multiplicity _ _ _ (Polynomial.X) P
---       (Multiset.count X (normalizedFactors (P : K⟦X⟧)))
---     rw [Polynomial.X_pow_dvd_iff] at due
---     rw [PowerSeries.X_pow_dvd_iff] at uno
---     simp_rw [Polynomial.coeff_coe P] at uno
-
---     --rw [← multiplicity_eq_count_normalizedFactors _ hP, ← multiplicity_eq_count_normalizedFactors
---       --  _ (coe_ne_zero hP)]
---     -- convert uno
---     -- rw [PowerSeries.X_pow_dvd_iff] at this
---     -- intro d hd
---     -- replace aux_pow_series := le_of_eq aux_pow_series.symm
---     rw [← multiplicity.pow_dvd_iff_le_multiplicity]/- , PowerSeries.X_pow_dvd_iff -/---/]-- at aux_pow_series
---     replace aux_pow_series := aux_pow_series d hd
---     rwa [Polynomial.coeff_coe P d] at aux_pow_series
---   · rw [X_eq_normalize, PowerSeries.X_eq_normalizeX, ← PartENat.coe_le_coe, ←
---       multiplicity_eq_count_normalizedFactors _ hP]--, ← multiplicity.pow_dvd_iff_le_multiplicity, PowerSeries.X_pow_dvd_iff]
-
-
---     intro d hd
---     replace aux_pol := le_of_eq aux_pol.symm
---     rw [← multiplicity.pow_dvd_iff_le_multiplicity, Polynomial.X_pow_dvd_iff] at aux_pol
---     replace aux_pol := aux_pol d hd
---     rwa [← Polynomial.coeff_coe P d] at aux_pol
+  apply eq_of_forall_le_iff
+  simp only [← PartENat.coe_le_coe]
+  rw [X_eq_normalize, PowerSeries.X_eq_normalizeX, ← multiplicity_eq_count_normalizedFactors
+    irreducible_X hP, ← multiplicity_eq_count_normalizedFactors X_irreducible (coe_ne_zero hP)]
+  simp only [← multiplicity.pow_dvd_iff_le_multiplicity, Polynomial.X_pow_dvd_iff,
+    PowerSeries.X_pow_dvd_iff, Polynomial.coeff_coe P, implies_true]
 
 
 -- **FAE** To golf a bit
@@ -301,7 +227,7 @@ theorem valuation_of_X_zpow (s : ℕ) :
      (↑(Multiplicative.ofAdd (-(1 : ℤ))) : ℤₘ₀) := by
     erw [@valuation_of_algebraMap (PowerSeries K) _ _ (LaurentSeries K) _ _ _
         (PowerSeries.idealX K) PowerSeries.X]
-    apply intValuation_of_X K
+    apply intValuation_of_X
   rw [map_pow, this, ← one_mul (s : ℤ), ← neg_mul (1 : ℤ) ↑s, Int.ofAdd_mul, WithZero.coe_zpow,
     ofAdd_neg, WithZero.coe_inv, zpow_natCast]
 
