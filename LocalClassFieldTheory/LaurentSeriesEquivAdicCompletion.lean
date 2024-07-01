@@ -6,6 +6,7 @@ Authors: María Inés de Frutos-Fernández, Filippo A. E. Nuccio
 import Mathlib.Algebra.GroupWithZero.WithZero
 import LocalClassFieldTheory.DiscreteValuationRing.Basic
 import LocalClassFieldTheory.ForMathlib.Topology.UniformSpace.AbstractCompletion
+import LocalClassFieldTheory.ForMathlib.Polynomial
 import Mathlib.RingTheory.DedekindDomain.Ideal
 import Mathlib.RingTheory.PowerSeries.Inverse
 import Mathlib.RingTheory.PowerSeries.Trunc
@@ -183,18 +184,22 @@ theorem intValuation_eq_of_coe (P : K[X]) :
 
 
 theorem intValuation_of_X :
-    (PowerSeries.idealX K).intValuation X = ↑(Multiplicative.ofAdd (-1 : ℤ)) := by
-  classical
-  rw [intValuation_apply, intValuationDef_if_neg (PowerSeries.idealX K) PowerSeries.X_ne_zero]
-  congr
-  have hX : Irreducible (Associates.mk (PowerSeries.idealX K).asIdeal) := by
-    rw [Associates.irreducible_mk]
-    apply Prime.irreducible
-    apply Ideal.prime_of_isPrime
-    apply Ideal.span_singleton_eq_bot.mp.mt
-    apply PowerSeries.X_ne_zero
-    apply PowerSeries.span_X_isPrime
-  convert Associates.count_self hX
+    (idealX K).intValuation X = ↑(Multiplicative.ofAdd (-1 : ℤ)) := by
+  rw [← Polynomial.coe_X, ← intValuation_eq_of_coe]
+  exact intValuation_singleton _ Polynomial.X_ne_zero (by rfl)
+
+
+  -- classical
+  -- rw [intValuation_apply, intValuationDef_if_neg (PowerSeries.idealX K) PowerSeries.X_ne_zero]
+  -- congr
+  -- have hX : Irreducible (Associates.mk (PowerSeries.idealX K).asIdeal) := by
+  --   rw [Associates.irreducible_mk]
+  --   apply Prime.irreducible
+  --   apply Ideal.prime_of_isPrime
+  --   apply Ideal.span_singleton_eq_bot.mp.mt
+  --   apply PowerSeries.X_ne_zero
+  --   apply PowerSeries.span_X_isPrime
+  -- convert Associates.count_self hX
 
 end PowerSeries
 ---`*3` to here is in PR #13064
@@ -680,7 +685,7 @@ theorem valuation_eq_LaurentSeries_valuation (P : RatFunc K) :
   rw [aux]
   convert @valuation_of_mk' (PowerSeries K) _ _ (LaurentSeries K) _ _ _ (PowerSeries.idealX K) f
         ⟨g, mem_nonZeroDivisors_iff_ne_zero.2 <| coe_ne_zero h⟩ <;>
-    apply PowerSeries.pol_intValuation_eq_powerSeries
+    apply PowerSeries.intValuation_eq_of_coe
 
 
 end RatFunc
