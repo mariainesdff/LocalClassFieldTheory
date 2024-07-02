@@ -51,6 +51,7 @@ open Function
 
 open scoped Topology NNReal
 
+-- The contents of this namespaces are not PR'd. They are not used in this file.
 namespace NormedGroupHom
 
 /-- The inverse of `f : normed_add_group_hom V W` as a `normed_add_group_hom W V`. The map `f` must
@@ -71,28 +72,27 @@ def normedGroupHomInvOfBijectiveBounded {V : Type _} {W : Type _} [SeminormedAdd
     rw [← rightInverse_invFun h_bij.surjective w]
     exact hC v
 
-/-- The inverse of `f : normed_add_group_hom V W` is bijective and there exists a real `C` such that
- `∀ v : W, ‖v‖ ≤ C * ‖f v‖`, then the inverse of `f` is continuous. -/
+/-- If `f : NormedAddGroupHom V W` is bijective and there exists a real `C` such that
+`∀ v : W, ‖v‖ ≤ C * ‖f v‖`, then the inverse function of `f` is continuous. -/
 theorem continuous_inv_of_bijective_bounded {V : Type _} {W : Type _} [SeminormedAddCommGroup V]
     [SeminormedAddCommGroup W] {f : NormedAddGroupHom V W} (h_bij : Bijective f)
     (h_bdd : ∃ C : ℝ, ∀ v, ‖v‖ ≤ C * ‖f v‖) : Continuous (invFun f) := by
   set g : NormedAddGroupHom W V :=
-    { toFun := invFun f
+    { toFun    := invFun f
       map_add' := fun x y => by
         rw [← (Classical.choose_spec (((bijective_iff_existsUnique _).mp h_bij) x)).1, ←
           (Classical.choose_spec (((bijective_iff_existsUnique _).mp h_bij) y)).1, ← map_add]
         simp only [← (invFun f).comp_apply, invFun_comp h_bij.injective, id_eq]
-      bound' := by
+      bound'   := by
         use Classical.choose h_bdd
         intro w
         rw [← (Classical.choose_spec (((bijective_iff_existsUnique _).mp h_bij) w)).1]
         simp only [← (invFun f).comp_apply, invFun_comp h_bij.injective, id_eq]
         exact Classical.choose_spec h_bdd _ }
-  change Continuous g
-  apply NormedAddGroupHom.continuous
+  exact NormedAddGroupHom.continuous g
 
-/-- We regard a bijective `f : normed_add_group_hom V W` such that
-  `∃ (C : ℝ), ∀ v, ‖v‖ ≤ C * ‖f v‖` as a homeomorphism. -/
+/-- We regard a bijective `f : NormedAddGroupHom V W` such that `∃ (C : ℝ), ∀ v, ‖v‖ ≤ C * ‖f v‖`
+as a homeomorphism. -/
 def homeoOfBijectiveBounded {V : Type _} {W : Type _} [SeminormedAddCommGroup V]
     [SeminormedAddCommGroup W] {f : NormedAddGroupHom V W} (h_bij : Bijective f)
     (h_bdd : ∃ C : ℝ, ∀ v, ‖v‖ ≤ C * ‖f v‖) : Homeomorph V W where
@@ -107,6 +107,7 @@ end NormedGroupHom
 
 variable {R : Type _} [CommRing R] (f : R → ℝ)
 
+-- In #14359
 section seminormFromBounded
 
 /-- The real-valued function sending `x ∈ R` to the supremum of  `f(x*y)/f(y)`, where `y` runs over
