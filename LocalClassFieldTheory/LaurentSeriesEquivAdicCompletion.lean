@@ -183,10 +183,16 @@ theorem intValuation_eq_of_coe (P : K[X]) :
     span_ne_zero'.1, (idealX K).isPrime, span_ne_zero'.2]
 
 
-theorem intValuation_of_X :
-    (idealX K).intValuation X = ↑(Multiplicative.ofAdd (-1 : ℤ)) := by
-  rw [← Polynomial.coe_X, ← intValuation_eq_of_coe]
-  exact intValuation_singleton _ Polynomial.X_ne_zero (by rfl)
+-- theorem intValuation_of_X : *FAE* Old version, probably not the right one
+--     (idealX K).intValuation X = ↑(Multiplicative.ofAdd (-1 : ℤ)) := by
+--   rw [← Polynomial.coe_X, ← intValuation_eq_of_coe]
+--   exact intValuation_singleton _ Polynomial.X_ne_zero (by rfl)
+
+/-- The integral valuation of the power series `X : K⟦X⟧` equals `(ofAdd -1) : ℤₘ₀`-/
+@[simp]
+theorem intValuation_of_X : (idealX K).intValuationDef X = ↑(Multiplicative.ofAdd (-1 : ℤ)) := by
+  rw [← Polynomial.coe_X, ← intValuation_apply, ← intValuation_eq_of_coe]
+  apply intValuation_singleton _ Polynomial.X_ne_zero (by rfl)
 
 end PowerSeries
 ---`*3` to here is in PR #13064
