@@ -88,6 +88,7 @@ def mulRingNormDef : MulRingNorm L where
 
 end Valued
 
+--PR'd in #13064
 namespace IsDedekindDomain.HeightOneSpectrum
 
 theorem intValuation_apply {R : Type _} [CommRing R] [IsDomain R] [IsDedekindDomain R]

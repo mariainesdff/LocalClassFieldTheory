@@ -8,6 +8,8 @@ import Mathlib.RingTheory.DedekindDomain.AdicValuation
 
 #align_import for_mathlib.polynomial
 
+
+-- ALL THIS HAS BEEN IMPORTED VIA #13064
 /-!
 # Polynomials
 This file contains general result concerning the coercion of polynomials to power series and to

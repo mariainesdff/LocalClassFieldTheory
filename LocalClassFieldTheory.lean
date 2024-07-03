@@ -29,9 +29,9 @@ import LocalClassFieldTheory.ForMathlib.RingTheory.IntegralClosure
 import LocalClassFieldTheory.ForMathlib.Topology.UniformSpace.AbstractCompletion -- In PR #12979
 import LocalClassFieldTheory.ForMathlib.DiscreteUniformity -- In PR #12179
 import LocalClassFieldTheory.ForMathlib.DiscreteValuationRing
-import LocalClassFieldTheory.ForMathlib.Polynomial
+import LocalClassFieldTheory.ForMathlib.Polynomial -- In PR #13064
 -- import LocalClassFieldTheory.ForMathlib.PowerSeries -- In PR #12160 and PR #12245
-import LocalClassFieldTheory.ForMathlib.RankOneValuation
+import LocalClassFieldTheory.ForMathlib.RankOneValuation -- Final lemma in PR #13064
 import LocalClassFieldTheory.ForMathlib.WithZero
 -- FromMathlib folder *complete*
 import LocalClassFieldTheory.FromMathlib.AlgNormOfGalois

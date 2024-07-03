@@ -188,19 +188,6 @@ theorem intValuation_of_X :
   rw [← Polynomial.coe_X, ← intValuation_eq_of_coe]
   exact intValuation_singleton _ Polynomial.X_ne_zero (by rfl)
 
-
-  -- classical
-  -- rw [intValuation_apply, intValuationDef_if_neg (PowerSeries.idealX K) PowerSeries.X_ne_zero]
-  -- congr
-  -- have hX : Irreducible (Associates.mk (PowerSeries.idealX K).asIdeal) := by
-  --   rw [Associates.irreducible_mk]
-  --   apply Prime.irreducible
-  --   apply Ideal.prime_of_isPrime
-  --   apply Ideal.span_singleton_eq_bot.mp.mt
-  --   apply PowerSeries.X_ne_zero
-  --   apply PowerSeries.span_X_isPrime
-  -- convert Associates.count_self hX
-
 end PowerSeries
 ---`*3` to here is in PR #13064
 namespace LaurentSeries
