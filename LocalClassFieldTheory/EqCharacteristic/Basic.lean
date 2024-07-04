@@ -273,7 +273,7 @@ theorem dvd_of_norm_lt_one {F : FpXIntCompletion p} :
     replace h := le_of_lt h
     rwa [neg_zero, ofAdd_zero, WithZero.coe_one, val_le_one_iff_eq_coe] at h
   rw [neg_zero, ← neg_add_self (1 : ℤ), WithZero.lt_succ_iff_le, ← h_Gg, ← Int.ofNat_one,
-    LaurentSeries.int_valuation_le_iff_coeff_zero_of_lt] at h
+    LaurentSeries.intValuation_le_iff_coeff_zero_of_lt] at h
   specialize h 0 zero_lt_one
   rw [PowerSeries.coeff_zero_eq_constantCoeff, ← PowerSeries.X_dvd_iff] at h
   obtain ⟨C, rfl⟩ := dvd_iff_exists_eq_mul_left.mp h
@@ -294,7 +294,7 @@ theorem norm_lt_one_of_dvd {F : FpXIntCompletion p} :
   simp only
   erw [← h_fG, valuation_compare 𝔽_[p], ← WithZero.coe_one, ← ofAdd_zero, ← neg_zero, neg_zero, ←
     neg_add_self (1 : ℤ), WithZero.lt_succ_iff_le, ← Int.ofNat_one,
-    LaurentSeries.int_valuation_le_iff_coeff_zero_of_lt]
+    LaurentSeries.intValuation_le_iff_coeff_zero_of_lt]
   intro n hn
   replace hn : n = 0 := Nat.lt_one_iff.mp hn
   rw [hn]
