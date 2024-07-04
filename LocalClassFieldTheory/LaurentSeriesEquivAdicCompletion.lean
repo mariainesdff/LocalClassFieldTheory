@@ -196,6 +196,8 @@ theorem intValuation_X : (idealX K).intValuationDef X = ↑(Multiplicative.ofAdd
 
 end PowerSeries
 ---`*3` to here is in PR #13064
+
+--from here `*4`...
 namespace LaurentSeries
 
 section Valuation
@@ -204,7 +206,7 @@ open PowerSeries
 
 instance : Valued (LaurentSeries K) ℤₘ₀ :=
   Valued.mk' (PowerSeries.idealX K).valuation
-
+#where
 theorem valuation_X_zpow (s : ℕ) :
     Valued.v ((↑(PowerSeries.X : PowerSeries K) : LaurentSeries K) ^ s) =
       ↑(Multiplicative.ofAdd (-(s : ℤ))) := by
@@ -220,7 +222,7 @@ theorem valuation_X_zpow (s : ℕ) :
 -- lemma coe_powerSeries {R : Type*} [Semiring R] (x : PowerSeries R) : (x : LaurentSeries R) =
 --   HahnSeries.ofPowerSeries ℤ R x := rfl
 
-theorem valuation_of_single_zpow (s : ℤ) :
+theorem valuation_single_zpow (s : ℤ) :
     Valued.v (HahnSeries.single s (1 : K) : LaurentSeries K) =
       ↑(Multiplicative.ofAdd (-(s : ℤ))) := by
   have aux_mul :
@@ -251,7 +253,7 @@ theorem coeff_zero_of_lt_intValuation {n d : ℕ} {f : PowerSeries K}
   rw [← span_singleton_dvd_span_singleton_iff_dvd, ← Ideal.span_singleton_pow]
   apply dvd_val_int
 
-theorem intValuation_le_iff_coeff_zero_of_lt {d : ℕ} (f : PowerSeries K) :
+theorem intValuation_le_iff_coeff_lt_eq_zero {d : ℕ} (f : PowerSeries K) :
     Valued.v (f : LaurentSeries K) ≤ ↑(Multiplicative.ofAdd (-d : ℤ)) ↔
       ∀ n : ℕ, n < d → coeff K n f = 0 := by
   have : PowerSeries.X ^ d ∣ f ↔ ∀ n : ℕ, n < d → (PowerSeries.coeff K n) f = 0 :=
@@ -277,7 +279,7 @@ theorem coeff_zero_of_lt_valuation {n D : ℤ} {f : LaurentSeries K}
       have F_coeff := powerSeriesPart_coeff f m
       rw [hs, add_comm, ← eq_add_neg_of_add_eq hm, ← hF] at F_coeff
       rw [← F_coeff]
-      refine' (@intValuation_le_iff_coeff_zero_of_lt K _ d F).mp _ m (by linarith)
+      refine' (@intValuation_le_iff_coeff_lt_eq_zero K _ d F).mp _ m (by linarith)
       have F_mul := ofPowerSeries_powerSeriesPart f
       rw [← hF, hs, neg_neg, ← HahnSeries.ofPowerSeries_X_pow s] at F_mul
       rwa [F_mul, map_mul, ← hd, PowerSeries.coe_pow, neg_add_rev, ofAdd_add, WithZero.coe_mul,
@@ -294,14 +296,14 @@ theorem coeff_zero_of_lt_valuation {n D : ℤ} {f : LaurentSeries K}
       have F_coeff := powerSeriesPart_coeff f m
       rw [hs, add_comm, ← hF, ← hm] at F_coeff
       rw [← F_coeff]
-      refine' (@intValuation_le_iff_coeff_zero_of_lt K _ d F).mp _ m (by linarith)
+      refine' (@intValuation_le_iff_coeff_lt_eq_zero K _ d F).mp _ m (by linarith)
       have F_mul := ofPowerSeries_powerSeriesPart f
       rw [← hF] at F_mul
-      rwa [F_mul, map_mul, ← hd, hs, neg_sub, sub_eq_add_neg, ofAdd_add, valuation_of_single_zpow,
+      rwa [F_mul, map_mul, ← hd, hs, neg_sub, sub_eq_add_neg, ofAdd_add, valuation_single_zpow,
         neg_neg, WithZero.coe_mul, mul_le_mul_left₀]
       simp only [ne_eq, WithZero.coe_ne_zero, not_false_iff]
 
-theorem valuation_le_iff_coeff_zero_of_lt {D : ℤ} {f : LaurentSeries K} :
+theorem valuation_le_iff_coeff_lt_eq_zero {D : ℤ} {f : LaurentSeries K} :
     Valued.v f ≤ ↑(Multiplicative.ofAdd (-D : ℤ)) ↔ ∀ n : ℤ, n < D → f.coeff n = 0 := by
   refine' ⟨fun hnD n hn => coeff_zero_of_lt_valuation K hnD hn, fun h_val_f => _⟩
   set F := powerSeriesPart f with hF
@@ -309,7 +311,7 @@ theorem valuation_le_iff_coeff_zero_of_lt {D : ℤ} {f : LaurentSeries K} :
   · obtain ⟨s, hs⟩ := Int.exists_eq_neg_ofNat ord_nonpos
     have h_F_mul := f.single_order_mul_powerSeriesPart
     rw [hs, ← hF] at h_F_mul
-    rw [← h_F_mul, map_mul, valuation_of_single_zpow, neg_neg, mul_comm, ← le_mul_inv_iff₀,
+    rw [← h_F_mul, map_mul, valuation_single_zpow, neg_neg, mul_comm, ← le_mul_inv_iff₀,
       ofAdd_neg, WithZero.coe_inv, ← mul_inv, ← WithZero.coe_mul, ← ofAdd_add, ← WithZero.coe_inv, ←
       ofAdd_neg]
     by_cases hDs : D + s ≤ 0
@@ -319,7 +321,7 @@ theorem valuation_le_iff_coeff_zero_of_lt {D : ℤ} {f : LaurentSeries K} :
     · rw [not_le] at hDs
       obtain ⟨d, hd⟩ := Int.eq_ofNat_of_zero_le (le_of_lt hDs)
       rw [hd]
-      apply (intValuation_le_iff_coeff_zero_of_lt K F).mpr
+      apply (intValuation_le_iff_coeff_lt_eq_zero K F).mpr
       intro n hn
       rw [powerSeriesPart_coeff f n, hs]
       apply h_val_f
@@ -330,7 +332,7 @@ theorem valuation_le_iff_coeff_zero_of_lt {D : ℤ} {f : LaurentSeries K} :
     rw [neg_inj] at hs
     have h_F_mul := f.single_order_mul_powerSeriesPart
     rw [hs, ← hF] at h_F_mul
-    rw [← h_F_mul, map_mul, valuation_of_single_zpow, mul_comm, ← le_mul_inv_iff₀, ofAdd_neg,
+    rw [← h_F_mul, map_mul, valuation_single_zpow, mul_comm, ← le_mul_inv_iff₀, ofAdd_neg,
       WithZero.coe_inv, ← mul_inv, ← WithZero.coe_mul, ← ofAdd_add, ← WithZero.coe_inv, ← ofAdd_neg,
       neg_add, neg_neg]
     by_cases hDs : D - s ≤ 0
@@ -343,7 +345,7 @@ theorem valuation_le_iff_coeff_zero_of_lt {D : ℤ} {f : LaurentSeries K} :
       rw [← sub_eq_neg_add]
       rw [neg_sub]
       rw [hd]
-      apply (intValuation_le_iff_coeff_zero_of_lt K F).mpr
+      apply (intValuation_le_iff_coeff_lt_eq_zero K F).mpr
       intro n hn
       rw [powerSeriesPart_coeff f n, hs]
       apply h_val_f (s + n)
@@ -352,7 +354,7 @@ theorem valuation_le_iff_coeff_zero_of_lt {D : ℤ} {f : LaurentSeries K} :
 
 theorem valuation_le_of_coeff_eventually_eq {f g : LaurentSeries K} {D : ℤ}
     (H : ∀ d, d < D → g.coeff d = f.coeff d) : Valued.v (f - g) ≤ ↑(Multiplicative.ofAdd (-D)) := by
-  apply (valuation_le_iff_coeff_zero_of_lt K).mpr
+  apply (valuation_le_iff_coeff_lt_eq_zero K).mpr
   intro n hn
   rw [HahnSeries.sub_coeff, sub_eq_zero]
   exact (H n hn).symm
@@ -382,7 +384,7 @@ theorem bounded_supp_of_valuation_le (f : LaurentSeries K) (d : ℤ) :
 
 theorem val_le_one_iff_eq_coe (f : LaurentSeries K) :
     Valued.v f ≤ (1 : ℤₘ₀) ↔ ∃ F : PowerSeries K, ↑F = f := by
-  rw [← WithZero.coe_one, ← ofAdd_zero, ← neg_zero, valuation_le_iff_coeff_zero_of_lt]
+  rw [← WithZero.coe_one, ← ofAdd_zero, ← neg_zero, valuation_le_iff_coeff_lt_eq_zero]
   refine' ⟨fun h => ⟨PowerSeries.mk fun n => f.coeff n, _⟩, _⟩
   ext (_ | n)
   · simp only [Int.ofNat_eq_coe, LaurentSeries.coeff_coe_powerSeries, coeff_mk]
@@ -400,7 +402,7 @@ theorem val_le_one_iff_eq_coe (f : LaurentSeries K) :
 end Valuation
 
 end LaurentSeries
-
+---`*4` to here is in PR #14418
 section CompletionLaurentSeries
 
 open LaurentSeries Polynomial
@@ -585,7 +587,7 @@ theorem exists_pol_int_val_lt (F : PowerSeries K) (η : ℤₘ₀ˣ) :
       by
       intro m hm
       rw [map_sub, sub_eq_zero, Polynomial.coeff_coe, coeff_trunc, if_pos hm]
-    have := (LaurentSeries.intValuation_le_iff_coeff_zero_of_lt K _).mpr trunc_prop
+    have := (LaurentSeries.intValuation_le_iff_coeff_lt_eq_zero K _).mpr trunc_prop
     rw [Nat.cast_add, neg_add, ofAdd_add, ← hd, hD, ofAdd_toAdd, WithZero.coe_mul,
       WithZero.coe_unzero, ← LaurentSeries.coe_algebraMap] at this
     rw [← @valuation_of_algebraMap (PowerSeries K) _ _ (LaurentSeries K) _ _ _
