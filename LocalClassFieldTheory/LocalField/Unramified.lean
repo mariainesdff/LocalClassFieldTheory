@@ -21,14 +21,18 @@ local notation "K₀" => Valuation.valuationSubring v
 local notation "w" => (@Valued.v L _ ℤₘ₀ _ _)
 local notation "L₀" => Valuation.valuationSubring w
 
-
 instance : FiniteDimensional K L := by
   sorry
 
 lemma foo : L₀ = (extendedValuation K L).valuationSubring := by
-  sorry
+  ext x
+  simp only [mem_valuationSubring_iff]
+  rw [Extension.apply]
+  split_ifs with h
+  · simp only [h, _root_.map_zero, zero_le']
+  · sorry
 
--- Why the proof below taken from `DVR.Extensions` broken?
+-- Why is the proof below taken from `DVR.Extensions` broken?
 -- MI: It is because the `L₀` in `DVR.Extensions` is defined as
 -- `(extendedValuation K L).valuationSubring`
 instance : Algebra K₀ L₀ := by
@@ -71,8 +75,7 @@ instance Kn_algebra : Algebra K (Kn K hn) := sorry
 
 instance Kn_algebra' : Algebra K₀ (Kn_valued K hn).v.valuationSubring := sorry
 
-#check e(K, K)
-lemma Kn_unramified : e(Kn K hn, K) = 1 /- e((Kn_valued K hn).v.valuationSubring, K₀) -/  := sorry
+lemma Kn_unramified : e(Kn K hn, K) = 1 := sorry
 
 local instance (L : Type*) [Field L] [Algebra K L] [FiniteDimensional K L] :
     Algebra K₀ (extendedValuation K L).valuationSubring := by
@@ -85,7 +88,6 @@ def Kn_unique (L : Type*) [Field L] [LocalField L] [Algebra K L]
   --[FiniteDimensional K L] replaced by `LocalField L`
   (hn' : FiniteDimensional.finrank K L = n)
   (he : e(L, K) = 1) :
-  --(he : e((extendedValuation K L).valuationSubring, K₀) = 1)  :
     (Kn K hn) ≃ₐ[K] L  :=
   sorry
 
