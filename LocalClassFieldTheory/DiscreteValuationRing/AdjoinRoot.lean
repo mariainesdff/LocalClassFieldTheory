@@ -37,8 +37,7 @@ local notation "k" => LocalRing.ResidueField A
 
 namespace AdjoinRoot
 
-lemma degree_ne_zero_of_irreducible {f : A[X]}
-    (hf : Irreducible (map (algebraMap A k) f))  :
+lemma degree_ne_zero_of_irreducible {f : A[X]} (hf : Irreducible (map (algebraMap A k) f)) :
     f.degree ≠ 0 := by
   intro h0
   rw [eq_C_of_degree_eq_zero h0, map_C] at hf
@@ -61,94 +60,21 @@ lemma isDomain_of_irreducible {f : A[X]} (hf1 : f.Monic)
 
 section Foo
 
-noncomputable def ResidueField_to_AdjoinRoot_quot' (f : A[X]) (π : A) :
-    k → AdjoinRoot f ⧸ Ideal.span {(AdjoinRoot.of f) π} := fun x ↦
-  RingHom.comp (Ideal.Quotient.mk (Ideal.span {(AdjoinRoot.of f) π}))
-    (AdjoinRoot.of f) (Ideal.Quotient.mk_surjective (I := LocalRing.maximalIdeal A) x).choose
-namespace ResidueField_to_AdjoinRoot_quot'
-
-protected lemma map_one (f : A[X]) {π : A} (hπ : Irreducible π) :
-    ResidueField_to_AdjoinRoot_quot' f π 1 = 1 := by
-  set x1 := (Ideal.Quotient.mk_surjective (I := LocalRing.maximalIdeal A) 1).choose
-  have h1 := (Ideal.Quotient.mk_surjective (I := LocalRing.maximalIdeal A) 1).choose_spec
-  simp only [ResidueField_to_AdjoinRoot_quot', RingHom.coe_comp, Function.comp_apply,
-    ← map_one (Ideal.Quotient.mk (Ideal.span {(AdjoinRoot.of f) π}))]
-  rw [Ideal.Quotient.mk_eq_mk_iff_sub_mem, ← map_one (AdjoinRoot.of f), ← map_sub,
-    Ideal.mem_span_singleton]
-  have hdvd : π ∣ (x1 - 1) := by
-    rw [← Ideal.mem_span_singleton, ← Ideal.Quotient.mk_eq_mk_iff_sub_mem,
-      ← Irreducible.maximalIdeal_eq hπ, h1, map_one]
-  rw [dvd_iff_exists_eq_mul_left] at hdvd ⊢
-  obtain ⟨c, hc⟩ := hdvd
-  use (AdjoinRoot.of f) c
-  rw [← map_mul, ← hc]
-
-protected lemma map_zero (f : A[X]) {π : A} (hπ : Irreducible π) :
-    ResidueField_to_AdjoinRoot_quot' f π 0 = 0 := by
-  set x0 := (Ideal.Quotient.mk_surjective (I := LocalRing.maximalIdeal A) 0).choose
-  have h0 := (Ideal.Quotient.mk_surjective (I := LocalRing.maximalIdeal A) 0).choose_spec
-  simp only [ResidueField_to_AdjoinRoot_quot', RingHom.coe_comp, Function.comp_apply,
-    ← map_zero (Ideal.Quotient.mk (Ideal.span {(AdjoinRoot.of f) π}))]
-  rw [Ideal.Quotient.mk_eq_mk_iff_sub_mem, ← map_zero (AdjoinRoot.of f), ← map_sub,
-    Ideal.mem_span_singleton]
-  have hdvd : π ∣ (x0 - 0) := by
-    rw [← Ideal.mem_span_singleton, ← Ideal.Quotient.mk_eq_mk_iff_sub_mem,
-      ← Irreducible.maximalIdeal_eq hπ, h0, map_zero]
-  rw [dvd_iff_exists_eq_mul_left] at hdvd ⊢
-  obtain ⟨c, hc⟩ := hdvd
-  use (AdjoinRoot.of f) c
-  rw [← map_mul, ← hc]
-
-protected lemma map_add (f : A[X]) {π : A} (hπ : Irreducible π)
-    (x y : k) :  ResidueField_to_AdjoinRoot_quot' f π (x + y) =
-      ResidueField_to_AdjoinRoot_quot' f π x + ResidueField_to_AdjoinRoot_quot' f π y := by
-  letI : AddHomClass (AdjoinRoot f →+* AdjoinRoot f ⧸ Ideal.span {(AdjoinRoot.of f) π}) _ _ :=
-    AddMonoidHomClass.toAddHomClass -- Otherwise this times out
-  set x' := (Ideal.Quotient.mk_surjective (I := LocalRing.maximalIdeal A) x).choose
-  set y' := (Ideal.Quotient.mk_surjective (I := LocalRing.maximalIdeal A) y).choose
-  set xy' := (Ideal.Quotient.mk_surjective (I := LocalRing.maximalIdeal A) (x + y)).choose
-  set hx' := (Ideal.Quotient.mk_surjective (I := LocalRing.maximalIdeal A) x).choose_spec
-  set hy' := (Ideal.Quotient.mk_surjective (I := LocalRing.maximalIdeal A) y).choose_spec
-  set hxy' := (Ideal.Quotient.mk_surjective (I := LocalRing.maximalIdeal A) (x + y)).choose_spec
-  simp only [ResidueField_to_AdjoinRoot_quot', RingHom.coe_comp, Function.comp_apply]
-  rw [← map_add, Ideal.Quotient.mk_eq_mk_iff_sub_mem, ← map_add, ← map_sub,
-    Ideal.mem_span_singleton]
-  have hdvd : π ∣ (xy' - (x' + y')) := by
-    rw [← Ideal.mem_span_singleton, ← Ideal.Quotient.mk_eq_mk_iff_sub_mem,
-      ← Irreducible.maximalIdeal_eq hπ, map_add, hx', hy', hxy']
-  rw [dvd_iff_exists_eq_mul_left] at hdvd ⊢
-  obtain ⟨c, hc⟩ := hdvd
-  use (AdjoinRoot.of f) c
-  rw [← map_mul, ← hc]
-
-protected lemma map_mul (f : A[X]) {π : A} (hπ : Irreducible π)
-    (x y : k) :  ResidueField_to_AdjoinRoot_quot' f π (x * y) =
-      ResidueField_to_AdjoinRoot_quot' f π x * ResidueField_to_AdjoinRoot_quot' f π y := by
-  set x' := (Ideal.Quotient.mk_surjective (I := LocalRing.maximalIdeal A) x).choose
-  set y' := (Ideal.Quotient.mk_surjective (I := LocalRing.maximalIdeal A) y).choose
-  set xy' := (Ideal.Quotient.mk_surjective (I := LocalRing.maximalIdeal A) (x*y)).choose
-  set hx' := (Ideal.Quotient.mk_surjective (I := LocalRing.maximalIdeal A) x).choose_spec
-  set hy' := (Ideal.Quotient.mk_surjective (I := LocalRing.maximalIdeal A) y).choose_spec
-  set hxy' := (Ideal.Quotient.mk_surjective (I := LocalRing.maximalIdeal A) (x*y)).choose_spec
-  simp only [ResidueField_to_AdjoinRoot_quot', RingHom.coe_comp, Function.comp_apply, ← map_mul,
-    Ideal.Quotient.mk_eq_mk_iff_sub_mem, ← map_sub, Ideal.mem_span_singleton]
-  have hdvd : π ∣ (xy' - x'*y') := by
-    rw [← Ideal.mem_span_singleton, ← Ideal.Quotient.mk_eq_mk_iff_sub_mem,
-      ← Irreducible.maximalIdeal_eq hπ, map_mul, hx', hy', hxy']
-  rw [dvd_iff_exists_eq_mul_left] at hdvd ⊢
-  obtain ⟨c, hc⟩ := hdvd
-  use (AdjoinRoot.of f) c
-  rw [← map_mul, ← hc]
-
-end ResidueField_to_AdjoinRoot_quot'
-
 noncomputable def ResidueField_to_AdjoinRoot_quot (f : A[X]) {π : A} (hπ : Irreducible π) :
-    k →+* AdjoinRoot f ⧸ Ideal.span {(AdjoinRoot.of f) π} where
-  toFun     := ResidueField_to_AdjoinRoot_quot' f π
-  map_one'  := ResidueField_to_AdjoinRoot_quot'.map_one f hπ
-  map_mul'  := ResidueField_to_AdjoinRoot_quot'.map_mul f hπ
-  map_zero' := ResidueField_to_AdjoinRoot_quot'.map_zero f hπ
-  map_add'  := ResidueField_to_AdjoinRoot_quot'.map_add f hπ
+    k →ₐ[A] AdjoinRoot f ⧸ Ideal.span {(AdjoinRoot.of f) π} := by
+  let g : A →ₐ[A] AdjoinRoot f :=
+  { algebraMap A (AdjoinRoot f) with
+    commutes' := fun r => rfl }
+  apply Ideal.Quotient.liftₐ (LocalRing.maximalIdeal A)
+    ((Ideal.Quotient.mkₐ (R₁ := A) (Ideal.span {(AdjoinRoot.of f) π})).comp g)
+  intro a ha
+  rw [AlgHom.coe_comp, Ideal.Quotient.mkₐ_eq_mk, Function.comp_apply, ← map_zero
+    ((Ideal.Quotient.mk (Ideal.span {(AdjoinRoot.of f) π}))),Ideal.Quotient.mk_eq_mk_iff_sub_mem,
+    sub_zero]
+  rw [Irreducible.maximalIdeal_eq hπ, Ideal.mem_span_singleton'] at ha
+  obtain ⟨c, rfl⟩ := ha
+  rw [Ideal.mem_span_singleton', map_mul]
+  exact ⟨g c, rfl⟩
 
 noncomputable def foo (f : A[X]) (π : A) : AdjoinRoot f ⧸ Ideal.span {(AdjoinRoot.of f) π} →
     AdjoinRoot (map (LocalRing.residue A) f) := fun p ↦
