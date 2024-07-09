@@ -27,7 +27,7 @@ import LocalClassFieldTheory.ForMathlib.RingTheory.Valuation.IntPolynomial
 import LocalClassFieldTheory.ForMathlib.RingTheory.Valuation.Minpoly
 import LocalClassFieldTheory.ForMathlib.RingTheory.IntegralClosure
 import LocalClassFieldTheory.ForMathlib.Topology.UniformSpace.AbstractCompletion -- In PR #12979
-import LocalClassFieldTheory.ForMathlib.DiscreteUniformity -- In PR #12179
+import LocalClassFieldTheorys.ForMathlib.DiscreteUniformity -- In PR #12179
 import LocalClassFieldTheory.ForMathlib.DiscreteValuationRing
 -- import LocalClassFieldTheory.ForMathlib.Polynomial -- In PR #13064
 -- import LocalClassFieldTheory.ForMathlib.PowerSeries -- In PR #12160 and PR #12245
