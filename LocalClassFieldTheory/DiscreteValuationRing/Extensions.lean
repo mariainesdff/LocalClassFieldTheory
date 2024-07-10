@@ -307,7 +307,7 @@ theorem extensionDef_add [FiniteDimensional K L] (x y : L) :
     · have hxy : x + y = x := by rw [hy, add_zero]
       simp only [extensionDef_apply, dif_pos hy, hxy]
       rw [max_eq_left]
-      simp_all only [add_zero, ↓reduceDite, Int.reduceNeg, ofAdd_neg, WithZero.coe_inv, inv_zpow',
+      simp_all only [add_zero, Int.reduceNeg, ofAdd_neg, WithZero.coe_inv, inv_zpow',
         zpow_neg, inv_pow, zero_le']
     · by_cases hxy : x + y = 0
       · simp only [extensionDef_apply, dif_pos hxy, zero_le']

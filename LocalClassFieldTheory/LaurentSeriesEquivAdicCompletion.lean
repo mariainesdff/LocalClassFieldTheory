@@ -135,7 +135,7 @@ variable (K : Type _) [Field K]
 ---`*2` to here is in PR #13063
 
 --from here `*3`...
-/-- The prime ideal `(X)` of `PowerSeries K`, as a term of the `HeightOneSpectrum`.
+/- The prime ideal `(X)` of `PowerSeries K`, as a term of the `HeightOneSpectrum`.
 -- def idealX (K : Type _) [Field K] : IsDedekindDomain.HeightOneSpectrum (PowerSeries K) where
 --   asIdeal := Ideal.span {X}
 --   isPrime := PowerSeries.span_X_isPrime
@@ -193,7 +193,8 @@ variable (K : Type _) [Field K]
 --   apply intValuation_singleton _ Polynomial.X_ne_zero (by rfl)
 
 -- end PowerSeries
----`*3` to here is in PR #13064
+--`*3` to here is in PR #13064
+-/
 
 --from here `*4`...
 namespace LaurentSeries
@@ -247,7 +248,7 @@ theorem coeff_zero_of_lt_intValuation {n d : ℕ} {f : PowerSeries K}
     (PowerSeries.idealX K) f
   erw [this] at H
   have dvd_val_int :=
-    (@int_valuation_le_pow_iff_dvd (PowerSeries K) _ _ (PowerSeries.idealX K) f d).mp H
+    (@intValuation_le_pow_iff_dvd (PowerSeries K) _ _ (PowerSeries.idealX K) f d).mp H
   rw [← span_singleton_dvd_span_singleton_iff_dvd, ← Ideal.span_singleton_pow]
   apply dvd_val_int
 
@@ -259,7 +260,7 @@ theorem intValuation_le_iff_coeff_lt_eq_zero {d : ℕ} (f : PowerSeries K) :
       PowerSeries.X_pow_dvd_iff.mpr H⟩
   erw [← this, valuation_of_algebraMap (PowerSeries.idealX K) f, ←
     span_singleton_dvd_span_singleton_iff_dvd, ← Ideal.span_singleton_pow]
-  apply int_valuation_le_pow_iff_dvd
+  apply intValuation_le_pow_iff_dvd
 
 theorem coeff_zero_of_lt_valuation {n D : ℤ} {f : LaurentSeries K}
     (H : Valued.v f ≤ ↑(Multiplicative.ofAdd (-D))) : n < D → f.coeff n = 0 := by
@@ -573,7 +574,7 @@ theorem exists_pol_int_val_lt (F : PowerSeries K) (η : ℤₘ₀ˣ) :
   by_cases h_neg' : 1 < η
   · use 0
     rw [Polynomial.coe_zero, sub_zero]
-    apply lt_of_le_of_lt (int_valuation_le_one (PowerSeries.idealX K) F)
+    apply lt_of_le_of_lt (intValuation_le_one (PowerSeries.idealX K) F)
     rwa [← Units.val_one, Units.val_lt_val]
   · set D := Multiplicative.toAdd (WithZero.unzero η.ne_zero) with hD
     rw [not_lt, ← Units.val_le_val, Units.val_one, ← WithZero.coe_one, ←
@@ -814,7 +815,8 @@ open Filter AbstractCompletion
 open scoped WithZeroTopology Topology
 
 theorem valuation_LaurentSeries_equal_extension :
-    (LaurentSeriesPkg K).denseInducing.extend Valued.v = @Valued.v (LaurentSeries K) _ ℤₘ₀ _ _ := by
+    (LaurentSeriesPkg K).denseInducing.extend Valued.v =
+      (@Valued.v (LaurentSeries K) _ ℤₘ₀ _ _ : (LaurentSeries K) → ℤₘ₀) := by
   apply DenseInducing.extend_unique
   · intro x
     erw [valuation_eq_LaurentSeries_valuation K x]
