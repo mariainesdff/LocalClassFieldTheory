@@ -6,7 +6,7 @@ Authors: María Inés de Frutos-Fernández
 
 -- PRs #12156 and #12159
 
-import Mathlib.Data.Real.NNReal
+import Mathlib.Data.NNReal.Basic
 import Mathlib.RingTheory.Valuation.Basic
 
 #align_import from_mathlib.rank_one_valuation
@@ -98,27 +98,27 @@ theorem some_hMul [Monoid G] {x y : WithZero G} (hxy : x * y ≠ 0) :
     some hxy = some (left_ne_zero_of_mul hxy) * some (right_ne_zero_of_mul hxy) := by
   rw [← coe_inj, coe_mul, some_spec, some_spec, some_spec]
 
-/-- The monoid_with_zero homomorphism `with_zero G →* with_zero H` induced by a monoid homomorphism
-  `f : G →* H`. -/
-def coeMonoidHom [Monoid G] [Monoid H] (f : G →* H) [DecidableEq (WithZero G)] :
-    WithZero G →*₀ WithZero H
-    where
-  toFun x := if hx : x = 0 then 0 else f (some hx)
-  map_zero' := by simp only [dif_pos]
-  map_one' := by
-    have h1 : (1 : WithZero G) ≠ 0 := one_ne_zero
-    have h := Classical.choose_spec (ne_zero_iff_exists.mp h1)
-    simp only [dif_neg h1]
-    simp_rw [← coe_one] at h ⊢
-    rw [coe_inj, some_coe, f.map_one]
-  map_mul' x y := by
-    by_cases hxy : x * y = 0
-    · simp only [dif_pos hxy]
-      cases' zero_eq_mul.mp (Eq.symm hxy) with hx hy
-      · rw [dif_pos hx, MulZeroClass.zero_mul]
-      · rw [dif_pos hy, MulZeroClass.mul_zero]
-    · simp only
-      rw [dif_neg hxy, dif_neg (left_ne_zero_of_mul hxy), dif_neg (right_ne_zero_of_mul hxy), ←
-        coe_mul, coe_inj, ← f.map_mul, some_hMul hxy]
+-- /-- The monoid_with_zero homomorphism `with_zero G →* with_zero H` induced by a monoid homomorphism
+--   `f : G →* H`. -/
+-- def coeMonoidHom [Monoid G] [Monoid H] (f : G →* H) [DecidableEq (WithZero G)] :
+--     WithZero G →*₀ WithZero H
+--     where
+--   toFun x := if hx : x = 0 then 0 else f (some hx)
+--   map_zero' := by simp only [dif_pos]
+--   map_one' := by
+--     have h1 : (1 : WithZero G) ≠ 0 := one_ne_zero
+--     have h := Classical.choose_spec (ne_zero_iff_exists.mp h1)
+--     simp only [dif_neg h1]
+--     simp_rw [← coe_one] at h ⊢
+--     rw [coe_inj, some_coe, f.map_one]
+--   map_mul' x y := by
+--     by_cases hxy : x * y = 0
+--     · simp only [dif_pos hxy]
+--       cases' zero_eq_mul.mp (Eq.symm hxy) with hx hy
+--       · rw [dif_pos hx, MulZeroClass.zero_mul]
+--       · rw [dif_pos hy, MulZeroClass.mul_zero]
+--     · simp only
+--       rw [dif_neg hxy, dif_neg (left_ne_zero_of_mul hxy), dif_neg (right_ne_zero_of_mul hxy), ←
+--         coe_mul, coe_inj, ← f.map_mul, some_hMul hxy]
 
 end WithZero

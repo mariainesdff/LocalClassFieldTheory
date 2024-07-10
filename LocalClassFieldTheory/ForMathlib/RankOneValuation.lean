@@ -7,7 +7,7 @@ import LocalClassFieldTheory.FromMathlib.RingSeminorm
 import Mathlib.Analysis.Normed.Ring.Seminorm
 import Mathlib.RingTheory.DedekindDomain.AdicValuation
 import Mathlib.RingTheory.Valuation.RankOne
-import Mathlib.Topology.Algebra.NormedValued
+import Mathlib.Topology.Algebra.Valued.NormedValued
 
 #align_import for_mathlib.rank_one_valuation
 

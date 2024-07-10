@@ -7,8 +7,8 @@ import Mathlib.NumberTheory.Padics.PadicNumbers
 import Mathlib.RingTheory.Valuation.Integers
 import Mathlib.RingTheory.Valuation.RankOne
 import Mathlib.Topology.MetricSpace.CauSeqFilter
-import Mathlib.Topology.Algebra.NormedValued
-import Mathlib.Topology.Algebra.ValuedField
+import Mathlib.Topology.Algebra.Valued.NormedValued
+import Mathlib.Topology.Algebra.Valued.ValuedField
 import LocalClassFieldTheory.FromMathlib.SpectralNormUnique
 
 #align_import from_mathlib.Cp_def

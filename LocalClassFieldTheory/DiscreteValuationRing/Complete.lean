@@ -83,7 +83,7 @@ instance : DiscreteValuationRing R_v := DiscreteValuation.dvr_of_isDiscrete _
 theorem IsDedekindDomain.HeightOneSpectrum.valuation_completion_integers_exists_uniformizer :
     ∃ π : R_v, Valued.v (π : K_v) = ofAdd (-1 : ℤ) := by
   letI ValI : Valued K ℤₘ₀ := adicValued v
-  obtain ⟨x, hx⟩ := IsDedekindDomain.HeightOneSpectrum.int_valuation_exists_uniformizer v
+  obtain ⟨x, hx⟩ := IsDedekindDomain.HeightOneSpectrum.intValuation_exists_uniformizer v
   use ⟨algebraMap R_v K_v (algebraMap _ R_v x), by simp only [ValuationSubring.algebraMap_apply,
     SetLike.coe_mem]⟩
   have h2 : v.intValuationDef x = v.intValuation x := rfl
@@ -144,20 +144,20 @@ theorem int_adic_of_compl_eq_int_compl_of_adic (a : R_v) :
   · simp_all only [_root_.map_zero]
   · rw [intValuation_apply]
     apply le_antisymm
-    · obtain ⟨n, hn⟩ : ∃ n : ℕ, v_compl_of_adic a = ofAdd (-n : ℤ)
-      replace ha : v_compl_of_adic a ≠ 0 := by rwa [Valuation.ne_zero_iff, ne_eq,
-        Subring.coe_eq_zero_iff]
-      have := (mem_integer v_compl_of_adic ↑a).mp a.2
-      obtain ⟨α, hα⟩ := WithZero.ne_zero_iff_exists.mp ha
-      rw [← hα, ← WithZero.coe_one, ← ofAdd_zero, WithZero.coe_le_coe, ← ofAdd_toAdd α,
-        Multiplicative.ofAdd_le] at this
-      obtain ⟨n, hn⟩ := Int.exists_eq_neg_ofNat this
-      use n
-      rw [← hα, WithZero.coe_inj, ← ofAdd_toAdd α, hn]
-      rw [ValuationSubring.algebraMap_apply, hn, int_valuation_le_pow_iff_dvd]
+    · obtain ⟨n, hn⟩ : ∃ n : ℕ, v_compl_of_adic a = ofAdd (-n : ℤ) := by
+        replace ha : v_compl_of_adic a ≠ 0 := by rwa [Valuation.ne_zero_iff, ne_eq,
+          Subring.coe_eq_zero_iff]
+        have := (mem_integer v_compl_of_adic ↑a).mp a.2
+        obtain ⟨α, hα⟩ := WithZero.ne_zero_iff_exists.mp ha
+        rw [← hα, ← WithZero.coe_one, ← ofAdd_zero, WithZero.coe_le_coe, ← ofAdd_toAdd α,
+          Multiplicative.ofAdd_le] at this
+        obtain ⟨n, hn⟩ := Int.exists_eq_neg_ofNat this
+        use n
+        rw [← hα, WithZero.coe_inj, ← ofAdd_toAdd α, hn]
+      rw [ValuationSubring.algebraMap_apply, hn, intValuation_le_pow_iff_dvd]
       apply (DiscreteValuation.val_le_iff_dvd K_v _ n).mp (le_of_eq hn)
-    · obtain ⟨m, hm⟩ : ∃ m : ℕ, v_adic_of_compl a = ofAdd (-m : ℤ)
-      · replace ha : v_adic_of_compl a ≠ 0 := by
+    · obtain ⟨m, hm⟩ : ∃ m : ℕ, v_adic_of_compl a = ofAdd (-m : ℤ) := by
+        replace ha : v_adic_of_compl a ≠ 0 := by
           rwa [Valuation.ne_zero_iff, ne_eq, Subring.coe_eq_zero_iff]
         have : (maxIdealOfCompletion R v K).valuation (algebraMap _ K_v a) ≤ 1 := by
           exact valuation_le_one _ _
@@ -170,7 +170,7 @@ theorem int_adic_of_compl_eq_int_compl_of_adic (a : R_v) :
       · erw [valuation_of_algebraMap, intValuation_apply] at hm
         rw [hm]
         replace hm := le_of_eq hm
-        rw [int_valuation_le_pow_iff_dvd] at hm
+        rw [intValuation_le_pow_iff_dvd] at hm
         rw [ValuationSubring.algebraMap_apply, DiscreteValuation.val_le_iff_dvd]
         apply hm
 

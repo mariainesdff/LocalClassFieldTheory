@@ -9,7 +9,7 @@ import Mathlib.RingTheory.DiscreteValuationRing.Basic
 import Mathlib.RingTheory.Ideal.Basic
 import Mathlib.RingTheory.Valuation.RankOne
 import Mathlib.RingTheory.Valuation.ValuationSubring
-import Mathlib.Topology.Algebra.ValuedField
+import Mathlib.Topology.Algebra.Valued.ValuedField
 import Mathlib.Topology.Algebra.WithZeroTopology
 import LocalClassFieldTheory.ForMathlib.RankOneValuation
 import LocalClassFieldTheory.ForMathlib.WithZero
@@ -472,10 +472,10 @@ theorem exists_of_le_one {x : FractionRing A} (H : Valued.v x ≤ (1 : ℤₘ₀
     have h_mn : m ≤ n :=
       by
       have π_lt_one :=
-        (int_valuation_lt_one_iff_dvd (maximalIdeal A) π).mpr
+        (intValuation_lt_one_iff_dvd (maximalIdeal A) π).mpr
           (dvd_of_eq ((irreducible_iff_uniformizer _).mp hπ))
       rw [← intValuation_apply] at π_lt_one
-      have : (maximalIdeal A).intValuation π ≠ 0 := int_valuation_ne_zero _ _ hπ.ne_zero
+      have : (maximalIdeal A).intValuation π ≠ 0 := intValuation_ne_zero _ _ hπ.ne_zero
       zify
       rw [← sub_nonneg]
       rw [← coe_unzero this, ← WithZero.coe_one] at H π_lt_one
