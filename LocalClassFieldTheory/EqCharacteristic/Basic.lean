@@ -91,7 +91,7 @@ def WithZero.valued : Valued (FpXCompletion p) ℤₘ₀ :=
 theorem valuation_X :
     Valued.v ((algebraMap (RatFunc (GaloisField p 1)) (FpXCompletion p)) X) = ofAdd (-1 : ℤ) := by
   erw [valuedAdicCompletion_def, FpXCompletion.algebraMap_eq_coe, Valued.extension_extends,
-    val_X_eq_neg_one]
+    Polynomial.valuation_X_eq_neg_one]
 
 theorem mem_FpXIntCompletion {x : FpXCompletion p} :
     x ∈ FpXIntCompletion p ↔ (Valued.v x : ℤₘ₀) ≤ 1 :=
@@ -215,16 +215,15 @@ theorem X_eq_coe : X p = ↑(@RatFunc.X 𝔽_[p] _ _) :=
 
 theorem norm_X : ‖X p‖ = 1 / (p : ℝ) := by
   have hv : Valued.v (X p) = Multiplicative.ofAdd (-1 : ℤ) := by
-    rw [← val_X_eq_neg_one 𝔽_[p], HeightOneSpectrum.valuedAdicCompletion_def,
+    rw [← Polynomial.valuation_X_eq_neg_one 𝔽_[p], HeightOneSpectrum.valuedAdicCompletion_def,
       FpXCompletion.X_eq_coe]
     erw [Valued.extension_extends]
     rfl
   have hX : ‖X p‖ = RankOne.hom _ (Valued.v (X p)) := rfl
   rw [hX, hv, DiscreteValuation.rankOne_hom_def]
   simp only [Int.reduceNeg, ofAdd_neg, WithZero.coe_inv, map_inv₀, NNReal.coe_inv, one_div, inv_inj]
-  --simp only [ofAdd_neg, WithZero.coe_inv, map_inv₀, Nonneg.coe_inv, one_div, inv_inj]
   simp only [withZeroMultIntToNNReal, MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk,
-    withZeroMultIntToNNRealDef, WithZero.coe_ne_zero, ↓reduceDite, WithZero.unzero_coe, toAdd_ofAdd,
+    withZeroMultIntToNNRealDef, WithZero.coe_ne_zero, ↓reduceDIte, WithZero.unzero_coe, toAdd_ofAdd,
     zpow_one]
   rw [valuation_base_eq_char, NNReal.coe_natCast]
 

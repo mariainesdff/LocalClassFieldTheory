@@ -205,7 +205,7 @@ open PowerSeries
 
 instance : Valued (LaurentSeries K) ℤₘ₀ :=
   Valued.mk' (PowerSeries.idealX K).valuation
-#where
+
 theorem valuation_X_zpow (s : ℕ) :
     Valued.v ((↑(PowerSeries.X : PowerSeries K) : LaurentSeries K) ^ s) =
       ↑(Multiplicative.ofAdd (-(s : ℤ))) := by

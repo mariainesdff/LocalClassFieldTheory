@@ -74,7 +74,7 @@ instance : Module K₀ S := Algebra.toModule
 instance : DiscreteValuationRing S :=
   DiscreteValuation.integralClosure.discreteValuationRing_of_finite_extension K L
 
-instance [IsSeparable K L] : IsNoetherian K₀ S := IsIntegralClosure.isNoetherian K₀ K L S
+instance [Algebra.IsSeparable K L] : IsNoetherian K₀ S := IsIntegralClosure.isNoetherian K₀ K L S
 
 instance : IsLocalRingHom (algebraMap K₀ S) := by
   constructor
@@ -84,15 +84,15 @@ instance : IsLocalRingHom (algebraMap K₀ S) := by
   rw [← @not_not (IsUnit _), ← mem_nonunits_iff, ← mem_maximalIdeal] at ha ⊢
   rwa [← hQ, mem_comap, eq_maximalIdeal hQ_max]
 
-theorem FiniteDimensional_residueField_of_integralClosure [IsSeparable K L] :
+theorem FiniteDimensional_residueField_of_integralClosure [Algebra.IsSeparable K L] :
     FiniteDimensional (ResidueField K₀) (ResidueField (integralClosure K₀ L)) :=
   FiniteDimensional_of_finite
 
-theorem finiteResidueFieldOfIntegralClosure [IsSeparable K L]
+theorem finiteResidueFieldOfIntegralClosure [Algebra.IsSeparable K L]
     (hfin : Finite (ResidueField K₀)) : Finite (ResidueField S) :=
   ResidueField.finite_of_finite hfin
 
-lemma finiteResidueFieldOfUnitBall [IsSeparable K L]
+lemma finiteResidueFieldOfUnitBall [Algebra.IsSeparable K L]
     (hfin : Finite (ResidueField K₀)) :
     Finite (ResidueField (extendedValuation K L).valuationSubring) :=
   letI : LocalRing ↥(Subalgebra.toSubring (integralClosure (↥K₀) L)) :=
@@ -103,12 +103,12 @@ lemma finiteResidueFieldOfUnitBall [IsSeparable K L]
           (DiscreteValuation.Extension.integralClosure_eq_integer K L))).toEquiv
 
 -- This should probably be omitted, since we are shifting from `Finite` to `Fintype`.
-def fintypeResidueFieldOfIntegralClosure [IsSeparable K L]
+def fintypeResidueFieldOfIntegralClosure [Algebra.IsSeparable K L]
     (hfin : Fintype (ResidueField K₀)) : Fintype (ResidueField S) := by
   let _ := @Finite.of_fintype _ hfin
   exact @Fintype.ofFinite (ResidueField S) (finiteResidueFieldOfIntegralClosure K L inferInstance)
 
-def fintypeResidueFieldOfUnitBall [IsSeparable K L]
+def fintypeResidueFieldOfUnitBall [Algebra.IsSeparable K L]
     (hfin : Fintype (ResidueField K₀)) :
     Fintype (ResidueField (extendedValuation K L).valuationSubring) :=
   letI : LocalRing ↥(Subalgebra.toSubring (integralClosure (↥K₀) L)) :=

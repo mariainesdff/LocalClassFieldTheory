@@ -27,7 +27,6 @@ lemma FiniteDimensional_of_finite [IsNoetherian R S] [IsLocalRingHom (algebraMap
     isNoetherian_of_tower R (S := ResidueField R) (M := ResidueField S) _
   convert isNoetherian_of_surjective S (Ideal.Quotient.mkₐ R (maximalIdeal S)).toLinearMap
     (LinearMap.range_eq_top.mpr Ideal.Quotient.mk_surjective)
-  congr
   exact Algebra.algebra_ext _ _ (fun r => rfl)
 
 lemma ResidueField.finite_of_finite [IsNoetherian R S] [IsLocalRingHom (algebraMap R S)]

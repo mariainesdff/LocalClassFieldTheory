@@ -62,12 +62,12 @@ variable (K : Type _) [Field K] [EqCharLocalField p K]
 /-- An `eq_char_local_field p K` that is separable over `FpX_completion` is a local field.
   The separability assumption is required to use some result in mathlib concerning
   the finiteness of the ring of integers.-/
-noncomputable def localField [Fact (IsSeparable (FpXCompletion p) K)] : LocalField K :=
+noncomputable def localField [Fact (Algebra.IsSeparable (FpXCompletion p) K)] : LocalField K :=
   { EqCharLocalField.WithZero.valued p K with
     complete := EqCharLocalField.completeSpace p K
     isDiscrete := valuation.IsDiscrete p K
     finiteResidueField := by
-      haveI : IsSeparable (FpXCompletion p) K := @Fact.out _ _
+      have : Algebra.IsSeparable (FpXCompletion p) K := @Fact.out _ _
       apply finiteResidueFieldOfUnitBall
       apply FpXIntCompletion.residueFieldFiniteOfCompletion }
 
