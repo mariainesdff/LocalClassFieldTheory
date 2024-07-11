@@ -648,25 +648,35 @@ theorem coe_range_dense : DenseRange (Coe.coe : RatFunc K → LaurentSeries K) :
 end Dense
 
 section Comparison
-
+--from here `*5`...
 open RatFunc
 namespace RatFunc
 
-theorem mk_eq_mk' (f : Polynomial K) (g : Polynomial K) (hg : g ≠ 0) :
+-- in `FieldTheory.RatFunc.Basic`
+theorem mk_eq_mk' (f : Polynomial K) {g : Polynomial K} (hg : g ≠ 0) :
     RatFunc.mk f g = IsLocalization.mk' (RatFunc K) f ⟨g, mem_nonZeroDivisors_iff_ne_zero.2 hg⟩ :=
   by simp only [mk_eq_div, IsFractionRing.mk'_eq_div]
 
-theorem mk_val (f : Polynomial K) (g : Polynomial K) (hg : g ≠ 0) :
+end RatFunc
+
+namespace Polynomial
+
+-- in `FieldTheory.RatFunc.asPolynomial`
+theorem valuation_of_mk (f : Polynomial K) {g : Polynomial K} (hg : g ≠ 0) :
     (Polynomial.idealX K).valuation (RatFunc.mk f g) =
       (Polynomial.idealX K).intValuation f / (Polynomial.idealX K).intValuation g :=
-  by simp only [RatFunc.mk_eq_mk' _ _ _ hg, valuation_of_mk']
+  by simp only [RatFunc.mk_eq_mk' _ _ hg, valuation_of_mk']
 
+end Polynomial
+
+namespace RatFunc
+--in `RingTheory.LaurentSeries`
 theorem valuation_eq_LaurentSeries_valuation (P : RatFunc K) :
     (Polynomial.idealX K).valuation P = (PowerSeries.idealX K).valuation (↑P : LaurentSeries K) := by
   refine' RatFunc.induction_on' P _
   intro f g h
-  convert RatFunc.mk_val K f g h
-  rw [RatFunc.mk_eq_mk' K f g h]
+  convert Polynomial.valuation_of_mk K f h
+  rw [RatFunc.mk_eq_mk' K f h]
   have aux :
     (↑(IsLocalization.mk' (RatFunc K) f ⟨g, mem_nonZeroDivisors_iff_ne_zero.2 h⟩) :
         LaurentSeries K) =
@@ -683,6 +693,8 @@ theorem valuation_eq_LaurentSeries_valuation (P : RatFunc K) :
 
 
 end RatFunc
+--to here `*5` in #14418
+
 
 theorem inducing_coe : UniformInducing (Coe.coe : RatFunc K → LaurentSeries K) := by
   letI : Ring (LaurentSeries K) := inferInstance -- Porting note: I had to add this
