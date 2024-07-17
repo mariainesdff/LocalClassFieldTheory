@@ -5,11 +5,11 @@ Authors: María Inés de Frutos-Fernández, Filippo A. E. Nuccio
 -/
 import Mathlib.Algebra.GroupWithZero.WithZero
 import LocalClassFieldTheory.DiscreteValuationRing.Basic
--- import LocalClassFieldTheory.ForMathlib.Topology.UniformSpace.AbstractCompletion
 import Mathlib.RingTheory.DedekindDomain.Ideal
 import Mathlib.RingTheory.PowerSeries.Inverse
 import Mathlib.RingTheory.PowerSeries.Trunc
 import Mathlib.RingTheory.LaurentSeries
+import Mathlib.Topology.UniformSpace.AbstractCompletion
 
 import LocalClassFieldTheory.ForMathlib.DiscreteUniformity -- Porting note : added
 
@@ -350,12 +350,12 @@ theorem valuation_le_iff_coeff_lt_eq_zero {D : ℤ} {f : LaurentSeries K} :
       linarith
     simp only [ne_eq, WithZero.coe_ne_zero, not_false_iff]
 
-theorem valuation_le_of_coeff_eventually_eq {f g : LaurentSeries K} {D : ℤ}
-    (H : ∀ d, d < D → g.coeff d = f.coeff d) : Valued.v (f - g) ≤ ↑(Multiplicative.ofAdd (-D)) := by
-  apply (valuation_le_iff_coeff_lt_eq_zero K).mpr
-  intro n hn
-  rw [HahnSeries.sub_coeff, sub_eq_zero]
-  exact (H n hn).symm
+-- theorem valuation_le_of_coeff_eventually_eq {f g : LaurentSeries K} {D : ℤ}
+--     (H : ∀ d, d < D → g.coeff d = f.coeff d) : Valued.v (f - g) ≤ ↑(Multiplicative.ofAdd (-D)) := by
+--   apply (valuation_le_iff_coeff_lt_eq_zero K).mpr
+--   intro n hn
+--   rw [HahnSeries.sub_coeff, sub_eq_zero]
+--   exact (H n hn).symm
 
 theorem eq_coeff_of_valuation_sub_lt {d n : ℤ} {f g : LaurentSeries K}
     (H : Valued.v (g - f) ≤ ↑(Multiplicative.ofAdd (-d))) : n < d → g.coeff n = f.coeff n := by
@@ -366,19 +366,20 @@ theorem eq_coeff_of_valuation_sub_lt {d n : ℤ} {f g : LaurentSeries K}
     erw [← HahnSeries.sub_coeff]
     apply coeff_zero_of_lt_valuation K H hn
 
-theorem bdd_support_of_valuation_le (f : LaurentSeries K) (d : ℤ) :
-    ∃ N : ℤ,
-      ∀ g : LaurentSeries K,
-        Valued.v (g - f) ≤ ↑(Multiplicative.ofAdd (-d)) → ∀ n < N, g.coeff n = 0 := by
-  by_cases hf : f = 0
-  · refine' ⟨d, fun _ hg _ hn => _⟩
-    simpa only [eq_coeff_of_valuation_sub_lt K hg hn, hf] using HahnSeries.zero_coeff
-  · refine' ⟨min (f.2.isWF.min (HahnSeries.support_nonempty_iff.mpr hf)) d - 1, fun _ hg n hn => _⟩
-    have hn' : f.coeff n = 0 := Function.nmem_support.mp fun h =>
-      Set.IsWF.not_lt_min f.2.isWF (HahnSeries.support_nonempty_iff.mpr hf) h
-        (lt_trans hn (Int.sub_one_lt_iff.mpr (Int.min_le_left _ _)))
-    rwa [eq_coeff_of_valuation_sub_lt K hg _]
-    · exact lt_trans hn (Int.lt_of_le_sub_one <| (sub_le_sub_iff_right _).mpr (min_le_right _ d))
+-- *FAE* Finally it seemed too specific, I inserted in the proof of the lemma using it
+-- theorem bdd_support_of_valuation_le (f : LaurentSeries K) (d : ℤ) :
+--     ∃ N : ℤ,
+--       ∀ g : LaurentSeries K,
+--         Valued.v (g - f) ≤ ↑(Multiplicative.ofAdd (-d)) → ∀ n < N, g.coeff n = 0 := by
+--   by_cases hf : f = 0
+--   · refine' ⟨d, fun _ hg _ hn => _⟩
+--     simpa only [eq_coeff_of_valuation_sub_lt K hg hn, hf] using HahnSeries.zero_coeff
+--   · refine' ⟨min (f.2.isWF.min (HahnSeries.support_nonempty_iff.mpr hf)) d - 1, fun _ hg n hn => _⟩
+--     have hn' : f.coeff n = 0 := Function.nmem_support.mp fun h =>
+--       Set.IsWF.not_lt_min f.2.isWF (HahnSeries.support_nonempty_iff.mpr hf) h
+--         (lt_trans hn (Int.sub_one_lt_iff.mpr (Int.min_le_left _ _)))
+--     rwa [eq_coeff_of_valuation_sub_lt K hg _]
+--     · exact lt_trans hn (Int.lt_of_le_sub_one <| (sub_le_sub_iff_right _).mpr (min_le_right _ d))
 
 theorem val_le_one_iff_eq_coe (f : LaurentSeries K) :
     Valued.v f ≤ (1 : ℤₘ₀) ↔ ∃ F : PowerSeries K, ↑F = f := by
@@ -452,7 +453,18 @@ theorem Cauchy.exists_lb_eventual_support {ℱ : Filter (LaurentSeries K)} (hℱ
         (@HasBasis.mem_of_mem _ _ _ _ _ ζ (Valued.hasBasis_uniformity (LaurentSeries K) ℤₘ₀)
           (by tauto)))
   obtain ⟨f, hf⟩ := forall_mem_nonempty_iff_neBot.mpr hℱ.1 (S ∩ T) (inter_mem_iff.mpr ⟨hS, hT⟩)
-  obtain ⟨N, hN⟩ := bdd_support_of_valuation_le K f 0
+  obtain ⟨N, hN⟩ :  ∃ N : ℤ, ∀ g : LaurentSeries K,
+    Valued.v (g - f) ≤ ↑(Multiplicative.ofAdd (0 : ℤ)) → ∀ n < N, g.coeff n = 0 := by
+    by_cases hf : f = 0
+    · refine' ⟨0, fun x hg y hn => _⟩
+      simp only [hf, sub_zero] at hg
+      apply (@valuation_le_iff_coeff_lt_eq_zero K _ 0 x).mp hg _ hn
+    · refine' ⟨min (f.2.isWF.min (HahnSeries.support_nonempty_iff.mpr hf)) 0 - 1, fun _ hg n hn => _⟩
+      have hn' : f.coeff n = 0 := Function.nmem_support.mp fun h ↦
+        Set.IsWF.not_lt_min f.2.isWF (HahnSeries.support_nonempty_iff.mpr hf) h
+        <| lt_trans hn <| Int.sub_one_lt_iff.mpr <| min_le_left _ _
+      rwa [eq_coeff_of_valuation_sub_lt K hg (d := 0) _]
+      · exact lt_of_lt_of_le hn <| le_of_lt (Int.sub_one_lt_of_le <| min_le_right _ _)
   use N
   apply mem_of_superset (inter_mem hS hT)
   suffices (S ∩ T) ×ˢ (S ∩ T) ⊆ entourage by
@@ -556,8 +568,12 @@ theorem Cauchy.eventually_mem_nhds {ℱ : Filter (LaurentSeries K)} (hℱ : Cauc
       exact zero_lt_one
     apply (coeff_eventually_equal  hℱ D).mono
     intro f hf
-    apply lt_of_le_of_lt (valuation_le_of_coeff_eventually_eq _ _) hD
-    apply hf
+    apply lt_of_le_of_lt _ hD --(valuation_le_of_coeff_eventually_eq _ _) hD
+    apply (valuation_le_iff_coeff_lt_eq_zero K).mpr
+    intro n hn
+    rw [HahnSeries.sub_coeff, sub_eq_zero, (hf n hn).symm]
+    rfl
+
 
 instance : CompleteSpace (LaurentSeries K) :=
   ⟨fun hℱ => ⟨Cauchy.mk_LaurentSeries hℱ, fun _ hS => Cauchy.eventually_mem_nhds hℱ hS⟩⟩
