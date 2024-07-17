@@ -5,7 +5,7 @@ Authors: María Inés de Frutos-Fernández, Filippo A. E. Nuccio
 -/
 import Mathlib.Algebra.GroupWithZero.WithZero
 import LocalClassFieldTheory.DiscreteValuationRing.Basic
-import LocalClassFieldTheory.ForMathlib.Topology.UniformSpace.AbstractCompletion
+-- import LocalClassFieldTheory.ForMathlib.Topology.UniformSpace.AbstractCompletion
 import Mathlib.RingTheory.DedekindDomain.Ideal
 import Mathlib.RingTheory.PowerSeries.Inverse
 import Mathlib.RingTheory.PowerSeries.Trunc
@@ -366,7 +366,7 @@ theorem eq_coeff_of_valuation_sub_lt {d n : ℤ} {f g : LaurentSeries K}
     erw [← HahnSeries.sub_coeff]
     apply coeff_zero_of_lt_valuation K H hn
 
-theorem bounded_supp_of_valuation_le (f : LaurentSeries K) (d : ℤ) :
+theorem bdd_support_of_valuation_le (f : LaurentSeries K) (d : ℤ) :
     ∃ N : ℤ,
       ∀ g : LaurentSeries K,
         Valued.v (g - f) ≤ ↑(Multiplicative.ofAdd (-d)) → ∀ n < N, g.coeff n = 0 := by
@@ -452,7 +452,7 @@ theorem Cauchy.exists_lb_eventual_support {ℱ : Filter (LaurentSeries K)} (hℱ
         (@HasBasis.mem_of_mem _ _ _ _ _ ζ (Valued.hasBasis_uniformity (LaurentSeries K) ℤₘ₀)
           (by tauto)))
   obtain ⟨f, hf⟩ := forall_mem_nonempty_iff_neBot.mpr hℱ.1 (S ∩ T) (inter_mem_iff.mpr ⟨hS, hT⟩)
-  obtain ⟨N, hN⟩ := bounded_supp_of_valuation_le K f 0
+  obtain ⟨N, hN⟩ := bdd_support_of_valuation_le K f 0
   use N
   apply mem_of_superset (inter_mem hS hT)
   suffices (S ∩ T) ×ˢ (S ∩ T) ⊆ entourage by
