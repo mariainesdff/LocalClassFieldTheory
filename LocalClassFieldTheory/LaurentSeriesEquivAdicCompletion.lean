@@ -10,7 +10,6 @@ import Mathlib.RingTheory.DedekindDomain.Ideal
 import Mathlib.RingTheory.PowerSeries.Inverse
 import Mathlib.RingTheory.PowerSeries.Trunc
 import Mathlib.RingTheory.LaurentSeries
-import Mathlib.Topology.UniformSpace.AbstractCompletion
 
 import LocalClassFieldTheory.ForMathlib.DiscreteUniformity -- Porting note : added
 
