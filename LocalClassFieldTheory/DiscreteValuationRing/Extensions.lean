@@ -457,7 +457,7 @@ theorem exists_generating_Unit [FiniteDimensional K L] :
   rw [← expExtensionOnUnits_generates_range, Subgroup.mem_map] at h_mem
   obtain ⟨x, _, hx⟩ := h_mem
   use x⁻¹
-  rw [map_inv, hx]
+  rw [_root_.map_inv, hx]
   rfl
 
 /-- The extended valuation on `L` is discrete. -/

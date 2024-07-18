@@ -14,7 +14,7 @@ variable {A : Type*} [CommRing A] [IsDomain A] [DiscreteValuationRing A]
 open Polynomial
 section Polynomial
 
-noncomputable def Polynomial.mapAlgHom  {A R S : Type*} [CommRing A] [Semiring R] [Algebra A R]
+noncomputable def Polynomial.mapAlgHom' {A R S : Type*} [CommRing A] [Semiring R] [Algebra A R]
     [Semiring S] [Algebra A S] (f : R →+* S)
     (hf : ∀ a, f ((algebraMap A R) a) = (algebraMap A S) a) : R[X] →ₐ[A] S[X] where
   toFun := Polynomial.map f
@@ -24,10 +24,13 @@ noncomputable def Polynomial.mapAlgHom  {A R S : Type*} [CommRing A] [Semiring R
   map_one'     := Polynomial.map_one f
   commutes' a  := by simp only [algebraMap_apply, map_C, hf]
 
+-- *FAE* Unfortunately in PR 14814 someone else defined `Polynomial.mapAlgHom'` and
+-- I had to add a `'` to the above name to avoid duplication. Probably we should align the
+-- above definition with the one in mathlib
 lemma Polynomial.mapAlgHom_eq {A R S : Type*} [CommRing A] [Semiring R] [Algebra A R]
     [Semiring S] [Algebra A S] (f : R →+* S)
     (hf : ∀ a, f ((algebraMap A R) a) = (algebraMap A S) a) :
-    Polynomial.mapAlgHom f hf = Polynomial.map f := rfl
+    Polynomial.mapAlgHom' f hf = Polynomial.map f := rfl
 
 end Polynomial
 namespace DiscreteValuationRing
