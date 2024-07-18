@@ -748,7 +748,7 @@ theorem continuous_coe : Continuous (Coe.coe : RatFunc K → LaurentSeries K) :=
   (uniformInducing_iff'.1 (inducing_coe K)).1.continuous
 
 /-- The `X`-adic completion as an abstract completion of `ratfunc K`-/
-noncomputable def ratfuncAdicComplPkg : AbstractCompletion (RatFunc K) :=
+abbrev ratfuncAdicComplPkg : AbstractCompletion (RatFunc K) :=
   UniformSpace.Completion.cPkg
 
 /-- Having established that the `laurent_series K` is complete and contains `ratfunc K` as a dense
@@ -893,10 +893,10 @@ theorem valuation_compare (f : LaurentSeries K) :
     (@Valued.v (RatFuncAdicCompl K) _ ℤₘ₀ _ _)
         (AbstractCompletion.compare (LaurentSeriesPkg K) (ratfuncAdicComplPkg K) f) =
       Valued.v f := by
-  simp only [← valuation_LaurentSeries_equal_extension, ←
-    extend_compare_extend (ratfuncAdicComplPkg K) (LaurentSeriesPkg K)
-      (@Valued.v (RatFunc K) _ ℤₘ₀ _ _) Valued.continuous_valuation (tendsto_valuation K)]
-  rfl
+  rw [← valuation_LaurentSeries_equal_extension, ← compare_comp_eq_compare
+    (pkg := (ratfuncAdicComplPkg K)) (cont_f := Valued.continuous_valuation)]
+  · rfl
+  exact (tendsto_valuation K)
 
 section PowerSeries
 
@@ -910,13 +910,10 @@ def powerSeries_as_subring : Subring (LaurentSeries K) :=
 @[reducible]
 def powerSeriesEquivSubring : PowerSeries K ≃+* powerSeries_as_subring K := by
   rw [powerSeries_as_subring, RingHom.range_eq_map]
-  -- Porting note: Lean 4 is no longer able to synthetize the `Add` instance on the `⊤` subring.
   let instAddZero : AddZeroClass (⊤ : (Subring (PowerSeries K))) := inferInstance
   let _ := instAddZero.2
   exact ((Subring.topEquiv).symm).trans (Subring.equivMapOfInjective ⊤ (HahnSeries.ofPowerSeries ℤ K)
     HahnSeries.ofPowerSeries_injective)
-  -- exact (((@Subring.topEquiv (PowerSeries K) _)).symm).trans (Subring.equivMapOfInjective ⊤ (HahnSeries.ofPowerSeries ℤ K)
-  --   HahnSeries.ofPowerSeries_injective)
 
 theorem mem_integers_of_powerSeries (F : PowerSeries K) :
     (LaurentSeriesRingEquiv K) F ∈ (Polynomial.idealX K).adicCompletionIntegers (RatFunc K) := by
