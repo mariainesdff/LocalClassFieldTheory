@@ -94,7 +94,7 @@ theorem some_coe {g : G} : some (@coe_ne_zero G g) = g :=
 
 /-- If `G` is a monoid and `x y : with_zero G` have a nonzero product, then
   `some hxy = some (left_ne_zero_of_mul hxy) * some (right_ne_zero_of_mul hxy)`  -/
-theorem some_hMul [Monoid G] {x y : WithZero G} (hxy : x * y ≠ 0) :
+theorem some_mul [Monoid G] {x y : WithZero G} (hxy : x * y ≠ 0) :
     some hxy = some (left_ne_zero_of_mul hxy) * some (right_ne_zero_of_mul hxy) := by
   rw [← coe_inj, coe_mul, some_spec, some_spec, some_spec]
 

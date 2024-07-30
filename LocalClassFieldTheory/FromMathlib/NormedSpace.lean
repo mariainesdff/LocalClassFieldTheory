@@ -4,20 +4,19 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: María Inés de Frutos-Fernández
 -/
 import Mathlib.Analysis.NormedSpace.BoundedLinearMaps
+import Mathlib.Analysis.Normed.Ring.SeminormFromBounded
 import Mathlib.LinearAlgebra.FiniteDimensional
-import LocalClassFieldTheory.FromMathlib.SeminormFromBounded
+--import LocalClassFieldTheory.FromMathlib.SeminormFromBounded
 import LocalClassFieldTheory.FromMathlib.SmoothingSeminorm
-
 import Mathlib.LinearAlgebra.FiniteDimensional
 
-#align_import from_mathlib.normed_space
 
 /-!
 # Basis.norm
 
-In this file, we prove [BGR, Lemma 3.2.1./3]: if `K` is a normed field with a nonarchimedean
-power-multiplicative norm and `L/K` is a finite extension, then there exists at least one
-power-multiplicative `K`-algebra norm on `L` extending the norm on `K`.
+In this file, we prove [BGR, Lemma 3.2.1./3][bosch-guntzer-remmert]  : if `K` is a normed field
+with a nonarchimedean power-multiplicative norm and `L/K` is a finite extension, then there exists
+at least one power-multiplicative `K`-algebra norm on `L` extending the norm on `K`.
 
 ## Main Definitions
 * `basis.norm` : the function sending an element `x : L` to the maximum of the norms of its
@@ -287,7 +286,7 @@ theorem finite_extension_pow_mul_seminorm (hfd : FiniteDimensional K L)
     basis_one hB1 -/
   -- Define a function g : L → ℝ by setting g (∑ki • ei) = maxᵢ ‖ ki ‖
   set g : L → ℝ := B.norm
-  -- g 0 = 0
+  -- g 0 = 0seminormFromBounded
   have hg0 : g 0 = 0 := B.norm_zero'
   -- g takes nonnegative values
   have hg_nonneg : ∀ x : L, 0 ≤ g x := fun x => norm_nonneg _
@@ -300,19 +299,18 @@ theorem finite_extension_pow_mul_seminorm (hfd : FiniteDimensional K L)
   -- g (-a) = g a
   have hg_neg : ∀ a : L, g (-a) = g a := B.norm_neg
   -- g is multiplicatively bounded
-  have hg_bdd : ∃ (c : ℝ) (_ : 0 < c), ∀ x y : L, g (x * y) ≤ c * g x * g y :=
-    Basis.norm_is_bdd hB1 hna
+  obtain ⟨_, _, hg_bdd⟩ := Basis.norm_is_bdd hB1 hna
   -- g is a K-module norm
   have hg_mul : ∀ (k : K) (y : L), g ((algebraMap K L) k * y) = g ((algebraMap K L) k) * g y :=
     fun k y => Basis.norm_smul hB1 k y
   -- Using BGR Prop. 1.2.1/2, we can smooth g to a ring norm f on L that extends the norm on K.
   set f := seminormFromBounded hg0 hg_nonneg hg_bdd hg_add hg_neg
-  have hf_na : IsNonarchimedean f := seminorm_from_bounded_isNonarchimedean hg_nonneg hg_bdd hg_na
-  have hf_1 : f 1 ≤ 1 := seminorm_from_bounded_is_norm_le_one_class hg_nonneg hg_bdd
+  have hf_na : IsNonarchimedean f := seminormFromBounded_isNonarchimedean hg_nonneg hg_bdd hg_na
+  have hf_1 : f 1 ≤ 1 := seminormFromBounded_one_le hg_nonneg hg_bdd
   have hf_ext : FunctionExtends (norm : K → ℝ) f := by
     intro k
     rw [← hg_ext]
-    exact seminorm_from_bounded_of_mul_apply hg_nonneg hg_bdd (hg_mul k)
+    exact seminormFromBounded_of_mul_apply hg_nonneg hg_bdd (hg_mul k)
   -- Using BGR Prop. 1.3.2/1, we obtain from f  a power multiplicative K-algebra norm on L
   -- extending the norm on K.
   set F' := smoothingSeminorm f hf_1 hf_na with hF'
@@ -320,7 +318,7 @@ theorem finite_extension_pow_mul_seminorm (hfd : FiniteDimensional K L)
     intro k
     rw [← hf_ext _]
     exact smoothingSeminorm_apply_of_is_mul f hf_1 hf_na
-      (seminorm_from_bounded_of_mul_is_mul hg_nonneg hg_bdd (hg_mul k))
+      (seminormFromBounded_of_mul_is_mul hg_nonneg hg_bdd (hg_mul k))
   have hF'_1 : F' 1 = 1 := by
     have h1 : (1 : L) = (algebraMap K L) 1 := by rw [map_one]
     simp only [h1, hF'_ext (1 : K), norm_one]
@@ -329,7 +327,7 @@ theorem finite_extension_pow_mul_seminorm (hfd : FiniteDimensional K L)
     { RingSeminorm.toRingNorm F' hF'_0 with
       smul' := fun k y => by
         have hk : ∀ y : L, f (algebraMap K L k * y) = f (algebraMap K L k) * f y :=
-          seminorm_from_bounded_of_mul_is_mul hg_nonneg hg_bdd (hg_mul k)
+          seminormFromBounded_of_mul_is_mul hg_nonneg hg_bdd (hg_mul k)
         have hfk : ‖k‖ = (smoothingSeminorm f hf_1 hf_na) ((algebraMap K L) k) := by
           rw [← hf_ext k, eq_comm, smoothingSeminorm_apply_of_is_mul f hf_1 hf_na hk]
         simp only [hfk, hF']
@@ -339,6 +337,6 @@ theorem finite_extension_pow_mul_seminorm (hfd : FiniteDimensional K L)
     intro k
     rw [← hf_ext _]
     exact smoothingSeminorm_apply_of_is_mul f hf_1 hf_na
-      (seminorm_from_bounded_of_mul_is_mul hg_nonneg hg_bdd (hg_mul k))
+      (seminormFromBounded_of_mul_is_mul hg_nonneg hg_bdd (hg_mul k))
   exact ⟨F, smoothing_seminorm_isPowMul f hf_1, hF_ext,
       smoothing_seminorm_isNonarchimedean f hf_1 hf_na⟩

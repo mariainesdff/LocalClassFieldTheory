@@ -324,7 +324,7 @@ theorem smoothingSeminorm_def_is_limit_ne_zero (hf1 : f 1 ≤ 1) {x : R} (hx : f
             (f x ^ (n % m1)) ^ (1 / (n : ℝ)) ≤
           L + ε :=
         by
-        have heq : L + ε = L + ε / 2 + ε / 2 := by rw [add_assoc, add_halves']
+        have heq : L + ε = L + ε / 2 + ε / 2 := by rw [add_assoc, add_halves]
         have hL0' : 0 < L + ε / 2 := add_pos_of_nonneg_of_pos hL0 (half_pos hε)
         rw [heq, ← tsub_le_iff_left]
         nth_rw 3 [← mul_one (L + ε / 2)]

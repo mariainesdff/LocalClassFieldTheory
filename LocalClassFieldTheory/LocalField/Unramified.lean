@@ -14,7 +14,7 @@ open Valued Valuation Extension
 namespace LocalField
 
 variable (K : Type*) [Field K] [LocalField K]
-  (L : Type*) [Field L] [LocalField L] [Algebra K L]
+  (L : Type*) [Field L] [LocalField L] [Algebra K L] -- use FiniteDimensional K L
 
 local notation "v" => (@Valued.v K _ ℤₘ₀ _ _)
 local notation "K₀" => Valuation.valuationSubring v
@@ -64,6 +64,8 @@ local notation "K₀" => Valuation.valuationSubring v
 
 /-- The unique unramified extension of `K` of degree `n`. -/
 def Kn (K : Type*) [Field K] [LocalField K] {n : ℕ} (hn : 0 < n) : Type* := sorry
+
+-- Q: does this allow to speak about maximal unramified subextensions easily?
 
 instance Kn_field : Field (Kn K hn) := sorry
 
