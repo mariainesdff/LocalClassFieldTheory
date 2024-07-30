@@ -5,9 +5,7 @@ Authors: María Inés de Frutos-Fernández
 -/
 import LocalClassFieldTheory.FromMathlib.PowMultFaithful
 import Mathlib.Analysis.Normed.Ring.SeminormFromConst
---import LocalClassFieldTheory.FromMathlib.SeminormFromConst
 import LocalClassFieldTheory.FromMathlib.SpectralNorm
---import Mathlib.Analysis.NormedSpace.FiniteDimension
 import Mathlib.Topology.Algebra.Module.FiniteDimension
 
 /-!
@@ -200,7 +198,7 @@ theorem spectral_norm_is_mul [CompleteSpace K] (hna : IsNonarchimedean (norm : K
     rw [map_eq_zero_iff_eq_zero] at hx ⊢
     rw [hx, MulZeroClass.zero_mul]
   · have hf1 : (spectralAlgNorm (L := L) hna) 1 ≤ 1 :=
-      sorry --spectralAlgNorm_is_norm_le_one_class hna
+      spectralAlgNorm_is_norm_le_one_class hna
     set f : AlgebraNorm K L := algNormFromConst hna hf1 hx with hf
     have hf_pow : IsPowMul f :=
       seminormFromConst_isPowMul hf1 hx (spectralNorm_isPowMul hna)
@@ -212,7 +210,7 @@ theorem spectral_norm_is_mul [CompleteSpace K] (hna : IsNonarchimedean (norm : K
 def spectralMulAlgNorm [CompleteSpace K] (hna : IsNonarchimedean (norm : K → ℝ)) :
     MulAlgebraNorm K L :=
   { spectralAlgNorm hna with
-    map_one' := sorry--spectralAlgNorm_is_norm_one_class hna
+    map_one' := spectralAlgNorm_is_norm_one_class hna
     map_mul' := spectral_norm_is_mul hna }
 
 theorem spectral_mul_ring_norm_def [CompleteSpace K] (hna : IsNonarchimedean (norm : K → ℝ))
@@ -245,8 +243,7 @@ def spectralNormToNormedField [CompleteSpace K] (h : IsNonarchimedean (norm : K 
 
 /-- `L` with the spectral norm is a `normed_add_comm_group`. -/
 def spectralNormToNormedAddCommGroup [CompleteSpace K] (h : IsNonarchimedean (norm : K → ℝ)) :
-     NormedAddCommGroup L :=
-  by
+     NormedAddCommGroup L := by
   haveI : NormedField L := spectralNormToNormedField h
   infer_instance
 
@@ -259,13 +256,12 @@ def spectralNormToSeminormedAddCommGroup [CompleteSpace K] (h : IsNonarchimedean
 /-- `L` with the spectral norm is a `normed_space` over `K`. -/
 def spectralNormToNormedSpace [CompleteSpace K]
     (h : IsNonarchimedean (norm : K → ℝ)) :
-    @NormedSpace K L _ (spectralNormToSeminormedAddCommGroup h) := sorry
-  -- letI _ := spectralNormToSeminormedAddCommGroup h
-  -- {(inferInstance : Module K L) with
-  --   norm_smul_le := fun r x =>
-  --     by
-  --     change spectralAlgNorm h (r • x) ≤ ‖r‖ * spectralAlgNorm h x
-  --     exact le_of_eq (map_smul_eq_mul _ _ _)}
+    @NormedSpace K L _ (spectralNormToSeminormedAddCommGroup h) :=
+   letI _ := spectralNormToSeminormedAddCommGroup (L := L) h
+   {(inferInstance : Module K L) with
+     norm_smul_le := fun r x => by
+       change spectralAlgNorm h (r • x) ≤ ‖r‖ * spectralAlgNorm h x
+       exact le_of_eq (map_smul_eq_mul _ _ _)}
 
 /-- The metric space structure on `L` induced by the spectral norm. -/
 def ms [CompleteSpace K] (h : IsNonarchimedean (norm : K → ℝ)) : MetricSpace L :=
@@ -282,5 +278,5 @@ instance (priority := 100) spectral_norm_completeSpace [CompleteSpace K]
     (h : IsNonarchimedean (norm : K → ℝ)) [h_fin : FiniteDimensional K L] :
     @CompleteSpace L (us h) := by
   letI := (spectralNormToNormedAddCommGroup (L := L) h)
-  letI := (spectralNormToNormedSpace (L :=L) h)
-  sorry--exact FiniteDimensional.complete K L
+  letI := (spectralNormToNormedSpace (L := L) h)
+  exact FiniteDimensional.complete K L
