@@ -6,8 +6,6 @@ Authors: María Inés de Frutos-Fernández, Filippo A. E. Nuccio
 import Mathlib.RingTheory.DedekindDomain.AdicValuation
 import LocalClassFieldTheory.DiscreteValuationRing.Basic
 
-#align_import discrete_valuation_ring.global_to_local
-
 /-!
 # Global-to-local results.
 
@@ -50,7 +48,7 @@ theorem valuation_completion_exists_uniformizer :
 theorem valuation_completion_integers_exists_uniformizer :
     ∃ π : R_v, Valued.v (π : K_v) = Multiplicative.ofAdd (-1 : ℤ) := by
   obtain ⟨x, hx⟩ := valuation_completion_exists_uniformizer R K v
-  refine' ⟨⟨x, _⟩, hx⟩
+  refine ⟨⟨x, ?_⟩, hx⟩
   rw [HeightOneSpectrum.mem_adicCompletionIntegers, hx]
   exact le_of_lt WithZero.ofAdd_neg_one_lt_one
 

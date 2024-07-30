@@ -8,8 +8,6 @@ import Mathlib.FieldTheory.Minpoly.Basic
 import LocalClassFieldTheory.FromMathlib.NormalClosure
 import LocalClassFieldTheory.FromMathlib.AlgNormOfGalois
 
-#align_import from_mathlib.spectral_norm
-
 /-!
 # The spectral norm and the norm extension theorem
 
@@ -91,46 +89,46 @@ theorem natDegree_pos_of_monic_of_root {p : K[X]} (hp : p.Monic) {x : L} (hx : a
     ((injective_iff_map_eq_zero (algebraMap K L)).mp (algebraMap K L).injective)
 
 theorem monic_of_prod (p : K[X]) {n : ℕ} (b : Fin n → L)
-    (hp : mapAlg K L p = finprod fun k : Fin n => X - C (b k)) : p.Monic := by
-  have hprod : (finprod fun k : Fin n => X - C (b k)).Monic := by
+    (hp : mapAlg K L p = finprod fun k : Fin n ↦ X - C (b k)) : p.Monic := by
+  have hprod : (finprod fun k : Fin n ↦ X - C (b k)).Monic := by
     rw [finprod_eq_prod_of_fintype]
-    exact monic_prod_of_monic _ _ fun m _ => monic_X_sub_C (b m)
+    exact monic_prod_of_monic _ _ fun m _ ↦ monic_X_sub_C (b m)
   rw [← hp, mapAlg_eq_map] at hprod
   exact monic_of_injective (algebraMap K L).injective hprod
 
 theorem monic_of_prod' (p : K[X]) (s : Multiset L)
-    (hp : mapAlg K L p = (Multiset.map (fun a : L => X - C a) s).prod) : p.Monic := by
-  have hprod : (Multiset.map (fun a : L => X - C a) s).prod.Monic :=
-    monic_multiset_prod_of_monic _ _ fun m _ => monic_X_sub_C m
+    (hp : mapAlg K L p = (Multiset.map (fun a : L ↦ X - C a) s).prod) : p.Monic := by
+  have hprod : (Multiset.map (fun a : L ↦ X - C a) s).prod.Monic :=
+    monic_multiset_prod_of_monic _ _ fun m _ ↦ monic_X_sub_C m
   rw [← hp, mapAlg_eq_map] at hprod
   exact monic_of_injective (algebraMap K L).injective hprod
 
 theorem c_finset_add {α : Type _} (s : Finset α) {K : Type _} [Semiring K] (b : α → K) :
-    (s.sum fun x : α => C (b x)) = C (s.sum b) := by
+    (s.sum fun x : α ↦ C (b x)) = C (s.sum b) := by
   classical
-  refine' s.induction_on _ _
+  refine s.induction_on ?_ ?_
   · simp only [Finset.sum_empty, _root_.map_zero]
   · intro a s ha hs
     rw [Finset.sum_insert ha, Finset.sum_insert ha, hs, C_add]
 
 theorem c_finset_prod {α : Type _} (s : Finset α) {K : Type _} [CommRing K] (b : α → K) :
-    (s.prod fun x : α => C (b x)) = C (s.prod b) := by
+    (s.prod fun x : α ↦ C (b x)) = C (s.prod b) := by
   classical
-  refine' s.induction_on _ _
+  refine s.induction_on ?_ ?_
   · simp only [Finset.prod_empty, map_one]
   · intro a s ha hs
     rw [Finset.prod_insert ha, Finset.prod_insert ha, hs, C_mul]
 
 theorem prod_x_add_c_natDegree {L : Type _} [Field L] {n : ℕ} (b : Fin n → L) :
-    (Finset.univ.prod fun i : Fin n => X - C (b i)).natDegree = n := by
-  rw [natDegree_prod _ _ fun m _ => X_sub_C_ne_zero (b m)]
+    (Finset.univ.prod fun i : Fin n ↦ X - C (b i)).natDegree = n := by
+  rw [natDegree_prod _ _ fun m _ ↦ X_sub_C_ne_zero (b m)]
   simp only [natDegree_X_sub_C, Finset.sum_const, Finset.card_fin, Algebra.id.smul_eq_mul, mul_one]
 
 theorem aeval_root (s : Multiset L) {x : L} (hx : x ∈ s) {p : K[X]}
-    (hp : mapAlg K L p = (Multiset.map (fun a : L => X - C a) s).prod) : aeval x p = 0 := by
+    (hp : mapAlg K L p = (Multiset.map (fun a : L ↦ X - C a) s).prod) : aeval x p = 0 := by
   have : aeval x (mapAlg K L p) = aeval x p := by rw [mapAlg_eq_map, aeval_map_algebraMap]
   rw [← this, hp, coe_aeval_eq_eval]
-  have hy : X - C x ∣ (Multiset.map (fun a : L => X - C a) s).prod := by
+  have hy : X - C x ∣ (Multiset.map (fun a : L ↦ X - C a) s).prod := by
     apply Multiset.dvd_prod
     simp only [Multiset.mem_map, sub_right_inj, C_inj, exists_eq_right]
     exact hx
@@ -144,7 +142,7 @@ namespace Real
 theorem multiset_prod_le_pow_card {K L : Type _} [SeminormedCommRing K] [Ring L] [Algebra K L]
     {t : Multiset L} {f : AlgebraNorm K L} {y : L} (hf : ∀ x : ℝ, x ∈ Multiset.map f t → x ≤ f y) :
     (Multiset.map f t).prod ≤ f y ^ card (map f t) := by
-  set g : L → NNReal := fun x : L => ⟨f x, apply_nonneg _ _⟩
+  set g : L → NNReal := fun x : L ↦ ⟨f x, apply_nonneg _ _⟩
   have hg_le : (Multiset.map g t).prod ≤ g y ^ card (map g t) := by
     apply prod_le_pow_card
     intro x hx
@@ -160,7 +158,7 @@ theorem multiset_prod_le_pow_card {K L : Type _} [SeminormedCommRing K] [Ring L]
 theorem multiset_le_prod_of_submultiplicative {α : Type _} [CommMonoid α] {f : α → ℝ}
     (h_nonneg : ∀ a, 0 ≤ f a) (h_one : f 1 = 1) (h_mul : ∀ a b, f (a * b) ≤ f a * f b)
     (s : Multiset α) : f s.prod ≤ (s.map f).prod := by
-  set g : α → NNReal := fun x : α => ⟨f x, h_nonneg _⟩
+  set g : α → NNReal := fun x : α ↦ ⟨f x, h_nonneg _⟩
   have hg_le : g s.prod ≤ (s.map g).prod := by
     apply Multiset.le_prod_of_submultiplicative
     · ext; rw [NNReal.coe_mk, NNReal.coe_one, h_one]
@@ -205,21 +203,21 @@ theorem le_prod_of_submultiplicative_on_pred' {α β : Type _} [CommMonoid α] [
     (h_mul : ∀ a b, p a → p b → f (a * b) ≤ f a * f b) (hp_mul : ∀ a b, p a → p b → p (a * b))
     (s : Multiset α) (hps : ∀ a, a ∈ s → p a) : f s.prod ≤ (s.map f).prod := by
   revert s
-  refine' Multiset.induction _ _
+  refine Multiset.induction ?_ ?_
   · simp [le_of_eq h_one]
   intro a s hs hpsa
-  have hps : ∀ x, x ∈ s → p x := fun x hx => hpsa x (mem_cons_of_mem hx)
+  have hps : ∀ x, x ∈ s → p x := fun x hx ↦ hpsa x (mem_cons_of_mem hx)
   have hp_prod : p s.prod := prod_induction p s hp_mul hp_one hps
   rw [prod_cons, map_cons, prod_cons]
-  refine' (h_mul a s.prod (hpsa a (mem_cons_self a s)) hp_prod).trans _
+  refine (h_mul a s.prod (hpsa a (mem_cons_self a s)) hp_prod).trans ?_
   exact mul_le_mul_of_nonneg_left (hs hps) (h_nonneg _)
 
 --@[to_additive existing le_sum_of_subadditive]
 theorem le_prod_of_submultiplicative' {α β : Type _} [CommMonoid α] [OrderedCommRing β] (f : α → β)
     (h_nonneg : ∀ a, 0 ≤ f a) (h_one : f 1 = 1) (h_mul : ∀ a b, f (a * b) ≤ f a * f b)
     (s : Multiset α) : f s.prod ≤ (s.map f).prod :=
-  le_prod_of_submultiplicative_on_pred' f (fun _ => True) h_nonneg h_one trivial
-    (fun x y _ _ => h_mul x y) (by simp) s (by simp)
+  le_prod_of_submultiplicative_on_pred' f (fun _ ↦ True) h_nonneg h_one trivial
+    (fun x y _ _ ↦ h_mul x y) (by simp) s (by simp)
 
 end Multiset
 
@@ -241,7 +239,7 @@ theorem powersetCard_nonempty' {α : Type _} {n : ℕ} {s : Finset α} (h : n �
 theorem le_prod_of_submultiplicative' {ι M N : Type _} [CommMonoid M] [OrderedCommRing N]
     (f : M → N) (h_nonneg : ∀ a, 0 ≤ f a) (h_one : f 1 = 1)
     (h_mul : ∀ x y : M, f (x * y) ≤ f x * f y) (s : Finset ι) (g : ι → M) :
-    f (s.prod fun i : ι => g i) ≤ s.prod fun i : ι => f (g i) := by
+    f (s.prod fun i : ι ↦ g i) ≤ s.prod fun i : ι ↦ f (g i) := by
   refine le_trans (Multiset.le_prod_of_submultiplicative' f h_nonneg h_one h_mul _) ?_
   rw [Multiset.map_map]
   rfl
@@ -255,10 +253,10 @@ variable {K L : Type _} [NormedCommRing K] [CommRing L] [Algebra K L]
 theorem isNonarchimedean_finset_powerset_image_add {f : AlgebraNorm K L}
     (hf_na : IsNonarchimedean f) {n : ℕ} (b : Fin n → L) (m : ℕ) :
     ∃ s : Finset.powersetCard (Fintype.card (Fin n) - m) (@Finset.univ (Fin n) _),
-      f ((Finset.powersetCard (Fintype.card (Fin n) - m) Finset.univ).sum fun t : Finset (Fin n) =>
-        t.prod fun i : Fin n => -b i) ≤
-        f (s.val.prod fun i : Fin n => -b i) := by
-  set g := fun t : Finset (Fin n) => t.prod fun i : Fin n => -b i
+      f ((Finset.powersetCard (Fintype.card (Fin n) - m) Finset.univ).sum fun t : Finset (Fin n) ↦
+        t.prod fun i : Fin n ↦ -b i) ≤
+        f (s.val.prod fun i : Fin n ↦ -b i) := by
+  set g := fun t : Finset (Fin n) ↦ t.prod fun i : Fin n ↦ -b i
   obtain ⟨b, hb_in, hb⟩ :=
     isNonarchimedean_finset_image_add hf_na g
       (Finset.powersetCard (Fintype.card (Fin n) - m) Finset.univ)
@@ -275,7 +273,7 @@ theorem isNonarchimedean_multiset_powerset_image_add {f : AlgebraNorm K L}
     (hf_na : IsNonarchimedean f) (s : Multiset L) (m : ℕ) :
     ∃ t : Multiset L, card t = card s - m ∧ (∀ x : L, x ∈ t → x ∈ s) ∧
       f (Multiset.map Multiset.prod (powersetCard (card s - m) s)).sum ≤ f t.prod := by
-  set g := fun t : Multiset L => t.prod
+  set g := fun t : Multiset L ↦ t.prod
   obtain ⟨b, hb_in, hb_le⟩ :=
     isNonarchimedean_multiset_image_add hf_na g (powersetCard (card s - m) s)
   have hb : b ≤ s ∧ card b = card s - m := by
@@ -283,7 +281,7 @@ theorem isNonarchimedean_multiset_powerset_image_add {f : AlgebraNorm K L}
     apply hb_in
     rw [card_powersetCard]
     exact Nat.choose_pos ((card s).sub_le m)
-  refine' ⟨b, hb.2, fun x hx => Multiset.mem_of_le hb.left hx, hb_le⟩
+  exact ⟨b, hb.2, fun x hx ↦ Multiset.mem_of_le hb.left hx, hb_le⟩
 
 end IsNonarchimedean
 
@@ -338,7 +336,7 @@ instance : AddHomClass (E →+* L) E L := inferInstance
 variable [Algebra.IsAlgebraic K L]
 
 instance : Normal K (AlgebraicClosure K) :=
-  normal_iff.mpr fun x =>
+  normal_iff.mpr fun x ↦
     ⟨isAlgebraic_iff_isIntegral.mp ((AlgebraicClosure.isAlgebraic K).isAlgebraic x),
       IsAlgClosed.splits_codomain (minpoly K x)⟩
 
@@ -355,14 +353,14 @@ theorem AdjoinSimple.alg_closure_normal (x : L) :
   have h_alg' : Algebra.IsAlgebraic K (AlgebraicClosure ↥K⟮x⟯) :=
     @Algebra.IsAlgebraic.trans K K⟮x⟯ (AlgebraicClosure ↥K⟮x⟯) _ _ _ _ _ _ _
      (isAlgebraic K⟮x⟯) (AlgebraicClosure.isAlgebraic K⟮x⟯)
-  normal_iff.mpr fun y => ⟨(h_alg'.isAlgebraic _).isIntegral,
+  normal_iff.mpr fun y ↦ ⟨(h_alg'.isAlgebraic _).isIntegral,
     IsAlgClosed.splits_codomain (minpoly K y)⟩
 
 theorem AdjoinDouble.alg_closure_normal (x y : L) : Normal K (AlgebraicClosure K⟮x, y⟯) :=
   have h_alg' : Algebra.IsAlgebraic K (AlgebraicClosure ↥K⟮x, y⟯) :=
    @Algebra.IsAlgebraic.trans K K⟮x, y⟯ (AlgebraicClosure ↥K⟮x, y⟯) _ _ _ _ _ _ _
      (isAlgebraic K⟮x, y⟯) (AlgebraicClosure.isAlgebraic K⟮x, y⟯)
-  normal_iff.mpr fun y => ⟨(h_alg'.isAlgebraic _).isIntegral,
+  normal_iff.mpr fun y ↦ ⟨(h_alg'.isAlgebraic _).isIntegral,
     IsAlgClosed.splits_codomain (minpoly K y)⟩
 
 theorem AdjoinAdjoin.finiteDimensional {x y : L} (hx : IsIntegral K x) (hy : IsIntegral K y) :
@@ -429,7 +427,7 @@ variable [SeminormedRing R]
 
 /-- The function `ℕ → ℝ` sending `n` to `‖ p.coeff n ‖^(1/(p.natDegree - n : ℝ))`, if
   `n < p.natDegree`, or to `0` otherwise. -/
-def spectralValueTerms (p : R[X]) : ℕ → ℝ := fun n : ℕ =>
+def spectralValueTerms (p : R[X]) : ℕ → ℝ := fun n : ℕ ↦
   if n < p.natDegree then ‖p.coeff n‖ ^ (1 / (p.natDegree - n : ℝ)) else 0
 
 theorem spectralValueTerms_of_lt_natDegree (p : R[X]) {n : ℕ} (hn : n < p.natDegree) :
@@ -446,14 +444,14 @@ def spectralValue (p : R[X]) : ℝ :=
 /-- The sequence `spectral_value_terms p` is bounded above. -/
 theorem spectralValueTerms_bddAbove (p : R[X]) : BddAbove (Set.range (spectralValueTerms p)) := by
   use List.foldr max 0
-      (List.map (fun n => ‖p.coeff n‖ ^ (1 / (p.natDegree - n : ℝ))) (List.range p.natDegree))
+      (List.map (fun n ↦ ‖p.coeff n‖ ^ (1 / (p.natDegree - n : ℝ))) (List.range p.natDegree))
   · rw [mem_upperBounds]
     intro r hr
     obtain ⟨n, hn⟩ := Set.mem_range.mpr hr
     simp only [spectralValueTerms] at hn
     split_ifs at hn  with hd
     · have h : ‖p.coeff n‖ ^ (1 / (p.natDegree - n : ℝ)) ∈
-        List.map (fun n : ℕ => ‖p.coeff n‖ ^ (1 / (p.natDegree - n : ℝ)))
+        List.map (fun n : ℕ ↦ ‖p.coeff n‖ ^ (1 / (p.natDegree - n : ℝ)))
           (List.range p.natDegree) :=  by
         simp only [List.mem_map, List.mem_range]
         exact ⟨n, hd, rfl⟩
@@ -463,18 +461,18 @@ theorem spectralValueTerms_bddAbove (p : R[X]) : BddAbove (Set.range (spectralVa
       · rw [hd0, List.range_zero, List.map_nil, List.foldr_nil]
       · have h :
           ‖p.coeff 0‖ ^ (1 / (p.natDegree - 0 : ℝ)) ∈
-            List.map (fun n : ℕ => ‖p.coeff n‖ ^ (1 / (p.natDegree - n : ℝ)))
+            List.map (fun n : ℕ ↦ ‖p.coeff n‖ ^ (1 / (p.natDegree - n : ℝ)))
               (List.range p.natDegree) := by
           simp only [List.mem_map, List.mem_range]
           exact ⟨0, Nat.pos_of_ne_zero hd0, by rw [Nat.cast_zero]⟩
-        refine' List.le_max_of_exists_le 0 h _
+        refine List.le_max_of_exists_le 0 h ?_
         exact Real.rpow_nonneg (norm_nonneg _) _
 
 /-- The range of `spectral_value_terms p` is a finite set. -/
 theorem spectralValueTerms_finite_range (p : R[X]) : (Set.range (spectralValueTerms p)).Finite :=
   haveI h_ss :
     Set.range (spectralValueTerms p) ⊆
-      (Set.range fun n : Fin p.natDegree => ‖p.coeff n‖ ^ (1 / (p.natDegree - n : ℝ))) ∪
+      (Set.range fun n : Fin p.natDegree ↦ ‖p.coeff n‖ ^ (1 / (p.natDegree - n : ℝ))) ∪
         {(0 : ℝ)} := by
     intro x hx
     obtain ⟨m, hm⟩ := Set.mem_range.mpr hx
@@ -545,7 +543,7 @@ variable [NormedRing R]
 /-- The spectral value of `p` equals zero if and only if `p` is of the form `X^n`. -/
 theorem spectralValue_eq_zero_iff [Nontrivial R] {p : R[X]} (hp : p.Monic) :
     spectralValue p = 0 ↔ p = X ^ p.natDegree := by
-  refine' ⟨fun h => _, fun h => _⟩
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · rw [spectralValue] at h
     ext n
     rw [coeff_X_pow]
@@ -604,7 +602,7 @@ theorem root_norm_le_spectralValue {f : AlgebraNorm K L} (hf_pm : IsPowMul f)
     have h_deg : 0 < p.natDegree := Polynomial.natDegree_pos_of_monic_of_root hp hx
     have : ‖(1 : K)‖ = 1 := norm_one
     have h_lt :
-      f ((Finset.range p.natDegree).sum fun i : ℕ => p.coeff i • x ^ i) < f (x ^ p.natDegree) := by
+      f ((Finset.range p.natDegree).sum fun i : ℕ ↦ p.coeff i • x ^ i) < f (x ^ p.natDegree) := by
       have hn' : ∀ (n : ℕ) (_ : n < p.natDegree), f (p.coeff n • x ^ n) < f (x ^ p.natDegree) := by
         intro n hn
         by_cases hn0 : n = 0
@@ -618,7 +616,7 @@ theorem root_norm_le_spectralValue {f : AlgebraNorm K L} (hf_pm : IsPowMul f)
             (mul_lt_mul_right (pow_pos (lt_of_le_of_ne (apply_nonneg _ _) (Ne.symm hx0)) _)).mpr
               (hn_lt n hn)
       obtain ⟨m, hm_in, hm⟩ :=
-        isNonarchimedean_finset_range_add_le hf_na p.natDegree fun i : ℕ => p.coeff i • x ^ i
+        isNonarchimedean_finset_range_add_le hf_na p.natDegree fun i : ℕ ↦ p.coeff i • x ^ i
       exact lt_of_le_of_lt hm (hn' m (hm_in h_deg))
     have h0 : f 0 ≠ 0 :=
       by
@@ -639,7 +637,7 @@ open Multiset
   of the norms of its roots. -/
 theorem max_root_norm_eq_spectralValue {f : AlgebraNorm K L} (hf_pm : IsPowMul f)
     (hf_na : IsNonarchimedean f) (hf1 : f 1 = 1) (p : K[X]) {n : ℕ} (hn : 0 < n) (b : Fin n → L)
-    (hp : mapAlg K L p = finprod fun k : Fin n => X - C (b k)) :
+    (hp : mapAlg K L p = finprod fun k : Fin n ↦ X - C (b k)) :
     iSup (f ∘ b) = spectralValue p := by
   apply le_antisymm
   · haveI : Nonempty (Fin n) := Fin.pos_iff_nonempty.mp hn
@@ -658,7 +656,7 @@ theorem max_root_norm_eq_spectralValue {f : AlgebraNorm K L} (hf_pm : IsPowMul f
   · have : Nonempty (Fin n) := by
       exact Fin.pos_iff_nonempty.mp hn
     have h_supr : 0 ≤ iSup (f ∘ b) := by
-      exact Real.iSup_nonneg fun x => apply_nonneg f (b x)
+      exact Real.iSup_nonneg fun x ↦ apply_nonneg f (b x)
     apply ciSup_le
     intro m
     by_cases hm : m < p.natDegree
@@ -674,8 +672,8 @@ theorem max_root_norm_eq_spectralValue {f : AlgebraNorm K L} (hf_pm : IsPowMul f
         rw [← AlgebraNorm.extends_norm hf1, mapAlg_eq_map, coeff_map]
       rw [hc, hp, finprod_eq_prod_of_fintype]
       simp_rw [sub_eq_add_neg, ← C_neg, Finset.prod_eq_multiset_prod, ← Pi.neg_apply]
-      have : (fun x => X + C ((-b) x)) = (fun y => ((fun x : L => X + C x) ∘ (-b)) y) := rfl
-      rw [this, ← Multiset.map_map (fun x : L => X + C x) (-b)]
+      have : (fun x ↦ X + C ((-b) x)) = (fun y ↦ ((fun x : L ↦ X + C x) ∘ (-b)) y) := rfl
+      rw [this, ← Multiset.map_map (fun x : L ↦ X + C x) (-b)]
       have hm_le' : m ≤ card (Multiset.map (-b) Finset.univ.val) := by
         have : card Finset.univ.val = Finset.card (Finset.univ : Finset (Fin n)) := rfl
         rw [card_map, this, Finset.card_fin n, hpn]
@@ -688,10 +686,10 @@ theorem max_root_norm_eq_spectralValue {f : AlgebraNorm K L} (hf_pm : IsPowMul f
         rw [card_map]; rfl
       rw [h_card]
       apply le_trans hs
-      have h_pr : f (s.val.prod fun i : Fin n => -b i) ≤ s.val.prod fun i : Fin n => f (-b i) :=
+      have h_pr : f (s.val.prod fun i : Fin n ↦ -b i) ≤ s.val.prod fun i : Fin n ↦ f (-b i) :=
         Finset.le_prod_of_submultiplicative' f (apply_nonneg _) hf1 (map_mul_le_mul _) _ _
       apply le_trans h_pr
-      have : (s.val.prod fun i : Fin n => f (-b i)) ≤ s.val.prod fun _ : Fin n => iSup (f ∘ b) :=
+      have : (s.val.prod fun i : Fin n ↦ f (-b i)) ≤ s.val.prod fun _ : Fin n ↦ iSup (f ∘ b) :=
         by
         apply Finset.prod_le_prod
         · intro i _; exact apply_nonneg _ _
@@ -714,8 +712,8 @@ theorem max_root_norm_eq_spectralValue {f : AlgebraNorm K L} (hf_pm : IsPowMul f
   maximum of the norms of the roots. -/
 theorem max_root_norm_eq_spectral_value' {f : AlgebraNorm K L} (hf_pm : IsPowMul f)
     (hf_na : IsNonarchimedean f) (hf1 : f 1 = 1) (p : K[X]) (s : Multiset L)
-    (hp : mapAlg K L p = (Multiset.map (fun a : L => X - C a) s).prod) :
-    (iSup fun x : L => if x ∈ s then f x else 0) = spectralValue p := by
+    (hp : mapAlg K L p = (Multiset.map (fun a : L ↦ X - C a) s).prod) :
+    (iSup fun x : L ↦ if x ∈ s then f x else 0) = spectralValue p := by
   have h_le : 0 ≤ ⨆ x : L, ite (x ∈ s) (f x) 0 := by
     apply Real.iSup_nonneg
     intro x
@@ -779,7 +777,7 @@ theorem max_root_norm_eq_spectral_value' {f : AlgebraNorm K L} (hf_pm : IsPowMul
           exact hy_max _ (hts _ hzt)
         rw [h_card]
         exact Real.multiset_prod_le_pow_card hx_le
-      have h_bdd : BddAbove (Set.range fun x : L => ite (x ∈ s) (f x) 0) := by
+      have h_bdd : BddAbove (Set.range fun x : L ↦ ite (x ∈ s) (f x) 0) := by
         use f y
         rw [mem_upperBounds]
         intro r hr
@@ -886,7 +884,7 @@ theorem spectralNorm_nonneg (y : L) : 0 ≤ spectralNorm K L y :=
 theorem spectralNorm_zero_lt [h_alg : Algebra.IsAlgebraic K L] {y : L} (hy : y ≠ 0) :
     0 < spectralNorm K L y := by
   rw [lt_iff_le_and_ne]
-  refine' ⟨spectralNorm_nonneg _, _⟩
+  refine ⟨spectralNorm_nonneg _, ?_⟩
   rw [spectralNorm, ne_eq, eq_comm,
     spectralValue_eq_zero_iff (minpoly.monic (h_alg.isAlgebraic y).isIntegral)]
   have h0 : coeff (minpoly K y) 0 ≠ 0 :=
@@ -925,9 +923,9 @@ section Normal
 If `L/K` is finite and normal, then `spectral_norm K L x = supr (λ (σ : L ≃ₐ[K] L), f (σ x))`. -/
 theorem spectralNorm_max_of_fd_normal (h_fin : FiniteDimensional K L) (hn : Normal K L)
     {f : AlgebraNorm K L} (hf_pm : IsPowMul f) (hf_na : IsNonarchimedean f)
-    (hf_ext : FunctionExtends (fun x : K => ‖x‖₊) f) (x : L) :
-    spectralNorm K L x = iSup fun σ : L ≃ₐ[K] L => f (σ x) := by
-  refine' le_antisymm _ (ciSup_le fun σ =>
+    (hf_ext : FunctionExtends (fun x : K ↦ ‖x‖₊) f) (x : L) :
+    spectralNorm K L x = iSup fun σ : L ≃ₐ[K] L ↦ f (σ x) := by
+  refine le_antisymm ?_ (ciSup_le fun σ ↦
     root_norm_le_spectralValue hf_pm hf_na (extends_is_norm_le_one_class hf_ext)
       (minpoly.monic (Normal.isIntegral hn x)) (minpoly.aeval_algHom _ σ.toAlgHom _))
   · set p := minpoly K x
@@ -955,7 +953,7 @@ theorem spectralNorm_max_of_fd_normal (h_fin : FiniteDimensional K L) (hn : Norm
       · exact instNonemptyOfInhabited
       · exact SemilatticeSup.to_isDirected_le
       --exact le_ciSup (Fintype.bddAbove_range _) σ
-    · exact Real.iSup_nonneg fun σ => apply_nonneg _ _
+    · exact Real.iSup_nonneg fun σ ↦ apply_nonneg _ _
 
 /-- If `L/K` is finite and normal, then `spectral_norm K L = alg_norm_of_galois h_fin hna`. -/
 theorem spectralNorm_eq_algNormOfGalois (h_fin : FiniteDimensional K L) (hn : Normal K L)
@@ -1016,11 +1014,11 @@ theorem spectralNorm_extends_norm_of_fd (h_fin : FiniteDimensional K L) (hn : No
   extending the norm on `K`, then `f = spectral_norm K L`. -/
 theorem spectralNorm_unique_of_fd_normal (h_fin : FiniteDimensional K L) (hn : Normal K L)
     {f : AlgebraNorm K L} (hf_pm : IsPowMul f) (hf_na : IsNonarchimedean f)
-    (hf_ext : FunctionExtends (fun x : K => ‖x‖₊) f)
+    (hf_ext : FunctionExtends (fun x : K ↦ ‖x‖₊) f)
     (hf_iso : ∀ (σ : L ≃ₐ[K] L) (x : L), f x = f (σ x)) (x : L) : f x = spectralNorm K L x := by
-  have h_sup : (iSup fun σ : L ≃ₐ[K] L => f (σ x)) = f x := by
+  have h_sup : (iSup fun σ : L ≃ₐ[K] L ↦ f (σ x)) = f x := by
     rw [← @ciSup_const _ (L ≃ₐ[K] L) _ _ (f x)]
-    exact iSup_congr fun σ => by rw [hf_iso σ x]
+    exact iSup_congr fun σ ↦ by rw [hf_iso σ x]
   rw [spectralNorm_max_of_fd_normal h_fin hn hf_pm hf_na hf_ext, h_sup]
 
 end Normal
@@ -1056,7 +1054,13 @@ theorem spectralNorm_isPowMul (hna : IsNonarchimedean (norm : K → ℝ)) :
     IntermediateField.AdjoinSimple.alg_closure_normal x
   rw [← spectralValue.eq_normal' _ (IntermediateField.AdjoinSimple.algebraMap_gen K x),
     ← spectralValue.eq_normal' (g ^ n) h_map, map_pow]
-  letI := normalClosure.isAlgebraic K E
+  letI h_alg := normalClosure.isAlgebraic K E
+  /- apply spectralNorm_isPowMul_of_fd_normal (L := (normalClosure K (↥K⟮x⟯) (AlgebraicClosure ↥K⟮x⟯)))
+    (h_alg := h_alg)
+  · exact (normalClosure.is_finiteDimensional K E _)
+  · exact (normalClosure.normal K E _)
+  · exact hna -/
+    --(normalClosure.is_finiteDimensional K E _) (normalClosure.normal K E _) hna _ n hn
   sorry
   /- exact spectralNorm_isPowMul_of_fd_normal
     (normalClosure.is_finiteDimensional K E _) (normalClosure.normal K E _) hna _ n hn -/
@@ -1271,7 +1275,7 @@ def mulNormToNormedField (f : MulRingNorm L) : NormedField L where
     rw [eq_comm, ENNReal.ofReal_eq_coe_nnreal]
 
 theorem mulNormToNormedField.norm (f : MulRingNorm L) :
-    (mulNormToNormedField f).norm = fun x => (f x : ℝ) :=
+    (mulNormToNormedField f).norm = fun x ↦ (f x : ℝ) :=
   rfl
 
 end SpectralValuation

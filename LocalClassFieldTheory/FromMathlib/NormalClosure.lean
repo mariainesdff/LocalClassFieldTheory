@@ -7,8 +7,6 @@ import Mathlib.FieldTheory.NormalClosure
 import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
 import Mathlib.RingTheory.Algebraic
 
-#align_import from_mathlib.normal_closure
-
 /-!
 # Normal closures
 

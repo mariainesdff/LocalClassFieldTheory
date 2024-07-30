@@ -14,8 +14,6 @@ import Mathlib.Topology.Algebra.WithZeroTopology
 import LocalClassFieldTheory.ForMathlib.RankOneValuation
 import LocalClassFieldTheory.ForMathlib.WithZero
 
-#align_import discrete_valuation_ring.basic
-
 /-!
 # Discrete Valuation Rings
 
@@ -100,11 +98,10 @@ theorem mem_integer {Γ₀ : Type w₂} [LinearOrderedCommGroupWithZero Γ₀] (
 namespace Integer
 
 theorem isUnit_iff_valuation_eq_one {K : Type w₁} [Field K] {Γ₀ : Type w₂}
-    [LinearOrderedCommGroupWithZero Γ₀] {v : Valuation K Γ₀} (x : v.integer) : IsUnit x ↔ v x = 1 :=
-  by
-  refine'
-    ⟨@Integers.one_of_isUnit K Γ₀ _ _ v v.integer _ _ (Valuation.integer.integers v) _, fun hx =>
-      _⟩
+    [LinearOrderedCommGroupWithZero Γ₀] {v : Valuation K Γ₀} (x : v.integer) :
+    IsUnit x ↔ v x = 1 := by
+  refine ⟨@Integers.one_of_isUnit K Γ₀ _ _ v v.integer _ _ (Valuation.integer.integers v) _,
+    fun hx ↦ ?_⟩
   have hx0 : (x : K) ≠ 0 := by
     by_contra h0
     rw [h0, map_zero] at hx
@@ -165,7 +162,7 @@ def Uniformizer.mk' (x : R) (hx : IsUniformizer vR x) : Uniformizer vR
 
 @[simp]
 instance : Coe (Uniformizer vR) vR.integer :=
-  ⟨fun π => π.val⟩
+  ⟨fun π ↦ π.val⟩
 
 theorem isDiscreteOfExistsUniformizer {K : Type w₁} [Field K] (v : Valuation K ℤₘ₀) {π : K}
     (hπ : IsUniformizer v π) : IsDiscrete v :=
@@ -300,9 +297,9 @@ theorem Uniformizer_is_generator (π : Uniformizer v) :
     · simp only [hx₀, Ideal.zero_mem]
     · obtain ⟨n, ⟨u, hu⟩⟩ := pow_Uniformizer v hx₀ π
       rw [← Subring.coe_mul, Subtype.coe_inj] at hu
-      have hn : Not (IsUnit x) := fun h =>
+      have hn : Not (IsUnit x) := fun h ↦
         (maximalIdeal.isMaximal _).ne_top (eq_top_of_isUnit_mem _ hx h)
-      replace hn : n ≠ 0 := fun h => by
+      replace hn : n ≠ 0 := fun h ↦ by
         simp only [hu, h, pow_zero, one_mul, Units.isUnit, not_true] at hn
       simp only [Ideal.mem_span_singleton, hu, IsUnit.dvd_mul_right, Units.isUnit,
         dvd_pow_self _ hn]
@@ -320,8 +317,8 @@ variable [IsDiscrete v]
 
 theorem exists_Uniformizer_ofDiscrete : ∃ π : K₀, IsUniformizer v (π : K) := by
   let surj_v : IsDiscrete v := by infer_instance
-  refine'
-    ⟨⟨(surj_v.surj (↑(Multiplicative.ofAdd (-1 : ℤ)) : ℤₘ₀)).choose, _⟩,
+  refine
+    ⟨⟨(surj_v.surj (↑(Multiplicative.ofAdd (-1 : ℤ)) : ℤₘ₀)).choose, ?_⟩,
       (surj_v.surj (↑(Multiplicative.ofAdd (-1 : ℤ)) : ℤₘ₀)).choose_spec⟩
   rw [mem_valuationSubring_iff, (surj_v.surj (↑(Multiplicative.ofAdd (-1 : ℤ)) : ℤₘ₀)).choose_spec]
   exact le_of_lt ofAdd_neg_one_lt_one
@@ -409,7 +406,7 @@ theorem ideal_isPrincipal (I : Ideal K₀) : I.IsPrincipal :=
     obtain ⟨n, ⟨u, hu⟩⟩ := pow_Uniformizer v hx₀ π
     by_cases hn : n = 0
     · rw [← Subring.coe_mul, hn, pow_zero, one_mul, SetLike.coe_eq_coe] at hu
-      refine' (hP.ne_top (Ideal.eq_top_of_isUnit_mem P hx_mem _)).elim
+      refine (hP.ne_top (Ideal.eq_top_of_isUnit_mem P hx_mem ?_)).elim
       simp only [hu, Units.isUnit]
     · rw [← Subring.coe_mul, SetLike.coe_eq_coe] at hu
       rw [hu, Ideal.mul_unit_mem_iff_mem P u.isUnit,
@@ -419,7 +416,7 @@ theorem ideal_isPrincipal (I : Ideal K₀) : I.IsPrincipal :=
       exact ⟨π.1, Uniformizer_is_generator v π⟩
 
 theorem integer_isPrincipalIdealRing : IsPrincipalIdealRing K₀ :=
-  ⟨fun I => ideal_isPrincipal v I⟩
+  ⟨fun I ↦ ideal_isPrincipal v I⟩
 
 /-- This is Chapter I, Section 1, Proposition 1 in Serre's Local Fields -/
 instance dvr_of_isDiscrete : DiscreteValuationRing K₀
@@ -497,10 +494,9 @@ theorem exists_of_le_one {x : FractionRing A} (H : Valued.v x ≤ (1 : ℤₘ₀
     exacts [hπ.ne_zero, valuation_le_one (maximalIdeal A), valuation_le_one (maximalIdeal A)]
 
 theorem alg_map_eq_integers :
-    Subring.map (algebraMap A (FractionRing A)) ⊤ = Valued.v.valuationSubring.toSubring :=
-  by
+    Subring.map (algebraMap A (FractionRing A)) ⊤ = Valued.v.valuationSubring.toSubring := by
   ext
-  refine' ⟨fun h => _, fun h => _⟩
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · obtain ⟨_, _, rfl⟩ := Subring.mem_map.mp h
     apply valuation_le_one
   · obtain ⟨y, rfl⟩ := exists_of_le_one h

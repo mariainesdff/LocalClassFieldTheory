@@ -6,8 +6,6 @@ Authors: María Inés de Frutos-Fernández, Filippo A. E. Nuccio
 import LocalClassFieldTheory.DiscreteValuationRing.Basic
 import Mathlib.RingTheory.DedekindDomain.AdicValuation
 
-#align_import discrete_valuation_ring.complete
-
 open scoped DiscreteValuation
 
 open Multiplicative

@@ -7,10 +7,7 @@ import Mathlib.Algebra.GroupWithZero.WithZero
 import Mathlib.Data.NNReal.Basic
 import Mathlib.Logic.Equiv.TransferInstance
 import Mathlib.RingTheory.Valuation.Basic
-
 import Mathlib.Algebra.Order.Group.TypeTags
-
-#align_import for_mathlib.with_zero
 
 /-!
 # with_zero
@@ -81,7 +78,7 @@ theorem mul_lt_mul_right₀ {α : Type _} {a b c : α} [LinearOrderedCommGroupWi
   by
   rw [mul_comm a, mul_comm b]
   exact
-    ⟨fun h => lt_of_mul_lt_mul_of_le₀ h hc (le_refl _), fun h =>
+    ⟨fun h ↦ lt_of_mul_lt_mul_of_le₀ h hc (le_refl _), fun h ↦
       mul_lt_mul_of_lt_of_le₀ (le_refl _) (ne_of_gt hc) h⟩
 
 theorem lt_hMul_left₀ {α : Type _} {b c : α} [LinearOrderedCommGroupWithZero α] {a : α} (h : b < c)
@@ -93,8 +90,8 @@ theorem one_lt_div' {α : Type _} [LinearOrderedCommGroupWithZero α] (a : α) {
 
 open scoped DiscreteValuation
 
-theorem strictMonoOn_zpow {n : ℤ} (hn : 0 < n) : StrictMonoOn (fun x : ℤₘ₀ => x ^ n) (Set.Ioi 0) :=
-  fun a ha b hb hab => by
+theorem strictMonoOn_zpow {n : ℤ} (hn : 0 < n) : StrictMonoOn (fun x : ℤₘ₀ ↦ x ^ n) (Set.Ioi 0) :=
+  fun a ha b hb hab ↦ by
   letI : LinearOrderedCommGroup (Multiplicative ℤ) := Multiplicative.linearOrderedCommGroup
   simp only [Set.mem_Ioi] at ha hb
   have ha0 : a ≠ 0 := ne_of_gt ha
@@ -106,11 +103,11 @@ theorem strictMonoOn_zpow {n : ℤ} (hn : 0 < n) : StrictMonoOn (fun x : ℤₘ�
   rw [← one_lt_div' (b^n) han, ← div_zpow]
   exact one_lt_zpow' ((one_lt_div' _ ha0).mpr hab) hn
 
-theorem zpow_left_injOn {n : ℤ} (hn : n ≠ 0) : Set.InjOn (fun _x : ℤₘ₀ => _x ^ n) (Set.Ioi 0) :=
+theorem zpow_left_injOn {n : ℤ} (hn : n ≠ 0) : Set.InjOn (fun _x : ℤₘ₀ ↦ _x ^ n) (Set.Ioi 0) :=
   by
   rcases hn.symm.lt_or_lt with h | h
   · exact (strictMonoOn_zpow h).injOn
-  · refine' fun a ha b hb (hab : a ^ n = b ^ n) => (strictMonoOn_zpow (neg_pos.mpr h)).injOn ha hb _
+  · refine fun a ha b hb (hab : a ^ n = b ^ n) ↦ (strictMonoOn_zpow (neg_pos.mpr h)).injOn ha hb ?_
     simp only [zpow_neg, zpow_neg, hab]
 
 theorem zpow_left_inj {n : ℤ} {a b : ℤₘ₀} (ha : a ≠ 0) (hb : b ≠ 0) (hn : n ≠ 0) :
@@ -140,7 +137,7 @@ end WithZero
   `x ↦ e^(multiplicative.to_add (with_zero.unzero hx)` when `x ≠ 0`.
   We regard this map as an inclusion of `ℤₘ₀` in `ℝ≥0`. -/
 @[reducible]
-def withZeroMultIntToNNRealDef (e : NNReal) : ℤₘ₀ → ℝ≥0 := fun x =>
+def withZeroMultIntToNNRealDef (e : NNReal) : ℤₘ₀ → ℝ≥0 := fun x ↦
   if hx : x = 0 then 0 else e ^ Multiplicative.toAdd (WithZero.unzero hx)
 
 theorem withZeroMultIntToNNRealDef_pos_apply (e : NNReal) {x : ℤₘ₀} (hx : x = 0) :

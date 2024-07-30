@@ -5,8 +5,6 @@ Authors: María Inés de Frutos-Fernández, Filippo A. E. Nuccio
 -/
 import LocalClassFieldTheory.DiscreteValuationRing.Extensions
 
-#align_import discrete_valuation_ring.trivial_extension
-
 /-!
 # Trivial extensions of discrete valuations
 

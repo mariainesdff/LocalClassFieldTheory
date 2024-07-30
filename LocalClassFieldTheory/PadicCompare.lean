@@ -203,10 +203,10 @@ theorem uniformInducing_cast : letI := ((@padicValued p _))
   have hp_one : (1 : ℝ≥0) < p := Nat.one_lt_cast.mpr (Nat.Prime.one_lt Fact.out)
   apply UniformInducing.mk'
   simp_rw [@Metric.mem_uniformity_dist ℚ_[p] _ _]
-  refine' fun S => ⟨fun hS => _, _⟩
+  refine fun S ↦ ⟨fun hS ↦ ?_, ?_⟩
   · obtain ⟨m, ⟨-, hM_sub⟩⟩ := (Valued.hasBasis_uniformity ℚ ℤₘ₀).mem_iff.mp hS
     set M := (withZeroMultIntToNNReal (NNReal_Cast.p_ne_zero p) m.1).1 with hM
-    refine' ⟨{p : ℚ_[p] × ℚ_[p] | dist p.1 p.2 < M}, ⟨⟨M, ⟨_, fun _ => _ ⟩⟩, fun x y h => _⟩⟩
+    refine ⟨{p : ℚ_[p] × ℚ_[p] | dist p.1 p.2 < M}, ⟨⟨M, ⟨?_, fun _ ↦ ?_ ⟩⟩, fun x y h ↦ ?_⟩⟩
     · exact withZeroMultIntToNNReal_pos _ (isUnit_iff_ne_zero.mp (Units.isUnit m))
     · tauto
     · apply hM_sub
@@ -217,7 +217,7 @@ theorem uniformInducing_cast : letI := ((@padicValued p _))
   · rw [(Valued.hasBasis_uniformity ℚ ℤₘ₀).mem_iff]
     rintro ⟨T, ⟨ε, ⟨hε, H⟩⟩, h⟩
     obtain ⟨M, hM⟩ := Real.exists_lt_of_strictMono (withZeroMultIntToNNReal_strictMono hp_one) hε
-    refine' ⟨M, by trivial, fun q hq => _⟩
+    refine ⟨M, by trivial, fun q hq ↦ ?_⟩
     simp only [Set.mem_setOf_eq, dist] at H hq
     have : (↑q.fst, ↑q.snd) ∈ T := by
       apply H
@@ -416,10 +416,10 @@ def comap_Zp : ValuationSubring ℚ_[p] :=
  `‖ x ‖ < 1` iff it belongs to the maximal ideal. -/
 theorem PadicInt.nonunit_mem_iff_top_nilpotent (x : ℚ_[p]) :
     x ∈ (PadicInt.valuationSubring p).nonunits ↔
-    Filter.Tendsto (fun n : ℕ => x ^ n) atTop (𝓝 0) := by
-  have aux : ∀ n : ℕ, ‖x ^ n‖ = ‖x‖ ^ n := fun n => norm_pow _ n
+    Filter.Tendsto (fun n : ℕ ↦ x ^ n) atTop (𝓝 0) := by
+  have aux : ∀ n : ℕ, ‖x ^ n‖ = ‖x‖ ^ n := fun n ↦ norm_pow _ n
   rw [tendsto_zero_iff_norm_tendsto_zero, Filter.tendsto_congr aux]
-  refine' ⟨fun H => _, fun H => _⟩
+  refine ⟨fun H ↦ ?_, fun H ↦ ?_⟩
   · obtain ⟨h1, h2⟩ := ValuationSubring.mem_nonunits_iff_exists_mem_maximalIdeal.mp H
     exact _root_.tendsto_pow_atTop_nhds_zero_of_lt_one (norm_nonneg _)
       (PadicInt.mem_nonunits.mp <| (LocalRing.mem_maximalIdeal _).mp h2)
@@ -433,7 +433,7 @@ theorem PadicInt.nonunit_mem_iff_top_nilpotent (x : ℚ_[p]) :
       ⟨(PadicInt.mem_subring_iff p).mpr (le_of_lt this),
         (LocalRing.mem_maximalIdeal _).mpr (PadicInt.mem_nonunits.mpr this)⟩
 
-theorem mem_unit_ball_of_tendsto_zero {x : Q_p p} (H : Tendsto (fun n : ℕ => ‖x‖ ^ n) atTop (𝓝 0))
+theorem mem_unit_ball_of_tendsto_zero {x : Q_p p} (H : Tendsto (fun n : ℕ ↦ ‖x‖ ^ n) atTop (𝓝 0))
     /- (h_go : ‖x‖ < 1)  -/: x ∈ (Z_p p).nonunits := by
   apply ValuationSubring.mem_nonunits_iff_exists_mem_maximalIdeal.mpr
   have : ‖x‖ < 1 := by
@@ -460,12 +460,12 @@ theorem mem_unit_ball_of_tendsto_zero {x : Q_p p} (H : Tendsto (fun n : ℕ => �
   exact this
 
 theorem UnitBall.nonunit_mem_iff_top_nilpotent (x : Q_p p) :
-    x ∈ (Z_p p).nonunits ↔ Filter.Tendsto (fun n : ℕ => x ^ n) atTop (𝓝 0) := by
+    x ∈ (Z_p p).nonunits ↔ Filter.Tendsto (fun n : ℕ ↦ x ^ n) atTop (𝓝 0) := by
   have h_max_ideal : (Padic'Int.heightOneIdeal p).asIdeal = LocalRing.maximalIdeal ↥(Z_p p) :=
     rfl
-  have aux : ∀ n : ℕ, ‖x ^ n‖ = ‖x‖ ^ n := fun n => norm_pow _ n
+  have aux : ∀ n : ℕ, ‖x ^ n‖ = ‖x‖ ^ n := fun n ↦ norm_pow _ n
   rw [tendsto_zero_iff_norm_tendsto_zero, Filter.tendsto_congr aux]
-  refine' ⟨fun H => _, fun H => _⟩
+  refine ⟨fun H ↦ ?_, fun H ↦ ?_⟩
   · obtain ⟨h, x_mem⟩ := ValuationSubring.mem_nonunits_iff_exists_mem_maximalIdeal.mp H
     have :=
       (@valuation_lt_one_iff_dvd (Z_p p) _ _ (Q_p p) _ _ _ (Padic'Int.heightOneIdeal p)
@@ -485,10 +485,9 @@ theorem mem_nonunits_iff (x : Q_p p) :
     have := (Z_p p).toSubring.comap_equiv_eq_map_symm (padicEquiv p).symm
     replace this := RingEquiv.subringCongr this.symm
     exact (@RingEquiv.subringMap _ _ _ _ (Z_p p).toSubring (padicEquiv p)).trans this
-  refine' ⟨fun hx => _, fun hx => _⟩
+  refine ⟨fun hx ↦ ?_, fun hx ↦ ?_⟩
   all_goals
-    rw [ValuationSubring.mem_nonunits_iff_exists_mem_maximalIdeal] at hx
-    rw [ValuationSubring.mem_nonunits_iff_exists_mem_maximalIdeal]
+    rw [ValuationSubring.mem_nonunits_iff_exists_mem_maximalIdeal] at hx ⊢
   · refine ⟨_, map_nonunit (f := (↑φ : Z_p p →+* comap_Zp p)) _ hx.choose_spec⟩
   · rcases hx with ⟨h1, h2⟩
     have h3 := ValuationSubring.mem_comap.mp h1
@@ -508,7 +507,7 @@ theorem mem_nonunits_iff (x : Q_p p) :
 theorem valuation_subrings_eq : PadicInt.valuationSubring p = comap_Zp p := by
   rw [← ValuationSubring.nonunits_inj]
   ext x
-  refine' ⟨fun hx => _, fun hx => _⟩
+  refine ⟨fun hx ↦ ?_, fun hx ↦ ?_⟩
   · rw [← (padicEquiv p).apply_symm_apply x]
     rw [← mem_nonunits_iff, UnitBall.nonunit_mem_iff_top_nilpotent, ←
       _root_.map_zero (padicEquiv p).symm]
@@ -519,7 +518,7 @@ theorem valuation_subrings_eq : PadicInt.valuationSubring p = comap_Zp p := by
   · rw [← (padicEquiv p).apply_symm_apply x, ← mem_nonunits_iff,
       UnitBall.nonunit_mem_iff_top_nilpotent] at hx
     replace hx :=
-      @Tendsto.comp ℕ (Q_p p) ℚ_[p] (fun n => (padicEquiv p).symm x ^ n) (padicEquiv p) atTop
+      @Tendsto.comp ℕ (Q_p p) ℚ_[p] (fun n ↦ (padicEquiv p).symm x ^ n) (padicEquiv p) atTop
         (𝓝 0) (𝓝 0) ?_ hx
     -- We postpone the verification of the first assumption in `tendsto.comp`
     · simp_rw [← _root_.map_pow (padicEquiv p).symm x, Function.comp,

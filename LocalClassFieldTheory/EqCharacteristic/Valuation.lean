@@ -6,8 +6,6 @@ Authors: María Inés de Frutos-Fernández, Filippo A. E. Nuccio
 import LocalClassFieldTheory.DiscreteValuationRing.TrivialExtension
 import LocalClassFieldTheory.EqCharacteristic.Basic
 
-#align_import eq_characteristic.valuation
-
 /-!
 # The canonical valuation on an equal characteristic local field
 

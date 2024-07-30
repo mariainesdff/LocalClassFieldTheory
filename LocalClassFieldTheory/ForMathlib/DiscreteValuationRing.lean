@@ -4,8 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: María Inés de Frutos-Fernández, Filippo A. E. Nuccio
 -/
 import Mathlib.RingTheory.DiscreteValuationRing.Basic
-
-#align_import for_mathlib.discrete_valuation_ring
+import Mathlib.RingTheory.LocalRing.RingHom.Basic
 
 /-!
 ## Main result

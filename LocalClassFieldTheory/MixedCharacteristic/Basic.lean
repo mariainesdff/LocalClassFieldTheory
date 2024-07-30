@@ -9,8 +9,6 @@ import Mathlib.NumberTheory.Padics.PadicIntegers
 import Mathlib.RingTheory.DedekindDomain.IntegralClosure
 import Mathlib.RingTheory.DiscreteValuationRing.Basic
 
-#align_import mixed_characteristic.basic
-
 /-!
 # Mixed characteristic local fields
 
@@ -78,7 +76,7 @@ instance : Algebra ↥(Z_p p) ↥(𝓞 p K) := Subalgebra.algebra _
 theorem isIntegral_of_mem_ringOfIntegers {x : K} (hx : x ∈ 𝓞 p K) :
     IsIntegral (Z_p p) (⟨x, hx⟩ : 𝓞 p K) := by
   obtain ⟨P, hPm, hP⟩ := hx
-  refine' ⟨P, hPm, _⟩
+  refine ⟨P, hPm, ?_⟩
   rw [← Polynomial.aeval_def, ← Subalgebra.coe_eq_zero, Polynomial.aeval_subalgebra_coe,
     Polynomial.aeval_def, Subtype.coe_mk, hP]
 

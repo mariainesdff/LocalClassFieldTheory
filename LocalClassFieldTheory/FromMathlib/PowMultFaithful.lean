@@ -7,8 +7,6 @@ import LocalClassFieldTheory.FromMathlib.RingSeminorm
 import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
 import Mathlib.Algebra.Order.Hom.Basic
 
-#align_import from_mathlib.pow_mult_faithful
-
 /-!
 # Equivalent power-multiplicative norms
 

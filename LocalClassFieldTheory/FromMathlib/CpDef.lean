@@ -11,8 +11,6 @@ import Mathlib.Topology.Algebra.Valued.NormedValued
 import Mathlib.Topology.Algebra.Valued.ValuedField
 import LocalClassFieldTheory.FromMathlib.SpectralNormUnique
 
-#align_import from_mathlib.Cp_def
-
 /-!
 # The `p`-adic complex numbers.
 
@@ -186,13 +184,11 @@ theorem nnnorm_extends (x : QPAlg p) : ‖(x : ℂ_[p])‖₊ = ‖x‖₊ := by
 /-- The norm on `ℂ_[p]` is nonarchimedean. -/
 theorem isNonarchimedean : IsNonarchimedean (Norm.norm : ℂ_[p] → ℝ) := by
   intro x y
-  refine' UniformSpace.Completion.induction_on₂ x y _ _
-  · exact
-      isClosed_le (Continuous.comp continuous_norm continuous_add)
-        (Continuous.max (Continuous.comp (@continuous_norm ℂ_[p] _) (Continuous.fst continuous_id))
-          (Continuous.comp (@continuous_norm ℂ_[p] _) (Continuous.snd continuous_id)))
-  · intro a b
-    rw [← UniformSpace.Completion.coe_add, norm_extends, norm_extends, norm_extends]
+  refine UniformSpace.Completion.induction_on₂ x y
+    (isClosed_le (Continuous.comp continuous_norm continuous_add)
+      (Continuous.max (Continuous.comp (@continuous_norm ℂ_[p] _) (Continuous.fst continuous_id))
+      (Continuous.comp (@continuous_norm ℂ_[p] _) (Continuous.snd continuous_id)))) (fun a b ↦ ?_)
+  · rw [← UniformSpace.Completion.coe_add, norm_extends, norm_extends, norm_extends]
     exact QPAlg.isNonarchimedean p a b
 
   /- apply UniformSpace.Completion.induction_on₂ x y

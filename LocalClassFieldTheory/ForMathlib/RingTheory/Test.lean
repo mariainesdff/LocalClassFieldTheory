@@ -2,6 +2,7 @@ import Mathlib.Algebra.Field.Equiv
 import Mathlib.RingTheory.Polynomial.IrreducibleRing
 import Mathlib.RingTheory.Ideal.Maps
 import Mathlib.RingTheory.DiscreteValuationRing.Basic
+import Mathlib.RingTheory.LocalRing.ResidueField.Defs
 
 import Mathlib.Algebra.Polynomial.Induction
 

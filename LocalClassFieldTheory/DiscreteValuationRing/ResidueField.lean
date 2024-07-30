@@ -7,8 +7,6 @@ import LocalClassFieldTheory.DiscreteValuationRing.Extensions
 import LocalClassFieldTheory.ForMathlib.RingTheory.Ideal.LocalRing
 import Mathlib.RingTheory.DedekindDomain.IntegralClosure
 
-#align_import discrete_valuation_ring.residue_field
-
 /-! # The residue field of a DVR
 In this file we consider a finite extension `L/K` of a discretely valued field `K`. By the results
 in `discrete_valuation_ring.basic`, the unit ball `K₀` is a DVR and the main result we prove is that

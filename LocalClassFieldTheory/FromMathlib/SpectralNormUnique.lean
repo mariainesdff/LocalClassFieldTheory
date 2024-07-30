@@ -4,12 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: María Inés de Frutos-Fernández
 -/
 import LocalClassFieldTheory.FromMathlib.PowMultFaithful
-import LocalClassFieldTheory.FromMathlib.SeminormFromConst
+import Mathlib.Analysis.Normed.Ring.SeminormFromConst
+--import LocalClassFieldTheory.FromMathlib.SeminormFromConst
 import LocalClassFieldTheory.FromMathlib.SpectralNorm
-import Mathlib.Analysis.NormedSpace.FiniteDimension
+--import Mathlib.Analysis.NormedSpace.FiniteDimension
 import Mathlib.Topology.Algebra.Module.FiniteDimension
-
-#align_import from_mathlib.spectral_norm_unique
 
 /-!
 # Unique norm extension theorem
@@ -161,13 +160,13 @@ theorem spectralNorm_unique_field_norm_ext [CompleteSpace K]
   have hgx : f x = g x := rfl
   rw [hgx, spectral_norm_unique' hg_pow hna]; rfl
 
-/-- `seminorm_from_const` can be regarded as an algebra norm, when one assumes that
+/-- `seminormFromConst` can be regarded as an algebra norm, when one assumes that
 `(spectral_alg_norm h_alg hna).to_ring_seminorm 1 ≤ 1` and `0 ≠ spectral_alg_norm h_alg hna x`
 for some `x : L` -/
 def algNormFromConst (hna : IsNonarchimedean (norm : K → ℝ))
     (h1 : (spectralAlgNorm (L := L) hna).toRingSeminorm 1 ≤ 1) {x : L}
-    (hx : 0 ≠ spectralAlgNorm hna x) : AlgebraNorm K L :=
-  { seminormFromConstRingNormOfField h1 hx.symm (spectralAlgNorm_isPowMul hna) with
+    (hx : spectralAlgNorm hna x ≠ 0) : AlgebraNorm K L :=
+  { normFromConst h1 hx (spectralAlgNorm_isPowMul hna) with
     smul' := fun k y => by
       have h_mul :
         ∀ y : L,
@@ -179,14 +178,14 @@ def algNormFromConst (hna : IsNonarchimedean (norm : K → ℝ))
         rfl
       have h : spectralNorm K L (algebraMap K L k) =
           seminormFromConst' h1 hx (spectralNorm_isPowMul hna) (algebraMap K L k) :=
-        by rw [seminorm_from_const_apply_of_is_hMul h1 hx _ h_mul]; rfl
+        by rw [seminormFromConst_apply_of_isMul h1 hx _ h_mul]; rfl
       simp only [RingSeminorm.toFun_eq_coe, seminormFromConstRingNormOfField_def]
       rw [← @spectralNorm_extends K _ L _ _ k, Algebra.smul_def, h]
-      exact seminorm_from_const_is_hMul_of_is_hMul _ _ _ h_mul _ }
+      exact seminormFromConst_isMul_of_isMul _ _ _ h_mul _ }
 
 theorem algNormFromConst_def (hna : IsNonarchimedean (norm : K → ℝ))
     (h1 : (spectralAlgNorm (L := L) hna).toRingSeminorm 1 ≤ 1) {x y : L}
-    (hx : 0 ≠ spectralAlgNorm hna x) :
+    (hx : spectralAlgNorm hna x ≠ 0) :
     algNormFromConst hna h1 hx y =
       seminormFromConst h1 hx (spectralNorm_isPowMul hna) y :=
   rfl
@@ -202,12 +201,12 @@ theorem spectral_norm_is_mul [CompleteSpace K] (hna : IsNonarchimedean (norm : K
     rw [hx, MulZeroClass.zero_mul]
   · have hf1 : (spectralAlgNorm (L := L) hna) 1 ≤ 1 :=
       sorry --spectralAlgNorm_is_norm_le_one_class hna
-    set f : AlgebraNorm K L := algNormFromConst hna hf1 (Ne.symm hx) with hf
+    set f : AlgebraNorm K L := algNormFromConst hna hf1 hx with hf
     have hf_pow : IsPowMul f :=
-      seminorm_from_const_isPowMul hf1 (Ne.symm hx) (spectralNorm_isPowMul hna)
+      seminormFromConst_isPowMul hf1 hx (spectralNorm_isPowMul hna)
     rw [← spectral_norm_unique' hf_pow, hf]
     simp only [algNormFromConst_def]
-    exact seminorm_from_const_c_is_mul hf1 (Ne.symm hx) (spectralNorm_isPowMul hna) _
+    exact seminormFromConst_const_mul hf1 hx (spectralNorm_isPowMul hna) _
 
 /-- The spectral norm is a multiplicative `K`-algebra norm on `L`.-/
 def spectralMulAlgNorm [CompleteSpace K] (hna : IsNonarchimedean (norm : K → ℝ)) :

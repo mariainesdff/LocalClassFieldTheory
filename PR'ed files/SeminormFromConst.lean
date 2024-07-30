@@ -5,8 +5,6 @@ Authors: María Inés de Frutos-Fernández
 -/
 import LocalClassFieldTheory.FromMathlib.RingSeminorm
 
-#align_import from_mathlib.seminorm_from_const
-
 -- In #14361
 /-!
 # seminorm_from_const

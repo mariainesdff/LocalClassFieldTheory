@@ -5,8 +5,6 @@ Authors: María Inés de Frutos-Fernández, Filippo A. E. Nuccio
 -/
 import Mathlib.Data.Set.Lattice
 
-#align_import for_mathlib.data.set.lattice
-
 -- *FAE* In PR 12961
 
 /-!

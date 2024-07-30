@@ -9,8 +9,6 @@ Authors: María Inés de Frutos-Fernández
 import Mathlib.Data.NNReal.Basic
 import Mathlib.RingTheory.Valuation.Basic
 
-#align_import from_mathlib.rank_one_valuation
-
 /-!
 # Rank one valuations
 

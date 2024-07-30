@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: María Inés de Frutos-Fernández, Filippo A. E. Nuccio
 -/
 import Mathlib.Algebra.Order.Group.TypeTags
+import Mathlib.RingTheory.IntegralClosure.Algebra.Basic
+import Mathlib.RingTheory.IntegralClosure.IsIntegralClosure.Basic
 import Mathlib.RingTheory.Valuation.ValuationSubring
-
-#align_import for_mathlib.ring_theory.valuation.algebra_instances
 
 /-!
 # Algebra instances
@@ -57,7 +57,7 @@ theorem algebraMap_injective : Injective (algebraMap v.valuationSubring L) := by
 theorem isIntegral_of_mem_ring_of_integers {x : L} (hx : x ∈ integralClosure v.valuationSubring L) :
     IsIntegral v.valuationSubring (⟨x, hx⟩ : integralClosure v.valuationSubring L) := by
   obtain ⟨P, hPm, hP⟩ := hx
-  refine' ⟨P, hPm, _⟩
+  refine ⟨P, hPm, ?_⟩
   rw [← Polynomial.aeval_def, ← Subalgebra.coe_eq_zero, Polynomial.aeval_subalgebra_coe,
     Polynomial.aeval_def, Subtype.coe_mk, hP]
 

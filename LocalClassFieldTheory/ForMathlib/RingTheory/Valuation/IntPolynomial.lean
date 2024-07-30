@@ -5,8 +5,6 @@ Authors: María Inés de Frutos-Fernández, Filippo A. E. Nuccio
 -/
 import LocalClassFieldTheory.ForMathlib.RingTheory.Valuation.AlgebraInstances
 
-#align_import for_mathlib.ring_theory.valuation.int_polynomial
-
 /-!
 # Polynomials over the valuation subring.
 

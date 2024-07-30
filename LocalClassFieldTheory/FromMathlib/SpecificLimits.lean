@@ -5,8 +5,6 @@ Authors: Filippo A. E. Nuccio
 -/
 import Mathlib.Analysis.SpecificLimits.Basic
 
-#align_import from_mathlib.specific_limits
-
 open NNReal Filter
 
 open scoped NNReal Topology

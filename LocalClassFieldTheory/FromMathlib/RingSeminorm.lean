@@ -6,8 +6,6 @@ Authors: María Inés de Frutos-Fernández
 import Mathlib.Analysis.Normed.Ring.Seminorm
 import Mathlib.Analysis.Seminorm
 
-#align_import from_mathlib.ring_seminorm
-
 /-!
 # Nonarchimedean ring seminorms and algebra norms
 
@@ -53,17 +51,17 @@ theorem one_div_cast_pos {n : ℕ} (hn : n ≠ 0) : 0 < 1 / (n : ℝ) := by
 theorem one_div_cast_nonneg (n : ℕ) : 0 ≤ 1 / (n : ℝ) := by
   by_cases hn : n = 0
   · rw [hn, cast_zero, div_zero]
-  · refine' le_of_lt (one_div_cast_pos hn)
+  · exact le_of_lt (one_div_cast_pos hn)
 
 theorem one_div_cast_ne_zero {n : ℕ} (hn : n ≠ 0) : 1 / (n : ℝ) ≠ 0 :=
   _root_.ne_of_gt (one_div_cast_pos hn)
 
 end Nat
 
-/-- A function `f : R → ℝ` is power-multiplicative if for all `r ∈ R` and all positive `n ∈ ℕ`,
+/- /-- A function `f : R → ℝ` is power-multiplicative if for all `r ∈ R` and all positive `n ∈ ℕ`,
   `f (r ^ n) = (f r) ^ n`. -/
 def IsPowMul {R : Type _} [Ring R] (f : R → ℝ) :=
-  ∀ (a : R) {n : ℕ} (_ : 1 ≤ n), f (a ^ n) = f a ^ n
+  ∀ (a : R) {n : ℕ} (_ : 1 ≤ n), f (a ^ n) = f a ^ n -/
 
 /-- Given an `α`-algebra `β`, a function `f : β → ℝ` extends a function `g : α → ℝ` if
   `∀ x : α, f (algebra_map α β x) = g x`. -/
@@ -141,18 +139,18 @@ theorem isNonarchimedean_finset_image_add {F α : Type _} [Ring α] [FunLike F �
   induction t using Finset.induction_on with
   | empty =>
       rw [Finset.sum_empty]
-      refine' ⟨hβ.some, by simp only [Finset.not_nonempty_empty, IsEmpty.forall_iff], _⟩
+      refine ⟨hβ.some, by simp only [Finset.not_nonempty_empty, IsEmpty.forall_iff], ?_⟩
       rw [map_zero f]; exact apply_nonneg f _
   | @insert a s has hM =>
       obtain ⟨M, hMs, hM⟩ := hM
       rw [Finset.sum_insert has]
       by_cases hMa : f (g M) ≤ f (g a)
-      · refine' ⟨a, _, le_trans (hna _ _) (max_le_iff.mpr ⟨le_refl _, le_trans hM hMa⟩)⟩
+      · refine ⟨a, ?_, le_trans (hna _ _) (max_le_iff.mpr ⟨le_refl _, le_trans hM hMa⟩)⟩
         simp only [Finset.nonempty_coe_sort, Finset.insert_nonempty, Finset.mem_insert,
           eq_self_iff_true, true_or_iff, forall_true_left]
       · rw [not_le] at hMa
         by_cases hs : s.Nonempty
-        · refine' ⟨M, _, le_trans (hna _ _) (max_le_iff.mpr ⟨le_of_lt hMa, hM⟩)⟩
+        · refine ⟨M, ?_, le_trans (hna _ _) (max_le_iff.mpr ⟨le_of_lt hMa, hM⟩)⟩
           simp only [Finset.nonempty_coe_sort, Finset.insert_nonempty, Finset.mem_insert,
             forall_true_left]
           exact Or.intro_right _ (hMs hs)
@@ -175,22 +173,22 @@ theorem isNonarchimedean_multiset_image_add {F α : Type _} [Ring α] [FunLike F
   induction s using Multiset.induction_on with
   | empty =>
       rw [Multiset.map_zero, Multiset.sum_zero, Multiset.card_zero, map_zero f]
-      refine' ⟨hβ.some, by simp only [not_lt_zero', IsEmpty.forall_iff], apply_nonneg _ _⟩
+      exact ⟨hβ.some, by simp only [not_lt_zero', IsEmpty.forall_iff], apply_nonneg _ _⟩
   | @cons a t hM =>
       obtain ⟨M, hMs, hM⟩ := hM
       by_cases hMa : f (g M) ≤ f (g a)
-      · refine' ⟨a, _, _⟩
+      · refine ⟨a, ?_, ?_⟩
         · simp only [Multiset.card_cons, Nat.succ_pos', Multiset.mem_cons_self, forall_true_left]
         · rw [Multiset.map_cons, Multiset.sum_cons]
           exact le_trans (hna _ _) (max_le_iff.mpr ⟨le_refl _, le_trans hM hMa⟩)
       · rw [not_le] at hMa
         by_cases ht : 0 < Multiset.card t
-        · refine' ⟨M, _, _⟩
+        · refine ⟨M, ?_, ?_⟩
           · simp only [Multiset.card_cons, Nat.succ_pos', Multiset.mem_cons, forall_true_left]
             exact Or.intro_right _ (hMs ht)
           rw [Multiset.map_cons, Multiset.sum_cons]
           exact le_trans (hna _ _) (max_le_iff.mpr ⟨le_of_lt hMa, hM⟩)
-        · refine' ⟨a, _, _⟩
+        · refine ⟨a, ?_, ?_⟩
           · simp only [Multiset.card_cons, Nat.succ_pos', Multiset.mem_cons_self, forall_true_left]
           · have h0 : f (Multiset.map g t).sum = 0 :=
               by
@@ -222,7 +220,7 @@ theorem isNonarchimedean_add_pow {F α : Type _} [CommRing α] [FunLike F α ℝ
       (Finset.range (n + 1))
   simp only [Finset.nonempty_range_iff, ne_eq, Nat.succ_ne_zero, not_false_iff, Finset.mem_range,
     if_true, forall_true_left] at hm_lt
-  refine' ⟨m, List.mem_range.mpr hm_lt, _⟩
+  refine ⟨m, List.mem_range.mpr hm_lt, ?_⟩
   simp only [← add_pow] at hM
   rw [mul_comm] at hM
   exact le_trans hM (le_trans (isNonarchimedean_nmul hna _ _) (map_mul_le_mul _ _ _))

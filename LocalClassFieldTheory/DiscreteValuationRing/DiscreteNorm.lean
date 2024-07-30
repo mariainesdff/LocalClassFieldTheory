@@ -7,8 +7,6 @@ import LocalClassFieldTheory.DiscreteValuationRing.Basic
 import LocalClassFieldTheory.ForMathlib.FieldTheory.Minpoly.IsIntegrallyClosed
 import LocalClassFieldTheory.SpectralNorm
 
-#align_import discrete_valuation_ring.discrete_norm
-
 /-!
 # Extensions of discrete norms
 
@@ -98,7 +96,7 @@ def discretelySemiNormedRing : SeminormedRing K := by
   let _ : NontriviallyNormedField K := nontriviallyDiscretelyNormedField K
   infer_instance
 
-theorem norm_isNonarchimedean : IsNonarchimedean (@norm K (hasDiscreteNorm K)) := fun x y =>
+theorem norm_isNonarchimedean : IsNonarchimedean (@norm K (hasDiscreteNorm K)) := fun x y ↦
   Valued.norm_add_le x y
 
 theorem norm_le_one_iff_val_le_one (x : K) :
@@ -195,11 +193,11 @@ theorem le_one_of_integer [fr : IsFractionRing hv.v.valuationSubring.toSubring K
   let min_int := minpoly hv.v.valuationSubring.toSubring x
   let min_x : Polynomial K := Polynomial.map (algebraMap _ _) min_int
   rw [of_integer]
-  refine' ciSup_le _
+  refine ciSup_le ?_
   intro n
   simp only [spectralValueTerms]
   split_ifs with hn
-  · have coeff_coe : ∀ n : ℕ, min_x.coeff n = min_int.coeff n := fun n => by
+  · have coeff_coe : ∀ n : ℕ, min_x.coeff n = min_int.coeff n := fun n ↦ by
       rw [Polynomial.coeff_map]; rfl
     rw [coeff_coe n]
     apply Real.rpow_le_one (norm_nonneg _)

@@ -7,8 +7,6 @@ import LocalClassFieldTheory.DiscreteValuationRing.ResidueField
 import LocalClassFieldTheory.EqCharacteristic.Valuation
 import LocalClassFieldTheory.MixedCharacteristic.Valuation
 
-#align_import local_field
-
 /-!
 # Local fields
 In this file we define the `class local_field` on a valued field `K`, requiring that it is

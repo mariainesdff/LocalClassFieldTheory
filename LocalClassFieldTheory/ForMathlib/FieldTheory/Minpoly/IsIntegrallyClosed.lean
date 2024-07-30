@@ -6,8 +6,6 @@ Authors: María Inés de Frutos-Fernández, Filippo A. E. Nuccio
 import Mathlib.FieldTheory.Adjoin
 import Mathlib.FieldTheory.Minpoly.IsIntegrallyClosed
 
-#align_import for_mathlib.field_theory.minpoly.is_integrally_closed
-
 /-!
 # Minimal polynomials
 

@@ -9,8 +9,6 @@ import Mathlib.RingTheory.DedekindDomain.AdicValuation
 import Mathlib.RingTheory.Valuation.RankOne
 import Mathlib.Topology.Algebra.Valued.NormedValued
 
-#align_import for_mathlib.rank_one_valuation
-
 /-!
 # Rank one valuations
 

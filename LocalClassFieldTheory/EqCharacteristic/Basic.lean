@@ -11,8 +11,6 @@ import LocalClassFieldTheory.ForMathlib.RingTheory.Valuation.AlgebraInstances
 import Mathlib.RingTheory.DedekindDomain.AdicValuation
 import Mathlib.RingTheory.Valuation.RankOne
 
-#align_import eq_characteristic.basic
-
 /-!
 # Equal characteristic local fields
 
@@ -276,7 +274,7 @@ theorem dvd_of_norm_lt_one {F : FpXIntCompletion p} :
   specialize h 0 zero_lt_one
   rw [PowerSeries.coeff_zero_eq_constantCoeff, ← PowerSeries.X_dvd_iff] at h
   obtain ⟨C, rfl⟩ := dvd_iff_exists_eq_mul_left.mp h
-  refine' dvd_of_mul_left_eq ⟨(LaurentSeriesRingEquiv 𝔽_[p]) C, _⟩ _
+  refine dvd_of_mul_left_eq ⟨(LaurentSeriesRingEquiv 𝔽_[p]) C, ?_⟩ ?_
   · erw [FpXCompletion.mem_FpXIntCompletion, valuation_compare, val_le_one_iff_eq_coe]
     use C
   apply_fun algebraMap (FpXIntCompletion p) (FpXCompletion p) using Subtype.val_injective
@@ -305,7 +303,7 @@ theorem norm_lt_one_of_dvd {F : FpXIntCompletion p} :
       ← Subring.coe_mul] at h
     exact h
   obtain ⟨Z, hZ⟩ := exists_powerSeries_of_memIntegers 𝔽_[p] y_mem
-  refine' dvd_of_mul_left_eq Z _
+  refine dvd_of_mul_left_eq Z ?_
   apply_fun HahnSeries.ofPowerSeries ℤ 𝔽_[p] using HahnSeries.ofPowerSeries_injective
   apply_fun LaurentSeriesRingEquiv 𝔽_[p]
   sorry/- rw [← LaurentSeries.coe_powerSeries]

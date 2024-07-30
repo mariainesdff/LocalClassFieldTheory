@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: María Inés de Frutos-Fernández, Filippo A. E. Nuccio
 -/
 import Mathlib.LinearAlgebra.FiniteDimensional
-import Mathlib.RingTheory.Ideal.LocalRing
+import Mathlib.RingTheory.LocalRing.ResidueField.Basic
 
 noncomputable section
 

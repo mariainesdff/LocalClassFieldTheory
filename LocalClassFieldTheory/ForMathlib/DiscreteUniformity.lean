@@ -9,8 +9,6 @@ Authors: María Inés de Frutos-Fernández, Filippo A. E. Nuccio
 import Mathlib.Order.Filter.Basic
 import Mathlib.Topology.UniformSpace.Cauchy
 
-#align_import for_mathlib.discrete_uniformity
-
 /-!
 # Discrete uniformity
 This file contains generalities about Cauchy filters (and convergence theoref) in spaces endowed
@@ -30,7 +28,7 @@ namespace Set
 theorem prod_subset_diag_singleton_left {X : Type _} {S T : Set X} (hS : S.Nonempty)
     (hT : T.Nonempty) (h_diag : S ×ˢ T ⊆ idRel) : ∃ x, S = {x} := by
   rcases hS, hT with ⟨⟨s, hs⟩, ⟨t, ht⟩⟩
-  refine' ⟨s, eq_singleton_iff_nonempty_unique_mem.mpr ⟨⟨s, hs⟩, fun x hx ↦ ?_⟩⟩
+  refine ⟨s, eq_singleton_iff_nonempty_unique_mem.mpr ⟨⟨s, hs⟩, fun x hx ↦ ?_⟩⟩
   rw [prod_subset_iff] at h_diag
   replace hs := h_diag s hs t ht
   replace hx := h_diag x hx t ht
@@ -39,19 +37,17 @@ theorem prod_subset_diag_singleton_left {X : Type _} {S T : Set X} (hS : S.Nonem
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 theorem prod_subset_idRel_Eq_singleton_right {X : Type _} {S T : Set X} (hS : S.Nonempty)
-    (hT : T.Nonempty) (h_diag : S ×ˢ T ⊆ idRel) : ∃ x, T = {x} :=
-  by
+    (hT : T.Nonempty) (h_diag : S ×ˢ T ⊆ idRel) : ∃ x, T = {x} := by
   rw [Set.prod_subset_iff] at h_diag
-  replace h_diag := fun x hx y hy => (h_diag y hy x hx).symm
+  replace h_diag := fun x hx y hy ↦ (h_diag y hy x hx).symm
   exact prod_subset_diag_singleton_left hT hS (prod_subset_iff.mpr h_diag)
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 theorem prod_subset_idRel_Eq_singleton {X : Type _} {S T : Set X} (hS : S.Nonempty) (hT : T.Nonempty)
-    (h_diag : S ×ˢ T ⊆ idRel) : ∃ x, S = {x} ∧ T = {x} :=
-  by
+    (h_diag : S ×ˢ T ⊆ idRel) : ∃ x, S = {x} ∧ T = {x} := by
   obtain ⟨⟨x, hx⟩, ⟨y, hy⟩⟩ := prod_subset_diag_singleton_left hS hT h_diag,
     prod_subset_idRel_Eq_singleton_right hS hT h_diag
-  refine' ⟨x, ⟨hx, _⟩⟩
+  refine ⟨x, ⟨hx, ?_⟩⟩
   rw [hy, Set.singleton_eq_singleton_iff]
   exact
     (Set.prod_subset_iff.mp h_diag x (by simp only [hx, Set.mem_singleton]) y

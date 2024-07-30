@@ -6,8 +6,6 @@ Authors: María Inés de Frutos-Fernández, Filippo A. E. Nuccio
 import LocalClassFieldTheory.FromMathlib.SpectralNormUnique
 import Mathlib.FieldTheory.SplittingField.Construction
 
-#align_import spectral_norm
-
 /-!
 # A formula for the spectral norm
 
@@ -39,8 +37,7 @@ variable {S : Type _} [NormedDivisionRing S]
 /-- The spectral value of a monic polynomial `P` is less than or equal to one if and only
   if all of its coefficients have norm less than or equal to 1. -/
 theorem spectralValue_le_one_iff {P : S[X]} (hP : Monic P) :
-    spectralValue P ≤ 1 ↔ ∀ n : ℕ, ‖P.coeff n‖ ≤ 1 :=
-  by
+    spectralValue P ≤ 1 ↔ ∀ n : ℕ, ‖P.coeff n‖ ≤ 1 := by
   rw [spectralValue]
   constructor <;> intro h
   · intro n
@@ -80,7 +77,7 @@ variable {K : Type _} [NontriviallyNormedField K] [CompleteSpace K]
 theorem Real.eq_rpow_one_div_iff {x y : ℝ} (hx : 0 ≤ x) (hy : 0 ≤ y) {z : ℝ} (hz : z ≠ 0) :
     x = y ^ (1 / z) ↔ x ^ z = y := by
   rw [← coe_mk x hx, ← coe_mk y hy, ← coe_rpow, ← coe_rpow, NNReal.coe_inj, NNReal.coe_inj,
-    NNReal.eq_rpow_one_div_iff hz]
+    ← NNReal.eq_rpow_inv_iff hz, one_div]
 
 theorem Polynomial.mapAlg_eq {A : Type _} (B C : Type _) [Field A] [Field B] [Field C] [Algebra A B]
     [Algebra A C] [Algebra B C] [IsScalarTower A B C] (p : A[X]) :

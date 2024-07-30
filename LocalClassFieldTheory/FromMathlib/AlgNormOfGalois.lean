@@ -7,8 +7,6 @@ import Mathlib.Data.Fintype.Order
 import Mathlib.FieldTheory.Fixed
 import LocalClassFieldTheory.FromMathlib.NormedSpace
 
-#align_import from_mathlib.alg_norm_of_galois
-
 /-!
 # alg_norm_of_auto and alg_norm_of_galois
 
@@ -163,7 +161,7 @@ theorem Real.iSup_pow {ι : Type _} [Nonempty ι] [Finite ι] {f : ι → ℝ} (
   · simp only [pow_zero, ciSup_const]
   · rw [pow_succ, hn]
     apply le_antisymm
-    · refine' Real.iSup_hMul_iSup_le ((fun x => pow_nonneg (hf_nn x) n)) hf_nn _
+    · refine Real.iSup_hMul_iSup_le ((fun x => pow_nonneg (hf_nn x) n)) hf_nn ?_
       intro i j
       by_cases hij : f i < f j
       · have hj : f i ^n * f j ≤ f j ^ n.succ := by

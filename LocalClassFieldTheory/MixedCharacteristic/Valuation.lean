@@ -7,8 +7,6 @@ import LocalClassFieldTheory.DiscreteValuationRing.TrivialExtension
 import LocalClassFieldTheory.MixedCharacteristic.Basic
 import LocalClassFieldTheory.PadicCompare
 
-#align_import mixed_characteristic.valuation
-
 /-!
 # The canonical valuation on a mixed characteristic local field
 

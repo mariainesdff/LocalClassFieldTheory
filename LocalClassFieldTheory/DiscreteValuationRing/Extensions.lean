@@ -9,8 +9,6 @@ import LocalClassFieldTheory.ForMathlib.RingTheory.IntegralClosure
 import LocalClassFieldTheory.ForMathlib.RingTheory.Valuation.IntPolynomial
 import LocalClassFieldTheory.ForMathlib.RingTheory.Valuation.Minpoly
 
-#align_import discrete_valuation_ring.extensions
-
 /-!
 # Extensions of discrete valuations
 
@@ -85,7 +83,7 @@ instance : MulZeroClass ↥(integralClosure ↥K₀ L) := MulZeroOneClass.toMulZ
 instance : NoZeroSMulDivisors K₀ (integralClosure K₀ L)
     where eq_zero_or_eq_zero_of_smul_eq_zero h := by
     { rw [Algebra.smul_def, mul_eq_zero] at h
-      refine' h.imp_left fun hc => _
+      refine h.imp_left fun hc ↦ ?_
       rw [← _root_.map_zero (algebraMap K₀ (integralClosure K₀ L))] at hc
       exact IsFractionRing.injective K₀ K ((algebraMap K L).injective (Subtype.ext_iff.mp hc)) }
 
@@ -234,7 +232,7 @@ theorem expExtensionOnUnits_dvd [FiniteDimensional K L] :
   simp only [zpow_neg, zpow_one, inv_inj] at hn
   replace hn := ofAdd_inj hn
   have hn0 : 0 ≤ n := by
-    refine' nonneg_of_mul_nonneg_left _ (Nat.cast_pos.mpr (expExtensionOnUnits_pos K L))
+    refine nonneg_of_mul_nonneg_left ?_ (Nat.cast_pos.mpr (expExtensionOnUnits_pos K L))
     rw [hn]
     exact Nat.cast_nonneg _
   rw [Int.natCast_div, eq_comm, Int.ediv_eq_iff_eq_mul_right hne_zero h_dvd] at hn
@@ -247,7 +245,7 @@ variable {L}
 open Classical
 
 /-- The underlying map to the discrete valuation on `L` induced by the valuation on `K`. -/
-def extensionDef [FiniteDimensional K L] : L → ℤₘ₀ := fun x => by
+def extensionDef [FiniteDimensional K L] : L → ℤₘ₀ := fun x ↦ by
   exact
   if hx : x = 0 then 0
   else
@@ -443,7 +441,7 @@ theorem le_one_iff_discreteNormExtension_le_one [FiniteDimensional K L] (x : L) 
       (withZeroMultIntToNNReal_strictMono (one_lt_base K hv.v)).le_iff_le, ← WithZero.coe_one, ←
       WithZero.coe_zpow, WithZero.coe_le_coe, ← WithZero.coe_pow, WithZero.coe_le_coe,
       ← zpow_natCast, ← Int.ofAdd_mul, ← Int.ofAdd_mul, ← ofAdd_zero, ofAdd_le, ofAdd_le]
-    exact ⟨fun h => mul_nonpos_of_nonpos_of_nonneg h (Nat.cast_nonneg _), fun h =>
+    exact ⟨fun h ↦ mul_nonpos_of_nonpos_of_nonneg h (Nat.cast_nonneg _), fun h ↦
       nonpos_of_mul_nonpos_left h (Nat.cast_pos.mpr (expExtensionOnUnits_pos K L))⟩
 
 variable (K L)
@@ -509,13 +507,13 @@ def valued [FiniteDimensional K L] : Valued L ℤₘ₀ :=
   letI : NormedField L := normedField K L
   { @NonUnitalNormedRing.toNormedAddCommGroup L _ with
     v := extendedValuation K L
-    is_topological_valuation := fun U =>  by
+    is_topological_valuation := fun U ↦  by
       have hpos : 0 < (expExtensionOnUnits K L : ℝ) :=
         Nat.cast_pos.mpr (expExtensionOnUnits_pos K L)
       have hpos' : 0 < (finrank K L : ℝ) := Nat.cast_pos.mpr finrank_pos
       have h_alg := Algebra.IsAlgebraic.of_finite K L
       rw [Metric.mem_nhds_iff]
-      refine' ⟨fun h => _, fun h => _⟩
+      refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
       · obtain ⟨ε, hε, h⟩ := h
         obtain ⟨δ, hδ⟩ :=
           Real.exists_lt_of_strictMono (withZeroMultIntToNNReal_strictMono (one_lt_base K hv.v)) hε
@@ -579,7 +577,7 @@ def valued [FiniteDimensional K L] : Valued L ℤₘ₀ :=
 
 attribute [-instance ] Semifield.toCommSemiring
 attribute [-instance ] EuclideanDomain.toCommRing
-#where
+--#where
 /-- `L` is a complete space with respect to the topology induced by `extended-valuation`. -/
 instance (priority := 100) completeSpace [FiniteDimensional K L] :
   @CompleteSpace L (@uniformSpace _ _ _ _ _ _ _ _ (Algebra.IsAlgebraic.of_finite K L)) :=
@@ -613,14 +611,12 @@ theorem integralClosure_eq_integer [FiniteDimensional K L] :
   ext x
   simp only [Subalgebra.mem_toSubring, ValuationSubring.mem_toSubring, mem_valuationSubring_iff,
     mem_integralClosure_iff, IsIntegral, RingHom.IsIntegralElem]
-  refine' ⟨fun hx => le_one_of_integer ⟨x, hx⟩, fun hx => _⟩
+  refine ⟨fun hx ↦ le_one_of_integer ⟨x, hx⟩, fun hx ↦ ?_⟩
   · rw [Extension.le_one_iff_discreteNormExtension_le_one] at hx
     let q := minpoly K x
     have hq : ∀ n : ℕ, q.coeff n ∈ hv.v.valuationSubring := (le_one_iff_integral_minpoly _).mp hx
     set p : Polynomial hv.v.valuationSubring := intPolynomial hv.v hq
-    refine'
-      ⟨intPolynomial hv.v hq,
-        (IntPolynomial.monic_iff hv.v hq).mpr
+    exact ⟨intPolynomial hv.v hq, (IntPolynomial.monic_iff hv.v hq).mpr
           (minpoly.monic (h_alg.isAlgebraic _).isIntegral),
         by rw [IntPolynomial.eval₂_eq, minpoly.aeval]⟩
 

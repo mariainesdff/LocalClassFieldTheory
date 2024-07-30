@@ -6,8 +6,6 @@ Authors: María Inés de Frutos-Fernández, Filippo A. E. Nuccio
 import Mathlib.FieldTheory.Adjoin
 import Mathlib.RingTheory.Valuation.ValuationSubring
 
-#align_import for_mathlib.ring_theory.valuation.minpoly
-
 /-!
 # Minimal polynomials.
 
