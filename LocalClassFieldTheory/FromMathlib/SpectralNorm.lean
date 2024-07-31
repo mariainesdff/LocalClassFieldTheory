@@ -1149,8 +1149,6 @@ theorem spectralNorm_isPowMul (hna : IsNonarchimedean (norm : K → ℝ)) :
   /- exact spectralNorm_isPowMul_of_fd_normal
     (normalClosure.is_finiteDimensional K E _) (normalClosure.normal K E _) hna _ n hn -/
 
-
--- MI: timeout
 /-- The spectral norm is nonarchimedean. -/
 theorem spectralNorm_isNonarchimedean (h : IsNonarchimedean (norm : K → ℝ)) :
     IsNonarchimedean (spectralNorm K L) := by
@@ -1173,8 +1171,6 @@ theorem spectralNorm_isNonarchimedean (h : IsNonarchimedean (norm : K → ℝ)) 
   apply spectralNorm_isNonarchimedean_of_fd_normal _ _ h
   · exact normalClosure.is_finiteDimensional K K⟮x, y⟯ _
   · exact normalClosure.normal K K⟮x, y⟯ _
-
--- MI: timeout
 
 /-- The spectral norm is a `K`-algebra norm on `L`. -/
 def spectralAlgNorm (hna : IsNonarchimedean (norm : K → ℝ)) :
