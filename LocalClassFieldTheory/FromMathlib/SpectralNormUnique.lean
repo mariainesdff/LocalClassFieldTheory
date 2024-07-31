@@ -224,7 +224,8 @@ def spectralNormToNormedField [CompleteSpace K] (h : IsNonarchimedean (norm : K 
     norm := fun x : L => (spectralNorm K L x : ℝ)
     dist := fun x y : L => (spectralNorm K L (x - y) : ℝ)
     dist_self := fun x => by simp only [sub_self, spectralNorm_zero]
-    dist_comm := fun x y => by simp only [dist]; rw [← neg_sub, spectralNorm_neg h]
+    dist_comm := fun x y => by simp only [dist]; rw [← neg_sub, spectralNorm_neg h
+      (Algebra.IsAlgebraic.isAlgebraic _)]
     dist_triangle := fun x y z => by
       simp only [dist_eq_norm]
       rw [← sub_add_sub_cancel x y z]
