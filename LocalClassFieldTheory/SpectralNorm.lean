@@ -165,7 +165,7 @@ theorem spectralNorm_eq_root_zero_coeff [Algebra.IsAlgebraic K L]
       div_self, ne_eq, one_ne_zero, not_false_iff, Real.rpow_one, spectralNorm_zero, Nat.cast_one,
       ne_eq, one_ne_zero, not_false_eq_true, div_self, Real.rpow_one]
   · set E := (mapAlg K L (minpoly K x)).SplittingField
-    have h_alg_E : Algebra.IsAlgebraic K E := sorry
+    have h_alg_E : Algebra.IsAlgebraic K E := IsScalarTower.isAlgebraic x
     have hspl : Splits (RingHom.id E) (mapAlg K E (minpoly K x)) :=
       IsScalarTower.splits _ (IsSplittingField.splittingField (mapAlg K L (minpoly K x)))
     rw [Real.eq_rpow_one_div_iff (spectralNorm_nonneg x) (norm_nonneg ((minpoly K x).coeff 0)),
