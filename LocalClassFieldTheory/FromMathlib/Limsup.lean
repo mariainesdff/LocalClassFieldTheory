@@ -172,7 +172,6 @@ theorem limsup_mul_le' {u v : ℕ → ℝ≥0∞} {Bu Bv : ℝ≥0} (hu : ∀ x,
     (iInf_hMul_le_hMul_iInf (iSup_le_top_of_bdd_above hu) Antitone.iSup
       (iSup_le_top_of_bdd_above hv) Antitone.iSup)
 
-
 theorem coe_limsup {u : ℕ → ℝ≥0} (hu : BddAbove (Set.range u)) :
     ((limsup u atTop : ℝ≥0) : ℝ≥0∞) = limsup (fun n ↦ (u n : ℝ≥0∞)) atTop := by
   simp only [limsup_eq]

@@ -49,7 +49,7 @@ variable {K : Type _} [NontriviallyNormedField K] {L : Type _} [Field L] [Algebr
   with the spectral norm. -/
 theorem spectral_norm_unique' [CompleteSpace K] {f : AlgebraNorm K L} (hf_pm : IsPowMul f)
     (hna : IsNonarchimedean (norm : K → ℝ)) : f = spectralAlgNorm hna := by
-  apply eq_of_pow_mult_faithful f hf_pm _ (spectralAlgNorm_isPowMul hna)
+  apply eq_of_powMul_faithful f hf_pm _ (spectralAlgNorm_isPowMul hna)
   intro x
   set E : Type _ := id K⟮x⟯ with hEdef
   letI hE : Field E := by rw [hEdef, id_eq]; infer_instance

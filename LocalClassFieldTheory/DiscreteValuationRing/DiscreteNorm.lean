@@ -155,7 +155,7 @@ theorem nonneg (x : L) : 0 ≤ discreteNormExtension (K := K) (L := L) x :=
   @spectralNorm_nonneg K (discretelyNormedField K) L _ _ _
 
 theorem isNonarchimedean : IsNonarchimedean (discreteNormExtension (K := K) (L := L)) :=
-  @spectralNorm_isNonarchimedean K (discretelyNormedField K) L _ _ (norm_isNonarchimedean K)
+  @spectralNorm_isNonarchimedean K (discretelyNormedField K) L _ _ _ (norm_isNonarchimedean K)
 
 theorem mul (x y : L) : discreteNormExtension (K := K) (x * y) =
       discreteNormExtension (K := K) x * discreteNormExtension (K := K) y :=
