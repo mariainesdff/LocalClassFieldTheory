@@ -6,6 +6,8 @@ Authors: María Inés de Frutos-Fernández, Filippo A. E. Nuccio
 import Mathlib.LinearAlgebra.FiniteDimensional
 import Mathlib.RingTheory.LocalRing.ResidueField.Basic
 
+-- In PR #15725
+
 noncomputable section
 
 open LocalRing
