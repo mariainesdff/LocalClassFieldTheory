@@ -31,6 +31,8 @@ commutative ring and `f₁` and `f₂` are two power-multiplicative `R`-algebra 
 norm, equivalent, power-multiplicative
 -/
 
+-- In PR #15445
+
 open Filter Real
 open scoped Topology
 

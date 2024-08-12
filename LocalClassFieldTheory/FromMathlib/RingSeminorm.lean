@@ -39,6 +39,8 @@ We also define algebra norms and multiplicative algebra norms.
 norm, nonarchimedean, pow_mul, power-multiplicative, algebra norm
 -/
 
+-- Partly in PR #15445
+
 
 open Metric
 

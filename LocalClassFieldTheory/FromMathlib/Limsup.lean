@@ -28,6 +28,7 @@ We prove some auxiliary results about limsups, infis, and suprs.
 limsup, Real, NNReal, ENNReal
 -/
 
+-- Mostly in PR #15373
 
 noncomputable section
 

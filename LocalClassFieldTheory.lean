@@ -37,17 +37,17 @@ import LocalClassFieldTheory.ForMathlib.WithZero
 import LocalClassFieldTheory.FromMathlib.AlgNormOfGalois
 import LocalClassFieldTheory.FromMathlib.CpDef
 -- import LocalClassFieldTheory.FromMathlib.Filter -- In PR #12430
-import LocalClassFieldTheory.FromMathlib.Limsup
+import LocalClassFieldTheory.FromMathlib.Limsup -- Mostly in PR #15373
 --import LocalClassFieldTheory.FromMathlib.Minpoly -- In PR #12450
 import LocalClassFieldTheory.FromMathlib.NormalClosure
 import LocalClassFieldTheory.FromMathlib.NormedSpace
 --import LocalClassFieldTheory.FromMathlib.NormedValued -- In PR #12432
-import LocalClassFieldTheory.FromMathlib.PowMultFaithful
+import LocalClassFieldTheory.FromMathlib.PowMultFaithful -- In PR #15445
 -- import LocalClassFieldTheory.FromMathlib.RankOneValuation -- PRs #12156 and #12159
-import LocalClassFieldTheory.FromMathlib.RingSeminorm
+import LocalClassFieldTheory.FromMathlib.RingSeminorm -- Partly in PR #15445
 --import LocalClassFieldTheory.FromMathlib.SeminormFromBounded -- Partly in #14359, except for NormedGroupHom section (unused)
---import LocalClassFieldTheory.FromMathlib.SeminormFromConst -- In #14361
-import LocalClassFieldTheory.FromMathlib.SmoothingSeminorm
+--import LocalClassFieldTheory.FromMathlib.SeminormFromConst -- In PR #14361
+import LocalClassFieldTheory.FromMathlib.SmoothingSeminorm -- In PR #15373
 import LocalClassFieldTheory.FromMathlib.SpecificLimits
 import LocalClassFieldTheory.FromMathlib.SpectralNormUnique
 -- LocalFields folder

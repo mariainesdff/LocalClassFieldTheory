@@ -39,6 +39,8 @@ power-multiplicative nonarchimedean seminorm on `R`.
 smoothingSeminorm, seminorm, nonarchimedean
 -/
 
+-- In PR #15373
+
 noncomputable section
 
 open Real
