@@ -156,8 +156,8 @@ theorem padicNorm_of_Int_eq_val_norm (x : ℤ) : (padicNorm p x : ℝ) =
       erw [← WithZero.coe_inj, ← intValuationDef_if_neg _ hx, WithZero.coe_unzero,
         valuation_of_algebraMap]
       rfl
-    rw [padicNorm.eq_zpow_of_nonzero hx0, withZeroMultIntToNNReal, Rat.cast_zpow, Rat.cast_natCast,
-      MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk, withZeroMultIntToNNRealDef_neg_apply, ← heq,
+    rw [padicNorm.eq_zpow_of_nonzero hx0, withZeroMultIntToNNReal_neg_apply, Rat.cast_zpow,
+      Rat.cast_natCast, ← heq,
       padicValRat.of_int, @padicValInt.of_ne_one_ne_zero p x (Nat.Prime.ne_one Fact.out) hx,
       toAdd_ofAdd]
     simp only [UniqueFactorizationMonoid.multiplicity_eq_count_normalizedFactors
@@ -175,7 +175,6 @@ theorem padicNorm_of_Int_eq_val_norm (x : ℤ) : (padicNorm p x : ℝ) =
     congr
     rw [← Nat.prime_iff_prime_int]
     exact Fact.out
-
 
 theorem padicNorm_eq_val_norm (z : ℚ) : (padicNorm p z : ℝ) =
   withZeroMultIntToNNReal (NNReal_Cast.p_ne_zero p) ((@padicValued p _).v z) := by

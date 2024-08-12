@@ -605,7 +605,7 @@ theorem exists_pol_int_val_lt (F : PowerSeries K) (η : ℤₘ₀ˣ) :
       (PowerSeries.idealX K) (F - ↑(F.trunc (d + 1)))]
     apply lt_of_le_of_lt this
     rw [← mul_one (η : ℤₘ₀), mul_assoc, one_mul]
-    apply WithZero.lt_hMul_left₀ _ η.ne_zero
+    apply WithZero.lt_mul_left₀ _ η.ne_zero
     rw [← WithZero.coe_one, WithZero.coe_lt_coe, ofAdd_neg, Right.inv_lt_one_iff, ← ofAdd_zero,
       Multiplicative.ofAdd_lt]
     apply Int.zero_lt_one

@@ -221,8 +221,7 @@ theorem norm_X : ‖X p‖ = 1 / (p : ℝ) := by
   rw [hX, hv, DiscreteValuation.rankOne_hom_def]
   simp only [Int.reduceNeg, ofAdd_neg, WithZero.coe_inv, map_inv₀, NNReal.coe_inv, one_div, inv_inj]
   simp only [withZeroMultIntToNNReal, MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk,
-    withZeroMultIntToNNRealDef, WithZero.coe_ne_zero, ↓reduceDIte, WithZero.unzero_coe, toAdd_ofAdd,
-    zpow_one]
+    WithZero.coe_ne_zero, ↓reduceDIte, WithZero.unzero_coe, toAdd_ofAdd, zpow_one]
   rw [valuation_base_eq_char, NNReal.coe_natCast]
 
 variable {p}
