@@ -20,11 +20,11 @@ import LocalClassFieldTheory.EqCharacteristic.Valuation
 import LocalClassFieldTheory.ForMathlib.FieldTheory.Minpoly.IsIntegrallyClosed -- In PR #15723
 import LocalClassFieldTheory.ForMathlib.NumberTheory.Padics.PadicIntegers
 -- import LocalClassFieldTheory.ForMathlib.RingTheory.DedekindDomain.Ideal --In PR #13065
-import LocalClassFieldTheory.ForMathlib.RingTheory.Ideal.LocalRing -- -- In PR #15725
-import LocalClassFieldTheory.ForMathlib.RingTheory.Valuation.AlgebraInstances
+import LocalClassFieldTheory.ForMathlib.RingTheory.Ideal.LocalRing -- In PR #15725
+import LocalClassFieldTheory.ForMathlib.RingTheory.Valuation.AlgebraInstances -- In PR #15734
 -- import LocalClassFieldTheory.ForMathlib.RingTheory.Valuation.Integers -- In PR #12247
-import LocalClassFieldTheory.ForMathlib.RingTheory.Valuation.IntPolynomial
-import LocalClassFieldTheory.ForMathlib.RingTheory.Valuation.Minpoly
+import LocalClassFieldTheory.ForMathlib.RingTheory.Valuation.IntPolynomial -- In PR #15733
+import LocalClassFieldTheory.ForMathlib.RingTheory.Valuation.Minpoly -- In PR #15736
 import LocalClassFieldTheory.ForMathlib.RingTheory.IntegralClosure
 -- import LocalClassFieldTheory.ForMathlib.Topology.UniformSpace.AbstractCompletion -- In PR #12979
 import LocalClassFieldTheory.ForMathlib.DiscreteUniformity -- In PR #12179

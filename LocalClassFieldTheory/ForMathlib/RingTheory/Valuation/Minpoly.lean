@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: María Inés de Frutos-Fernández, Filippo A. E. Nuccio
 -/
 import Mathlib.FieldTheory.Adjoin
-import Mathlib.RingTheory.Valuation.ValuationSubring
+import Mathlib.RingTheory.Valuation.ValuationRing
 
 /-!
 # Minimal polynomials.
@@ -21,13 +21,12 @@ Let `K` be a field with a valuation `v` and let `L` be a field extension of `K`.
   for defining the valuation on `L` inducing `v`.
 -/
 
+-- In PR #15736
 
 open FiniteDimensional minpoly Polynomial
 
-open scoped DiscreteValuation
-
-variable {K : Type _} [Field K] {Γ₀ : Type _} [LinearOrderedCommGroupWithZero Γ₀]
-  (v : Valuation K Γ₀) {L : Type _} [Field L] [Algebra K L]
+variable {K : Type*} [Field K] {Γ₀ : Type*} [LinearOrderedCommGroupWithZero Γ₀]
+  (v : Valuation K Γ₀) (L : Type*) [Field L] [Algebra K L]
 
 namespace Valuation
 
@@ -40,6 +39,8 @@ theorem coeff_zero (x : K) : v ((minpoly K (algebraMap K L x)).coeff 0) = v x :=
 -- TODO: move to Mathlib.RingTheory.Valuation.ValuationRing
 theorem unit_ne_zero (x : Kˣ) : v x ≠ (0 : Γ₀) := by
   simp only [ne_eq, Valuation.zero_iff, Units.ne_zero x, not_false_iff]
+
+variable {L}
 
 -- TODO: minpoly namespace, rename
 /- For any unit `x : Lˣ`, we prove that a certain power of the valuation of

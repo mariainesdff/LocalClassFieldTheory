@@ -20,6 +20,7 @@ This is useful when dealing with integral elements in an extension of fields.
   corresponding polynomial in `v.valuationSubring[X]`.
 -/
 
+-- In PR #15733
 
 open scoped DiscreteValuation
 

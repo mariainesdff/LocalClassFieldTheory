@@ -24,6 +24,8 @@ of a field with a valuation, as well as their unit balls.
   valuation injects into its integral closure in a field extension `L` of `K`.
 -/
 
+-- In PR #15734
+
 open Function Valuation
 
 open scoped DiscreteValuation
