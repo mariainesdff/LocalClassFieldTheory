@@ -327,20 +327,26 @@ variable (K L : Type _) [Field K] [Algebra (FpXCompletion p) K] [Field L]
 
 variable [Algebra (FpXCompletion p) L]
 
-instance toIntAlgebra : Algebra (FpXIntCompletion p) K :=
-  ValuationSubring.algebra' _ K
+--MI : inferInstance now works (August 2024)
 
-@[simp]
+--instance toIntAlgebra : Algebra (FpXIntCompletion p) K := inferInstance
+  --ValuationSubring.algebra' _ K
+
+/- @[simp]
 theorem int_algebraMap_def :
     algebraMap (FpXIntCompletion p) K = (AdicAlgebra.toIntAlgebra p K).toRingHom :=
-  rfl
+  rfl -/
 
+--MI : inferInstance now works (August 2024)
+-- I am leaving this here because of the priority, but we should check if it is needed.
 instance (priority := 10000) : IsScalarTower (FpXIntCompletion p) (FpXCompletion p) K :=
-  ValuationSubring.isScalarTower _ _
+  inferInstance --ValuationSubring.isScalarTower _ _
 
+--MI : inferInstance now works (August 2024)
+-- I am leaving this here because of the priority, but we should check if it is needed.
 instance (priority := 1000) int_isScalarTower [Algebra K L] [IsScalarTower (FpXCompletion p) K L] :
     IsScalarTower (FpXIntCompletion p) K L :=
-  ValuationSubring.int_isScalarTower _ K L
+  inferInstance --ValuationSubring.int_isScalarTower _ K L
 
 theorem algebraMap_injective : Function.Injective ⇑(algebraMap (FpXIntCompletion p) L) :=
   ValuationSubring.algebraMap_injective _ L
@@ -379,7 +385,7 @@ being defeq on subtypes. It will be an instance when ported to Lean 4, since the
 an issue. -/
 def ringOfIntegersAlgebra [Algebra K L] [IsScalarTower (FpXCompletion p) K L] :
     Algebra (𝓞 p K) (𝓞 p L) :=
-  ValuationSubring.valuationSubringAlgebra _ K L
+  ValuationSubring.algebra _ K L
 
 namespace RingOfIntegers
 

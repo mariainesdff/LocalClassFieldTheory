@@ -81,8 +81,8 @@ lemma Kn_unramified : e(Kn K hn, K) = 1 := sorry
 
 local instance (L : Type*) [Field L] [Algebra K L] [FiniteDimensional K L] :
     Algebra K₀ (extendedValuation K L).valuationSubring := by
-  convert ValuationSubring.algebra v L
-  sorry
+  --convert ValuationSubring.algebra v L
+  --sorry
   sorry
 
 /-- The extension `Kn K hn` of `K` is the unique unramified extension of degree `n`. -/

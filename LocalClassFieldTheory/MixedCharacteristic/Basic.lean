@@ -85,7 +85,7 @@ of integers. For now, this is not an instance by default as it creates an equal-
 diamond with `algebra.id` when `K = L`. This is caused by `x = ⟨x, x.prop⟩` not being defeq on
 subtypes. It will be an instance when ported to Lean 4, since the above will not be an issue. -/
 def ringOfIntegersAlgebra [Algebra K L] [IsScalarTower (Q_p p) K L] : Algebra (𝓞 p K) (𝓞 p L) :=
-  ValuationSubring.valuationSubringAlgebra _ K L
+  ValuationSubring.algebra _ K L
 
 namespace RingOfIntegers
 
