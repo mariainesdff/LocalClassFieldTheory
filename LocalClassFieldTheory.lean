@@ -25,7 +25,7 @@ import LocalClassFieldTheory.ForMathlib.RingTheory.Valuation.AlgebraInstances --
 -- import LocalClassFieldTheory.ForMathlib.RingTheory.Valuation.Integers -- In PR #12247
 import LocalClassFieldTheory.ForMathlib.RingTheory.Valuation.IntPolynomial -- In PR #15733
 import LocalClassFieldTheory.ForMathlib.RingTheory.Valuation.Minpoly -- In PR #15736
-import LocalClassFieldTheory.ForMathlib.RingTheory.IntegralClosure
+import LocalClassFieldTheory.ForMathlib.RingTheory.IntegralClosure -- In PR #15738
 -- import LocalClassFieldTheory.ForMathlib.Topology.UniformSpace.AbstractCompletion -- In PR #12979
 import LocalClassFieldTheory.ForMathlib.DiscreteUniformity -- In PR #12179
 import LocalClassFieldTheory.ForMathlib.DiscreteValuationRing
