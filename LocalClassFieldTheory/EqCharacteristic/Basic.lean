@@ -305,10 +305,11 @@ theorem norm_lt_one_of_dvd {F : FpXIntCompletion p} :
   refine dvd_of_mul_left_eq Z ?_
   apply_fun HahnSeries.ofPowerSeries ℤ 𝔽_[p] using HahnSeries.ofPowerSeries_injective
   apply_fun LaurentSeriesRingEquiv 𝔽_[p]
-  sorry/- rw [← LaurentSeries.coe_powerSeries]
-  erw [PowerSeries.coe_mul, _root_.map_mul, hZ, h_fG, ← coe_X_compare 𝔽_[p], h_fy,
-    RingEquiv.symm_apply_apply]
-  rfl -/
+  sorry
+  -- rw [← LaurentSeries.coe_powerSeries]
+  -- erw [PowerSeries.coe_mul, _root_.map_mul, hZ, h_fG, ← coe_X_compare 𝔽_[p], h_fy,
+  --   RingEquiv.symm_apply_apply]
+  -- rfl -/
 
 theorem norm_lt_one_iff_dvd (F : FpXIntCompletion p) :
     ‖(F : FpXCompletion p)‖ < 1 ↔ FpXIntCompletion.X p ∣ F := by
