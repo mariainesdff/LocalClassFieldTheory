@@ -22,6 +22,8 @@ This file contains lemmas about minimal polynomials, to be added to the mathlib 
   over `K` agrees with its minimal polynomial over `R` (applying the appropriate algebra map).
 -/
 
+-- In PR #15723
+
 
 namespace minpoly
 
@@ -38,12 +40,14 @@ theorem degree_dvd [FiniteDimensional K L] {x : L} (hx : IsIntegral K x) :
   rw [eq_comm, mul_comm]
   exact FiniteDimensional.finrank_mul_finrank _ _ _
 
+#find_home degree_dvd
+
 variable (K L)
 variable (R : Subring K) [IsIntegrallyClosed R] [IsFractionRing R K]
 
 --Porting note: inferInstance does not work for these
-instance : AddCommMonoid ↥(integralClosure (↥R) L) := by apply
-  AddSubmonoidClass.toAddCommMonoid
+/- instance : AddCommMonoid ↥(integralClosure (↥R) L) := inferInstance/-  by apply
+  AddSubmonoidClass.toAddCommMonoid -/ -/
 instance : Algebra R (integralClosure (R) L) := Subalgebra.algebra (integralClosure (↥R) L)
 instance : SMul R (integralClosure R L) := Algebra.toSMul
 instance : IsScalarTower R ((integralClosure R L)) L :=
@@ -51,8 +55,7 @@ instance : IsScalarTower R ((integralClosure R L)) L :=
 
 /-- The minimal polynomial of `x` over `K` agrees with its minimal polynomial over `R`. -/
 theorem minpoly_ofSubring (x : integralClosure R L) :
-    Polynomial.map (algebraMap R K) (minpoly R x) = minpoly K (x : L) := by
-  rw [eq_comm]
-  apply minpoly.isIntegrallyClosed_eq_field_fractions K L (IsIntegralClosure.isIntegral R L x)
+    Polynomial.map (algebraMap R K) (minpoly R x) = minpoly K (x : L) :=
+  eq_comm.mpr (isIntegrallyClosed_eq_field_fractions K L (IsIntegralClosure.isIntegral R L x))
 
 end minpoly
