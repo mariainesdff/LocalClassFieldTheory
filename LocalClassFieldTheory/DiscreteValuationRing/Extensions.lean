@@ -571,7 +571,7 @@ def valued [FiniteDimensional K L] : Valued L ℤₘ₀ :=
             ← Real.rpow_lt_rpow_iff (pow_nonneg (DiscreteNormExtension.nonneg _) _)
                 (coe_nonneg _) (inv_pos.mpr hpos'),
             ← Real.rpow_natCast, ← Real.rpow_mul (DiscreteNormExtension.nonneg _),
-            mul_inv_cancel (ne_of_gt hpos'), Real.rpow_one, coe_rpow,
+            mul_inv_cancel₀ (ne_of_gt hpos'), Real.rpow_one, coe_rpow,
             ← Real.rpow_mul (coe_nonneg _)]
           exact hx }
 

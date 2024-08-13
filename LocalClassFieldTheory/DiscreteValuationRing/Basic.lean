@@ -112,7 +112,7 @@ theorem isUnit_iff_valuation_eq_one {K : Type w₁} [Field K] {Γ₀ : Type w₂
   · rw [mem_integer]
     exact le_of_eq hx'
   · ext; simp only [Subring.coe_mul, ne_eq, ZeroMemClass.coe_eq_zero, OneMemClass.coe_one,
-      mul_inv_cancel hx0]
+      mul_inv_cancel₀ hx0]
 
 theorem not_isUnit_iff_valuation_lt_one {K : Type w₁} [Field K] {Γ₀ : Type w₂}
     [LinearOrderedCommGroupWithZero Γ₀] {v : Valuation K Γ₀} (x : v.integer) :
@@ -242,13 +242,13 @@ theorem UniformizerOfAssociated {π₁ π₂ : K₀} (h1 : IsUniformizer v π₁
 theorem associatedOfUniformizer {π₁ π₂ : Uniformizer v} : Associated π₁.1 π₂.1 := by
   have hval : v ((π₁.1 : K)⁻¹ * π₂.1) = 1 := by
     simp only [Valuation.map_mul, map_inv₀, IsUniformizer_iff.mp π₁.2,
-    IsUniformizer_iff.mp π₂.2, ofAdd_neg, coe_inv, inv_inv, mul_inv_cancel, ne_eq, coe_ne_zero,
+    IsUniformizer_iff.mp π₂.2, ofAdd_neg, coe_inv, inv_inv, mul_inv_cancel₀, ne_eq, coe_ne_zero,
     not_false_iff]
   let p : v.integer := ⟨(π₁.1 : K)⁻¹ * π₂.1, (Valuation.mem_integer v _).mpr (le_of_eq hval)⟩
   use ((Integer.isUnit_iff_valuation_eq_one p).mpr hval).unit
   simp only [IsUnit.unit_spec]
   apply_fun ((↑·) : K₀ → K) using Subtype.val_injective
-  simp only [Submonoid.coe_mul, ne_eq, ← mul_assoc, mul_inv_cancel (Uniformizer_ne_zero v π₁.2),
+  simp only [Submonoid.coe_mul, ne_eq, ← mul_assoc, mul_inv_cancel₀ (Uniformizer_ne_zero v π₁.2),
     one_mul]
 
 theorem pow_Uniformizer {r : K₀} (hr : r ≠ 0) (π : Uniformizer v) :
@@ -263,7 +263,7 @@ theorem pow_Uniformizer {r : K₀} (hr : r ≠ 0) (π : Uniformizer v) :
   have hpow : v (π.1.1 ^ (-m) * r) = 1 := by
     rw [Valuation.map_mul, map_zpow₀, IsUniformizer_iff.mp π.2, ofAdd_neg, coe_inv, inv_zpow',
       neg_neg, ← WithZero.coe_zpow, ← Int.ofAdd_mul, one_mul, ofAdd_neg, ofAdd_toAdd, coe_inv,
-      coe_unzero, inv_mul_cancel hr₀]
+      coe_unzero, inv_mul_cancel₀ hr₀]
   set a : K₀ := ⟨π.1.1 ^ (-m) * r, by apply le_of_eq hpow⟩ with ha
   have ha₀ : (↑a : K) ≠ 0 := by
     simp only [ha, neg_neg, ne_eq]
@@ -279,7 +279,7 @@ theorem pow_Uniformizer {r : K₀} (hr : r ≠ 0) (π : Uniformizer v) :
     Integers.isUnit_of_one (integer.integers v) (isUnit_iff_ne_zero.mpr ha₀) hpow
   use h_unit_a.unit
   rw [IsUnit.unit_spec, Subring.coe_pow, ha, ← mul_assoc, zpow_neg, hn, zpow_natCast,
-    mul_inv_cancel, one_mul]
+    mul_inv_cancel₀, one_mul]
   · apply pow_ne_zero
     exact Uniformizer_ne_zero' _ π
 

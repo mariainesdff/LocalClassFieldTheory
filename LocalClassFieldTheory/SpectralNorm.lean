@@ -133,7 +133,7 @@ theorem spectral_norm_pow_degree_eq_prof_roots (hna : IsNonarchimedean (norm : K
       intro s hs
       simp only [Multiset.mem_map, mem_roots', ne_eq, IsRoot.def] at hs
       obtain ⟨a, ha_root, has⟩ := hs
-      rw [hr, ← has]
+      rw [← hr, ← has]
       change spectralNorm K E (algebraMap L E x) = spectralNorm K E a
       simp only [spectralNorm]
       rw [← minpoly.eq_of_root (Algebra.IsAlgebraic.isAlgebraic ((algebraMap L E) x))]
@@ -153,7 +153,7 @@ theorem spectral_norm_pow_degree_eq_prof_roots (hna : IsNonarchimedean (norm : K
       rw [← he_root.2, mapAlg_eq_map, minpoly.algebraMap_eq (algebraMap L E).injective, aeval_def,
         eval_map]
     rw [heq] at her
-    exact hr her.symm
+    exact hr her
 
 /-- For `x : L` with minimal polynomial `f(X) := X^n + a_{n-1}X^{n-1} + ... + a_0` over `K`,
   the spectral norm of `x` is equal to `‖ a_0 ‖^(1/(degree(f(X))))`. -/

@@ -84,7 +84,7 @@ noncomputable def fooEquiv {π : A} (hπ : Irreducible π) (f : A[X]) :
   --simp only [AdjoinRoot, AdjoinRoot.of, RingHom.coe_comp, Function.comp_apply]
   --Set.image_singleton ▸ Ideal.map_span C
 
-  have := DoubleQuot.quotQuotSpanEquivResidueFieldPolynomialQuot hπ (Ideal.span {f})
+  let _ := DoubleQuot.quotQuotSpanEquivResidueFieldPolynomialQuot hπ (Ideal.span {f})
   set this := AdjoinRoot.quotEquivQuotMap f (Ideal.span {π})
   rw [ ← Set.image_singleton,
     ← Ideal.map_span (AdjoinRoot.of f)]
