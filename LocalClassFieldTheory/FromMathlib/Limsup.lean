@@ -38,7 +38,7 @@ namespace Filter
 theorem limsup_nonneg_of_nonneg {α β : Type _} [Zero α] [ConditionallyCompleteLinearOrder α]
     {f : Filter β} [f.NeBot] {u : β → α} (hfu : IsBoundedUnder LE.le f u) (h : 0 ≤ u) :
     0 ≤ limsup u f :=
-  le_limsup_of_frequently_le (frequently_of_forall h) hfu
+  le_limsup_of_frequently_le (Frequently.of_forall h) hfu
 
 /-- If `filter.limsup u at_top ≤ x`, then for all `ε > 0`, eventually we have `u a < x + ε`.  -/
 theorem eventually_lt_add_pos_of_limsup_le {α : Type _} [Preorder α] {x : ℝ} {u : α → ℝ}
@@ -104,7 +104,7 @@ theorem eventually_le_of_bdd_above' {u : ℕ → ℝ≥0} (hu : BddAbove (Set.ra
     {a : ℝ≥0 | ∀ᶠ n : ℕ in atTop, u n ≤ a}.Nonempty := by
   obtain ⟨B, hB⟩ := hu
   simp only [mem_upperBounds, Set.mem_range, forall_exists_index, forall_apply_eq_imp_iff] at hB
-  exact ⟨B, Set.mem_setOf_eq.mpr (eventually_of_forall hB)⟩
+  exact ⟨B, Set.mem_setOf_eq.mpr (Eventually.of_forall hB)⟩
 
 end NNReal
 

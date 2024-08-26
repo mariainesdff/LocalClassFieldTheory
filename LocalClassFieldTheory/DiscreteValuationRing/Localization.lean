@@ -22,7 +22,7 @@ open IsDedekindDomain IsDedekindDomain.HeightOneSpectrum Valuation DiscreteValua
 
 open scoped DiscreteValuation
 
-variable (R : Type*) [CommRing R] [IsDomain R] [IsDedekindDomain R] (K : Type*) [Field K]
+variable (R : Type*) [CommRing R] [IsDedekindDomain R] (K : Type*) [Field K]
   [Algebra R K] [IsFractionRing R K] (v : HeightOneSpectrum R)
 
 theorem adicValuedIsDiscrete : IsDiscrete (@adicValued R _ _ K _ _ _ v).v := by

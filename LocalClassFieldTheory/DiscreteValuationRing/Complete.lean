@@ -55,7 +55,7 @@ open IsDedekindDomain IsDedekindDomain.HeightOneSpectrum Valuation
 
 namespace IsDedekindDomain.HeightOneSpectrum.Completion
 
-variable (R : Type _) [CommRing R] [IsDomain R] [IsDedekindDomain R] (v : HeightOneSpectrum R)
+variable (R : Type _) [CommRing R] [IsDedekindDomain R] (v : HeightOneSpectrum R)
 
 variable (K : Type _) [Field K] [Algebra R K] [IsFractionRing R K]
 

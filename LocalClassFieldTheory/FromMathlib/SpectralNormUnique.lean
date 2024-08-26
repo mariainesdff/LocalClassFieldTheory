@@ -15,7 +15,7 @@ Let `K` be a field complete with respect to a nontrivial nonarchimedean multipli
 `L/K` be an algebraic extension. We show that the spectral norm on `L` is a nonarchimedean
 multiplicative norm, and any power-multiplicative `K`-algebra norm on `L` coincides with the
 spectral norm. More over, if `L/K` is finite, then `L` is a complete space.
-This result is [BGR, Theorem 3.2.4/2].
+This result is <[S. Bosch, U. Güntzer, R. Remmert, *Non-Archimedean Analysis*, Theorem 3.2.4/2]>.
 
 ## Main Definitions
 
@@ -100,7 +100,9 @@ theorem spectral_norm_unique' [CompleteSpace K] {f : AlgebraNorm K L} (hf_pm : I
     { toFun := fun y => f ((algebraMap K⟮x⟯ L) y)
       map_zero' := map_zero _
       add_le' := fun a b => map_add_le_add _ _ _
-      neg' := fun y => by simp only [map_neg, map_neg_eq_map]
+      neg' := fun y => by
+        simp only [(algebraMap K⟮x⟯ L).map_neg y,
+          map_neg_eq_map (f := f) ((algebraMap K⟮x⟯ L) y)]
       mul_le' := fun a b => map_mul_le_mul _ _ _
       eq_zero_of_map_eq_zero' := fun a ha => by
         simp only [map_eq_zero_iff_eq_zero, map_eq_zero] at ha

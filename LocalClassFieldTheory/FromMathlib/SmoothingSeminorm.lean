@@ -99,8 +99,8 @@ theorem tendsto_bdd_div_atTop_nhds_zero_nat (f : ℕ → ℝ) (b : ℝ)
 theorem tendsto_mod_div_atTop_nhds_zero_nat {m : ℕ} (hm : 0 < m) :
     Tendsto (fun n : ℕ => ((n % m : ℕ) : ℝ) / (n : ℝ)) atTop (𝓝 0) := by
   apply tendsto_bdd_div_atTop_nhds_zero_nat (fun n : ℕ => ((n % m : ℕ) : ℝ)) 0
-    (eventually_of_forall (fun _ ↦ cast_nonneg _)) m
-  apply eventually_of_forall
+    (Eventually.of_forall (fun _ ↦ cast_nonneg _)) m
+  apply Eventually.of_forall
   intro n
   simp only [cast_le, le_of_lt (mod_lt n hm)]
 
@@ -177,7 +177,7 @@ private theorem smoothingSeminorm_seq_hasLimit_aux {L : ℝ} (hL : 0 ≤ L) {ε 
       exact Tendsto.neg h_exp
     rw [← rpow_zero (L + ε)]
     apply Tendsto.rpow tendsto_const_nhds h0
-    rw [ne_eq, add_eq_zero_iff' hL (le_of_lt hε)]
+    rw [ne_eq, add_eq_zero_iff_of_nonneg hL (le_of_lt hε)]
     exact Or.inl (not_and_of_not_right _ (ne_of_gt hε))
   · simp_rw [mul_one, ← rpow_natCast, ← rpow_mul (apply_nonneg f x), ← mul_div_assoc, mul_one, ←
       rpow_zero (f x)]
