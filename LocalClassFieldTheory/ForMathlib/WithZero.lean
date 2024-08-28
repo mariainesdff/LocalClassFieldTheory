@@ -85,8 +85,9 @@ theorem mul_lt_mul_right₀ {α : Type*} {a b c : α} [LinearOrderedCommGroupWit
     fun h ↦ mul_lt_mul_of_lt_of_le₀ (le_refl _) (ne_of_gt hc) h⟩
 
 --[Mathlib.Algebra.Order.GroupWithZero.Canonical]
-theorem lt_mul_left₀ {α : Type _} {b c : α} [LinearOrderedCommGroupWithZero α] {a : α} (h : b < c)
-    (ha : a ≠ 0) : a * b < a * c := by simpa only [mul_comm a _] using mul_lt_right₀ a h ha
+-- *FAE* The lemma below was used only once and was basically already in mathlib: removed
+-- theorem lt_mul_left₀ {α : Type _} {b c : α} [LinearOrderedCommGroupWithZero α] {a : α} (h : b < c)
+--     (ha : a ≠ 0) : a * b < a * c := by simpa only [mul_comm a _] using mul_lt_right₀ a h ha
 
 --[Mathlib.Algebra.Order.GroupWithZero.Canonical]
 theorem one_lt_div' {α : Type _} [LinearOrderedCommGroupWithZero α] (a : α) {b : α} (hb : b ≠ 0) :

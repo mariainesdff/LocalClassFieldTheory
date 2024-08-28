@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: María Inés de Frutos-Fernández, Filippo A. E. Nuccio
 -/
 import Mathlib.Algebra.GroupWithZero.WithZero
-import LocalClassFieldTheory.DiscreteValuationRing.Basic
+-- import LocalClassFieldTheory.ForMathlib.WithZero
 import Mathlib.RingTheory.DedekindDomain.Ideal
 import Mathlib.RingTheory.PowerSeries.Inverse
 import Mathlib.RingTheory.PowerSeries.Trunc
@@ -430,7 +430,7 @@ def Cauchy.coeff {ℱ : Filter (LaurentSeries K)} (hℱ : Cauchy ℱ) : ℤ → 
   use fun d ↦ cauchy_discrete_is_constant hK (hℱ.map (uniformContinuous_coeff K hK d))
 
 theorem Cauchy.coeff_tendso {ℱ : Filter (LaurentSeries K)} (hℱ : Cauchy ℱ) (D : ℤ) :
-    Tendsto (fun f : LaurentSeries K ↦ f.coeff D) ℱ (𝓟 {Cauchy.coeff hℱ D}) := by
+    Tendsto (fun f : LaurentSeries K ↦ f.coeff D) ℱ (𝓟 {hℱ.coeff D}) := by
   letI : UniformSpace K := ⊥
   have hK : uniformity K = Filter.principal idRel := rfl
   exact cauchy_discrete_le hK (hℱ.map (uniformContinuous_coeff K hK D))
@@ -477,40 +477,38 @@ theorem Cauchy.exists_lb_eventual_support {ℱ : Filter (LaurentSeries K)} (hℱ
 theorem Cauchy.exists_lb_gt_principal {ℱ : Filter (LaurentSeries K)} (hℱ : Cauchy ℱ) :
     ∃ N, ∀ n < N, (ℱ.map fun f : LaurentSeries K ↦ f.coeff n) ≤ Filter.principal {0} := by
   simp only [principal_singleton, pure_zero, nonpos_iff, mem_map]
-  obtain ⟨N, hN⟩ := Cauchy.exists_lb_eventual_support hℱ -- Porting note: dot notation doesn't work
+  obtain ⟨N, hN⟩ := hℱ.exists_lb_eventual_support
   exact ⟨N, fun n hn ↦  Filter.mem_of_superset hN (fun a ha ↦ ha n hn)⟩
 
 theorem Cauchy.exists_lb_support {ℱ : Filter (LaurentSeries K)} (hℱ : Cauchy ℱ) :
-    ∃ N, ∀ n, n < N → coeff hℱ n = 0 := by -- Porting note: dot notation doesn't work
+    ∃ N, ∀ n, n < N → hℱ.coeff n = 0 := by -- Porting note: dot notation doesn't work
   letI : UniformSpace K := ⊥
   have hK : uniformity K = Filter.principal idRel := rfl
-  obtain ⟨N, hN⟩ := exists_lb_gt_principal hℱ -- Porting note: dot notation doesn't work
+  obtain ⟨N, hN⟩ := hℱ.exists_lb_gt_principal
   exact ⟨N, fun n hn ↦ neBot_unique_principal hK (hℱ.map (uniformContinuous_coeff K hK n)).1
     (coeff_tendso _ _) (hN n hn)⟩
-
-/- Porting note: dot notation doesn't work for the `Cauchy` hypothesis `hℱ`. -/
 
 /- The following lemma shows that for every `d` smaller than the minimum between the integers
 produced in `cauchy.exists_lb_eventual_support` and `cauchy.exists_lb_support`, for almost all
 series in `ℱ` the `d`th coefficient coincides with the `d`th coefficient of `coeff hℱ`. -/
 theorem Cauchy.exists_lb_coeff_ne {ℱ : Filter (LaurentSeries K)} (hℱ : Cauchy ℱ) :
-    ∃ N, ∀ᶠ f : LaurentSeries K in ℱ, ∀ d < N, coeff hℱ d = f.coeff d := by
-  obtain ⟨⟨N₁, hN₁⟩, ⟨N₂, hN₂⟩⟩ := exists_lb_eventual_support hℱ, exists_lb_support hℱ
+    ∃ N, ∀ᶠ f : LaurentSeries K in ℱ, ∀ d < N, hℱ.coeff d = f.coeff d := by
+  obtain ⟨⟨N₁, hN₁⟩, ⟨N₂, hN₂⟩⟩ := hℱ.exists_lb_eventual_support, hℱ.exists_lb_support
   refine ⟨min N₁ N₂, ℱ.3 hN₁ fun _ hf d hd ↦ ?_⟩
   rw [hf d (lt_of_lt_of_le hd (min_le_left _ _)), hN₂ d (lt_of_lt_of_le hd (min_le_right _ _))]
 
 theorem Cauchy.coeff_support_bdd {ℱ : Filter (LaurentSeries K)} (hℱ : Cauchy ℱ) :
-    BddBelow (coeff hℱ).support := by
-  refine ⟨(exists_lb_support hℱ).choose, fun d hd ↦ ?_⟩
+    BddBelow (hℱ.coeff).support := by
+  refine ⟨(hℱ.exists_lb_support).choose, fun d hd ↦ ?_⟩
   by_contra hNd
-  exact hd ((exists_lb_support hℱ).choose_spec d (not_le.mp hNd))
+  exact hd ((hℱ.exists_lb_support).choose_spec d (not_le.mp hNd))
 
 /-- To any Cauchy filter ℱ of `laurent_series K`, we can attach a laurent series that is the limit
 of the filter. Its `d`-th coefficient is defined as the limit of `ℱ.coeff d`, which is again Cauchy
 but valued in the discrete space `K`. That sufficiently negative coefficients vanish follows from
 `cauchy.coeff_support_bdd` -/
 def Cauchy.mk_LaurentSeries {ℱ : Filter (LaurentSeries K)} (hℱ : Cauchy ℱ) : LaurentSeries K :=
-  HahnSeries.mk (fun d ↦ coeff hℱ d) (Set.IsWF.isPWO (coeff_support_bdd hℱ).wellFoundedOn_lt)
+  HahnSeries.mk (fun d ↦ hℱ.coeff d) (Set.IsWF.isPWO (hℱ.coeff_support_bdd).wellFoundedOn_lt)
 
 set_option pp.proofs true
 
@@ -519,15 +517,15 @@ theorem Cauchy.coeff_eventually_equal {ℱ : Filter (LaurentSeries K)} (hℱ : C
   intro D
   set X : ℤ → Set (LaurentSeries K) := fun d ↦ {f | (coeff hℱ) d = f.coeff d} with hX
   have intersec :
-    (⋂ n ∈ Set.Iio D, X n) ⊆ {x : LaurentSeries K | ∀ d : ℤ, d < D → (coeff hℱ) d = x.coeff d} := by
+    (⋂ n ∈ Set.Iio D, X n) ⊆ {x : LaurentSeries K | ∀ d : ℤ, d < D → hℱ.coeff d = x.coeff d} := by
     rintro (_ hf n hn)
     simp only [Set.mem_iInter, Set.mem_setOf_eq, hX] at hf
     exact hf n hn
-  set N := min (exists_lb_coeff_ne hℱ).choose D with hN₀
+  set N := min (hℱ.exists_lb_coeff_ne).choose D with hN₀
   suffices (⋂ n ∈ Set.Iio D, X n) ∈ ℱ by
     exact ℱ.3 this intersec
-  by_cases H : D < (exists_lb_coeff_ne hℱ).choose
-  · apply ℱ.3 (exists_lb_coeff_ne hℱ).choose_spec
+  by_cases H : D < hℱ.exists_lb_coeff_ne.choose
+  · apply ℱ.3 hℱ.exists_lb_coeff_ne.choose_spec
     simp only [Set.mem_Iio, Set.subset_iInter₂_iff, Set.setOf_subset_setOf]
     intro m hm f hd
     exact hd _ (lt_trans hm H)
@@ -535,11 +533,11 @@ theorem Cauchy.coeff_eventually_equal {ℱ : Filter (LaurentSeries K)} (hℱ : C
     rw [Set.biInter_union]
     simp only [Set.mem_Iio, Set.mem_Ico, inter_mem_iff]
     constructor
-    · convert (exists_lb_coeff_ne hℱ).choose_spec using 1
+    · convert hℱ.exists_lb_coeff_ne.choose_spec using 1
       ext f
       simp only [Set.mem_Iio, Set.mem_iInter, Set.mem_setOf_eq]
       rfl
-    · have : ⋂ x, ⋂ (_ : (exists_lb_coeff_ne hℱ).choose ≤ x ∧ x < D), X x =
+    · have : ⋂ x, ⋂ (_ : hℱ.exists_lb_coeff_ne.choose ≤ x ∧ x < D), X x =
         (⋂ (n : ℤ) (_ : n ∈ Set.Ico N D), X n) := by
         simp only [Set.mem_Ico]
         apply Set.iInter_congr
@@ -548,13 +546,12 @@ theorem Cauchy.coeff_eventually_equal {ℱ : Filter (LaurentSeries K)} (hℱ : C
         omega
       rw [this, biInter_mem (Set.finite_Ico N D)]
       intro d _
-      apply coeff_tendso hℱ
+      apply hℱ.coeff_tendso
       simp only [principal_singleton, mem_pure]
       rfl
 
 theorem Cauchy.eventually_mem_nhds {ℱ : Filter (LaurentSeries K)} (hℱ : Cauchy ℱ)
     {U : Set (LaurentSeries K)} (hU : U ∈ 𝓝 (mk_LaurentSeries hℱ)) : ∀ᶠ f in ℱ, f ∈ U := by
-  letI : Ring (LaurentSeries K) := inferInstance -- Porting note : I had to add this
   obtain ⟨γ, hU₁⟩ := Valued.mem_nhds.mp hU
   suffices ∀ᶠ f in ℱ, f ∈ {y : LaurentSeries K | Valued.v (y - (mk_LaurentSeries hℱ)) < ↑γ} by
     apply this.mono fun _ hf ↦ hU₁ hf
@@ -563,9 +560,9 @@ theorem Cauchy.eventually_mem_nhds {ℱ : Filter (LaurentSeries K)} (hℱ : Cauc
       rw [← WithZero.coe_unzero γ.ne_zero, WithZero.coe_lt_coe, hD₀, neg_neg, ofAdd_sub,
         ofAdd_toAdd, div_lt_comm, div_self', ← ofAdd_zero, Multiplicative.ofAdd_lt]
       exact zero_lt_one
-    apply (coeff_eventually_equal  hℱ D).mono
+    apply (hℱ.coeff_eventually_equal D).mono
     intro f hf
-    apply lt_of_le_of_lt _ hD --(valuation_le_of_coeff_eventually_eq _ _) hD
+    apply lt_of_le_of_lt _ hD
     apply (valuation_le_iff_coeff_lt_eq_zero K).mpr
     intro n hn
     rw [HahnSeries.sub_coeff, sub_eq_zero, (hf n hn).symm]
@@ -573,7 +570,7 @@ theorem Cauchy.eventually_mem_nhds {ℱ : Filter (LaurentSeries K)} (hℱ : Cauc
 
 
 instance : CompleteSpace (LaurentSeries K) :=
-  ⟨fun hℱ ↦ ⟨Cauchy.mk_LaurentSeries hℱ, fun _ hS ↦ Cauchy.eventually_mem_nhds hℱ hS⟩⟩
+  ⟨fun hℱ ↦ ⟨hℱ.mk_LaurentSeries, fun _ hS ↦ hℱ.eventually_mem_nhds hS⟩⟩
 
 end Complete
 
@@ -605,7 +602,7 @@ theorem exists_pol_int_val_lt (F : PowerSeries K) (η : ℤₘ₀ˣ) :
       (PowerSeries.idealX K) (F - ↑(F.trunc (d + 1)))]
     apply lt_of_le_of_lt this
     rw [← mul_one (η : ℤₘ₀), mul_assoc, one_mul]
-    apply WithZero.lt_mul_left₀ _ η.ne_zero
+    apply mul_lt_mul_of_lt_of_le₀ (le_refl _) η.ne_zero
     rw [← WithZero.coe_one, WithZero.coe_lt_coe, ofAdd_neg, Right.inv_lt_one_iff, ← ofAdd_zero,
       Multiplicative.ofAdd_lt]
     apply Int.zero_lt_one
