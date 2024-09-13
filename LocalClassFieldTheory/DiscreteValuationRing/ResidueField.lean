@@ -93,6 +93,7 @@ theorem finiteResidueFieldOfIntegralClosure [Algebra.IsSeparable K L]
 lemma finiteResidueFieldOfUnitBall [Algebra.IsSeparable K L]
     (hfin : Finite (ResidueField K₀)) :
     Finite (ResidueField (extendedValuation K L).valuationSubring) :=
+  letI : LocalRing (extendedValuation K L).valuationSubring := inferInstance -- Needed to avoid error
   letI : LocalRing ↥(Subalgebra.toSubring (integralClosure (↥K₀) L)) :=
     inferInstanceAs (LocalRing (integralClosure (↥K₀) L))
   @Finite.of_equiv _ _ (finiteResidueFieldOfIntegralClosure K L hfin)
@@ -109,6 +110,7 @@ def fintypeResidueFieldOfIntegralClosure [Algebra.IsSeparable K L]
 def fintypeResidueFieldOfUnitBall [Algebra.IsSeparable K L]
     (hfin : Fintype (ResidueField K₀)) :
     Fintype (ResidueField (extendedValuation K L).valuationSubring) :=
+  letI : LocalRing (extendedValuation K L).valuationSubring := inferInstance -- Needed to avoid error
   letI : LocalRing ↥(Subalgebra.toSubring (integralClosure (↥K₀) L)) :=
     inferInstanceAs (LocalRing (integralClosure (↥K₀) L))
   @Fintype.ofEquiv _ _ (fintypeResidueFieldOfIntegralClosure K L hfin)

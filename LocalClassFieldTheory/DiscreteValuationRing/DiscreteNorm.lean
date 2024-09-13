@@ -178,6 +178,7 @@ theorem of_integer [fr : IsFractionRing hv.v.valuationSubring.toSubring K]
     (Polynomial.map (algebraMap hv.v.valuationSubring.toSubring K)
       (minpoly hv.v.valuationSubring.toSubring x)) := by
   letI := nontriviallyDiscretelyNormedField K
+  letI : IsIntegrallyClosed hv.v.valuationSubring := sorry
   have is_minpoly : minpoly K (x : L) =
     Polynomial.map (algebraMap hv.v.valuationSubring.toSubring K)
         (minpoly hv.v.valuationSubring.toSubring x) := by

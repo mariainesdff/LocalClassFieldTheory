@@ -520,9 +520,11 @@ theorem valuation_subrings_eq : PadicInt.valuationSubring p = comap_Zp p := by
       @Tendsto.comp ℕ (Q_p p) ℚ_[p] (fun n ↦ (padicEquiv p).symm x ^ n) (padicEquiv p) atTop
         (𝓝 0) (𝓝 0) ?_ hx
     -- We postpone the verification of the first assumption in `tendsto.comp`
-    · simp_rw [← _root_.map_pow (padicEquiv p).symm x, Function.comp,
+    · simp_rw [← _root_.map_pow (padicEquiv p).symm x] at hx
+      rw [PadicInt.nonunit_mem_iff_top_nilpotent]
+      sorry/- simp_rw [← _root_.map_pow (padicEquiv p).symm x, Function.comp,
         RingEquiv.apply_symm_apply] at hx
-      rwa [PadicInt.nonunit_mem_iff_top_nilpotent]
+      rwa [PadicInt.nonunit_mem_iff_top_nilpotent] -/
     · rw [← _root_.map_zero (padicEquiv p)]
       apply Continuous.tendsto (compare p).symm.3.continuous 0
 

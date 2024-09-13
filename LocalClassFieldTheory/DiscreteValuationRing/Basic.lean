@@ -248,8 +248,7 @@ theorem associatedOfUniformizer {π₁ π₂ : Uniformizer v} : Associated π₁
   use ((Integer.isUnit_iff_valuation_eq_one p).mpr hval).unit
   simp only [IsUnit.unit_spec]
   apply_fun ((↑·) : K₀ → K) using Subtype.val_injective
-  simp only [Submonoid.coe_mul, ne_eq, ← mul_assoc, mul_inv_cancel₀ (Uniformizer_ne_zero v π₁.2),
-    one_mul]
+  simp only [Subring.coe_mul, ← mul_assoc, mul_inv_cancel₀ (Uniformizer_ne_zero v π₁.2), one_mul]
 
 theorem pow_Uniformizer {r : K₀} (hr : r ≠ 0) (π : Uniformizer v) :
     ∃ n : ℕ, ∃ u : K₀ˣ, r = (π.1 ^ n).1  * u.1 := by

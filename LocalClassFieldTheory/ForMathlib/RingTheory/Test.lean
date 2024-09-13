@@ -43,7 +43,7 @@ noncomputable def _root_.Ideal.polynomialQuotientIrreducibleAlgEquivResidueField
    (by rw [Ideal.map_map]; rfl)
   Set.image_singleton ▸ Ideal.map_span C {ϖ} ▸ (Irreducible.maximalIdeal_eq h ▸  (β.symm).trans φ)
 
-set_option profiler true
+--set_option profiler true
 
 noncomputable def DoubleQuot.quotSpanQuotEquivResidueFieldPolynomialQuot [DiscreteValuationRing A]
     {ϖ : A} (h : Irreducible ϖ) (I : Ideal A[X]) :

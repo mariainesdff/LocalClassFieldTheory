@@ -121,8 +121,8 @@ noncomputable def FpXIntCompletion.equivValuationSubring :
     exact x.2
   left_inv x   := by simp only [SetLike.eta]
   right_inv x  := by simp only [SetLike.eta]
-  map_mul' x y := by simp only [Subring.coe_mul, MulMemClass.mk_mul_mk]
-  map_add' x y := by simp only [Subring.coe_add, AddMemClass.mk_add_mk]
+  map_mul' x y := by simp only [MulMemClass.coe_mul, MulMemClass.mk_mul_mk]
+  map_add' x y := by simp only [AddMemClass.coe_add, AddMemClass.mk_add_mk]
 
 variable {p}
 

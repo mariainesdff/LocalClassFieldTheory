@@ -7,7 +7,7 @@ import Mathlib.Algebra.CharP.Subring
 import Mathlib.FieldTheory.Finite.GaloisField
 import LocalClassFieldTheory.DiscreteValuationRing.Complete
 import LocalClassFieldTheory.LaurentSeriesEquivAdicCompletion
-import LocalClassFieldTheory.ForMathlib.RingTheory.Valuation.AlgebraInstances
+import Mathlib.RingTheory.Valuation.AlgebraInstances
 import Mathlib.RingTheory.DedekindDomain.AdicValuation
 import Mathlib.RingTheory.Valuation.RankOne
 
@@ -287,7 +287,7 @@ theorem norm_lt_one_of_dvd {F : FpXIntCompletion p} :
   rcases F with ⟨f, f_mem⟩
   obtain ⟨G, h_fG⟩ := exists_powerSeries_of_memIntegers 𝔽_[p] f_mem
   rintro ⟨⟨y, y_mem⟩, h⟩
-  simp only
+  simp only [ValuationSubring.algebraMap_apply]
   erw [← h_fG, valuation_compare 𝔽_[p], ← WithZero.coe_one, ← ofAdd_zero, ← neg_zero, neg_zero, ←
     neg_add_cancel (1 : ℤ), WithZero.lt_succ_iff_le, ← Int.ofNat_one,
     LaurentSeries.intValuation_le_iff_coeff_lt_eq_zero]
@@ -298,8 +298,7 @@ theorem norm_lt_one_of_dvd {F : FpXIntCompletion p} :
   rw [PowerSeries.coeff_zero_eq_constantCoeff, ← PowerSeries.X_dvd_iff]
   replace h_fy : f = y * FpXCompletion.X p := by
     apply_fun algebraMap (FpXIntCompletion p) (FpXCompletion p) at h
-    rw [_root_.map_mul, algebraMap_eq_coe, algebraMap_eq_coe, algebraMap_eq_coe, mul_comm,
-      ← Subring.coe_mul] at h
+    rw [_root_.map_mul, algebraMap_eq_coe, algebraMap_eq_coe, algebraMap_eq_coe, mul_comm] at h
     exact h
   obtain ⟨Z, hZ⟩ := exists_powerSeries_of_memIntegers 𝔽_[p] y_mem
   refine dvd_of_mul_left_eq Z ?_
@@ -327,24 +326,43 @@ variable [Algebra (FpXCompletion p) L]
 
 --MI : inferInstance now works (August 2024)
 
---instance toIntAlgebra : Algebra (FpXIntCompletion p) K := inferInstance
-  --ValuationSubring.algebra' _ K
+instance toIntAlgebra : Algebra (FpXIntCompletion p) K :=
+  ValuationSubring.instAlgebraSubtypeMemValuationSubringWithZeroMultiplicativeInt _ K
+
+/- section AlgebraInstances
+
+variable {A : Type*} [Field A] (w : Valuation A ℤₘ₀) (B : Type*) [Field B] [Algebra A B]
+
+/- instance ValuationSubring.Algebra' : Algebra v.valuationSubring B :=
+  Algebra.ofSubring v.valuationSubring.toSubring
+
+instance : SMul v.valuationSubring B := Algebra.toSMul -/
+
+
+instance _root_.ValuationSubring.isScalarTower' : IsScalarTower w.valuationSubring A B :=
+  IsScalarTower.subsemiring w.valuationSubring.toSubsemiring
+
+end AlgebraInstances -/
 
 /- @[simp]
 theorem int_algebraMap_def :
     algebraMap (FpXIntCompletion p) K = (AdicAlgebra.toIntAlgebra p K).toRingHom :=
-  rfl -/
+  rfl   -/
 
 --MI : inferInstance now works (August 2024)
+--MI: as of 12 September 2024, this is again broken
 -- I am leaving this here because of the priority, but we should check if it is needed.
+
+set_option synthInstance.maxHeartbeats 100000 --This is now slow...
 instance (priority := 10000) : IsScalarTower (FpXIntCompletion p) (FpXCompletion p) K :=
-  inferInstance --ValuationSubring.isScalarTower _ _
+  ValuationSubring.instIsScalarTowerSubtypeMemValuationSubringWithZeroMultiplicativeInt
+    (@FpXCompletion.WithZero.valued p _).v _ K
 
 --MI : inferInstance now works (August 2024)
 -- I am leaving this here because of the priority, but we should check if it is needed.
 instance (priority := 1000) int_isScalarTower [Algebra K L] [IsScalarTower (FpXCompletion p) K L] :
     IsScalarTower (FpXIntCompletion p) K L :=
-  inferInstance --ValuationSubring.int_isScalarTower _ K L
+  ValuationSubring.instIsScalarTowerSubtypeMemValuationSubringWithZeroMultiplicativeInt _ K L
 
 theorem algebraMap_injective : Function.Injective ⇑(algebraMap (FpXIntCompletion p) L) :=
   ValuationSubring.algebraMap_injective _ L
@@ -442,6 +460,7 @@ instance eqCharLocalField (p : ℕ) [Fact (Nat.Prime p)] : EqCharLocalField p (F
   to_finiteDimensional := by
     convert (inferInstance : FiniteDimensional (FpXCompletion p) (FpXCompletion p))
 
+set_option synthInstance.maxHeartbeats 100000 -- This is now slow...
 /-- The ring of integers of `FpX_completion` as a mixed characteristic local field coincides with
   `FpX_int_completion`. -/
 def ringOfIntegersEquiv (p : ℕ) [Fact (Nat.Prime p)] :

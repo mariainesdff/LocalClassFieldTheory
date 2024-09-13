@@ -195,9 +195,14 @@ theorem coe_limsup {u : ℕ → ℝ≥0} (hu : BddAbove (Set.range u)) :
       simp_rw [coe_le_coe]
       exact iInf_le_of_le h (le_refl _)
 
+--TODO: PR
+lemma _root_.BddAbove.isBoundedUnder_of_range {α β : Type*} [Preorder α] {f : Filter β} {u : β → α} :
+    BddAbove (Set.range u) → f.IsBoundedUnder (· ≤ ·) u
+  | ⟨b, hb⟩ => isBoundedUnder_of ⟨b, by simpa [mem_upperBounds] using hb⟩
+
 theorem coe_limsup' {u : ℕ → ℝ} (hu : BddAbove (Set.range u)) (hu0 : 0 ≤ u) :
     limsup (fun n ↦ ((↑⟨u n, hu0 n⟩ : ℝ≥0) : ℝ≥0∞)) atTop =
-      ((↑⟨limsup u atTop, limsup_nonneg_of_nonneg hu.isBoundedUnder hu0⟩ : ℝ≥0) : ℝ≥0∞) := by
+      ((↑⟨limsup u atTop, limsup_nonneg_of_nonneg hu.isBoundedUnder_of_range hu0⟩ : ℝ≥0) : ℝ≥0∞) := by
   rw [← ENNReal.coe_limsup (NNReal.bdd_above' hu0 hu), ENNReal.coe_inj, ← NNReal.coe_inj,
     NNReal.coe_mk, NNReal.coe_limsup]
 

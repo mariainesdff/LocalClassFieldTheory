@@ -1207,8 +1207,7 @@ def Adjoin.algebraNorm (f : AlgebraNorm K L) (x : L) : AlgebraNorm K K⟮x⟯ wh
     ZeroMemClass.coe_zero, _root_.map_zero]
   add_le' a b := by simp only [Function.comp_apply, _root_.map_add, map_add_le_add]
   mul_le' a b := by simp only [Function.comp_apply, IntermediateField.algebraMap_apply,
-    Submonoid.coe_mul, Subsemiring.coe_toSubmonoid, Subalgebra.coe_toSubsemiring,
-    IntermediateField.coe_toSubalgebra, map_mul_le_mul]
+    MulMemClass.coe_mul, map_mul_le_mul]
   smul' r a := by
     simp only [Function.comp_apply, Algebra.smul_def]
     rw [map_mul, ← RingHom.comp_apply, ← IsScalarTower.algebraMap_eq, ← Algebra.smul_def,

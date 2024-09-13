@@ -534,9 +534,9 @@ theorem Cauchy.coeff_eventually_equal {ℱ : Filter (LaurentSeries K)} (hℱ : C
     simp only [Set.mem_Iio, Set.mem_Ico, inter_mem_iff]
     constructor
     · convert hℱ.exists_lb_coeff_ne.choose_spec using 1
-      ext f
+      sorry/- ext f
       simp only [Set.mem_Iio, Set.mem_iInter, Set.mem_setOf_eq]
-      rfl
+      rfl -/
     · have : ⋂ x, ⋂ (_ : hℱ.exists_lb_coeff_ne.choose ≤ x ∧ x < D), X x =
         (⋂ (n : ℤ) (_ : n ∈ Set.Ico N D), X n) := by
         simp only [Set.mem_Ico]

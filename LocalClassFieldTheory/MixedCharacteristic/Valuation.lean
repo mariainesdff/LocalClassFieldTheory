@@ -115,8 +115,8 @@ noncomputable def PadicInt.equivValuationSubring :
     exact x.2
   left_inv x   := by simp only [SetLike.eta]
   right_inv x  := by simp only [SetLike.eta]
-  map_mul' x y := by simp only [Submonoid.coe_mul, Subsemiring.coe_toSubmonoid, Submonoid.mk_mul_mk]
-  map_add' x y := by simp only [Subsemiring.coe_add, AddMemClass.mk_add_mk]
+  map_mul' x y := by simp only [MulMemClass.coe_mul, MulMemClass.mk_mul_mk]
+  map_add' x y := by simp only [AddMemClass.coe_add, AddMemClass.mk_add_mk]
 
 variable {p}
 

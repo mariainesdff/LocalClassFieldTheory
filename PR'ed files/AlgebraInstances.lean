@@ -35,7 +35,10 @@ variable {K : Type*} [Field K] (v : Valuation K ℤₘ₀) (L : Type*) [Field L]
 namespace ValuationSubring
 
 --MI : inferInstance now works (August 2024)
---instance algebra' : Algebra v.valuationSubring L := inferInstance
+
+-- Implementation note : this instance was automatic in Lean3
+instance : Algebra v.valuationSubring L := Algebra.ofSubring v.valuationSubring.toSubring
+
  -- Algebra.ofSubring v.valuationSubring.toSubring
 --MI : inferInstance now works (August 2024)
 --Porting note: In Lean3 the following was already found as an instance, now it has to be specified
@@ -51,8 +54,8 @@ theorem algebraMap_def :
     algebraMap v.valuationSubring L = (ValuationSubring.algebra' v L).toRingHom := rfl -/
 
 --MI : inferInstance now works (August 2024)
---instance isScalarTower : IsScalarTower v.valuationSubring K L :=
-  --inferInstance --IsScalarTower.subsemiring v.valuationSubring.toSubsemiring
+instance isScalarTower : IsScalarTower v.valuationSubring K L :=
+  IsScalarTower.subsemiring v.valuationSubring.toSubsemiring
 
 theorem algebraMap_injective : Injective (algebraMap v.valuationSubring L) :=
   (NoZeroSMulDivisors.algebraMap_injective K L).comp (IsFractionRing.injective _ _)
@@ -67,10 +70,9 @@ theorem isIntegral_of_mem_ringOfIntegers {x : L} (hx : x ∈ integralClosure v.v
 variable (E : Type _) [Field E] [Algebra K E] [Algebra L E] [IsScalarTower K L E]
 
 --MI : inferInstance now works (August 2024)
---instance isScalarTower' : IsScalarTower v.valuationSubring L E := inferInstance
-/- where smul_assoc x y z := by
+instance isScalarTower' : IsScalarTower v.valuationSubring L E where smul_assoc x y z := by
   {nth_rw 1 [← one_smul K y]
-   rw [← one_smul K (y • z), ← smul_assoc, ← smul_assoc, ← smul_assoc]} -/
+   rw [← one_smul K (y • z), ← smul_assoc, ← smul_assoc, ← smul_assoc]}
 
 /-- Given an algebra between two field extensions `L` and `E` of a field `K` with a valuation `v`,
   create an algebra between their two rings of integers. -/

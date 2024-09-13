@@ -295,7 +295,7 @@ theorem smoothingSeminorm'_isLimit_ne_zero (hf1 : f 1 ≤ 1) {x : R} (hx : f x �
         have hL0' : 0 < L + ε / 2 := add_pos_of_nonneg_of_pos hL0 (half_pos hε)
         rw [heq, ← tsub_le_iff_left]
         nth_rw 3 [← mul_one (L + ε / 2)]
-        rw [mul_assoc, ← mul_sub, mul_comm, ← le_div_iff hL0', div_div]
+        rw [mul_assoc, ← mul_sub, mul_comm, ← le_div_iff₀ hL0', div_div]
         exact hm2 n (le_trans (le_max_right (m1 : ℕ) m2) hn)
       have h4 : 0 < f (x ^ (n % ↑m1)) ^ (1 / (n : ℝ)) := rpow_pos_of_pos hxn' _
       have h5 : 0 < (L + ε / 2) * (L + ε / 2) ^ (-(↑(n % ↑m1) / (n : ℝ))) :=
@@ -621,7 +621,7 @@ theorem smoothingSeminorm_isNonarchimedean (hf1 : f 1 ≤ 1) (hna : IsNonarchime
       smoothingSeminorm' f x ^ a * smoothingSeminorm' f y ^ b + ε :=
     exists_lt_of_limsup_le (range_bddAbove_mul (f_bddAbove f hf1 hmu_le _ _)
         (fun n => rpow_nonneg (apply_nonneg _ _) _) (f_bddAbove f hf1 hnu_le _ _)
-        fun n => rpow_nonneg (apply_nonneg _ _) _).isBoundedUnder hxy hε
+        fun n => rpow_nonneg (apply_nonneg _ _) _).isBoundedUnder_of_range hxy hε
   obtain ⟨N, hN⟩ := hex
   apply le_trans (ciInf_le (smoothingSeminorm_seq_bddBelow f _)
     ⟨ψ N, lt_of_le_of_lt (_root_.zero_le (ψ 0)) (hψ_mono.lt_iff_lt.mpr N.pos)⟩)

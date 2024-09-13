@@ -21,7 +21,7 @@ import LocalClassFieldTheory.ForMathlib.FieldTheory.Minpoly.IsIntegrallyClosed -
 import LocalClassFieldTheory.ForMathlib.NumberTheory.Padics.PadicIntegers
 -- import LocalClassFieldTheory.ForMathlib.RingTheory.DedekindDomain.Ideal --In PR #13065
 import LocalClassFieldTheory.ForMathlib.RingTheory.Ideal.LocalRing -- In PR #15725
-import LocalClassFieldTheory.ForMathlib.RingTheory.Valuation.AlgebraInstances -- In PR #15734
+--import LocalClassFieldTheory.ForMathlib.RingTheory.Valuation.AlgebraInstances -- In PR #15734
 -- import LocalClassFieldTheory.ForMathlib.RingTheory.Valuation.Integers -- In PR #12247
 import LocalClassFieldTheory.ForMathlib.RingTheory.Valuation.IntPolynomial -- In PR #15733
 import LocalClassFieldTheory.ForMathlib.RingTheory.Valuation.Minpoly -- In PR #15736
@@ -37,6 +37,7 @@ import LocalClassFieldTheory.ForMathlib.WithZero -- Partly in PR #15741
 import LocalClassFieldTheory.FromMathlib.AlgNormOfGalois
 import LocalClassFieldTheory.FromMathlib.CpDef
 -- import LocalClassFieldTheory.FromMathlib.Filter -- In PR #12430
+-- TODO: uncomment
 import LocalClassFieldTheory.FromMathlib.Limsup -- Mostly in PR #15373
 --import LocalClassFieldTheory.FromMathlib.Minpoly -- In PR #12450
 import LocalClassFieldTheory.FromMathlib.NormalClosure
