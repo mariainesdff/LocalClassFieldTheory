@@ -400,9 +400,10 @@ variable (K : Type _) [Field K]
 
 -- end LaurentSeries
 ---`*4` to here is in PR #14418
-section CompletionLaurentSeries
 
+-- `*6`From here ....
 open LaurentSeries Polynomial
+
 section Complete
 
 open Filter TopologicalSpace
@@ -499,9 +500,6 @@ theorem Cauchy.exists_lb_coeff_ne {ℱ : Filter (LaurentSeries K)} (hℱ : Cauch
   refine ⟨min N₁ N₂, ℱ.3 hN₁ fun _ hf d hd ↦ ?_⟩
   rw [hf d (lt_of_lt_of_le hd (min_le_left _ _)), hN₂ d (lt_of_lt_of_le hd (min_le_right _ _))]
 
--- **FAE**: Remove!
-set_option pp.proofs true
-
 
 /- Given a Cauchy filter in the Laurent Series and a bound `D`, for almost all series in the filter
 the coefficients below `D` coincide with `Caucy.coeff`-/
@@ -566,6 +564,8 @@ instance : CompleteSpace (LaurentSeries K) :=
   ⟨fun hℱ ↦ ⟨hℱ.mk_LaurentSeries, fun _ hS ↦ hℱ.eventually_mem_nhds hS⟩⟩
 
 end Complete
+
+-- `#6`... to here, is in PR #16865
 
 section Dense
 
@@ -955,5 +955,3 @@ def powerSeriesRingEquiv : PowerSeries K ≃+* (Polynomial.idealX K).adicComplet
 end PowerSeries
 
 end Comparison
-
-end CompletionLaurentSeries
