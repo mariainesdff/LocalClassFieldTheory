@@ -33,7 +33,7 @@ WithZero, multiplicative, nnreal
 
 noncomputable section
 
-open scoped DiscreteValuation NNReal
+open scoped Multiplicative NNReal
 
 open Multiplicative WithZero Equiv
 
@@ -94,8 +94,6 @@ theorem one_lt_div' {α : Type _} [LinearOrderedCommGroupWithZero α] (a : α) {
     1 < a / b ↔ b < a := by
   rw [← mul_lt_mul_right₀ (zero_lt_iff.mpr hb), one_mul, div_eq_mul_inv, inv_mul_cancel_right₀ hb]
 
-open scoped DiscreteValuation
-
 theorem strictMonoOn_zpow {n : ℤ} (hn : 0 < n) : StrictMonoOn (fun x : ℤₘ₀ ↦ x ^ n) (Set.Ioi 0) :=
   fun a ha b _ hab ↦ by
     have ha0 : a ≠ 0 := ne_of_gt ha
@@ -133,7 +131,7 @@ theorem ofAdd_neg_one_lt_one : (↑(Multiplicative.ofAdd (-1 : ℤ)) : ℤₘ₀
 theorem lt_succ_iff_le (x : ℤₘ₀) (m : ℤ) :
     x < (↑(ofAdd (m + 1)) : ℤₘ₀) ↔ x ≤ (↑(ofAdd m) : ℤₘ₀) := by
   by_cases hx : x = 0
-  · simpa only [hx, zero_le', iff_true_iff, zero_lt_iff] using WithZero.coe_ne_zero
+  · simpa only [hx, zero_le', iff_true, zero_lt_iff] using WithZero.coe_ne_zero
   · obtain ⟨γ, rfl⟩ := WithZero.ne_zero_iff_exists.mp hx
     rw [coe_le_coe, coe_lt_coe, ← toAdd_le, ← toAdd_lt, toAdd_ofAdd, toAdd_ofAdd]
     exact ⟨Int.le_of_lt_add_one, Int.lt_add_one_of_le⟩

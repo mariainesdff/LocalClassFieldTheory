@@ -116,11 +116,15 @@ theorem le_iInf_hMul_iInf {ι : Sort _} [hι : Nonempty ι] {a : ℝ≥0∞} {f 
     (hf : ∀ x, f x ≠ ⊤) (hg : ∀ x, g x ≠ ⊤) (H : ∀ i j : ι, a ≤ f i * g j) :
     a ≤ iInf f * iInf g := by
   have hg' : iInf g ≠ ⊤ := by rw [ne_eq, iInf_eq_top, not_forall]; exact ⟨hι.some, hg hι.some⟩
-  rw [iInf_mul hg']
+  rw [iInf_mul]
   refine le_iInf ?_
   intro i
-  rw [mul_iInf (hf i)]
+  rw [mul_iInf]
   exact le_iInf (H i)
+  · intro h
+    exact (hf i h).elim
+  · intro h
+    exact (hg' h).elim
 
 /-- If `u v : ι → ℝ≥0∞` take real values and are antitone, then `infi (u * v) ≤ infi u * infi v`. -/
 theorem iInf_hMul_le_hMul_iInf {u v : ℕ → ℝ≥0∞} (hu_top : ∀ x, u x ≠ ⊤) (hu : Antitone u)

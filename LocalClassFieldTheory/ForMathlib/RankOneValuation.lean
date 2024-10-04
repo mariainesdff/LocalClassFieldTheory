@@ -37,7 +37,7 @@ valuation, rank_one_valuation
 
 open NNReal Valuation
 
-open scoped DiscreteValuation
+open scoped Multiplicative
 
 namespace RankOneValuation
 

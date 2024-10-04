@@ -55,7 +55,7 @@ loops in the type-class inference mechanism.
 -/
 universe w₁ w₂
 
-open scoped DiscreteValuation
+open scoped Multiplicative
 
 open Multiplicative
 
@@ -358,7 +358,7 @@ theorem val_le_iff_dvd (L : Type w₁) [Field L] {w : Valuation L ℤₘ₀} [Is
     w x ≤ ofAdd (-(n : ℤ)) ↔ LocalRing.maximalIdeal w.valuationSubring ^ n ∣ Ideal.span {x} := by
   by_cases hx : x = 0
   · rw [Ideal.span_singleton_eq_bot.mpr hx, hx, Subring.coe_zero, Valuation.map_zero]
-    simp only [WithZero.zero_le, true_iff_iff, ← Ideal.zero_eq_bot, dvd_zero]
+    simp only [WithZero.zero_le, true_iff, ← Ideal.zero_eq_bot, dvd_zero]
   · set r := Submodule.IsPrincipal.generator (LocalRing.maximalIdeal w.valuationSubring) with hr
     have hrn : w (r ^ n) = ofAdd (-(n : ℤ)) := by
       replace hr : IsUniformizer w r := DiscreteValuation.IsUniformizerOfGenerator w ?_

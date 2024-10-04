@@ -149,7 +149,7 @@ theorem isNonarchimedean_finset_image_add {F α : Type _} [Ring α] [FunLike F �
       by_cases hMa : f (g M) ≤ f (g a)
       · refine ⟨a, ?_, le_trans (hna _ _) (max_le_iff.mpr ⟨le_refl _, le_trans hM hMa⟩)⟩
         simp only [Finset.nonempty_coe_sort, Finset.insert_nonempty, Finset.mem_insert,
-          eq_self_iff_true, true_or_iff, forall_true_left]
+          eq_self_iff_true, true_or, forall_true_left]
       · rw [not_le] at hMa
         by_cases hs : s.Nonempty
         · refine ⟨M, ?_, le_trans (hna _ _) (max_le_iff.mpr ⟨le_of_lt hMa, hM⟩)⟩
@@ -246,6 +246,8 @@ theorem map_pow_le_pow' {F α : Type _} [Ring α] [FunLike F α ℝ] [RingSemino
     simp only [pow_succ _ n];
       exact le_trans (map_mul_le_mul f _ a)
         (mul_le_mul_of_nonneg_right (map_pow_le_pow' hf1 _ n) (apply_nonneg f a))
+
+-/
 
 /-- An algebra norm on an `R`-algebra norm `S` is a ring norm on `S` compatible with the
   action of `R`. -/
@@ -439,3 +441,5 @@ def NormedField.toMulRingNorm (R : Type _) [NormedField R] : MulRingNorm R where
   map_mul'  := norm_mul
   neg'      := norm_neg
   eq_zero_of_map_eq_zero' x hx := by rw [← norm_eq_zero]; exact hx
+
+-/

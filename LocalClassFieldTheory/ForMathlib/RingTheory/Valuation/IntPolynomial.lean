@@ -23,7 +23,7 @@ This is useful when dealing with integral elements in an extension of fields.
 
 -- In PR #15733
 
-open scoped DiscreteValuation
+open scoped Multiplicative
 
 variable {K : Type*} [Field K] (v : Valuation K ℤₘ₀)
 

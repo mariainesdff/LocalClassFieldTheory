@@ -102,7 +102,7 @@ noncomputable section
 
 open Polynomial PowerSeries IsDedekindDomain.HeightOneSpectrum
 
-open scoped DiscreteValuation
+open scoped Multiplicative
 
 variable (K : Type _) [Field K]
 
@@ -569,7 +569,9 @@ variable (K : Type _) [Field K]
 
 section Dense
 
-open HahnSeries
+open scoped Multiplicative
+
+open HahnSeries LaurentSeries
 
 theorem exists_pol_int_val_lt (F : PowerSeries K) (η : ℤₘ₀ˣ) :
     ∃ P : Polynomial K, (PowerSeries.idealX K).intValuation (F - P) < η := by
@@ -635,7 +637,7 @@ theorem coe_range_dense : DenseRange (Coe.coe : RatFunc K → LaurentSeries K) :
   letI : Ring (LaurentSeries K) := inferInstance
   rw [denseRange_iff_closure_range]
   ext f
-  simp only [UniformSpace.mem_closure_iff_symm_ball, Set.mem_univ, iff_true_iff, Set.Nonempty,
+  simp only [UniformSpace.mem_closure_iff_symm_ball, Set.mem_univ, iff_true, Set.Nonempty,
     Set.mem_inter_iff, Set.mem_range, Set.mem_setOf_eq, exists_exists_eq_and]
   intro V hV h_symm
   rw [uniformity_eq_comap_neg_add_nhds_zero_swapped] at hV
@@ -826,14 +828,14 @@ theorem coe_X_compare :
   rw [PowerSeries.coe_X, ← RatFunc.coe_X, ← LaurentSeries_coe, ← AbstractCompletion.compare_coe]
   rfl
 
-open Filter AbstractCompletion
+open Filter AbstractCompletion LaurentSeries
 
-open scoped WithZeroTopology Topology
+open scoped WithZeroTopology Topology Multiplicative
 
 theorem valuation_LaurentSeries_equal_extension :
-    (LaurentSeriesPkg K).denseInducing.extend Valued.v =
+    (LaurentSeriesPkg K).isDenseInducing.extend Valued.v =
       (@Valued.v (LaurentSeries K) _ ℤₘ₀ _ _ : (LaurentSeries K) → ℤₘ₀) := by
-  apply DenseInducing.extend_unique
+  apply IsDenseInducing.extend_unique
   · intro x
     erw [valuation_eq_LaurentSeries_valuation K x]
     rfl
