@@ -131,9 +131,6 @@ theorem iInf_hMul_le_hMul_iInf {u v : ℕ → ℝ≥0∞} (hu_top : ∀ x, u x �
   intro m n
   exact le_trans (hb (max m n)) (mul_le_mul' (hu (le_max_left _ _)) (hv (le_max_right _ _)))
 
-theorem iSup_tail_seq (u : ℕ → ℝ≥0∞) (n : ℕ) :
-    (⨆ (k : ℕ) (_ : n ≤ k), u k) = ⨆ k : { k : ℕ // n ≤ k }, u k := by rw [iSup_subtype]
-
 theorem le_iSup_prop (u : ℕ → ℝ≥0∞) {n k : ℕ} (hnk : n ≤ k) : u k ≤ ⨆ (k : ℕ) (_ : n ≤ k), u k := by
   refine le_iSup_of_le k ?_
   rw [ciSup_pos hnk]
@@ -149,8 +146,9 @@ theorem Antitone.iSup {u : ℕ → ℝ≥0∞} : Antitone fun n : ℕ ↦ ⨆ (k
 /-- If `u : ℕ → ℝ≥0∞` is bounded above by a real number, then its `supr` is finite. -/
 theorem iSup_le_top_of_bdd_above {u : ℕ → ℝ≥0∞} {B : ℝ≥0} (hu : ∀ x, u x ≤ B) (n : ℕ) :
     (⨆ (k : ℕ) (_ : n ≤ k), u k) ≠ ⊤ :=
-  haveI h_le : (⨆ (k : ℕ) (_ : n ≤ k), u k) ≤ B := by
-    rw [iSup_tail_seq]
+  have h_le : (⨆ (k : ℕ) (_ : n ≤ k), u k) ≤ B := by
+    have : (⨆ (k : ℕ) (_ : n ≤ k), u k) = ⨆ k : { k : ℕ // n ≤ k }, u k := by rw [iSup_subtype]
+    rw [this]
     exact iSup_le fun m ↦ hu m
   ne_top_of_le_ne_top coe_ne_top h_le
 
