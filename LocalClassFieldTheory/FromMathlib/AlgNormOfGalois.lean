@@ -70,7 +70,7 @@ theorem csupr₂_le {ι : Sort _} [Nonempty ι] {κ : ι → Prop} {α : Type _}
   by_cases hx : κ x
   · haveI : Nonempty (κ x) := ⟨hx⟩
     exact ciSup_le fun hx' => h _ _
-  · rw [← iff_false_iff] at hx
+  · rw [← iff_false] at hx
     simp only [hx, ciSup_false, bot_le]
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/

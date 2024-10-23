@@ -81,7 +81,7 @@ namespace Padic'
 
 open Valuation Int
 
-open scoped DiscreteValuation
+open scoped Multiplicative
 
 attribute [-instance] Rat.instMetricSpace Rat.instNormedField Rat.instDenselyNormedField
   Rat.instDivisionRing Rat.instNormedAddCommGroup

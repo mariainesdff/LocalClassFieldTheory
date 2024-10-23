@@ -20,7 +20,7 @@ namespace IsDedekindDomain.HeightOneSpectrum
 
 open IsDedekindDomain IsDedekindDomain.HeightOneSpectrum Valuation DiscreteValuation
 
-open scoped DiscreteValuation
+open scoped Multiplicative
 
 variable (R : Type*) [CommRing R] [IsDedekindDomain R] (K : Type*) [Field K]
   [Algebra R K] [IsFractionRing R K] (v : HeightOneSpectrum R)

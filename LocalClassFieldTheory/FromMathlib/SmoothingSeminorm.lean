@@ -502,7 +502,7 @@ private theorem f_limsup_le_one {s : ℕ → ℕ} (hs_le : ∀ n : ℕ, s n ≤ 
       apply le_of_forall_pos_le_add
       intro ε hε
       have h1 : (1 : ℝ) ∈ Set.Ioo 0 (1 + ε) := by
-        simp only [Set.mem_Ioo, zero_lt_one, lt_add_iff_pos_right, true_and_iff, hε]
+        simp only [Set.mem_Ioo, zero_lt_one, lt_add_iff_pos_right, true_and, hε]
       obtain ⟨k, hk⟩ := hf_lim (Set.Ioo (0 : ℝ) (1 + ε)) h1 isOpen_Ioo
       exact hc_bd (1 + ε) k fun b hb => le_of_lt (Set.mem_Ioo.mp (hk b hb)).2
 

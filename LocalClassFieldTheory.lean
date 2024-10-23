@@ -1,5 +1,5 @@
 -- Basic folder *complete*
-import LocalClassFieldTheory.LaurentSeriesEquivAdicCompletion  -- In PR #11720, #13063, #13064, #14418 (to be cont'd)
+import LocalClassFieldTheory.LaurentSeriesEquivAdicCompletion  -- In PR #11720, #13063, #13064, #14418, #16865 (to be cont'd)
 import LocalClassFieldTheory.PadicCompare
 import LocalClassFieldTheory.SpectralNorm
 -- DiscreteValuationRing folder *complete*
@@ -27,7 +27,7 @@ import LocalClassFieldTheory.ForMathlib.RingTheory.Valuation.IntPolynomial -- In
 import LocalClassFieldTheory.ForMathlib.RingTheory.Valuation.Minpoly -- In PR #15736
 import LocalClassFieldTheory.ForMathlib.RingTheory.IntegralClosure -- In PR #15738
 -- import LocalClassFieldTheory.ForMathlib.Topology.UniformSpace.AbstractCompletion -- In PR #12979
-import LocalClassFieldTheory.ForMathlib.DiscreteUniformity -- In PR #12179
+-- import LocalClassFieldTheory.ForMathlib.DiscreteUniformity -- In PR #16865 (was in #12179)
 import LocalClassFieldTheory.ForMathlib.DiscreteValuationRing
 -- import LocalClassFieldTheory.ForMathlib.Polynomial -- In PR #13064
 -- import LocalClassFieldTheory.ForMathlib.PowerSeries -- In PR #12160 and PR #12245
