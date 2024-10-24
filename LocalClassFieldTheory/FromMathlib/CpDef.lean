@@ -83,9 +83,12 @@ theorem norm_def (x : QPAlg p) : ‖x‖ = spectralNorm ℚ_[p] (QPAlg p) x :=
 theorem QP.norm_extends (x : ℚ_[p]) : ‖(x : QPAlg p)‖ = ‖x‖ :=
   spectralAlgNorm_extends (K := ℚ_[p]) (L := QPAlg p) _ padicNormE.nonarchimedean
 
+instance : IsUltrametricDist (QPAlg p) :=
+  IsUltrametricDist.isUltrametricDist_of_forall_norm_add_le_max_norm
+    (QPAlg.isNonarchimedean p)
+
 /-- `Q_p_alg p` is a valued field, with the valuation corresponding to the `p`-adic norm. -/
-instance valuedField : Valued (QPAlg p) ℝ≥0 :=
-  NormedField.toValued (QPAlg.isNonarchimedean p)
+instance valuedField : Valued (QPAlg p) ℝ≥0 := NormedField.toValued
 
 /-- The valuation of `x : Q_p_alg p` agrees with its `ℝ≥0`-valued norm. -/
 theorem v_def (x : QPAlg p) : Valued.v x = ‖x‖₊ :=

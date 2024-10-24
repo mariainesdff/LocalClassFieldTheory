@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: María Inés de Frutos-Fernández, Filippo A. E. Nuccio
 -/
 import LocalClassFieldTheory.DiscreteValuationRing.Basic
-import LocalClassFieldTheory.ForMathlib.FieldTheory.Minpoly.IsIntegrallyClosed
 import LocalClassFieldTheory.SpectralNorm
+import Mathlib.FieldTheory.Minpoly.IsIntegrallyClosed
 
 /-!
 # Extensions of discrete norms
@@ -38,7 +38,7 @@ In the meantime, we create definitions for all of the needed structures on `K` (
 
 noncomputable section
 
-open DiscreteValuation Multiplicative FiniteDimensional minpoly Polynomial Valuation WithZero
+open DiscreteValuation Multiplicative FiniteDimensional Module minpoly Polynomial Valuation WithZero
 
 open scoped DiscreteValuation NNReal
 
@@ -47,9 +47,9 @@ section AuxLemma
 variable {K : Type _} [Field K] {v : Valuation K ℤₘ₀} {L : Type _} [Field L] [Algebra K L]
 
 theorem map_pow_div [FiniteDimensional K L] (x : Lˣ) :
-    (withZeroMultIntToNNReal (base_ne_zero K v))
+    (WithZeroMulInt.toNNReal (base_ne_zero K v))
         (v ((minpoly K (x : L)).coeff 0) ^ (finrank K L / (minpoly K (x : L)).natDegree)) =
-      ((withZeroMultIntToNNReal (base_ne_zero K v)) (v ((minpoly K (x : L)).coeff 0)) ^
+      ((WithZeroMulInt.toNNReal (base_ne_zero K v)) (v ((minpoly K (x : L)).coeff 0)) ^
           (1 / ((minpoly K (x : L)).natDegree : ℝ))) ^
         (finrank K L : ℝ) := by
   have h_alg : Algebra.IsAlgebraic K L := Algebra.IsAlgebraic.of_finite K L
@@ -77,7 +77,7 @@ def nontriviallyDiscretelyNormedField : NontriviallyNormedField K :=
       obtain ⟨x, hx⟩ := exists_Uniformizer_ofDiscrete hv.v
       use x.1⁻¹
       erw [@norm_inv K (@NormedField.toNormedDivisionRing K (discretelyNormedField K)),
-        one_lt_inv_iff, RankOneValuation.norm_lt_one_iff_val_lt_one,
+        one_lt_inv_iff₀, RankOneValuation.norm_lt_one_iff_val_lt_one,
         RankOneValuation.norm_pos_iff_val_pos]
       exact ⟨Uniformizer_valuation_pos hv.v hx, Uniformizer_valuation_lt_one hv.v hx⟩ }
 
@@ -130,21 +130,21 @@ theorem zero : discreteNormExtension (K := K) (L := L) 0 = 0 :=
   coefficient of the minimal polynomial of `x` over `K`, raised to the
   `(1/(minpoly K x).nat_degree` power. -/
 theorem eq_root_zero_coeff (x : L) : discreteNormExtension (K := K) (L := L) x =
-      withZeroMultIntToNNReal (base_ne_zero K hv.v) (Valued.v ((minpoly K x).coeff 0)) ^
+      WithZeroMulInt.toNNReal (base_ne_zero K hv.v) (Valued.v ((minpoly K x).coeff 0)) ^
         (1 / (minpoly K x).natDegree : ℝ) :=
   @spectralNorm_eq_root_zero_coeff K (nontriviallyDiscretelyNormedField K) _ L _ _ _
     (norm_isNonarchimedean K) x
 
 theorem pow_eq_pow_root_zero_coeff' (x : L) (n : ℕ) :
     discreteNormExtension (K := K) (L := L) x ^ n =
-      withZeroMultIntToNNReal (base_ne_zero K hv.v) (Valued.v ((minpoly K x).coeff 0)) ^
+      WithZeroMulInt.toNNReal (base_ne_zero K hv.v) (Valued.v ((minpoly K x).coeff 0)) ^
         (n / (minpoly K x).natDegree : ℝ) := by
   rw [div_eq_inv_mul, Real.rpow_mul NNReal.zero_le_coe, eq_root_zero_coeff, inv_eq_one_div,
     Real.rpow_natCast]
 
 theorem pow_eq_pow_root_zero_coeff (x : L) {n : ℕ} (hn : (minpoly K x).natDegree ∣ n) :
     discreteNormExtension (K := K) (L := L) x ^ n =
-      withZeroMultIntToNNReal (base_ne_zero K hv.v) (Valued.v ((minpoly K x).coeff 0)) ^
+      WithZeroMulInt.toNNReal (base_ne_zero K hv.v) (Valued.v ((minpoly K x).coeff 0)) ^
         (n / (minpoly K x).natDegree) := by
   nth_rw 2 [← Real.rpow_natCast]
   rw [Nat.cast_div hn (Nat.cast_ne_zero.mpr
@@ -183,7 +183,7 @@ theorem of_integer [fr : IsFractionRing hv.v.valuationSubring.toSubring K]
     Polynomial.map (algebraMap hv.v.valuationSubring.toSubring K)
         (minpoly hv.v.valuationSubring.toSubring x) := by
     rw [eq_comm]
-    exact minpoly_ofSubring K L hv.v.valuationSubring.toSubring x
+    exact minpoly.ofSubring hv.v.valuationSubring.toSubring x
   rw [discreteNormExtension, ← is_minpoly]
   rfl
 

@@ -173,7 +173,7 @@ theorem spectralNorm_eq_root_zero_coeff [Algebra.IsAlgebraic K L]
       @spectralNorm_extends K _ L _ _ ((minpoly K x).coeff 0),
       @spectralValue.eq_of_tower K _ E _ _ L, ← spectral_mul_ring_norm_def hna, ←
       spectral_mul_ring_norm_def hna, Polynomial.coeff_zero_of_isScalarTower,
-      Polynomial.prod_roots_eq_coeff_zero_of_monic_of_split _ hspl, map_mul, map_pow,
+      Polynomial.prod_roots_eq_coeff_zero_of_monic_of_splits _ hspl, map_mul, map_pow,
       map_neg_eq_map, map_one, one_pow, one_mul, spectral_norm_pow_degree_eq_prof_roots hna x]
     exact IsSplittingField.splittingField _
     · have h_monic : (minpoly K x).leadingCoeff = 1 := by

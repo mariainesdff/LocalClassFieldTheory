@@ -5,6 +5,7 @@ Authors: María Inés de Frutos-Fernández, Filippo A. E. Nuccio
 -/
 import LocalClassFieldTheory.FromMathlib.RingSeminorm
 import Mathlib.Analysis.Normed.Ring.Seminorm
+import Mathlib.Data.Real.IsNonarchimedean
 import Mathlib.RingTheory.DedekindDomain.AdicValuation
 import Mathlib.RingTheory.Valuation.RankOne
 import Mathlib.Topology.Algebra.Valued.NormedValued
@@ -78,7 +79,7 @@ theorem norm_isNonarchimedean : IsNonarchimedean (@norm L _ Γ₀ _ val hv) :=
 def mulRingNormDef : MulRingNorm L where
   toFun        := norm
   map_zero'    := by simp only [norm, _root_.map_zero, Nonneg.coe_zero, coe_zero]
-  add_le' x y  := add_le_of_isNonarchimedean norm_nonneg (norm_isNonarchimedean L Γ₀) x y
+  add_le' x y  := IsNonarchimedean.add_le norm_nonneg (norm_isNonarchimedean L Γ₀)
   neg' x       := by simp only [norm, Valuation.map_neg]
   map_one'     := by simp only [norm, _root_.map_one, Nonneg.coe_one, coe_one]
   map_mul' x y := by simp only [norm, _root_.map_mul, Nonneg.coe_mul, NNReal.coe_mul]

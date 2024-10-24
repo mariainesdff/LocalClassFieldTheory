@@ -28,7 +28,7 @@ We prove some auxiliary results about limsups, infis, and suprs.
 limsup, Real, NNReal, ENNReal
 -/
 
--- Mostly in PR #15373
+-- Mostly in PR #18172
 
 noncomputable section
 
@@ -88,7 +88,7 @@ theorem coe_limsup {u : ℕ → ℝ} (hu : 0 ≤ u) :
 
 /-- If `u : ℕ → ℝ` is bounded above an nonnegative, it is also bounded above when regarded as
   a function to `ℝ≥0`. -/
-theorem bdd_above' {u : ℕ → ℝ} (hu0 : 0 ≤ u) (hu_bdd : BddAbove (Set.range u)) :
+theorem bddAbove' {u : ℕ → ℝ} (hu0 : 0 ≤ u) (hu_bdd : BddAbove (Set.range u)) :
     BddAbove (Set.range fun n : ℕ ↦ (⟨u n, hu0 n⟩ : ℝ≥0)) := by
   obtain ⟨B, hB⟩ := hu_bdd
   simp only [mem_upperBounds, Set.mem_range, forall_exists_index, forall_apply_eq_imp_iff] at hB
@@ -156,7 +156,8 @@ theorem iSup_le_top_of_bdd_above {u : ℕ → ℝ≥0∞} {B : ℝ≥0} (hu : �
     exact iSup_le fun m ↦ hu m
   ne_top_of_le_ne_top coe_ne_top h_le
 
-/-- If `u v : ℕ → ℝ≥0∞` are bounded above by real numbers, then
+-- Now in Mathlib, with different hypotheses
+/- /-- If `u v : ℕ → ℝ≥0∞` are bounded above by real numbers, then
   `filter.limsup (u * v) at_top ≤ filter.limsup u at_top * filter.limsup v at_top`. -/
 theorem limsup_mul_le' {u v : ℕ → ℝ≥0∞} {Bu Bv : ℝ≥0} (hu : ∀ x, u x ≤ Bu) (hv : ∀ x, v x ≤ Bv) :
     Filter.limsup (u * v) atTop ≤ Filter.limsup u atTop * Filter.limsup v atTop := by
@@ -173,7 +174,7 @@ theorem limsup_mul_le' {u v : ℕ → ℝ≥0∞} {Bu Bv : ℝ≥0} (hu : ∀ x,
   simp only [Filter.limsup_eq_iInf_iSup_of_nat, ge_iff_le, Pi.mul_apply]
   exact le_trans h_le
     (iInf_hMul_le_hMul_iInf (iSup_le_top_of_bdd_above hu) Antitone.iSup
-      (iSup_le_top_of_bdd_above hv) Antitone.iSup)
+      (iSup_le_top_of_bdd_above hv) Antitone.iSup) -/
 
 theorem coe_limsup {u : ℕ → ℝ≥0} (hu : BddAbove (Set.range u)) :
     ((limsup u atTop : ℝ≥0) : ℝ≥0∞) = limsup (fun n ↦ (u n : ℝ≥0∞)) atTop := by
@@ -197,15 +198,15 @@ theorem coe_limsup {u : ℕ → ℝ≥0} (hu : BddAbove (Set.range u)) :
       simp_rw [coe_le_coe]
       exact iInf_le_of_le h (le_refl _)
 
---TODO: PR
-lemma _root_.BddAbove.isBoundedUnder_of_range {α β : Type*} [Preorder α] {f : Filter β} {u : β → α} :
+-- In #16765
+/- lemma _root_.BddAbove.isBoundedUnder_of_range {α β : Type*} [Preorder α] {f : Filter β} {u : β → α} :
     BddAbove (Set.range u) → f.IsBoundedUnder (· ≤ ·) u
-  | ⟨b, hb⟩ => isBoundedUnder_of ⟨b, by simpa [mem_upperBounds] using hb⟩
+  | ⟨b, hb⟩ => isBoundedUnder_of ⟨b, by simpa [mem_upperBounds] using hb⟩ -/
 
 theorem coe_limsup' {u : ℕ → ℝ} (hu : BddAbove (Set.range u)) (hu0 : 0 ≤ u) :
     limsup (fun n ↦ ((↑⟨u n, hu0 n⟩ : ℝ≥0) : ℝ≥0∞)) atTop =
       ((↑⟨limsup u atTop, limsup_nonneg_of_nonneg hu.isBoundedUnder_of_range hu0⟩ : ℝ≥0) : ℝ≥0∞) := by
-  rw [← ENNReal.coe_limsup (NNReal.bdd_above' hu0 hu), ENNReal.coe_inj, ← NNReal.coe_inj,
+  rw [← ENNReal.coe_limsup (NNReal.bddAbove' hu0 hu), ENNReal.coe_inj, ← NNReal.coe_inj,
     NNReal.coe_mk, NNReal.coe_limsup]
 
 end ENNReal
@@ -213,7 +214,7 @@ end ENNReal
 namespace Real
 
 /-- If `u v : ℕ → ℝ` are nonnegative and bounded above, then `u * v` is bounded above. -/
-theorem range_bddAbove_mul {u v : ℕ → ℝ} (hu : BddAbove (Set.range u)) (hu0 : 0 ≤ u)
+theorem bddAbove_range_mul {u v : ℕ → ℝ} (hu : BddAbove (Set.range u)) (hu0 : 0 ≤ u)
     (hv : BddAbove (Set.range v)) (hv0 : 0 ≤ v) : BddAbove (Set.range (u * v)) := by
   obtain ⟨bu, hbu⟩ := hu
   obtain ⟨bv, hbv⟩ := hv
@@ -224,43 +225,30 @@ theorem range_bddAbove_mul {u v : ℕ → ℝ} (hu : BddAbove (Set.range u)) (hu
   exact mul_le_mul (hbu n) (hbv n) (hv0 n) (le_trans (hu0 n) (hbu n))
 
 
-
 /-- If `u v : ℕ → ℝ` are nonnegative and bounded above, then
   `filter.limsup (u * v) at_top ≤ filter.limsup u at_top * filter.limsup v at_top `.-/
 theorem limsup_mul_le {u v : ℕ → ℝ} (hu_bdd : BddAbove (Set.range u)) (hu0 : 0 ≤ u)
     (hv_bdd : BddAbove (Set.range v)) (hv0 : 0 ≤ v) :
     Filter.limsup (u * v) atTop ≤ Filter.limsup u atTop * Filter.limsup v atTop := by
-  have h_bdd : BddAbove (Set.range (u * v)) := range_bddAbove_mul hu_bdd hu0 hv_bdd hv0
-  have hc :
-    ∀ n : ℕ, (⟨u n * v n, mul_nonneg (hu0 n) (hv0 n)⟩ : ℝ≥0) = ⟨u n, hu0 n⟩ * ⟨v n, hv0 n⟩ := by
-    intro n; simp only [Nonneg.mk_mul_mk]
-  rw [NNReal.coe_limsup (mul_nonneg hu0 hv0), NNReal.coe_limsup hu0, NNReal.coe_limsup hv0, ←
-    NNReal.coe_mul, NNReal.coe_le_coe, ← ENNReal.coe_le_coe, ENNReal.coe_mul,
-    ENNReal.coe_limsup (NNReal.bdd_above' _ h_bdd),
-    ENNReal.coe_limsup (NNReal.bdd_above' hu0 hu_bdd),
-    ENNReal.coe_limsup (NNReal.bdd_above' hv0 hv_bdd)]
-  simp only [Pi.mul_apply, hc, ENNReal.coe_mul]
+  have h_bdd : BddAbove (Set.range (u * v)) := bddAbove_range_mul hu_bdd hu0 hv_bdd hv0
+  rw [NNReal.coe_limsup (mul_nonneg hu0 hv0), NNReal.coe_limsup hu0, NNReal.coe_limsup hv0,
+    ← NNReal.coe_mul, NNReal.coe_le_coe, ← ENNReal.coe_le_coe, ENNReal.coe_mul,
+    ENNReal.coe_limsup (NNReal.bddAbove' _ h_bdd), ENNReal.coe_limsup (NNReal.bddAbove' hu0 hu_bdd),
+    ENNReal.coe_limsup (NNReal.bddAbove' hv0 hv_bdd)]
   obtain ⟨Bu, hBu⟩ := hu_bdd
   obtain ⟨Bv, hBv⟩ := hv_bdd
-  simp only [Nonneg.mk_mul_mk]
   simp only [mem_upperBounds, Set.mem_range, forall_exists_index, forall_apply_eq_imp_iff]
     at hBu hBv
-  have hBu_0 : 0 ≤ Bu := le_trans (hu0 0) (hBu 0)
-  -- TODO: ask about this (Real.toNNReal might not be needed)
-  have hBu' : ∀ n : ℕ, Real.toNNReal (u n) ≤ Real.toNNReal Bu := by
-    intro n
-    rw [Real.toNNReal_of_nonneg (hu0 n), Real.toNNReal_of_nonneg hBu_0]
-    exact hBu n
-  have hBv_0 : 0 ≤ Bv := le_trans (hv0 0) (hBv 0)
-  have hBv' : ∀ n : ℕ, Real.toNNReal (v n) ≤ Real.toNNReal Bv := by
-    intro n
-    rw [Real.toNNReal_of_nonneg (hv0 n), Real.toNNReal_of_nonneg hBv_0]
-    exact hBv n
+  have hBu' : ∀ n : ℕ, ⟨u n, hu0 n⟩ ≤ Real.toNNReal Bu := fun n ↦ by
+    rw [← NNReal.coe_le_coe, NNReal.coe_mk, coe_toNNReal', le_max_iff]
+    exact Or.inl (hBu n)
+  have hBv' : ∀ n : ℕ, ⟨v n, hv0 n⟩ ≤ Real.toNNReal Bv := fun n ↦ by
+    rw [← NNReal.coe_le_coe, NNReal.coe_mk, coe_toNNReal', le_max_iff]
+    exact Or.inl (hBv n)
   simp_rw [← ENNReal.coe_le_coe] at hBu' hBv'
-  convert ENNReal.limsup_mul_le' hBu' hBv'
-  · rw [Pi.mul_apply, ← Real.toNNReal_of_nonneg, Real.toNNReal_mul (hu0 _), ENNReal.coe_mul]
-  · rw [Real.toNNReal_of_nonneg (hu0 _)]
-  · rw [Real.toNNReal_of_nonneg (hv0 _)]
+  apply ENNReal.limsup_mul_le' (Or.inr (ne_top_of_le_ne_top ENNReal.coe_ne_top
+      (le_trans limsup_le_iSup (iSup_le hBv')))) (Or.inl (ne_top_of_le_ne_top ENNReal.coe_ne_top
+      (le_trans limsup_le_iSup (iSup_le hBu'))))
 
   /-
 -- Alternative proof of limsup_mul_le

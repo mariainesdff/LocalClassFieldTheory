@@ -220,7 +220,7 @@ theorem norm_X : ‖X p‖ = 1 / (p : ℝ) := by
   have hX : ‖X p‖ = RankOne.hom _ (Valued.v (X p)) := rfl
   rw [hX, hv, DiscreteValuation.rankOne_hom_def]
   simp only [Int.reduceNeg, ofAdd_neg, WithZero.coe_inv, map_inv₀, NNReal.coe_inv, one_div, inv_inj]
-  simp only [withZeroMultIntToNNReal, MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk,
+  simp only [WithZeroMulInt.toNNReal, MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk,
     WithZero.coe_ne_zero, ↓reduceDIte, WithZero.unzero_coe, toAdd_ofAdd, zpow_one]
   rw [valuation_base_eq_char, NNReal.coe_natCast]
 
@@ -230,14 +230,14 @@ theorem norm_X_pos : 0 < ‖X p‖ := by
   rw [norm_X, one_div, inv_pos, Nat.cast_pos]; exact (Nat.Prime.pos Fact.out)
 
 theorem norm_X_lt_one : ‖X p‖ < 1 := by
-  rw [norm_X, one_div]; exact inv_lt_one (Nat.one_lt_cast.mpr (Nat.Prime.one_lt Fact.out))
+  rw [norm_X, one_div]; exact inv_lt_one_of_one_lt₀ (Nat.one_lt_cast.mpr (Nat.Prime.one_lt Fact.out))
 
 instance : NontriviallyNormedField (FpXCompletion p) :=
   { (by infer_instance : NormedField (FpXCompletion p)) with
     non_trivial := by
       use(X p)⁻¹
-      rw [norm_inv]
-      exact one_lt_inv norm_X_pos norm_X_lt_one }
+      rw [norm_inv, one_lt_inv₀ norm_X_pos]
+      exact norm_X_lt_one }
 
 theorem X_mem_int_completion : X p ∈ FpXIntCompletion p := by
   rw [mem_FpXIntCompletion, ← norm_le_one_iff_val_le_one]

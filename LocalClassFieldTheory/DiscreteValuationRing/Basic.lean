@@ -3,6 +3,7 @@ Copyright (c) 2024 María Inés de Frutos-Fernández, Filippo A. E. Nuccio. All 
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: María Inés de Frutos-Fernández, Filippo A. E. Nuccio
 -/
+import Mathlib.Data.Int.WithZero
 import Mathlib.RingTheory.DedekindDomain.AdicValuation
 import Mathlib.RingTheory.DedekindDomain.PID
 import Mathlib.RingTheory.DiscreteValuationRing.Basic
@@ -382,14 +383,14 @@ section RankOne
 open Valuation
 
 noncomputable instance rankOne : RankOne v where
-  hom := withZeroMultIntToNNReal (base_ne_zero K v)
-  strictMono' := withZeroMultIntToNNReal_strictMono (one_lt_base K v)
+  hom := WithZeroMulInt.toNNReal (base_ne_zero K v)
+  strictMono' := WithZeroMulInt.toNNReal_strictMono (one_lt_base K v)
   nontrivial' := by
     obtain ⟨π, hπ⟩ := exists_Uniformizer_ofDiscrete v
     exact
       ⟨π, ne_of_gt (Uniformizer_valuation_pos v hπ), ne_of_lt (Uniformizer_valuation_lt_one v hπ)⟩
 
-theorem rankOne_hom_def : RankOne.hom v = withZeroMultIntToNNReal (base_ne_zero K v) := rfl
+theorem rankOne_hom_def : RankOne.hom v = WithZeroMulInt.toNNReal (base_ne_zero K v) := rfl
 
 end RankOne
 

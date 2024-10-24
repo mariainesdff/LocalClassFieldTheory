@@ -5,6 +5,7 @@ Authors: María Inés de Frutos-Fernández
 -/
 import Mathlib.Analysis.Normed.Ring.Seminorm
 import Mathlib.Analysis.Seminorm
+import Mathlib.Data.Real.IsNonarchimedean
 
 /-!
 # Nonarchimedean ring seminorms and algebra norms
@@ -39,12 +40,14 @@ We also define algebra norms and multiplicative algebra norms.
 norm, nonarchimedean, pow_mul, power-multiplicative, algebra norm
 -/
 
--- Partly in PR #15445
+-- Partly in PR #15445, #14361, #12432, #16767
 
 
 open Metric
 
 namespace Nat
+
+-- This section is in #18171
 
 theorem one_div_cast_pos {n : ℕ} (hn : n ≠ 0) : 0 < 1 / (n : ℝ) := by
   rw [one_div, inv_pos, cast_pos]
@@ -77,6 +80,19 @@ def FunctionExtends {α : Type _} [CommRing α] (g : α → ℝ) {β : Type _} [
 -- def IsNonarchimedean {R : Type _} [AddGroup R] (f : R → ℝ) : Prop :=
 --   ∀ r s, f (r + s) ≤ max (f r) (f s)
 -/
+
+
+/-- Given a nonarchimedean additive group seminorm `f` on `α`, a number `n : ℕ` and a function
+  `g : ℕ → α`, there exists `m : ℕ` such that `f ((finset.range n).sum g) ≤ f (g m)`.
+  If `0 < n`, this `m` satisfies `m < n`. -/
+theorem isNonarchimedean_finset_range_add_le {F α : Type _} [Ring α] [FunLike F α ℝ]
+    [AddGroupSeminormClass F α ℝ] {f : F} (hna : IsNonarchimedean f) (n : ℕ) (g : ℕ → α) :
+    ∃ (m : ℕ) (_ : 0 < n → m < n), f ((Finset.range n).sum g) ≤ f (g m) := by
+  obtain ⟨m, hm, h⟩ := IsNonarchimedean.finset_image_add hna g (Finset.range n)
+  rw [Finset.nonempty_range_iff, ← zero_lt_iff, Finset.mem_range] at hm
+  exact ⟨m, hm, h⟩
+
+/- In #16767
 
 /-- A nonarchimedean function satisfies the triangle inequality. -/
 theorem add_le_of_isNonarchimedean {α : Type _} [AddCommGroup α] {f : α → ℝ} (hf : ∀ x : α, 0 ≤ f x)
@@ -247,7 +263,6 @@ theorem map_pow_le_pow' {F α : Type _} [Ring α] [FunLike F α ℝ] [RingSemino
       exact le_trans (map_mul_le_mul f _ a)
         (mul_le_mul_of_nonneg_right (map_pow_le_pow' hf1 _ n) (apply_nonneg f a))
 
--/
 
 /-- An algebra norm on an `R`-algebra norm `S` is a ring norm on `S` compatible with the
   action of `R`. -/
@@ -319,7 +334,9 @@ theorem extends_norm' {f : AlgebraNorm R S} (hf1 : f 1 = 1) (a : R) : f (a • (
 theorem extends_norm {f : AlgebraNorm R S} (hf1 : f 1 = 1) (a : R) : f (algebraMap R S a) = ‖a‖ :=
   by rw [Algebra.algebraMap_eq_smul_one]; exact extends_norm' hf1 _
 
-end AlgebraNorm
+end AlgebraNorm -/
+
+/- In #15445
 
 /-- A multiplicative algebra norm on an `R`-algebra norm `S` is a multiplicative ring norm on `S`
   compatible with the action of `R`. -/
@@ -372,6 +389,8 @@ instance mulAlgebraNormClass : MulAlgebraNormClass (MulAlgebraNorm R S) R S wher
 instance : CoeFun (MulAlgebraNorm R S) fun _ => S → ℝ :=
   DFunLike.hasCoeToFun
 
+
+
 theorem toFun_eq_coe (p : MulAlgebraNorm R S) : p.toFun = p := rfl
 
 @[ext]
@@ -401,14 +420,19 @@ def toRingNorm (f : MulRingNorm R) : RingNorm R where
   mul_le' x y := le_of_eq (f.map_mul' x y)
   eq_zero_of_map_eq_zero' := f.eq_zero_of_map_eq_zero'
 
-/-- A multiplicative ring norm is power-multiplicative. -/
+
+-- In #14361
+/- /-- A multiplicative ring norm is power-multiplicative. -/
 theorem isPowMul {A : Type _} [Ring A] (f : MulRingNorm A) : IsPowMul f := fun x n hn => by
   cases n
   · exfalso; linarith
-  · rw [map_pow]
+  · rw [map_pow] -/
 
 end MulRingNorm
+-/
 
+
+/- In #15445
 /-- The seminorm on a `semi_normed_ring`, as a `ring_seminorm`. -/
 def SeminormedRing.toRingSeminorm (R : Type _) [SeminormedRing R] : RingSeminorm R where
   toFun     := norm

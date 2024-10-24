@@ -5,6 +5,7 @@ Authors: María Inés de Frutos-Fernández
 -/
 --import Mathlib.Analysis.Normed.Ring.Seminorm
 import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
+import Mathlib.Data.Real.IsNonarchimedean
 import Mathlib.Topology.MetricSpace.Sequences
 import LocalClassFieldTheory.FromMathlib.Limsup
 import LocalClassFieldTheory.FromMathlib.RingSeminorm -- add lemmas to this PR
@@ -141,7 +142,7 @@ theorem isBoundedUnder {R : Type _} [CommRing R] (f : RingSeminorm R) (hf1 : f 1
     apply le_trans (h_le m)
     conv_rhs => rw [← rpow_one (f x)]
     exact rpow_le_rpow_of_exponent_le (le_of_lt (not_le.mp hfx))
-      (div_le_one_of_le (cast_le.mpr (hs_le _)) (cast_nonneg _))
+      (div_le_one_of_le₀ (cast_le.mpr (hs_le _)) (cast_nonneg _))
 
 end Filter
 
@@ -170,7 +171,7 @@ private theorem smoothingSeminorm_seq_hasLimit_aux {L : ℝ} (hL : 0 ≤ L) {ε 
       atTop (𝓝 1) := by
   rw [← mul_one (1 : ℝ)]
   have h_exp : Tendsto (fun n : ℕ => ((n % m1 : ℕ) : ℝ) / (n : ℝ)) atTop (𝓝 0) :=
-    tendsto_mod_div_atTop_nhds_zero_nat hm1
+    _root_.tendsto_mod_div_atTop_nhds_zero_nat hm1
   apply Tendsto.mul
   · have h0 : Tendsto (fun t : ℕ => -(((t % m1 : ℕ) : ℝ) / (t : ℝ))) atTop (𝓝 0) := by
       rw [← neg_zero]
@@ -393,11 +394,13 @@ theorem smoothingSeminorm_le (x : R) : smoothingSeminorm' f x ≤ f x := by
   nonarchimedean. -/
 section IsNonarchimedean
 
-theorem exists_index_le (hna : IsNonarchimedean f) (x y : R) (n : ℕ) :
-    ∃ (m : ℕ) (_ : m ∈ Finset.range (n + 1)), f ((x + y) ^ (n : ℕ)) ^ (1 / (n : ℝ)) ≤
-      (f (x ^ m) * f (y ^ (n - m : ℕ))) ^ (1 / (n : ℝ)) := by
-  obtain ⟨m, hm_lt, hm⟩ := isNonarchimedean_add_pow hna n x y
-  exact ⟨m, hm_lt, rpow_le_rpow (apply_nonneg f _) hm (one_div_cast_nonneg (n : ℕ))⟩
+theorem exists_index_pow_le [Ring R] (p : RingSeminorm R) (hna : IsNonarchimedean p)
+    (x y : R) (n : ℕ) :
+    ∃ (m : ℕ) (_ : m ∈ Finset.range (n + 1)), p ((x + y) ^ (n : ℕ)) ^ (1 / (n : ℝ)) ≤
+      (p (x ^ m) * p (y ^ (n - m : ℕ))) ^ (1 / (n : ℝ)) := by
+  obtain ⟨m, hm_lt, hm⟩ := IsNonarchimedean.add_pow_le hna n x y
+  exact ⟨m, Finset.mem_range.mpr hm_lt,
+    Real.rpow_le_rpow (apply_nonneg p _) hm (one_div_nonneg.mpr n.cast_nonneg')⟩
 
 /-- Auxiliary sequence for the proof that `smoothingSeminorm'` is nonarchimedean. -/
 private def mu {x y : R} (hn : ∀ n : ℕ, ∃ (m : ℕ) (_ : m ∈ Finset.range (n + 1)),
@@ -455,7 +458,7 @@ private theorem f_bddAbove (hf1 : f 1 ≤ 1) {s : ℕ → ℕ} (hs : ∀ n : ℕ
     rw [← rpow_natCast, ← rpow_mul (apply_nonneg _ _), mul_one_div]
     conv_rhs => rw [← rpow_one (f x)]
     rw [rpow_le_rpow_left_iff (not_le.mp hx)]
-    exact div_le_one_of_le (cast_le.mpr (hs (ψ n))) (cast_nonneg _)
+    exact div_le_one_of_le₀ (cast_le.mpr (hs (ψ n))) (cast_nonneg _)
 
 private theorem f_nonempty {s : ℕ → ℕ} (hs_le : ∀ n : ℕ, s n ≤ n) {x y : R} (_hn : ∀ n : ℕ,
       ∃ (m : ℕ) (_hm : m ∈ Finset.range (n + 1)),
@@ -475,7 +478,7 @@ private theorem f_nonempty {s : ℕ → ℕ} (hs_le : ∀ n : ℕ, s n ≤ n) {x
     nth_rw 2 [← rpow_one (f x)]
     apply rpow_le_rpow_of_exponent_le (not_lt.mp hfx)
     rw [mul_one_div]
-    exact div_le_one_of_le (cast_le.mpr (hs_le (ψ b))) (cast_nonneg _)
+    exact div_le_one_of_le₀ (cast_le.mpr (hs_le (ψ b))) (cast_nonneg _)
 
 private theorem f_limsup_le_one {s : ℕ → ℕ} (hs_le : ∀ n : ℕ, s n ≤ n) {x y : R}
     (hn : ∀ n : ℕ, ∃ (m : ℕ) (_hm : m ∈ Finset.range (n + 1)),
@@ -543,15 +546,14 @@ private theorem limsup_mu_le (hf1 : f 1 ≤ 1) {s : ℕ → ℕ} (hs_le : ∀ n 
         (f (x ^ s (ψ n)) ^ (1 / (s (ψ n) : ℝ))) ^ ((s (ψ n) : ℝ) / (ψ n : ℝ))) =ᶠ[atTop]
         fun n : ℕ => f (x ^ s (ψ n)) ^ (1 / (ψ n : ℝ)) := by
       have h : (fun n : ℕ => (1 : ℝ) / (s (ψ n) : ℝ) * (s (ψ n) : ℝ)) =ᶠ[atTop] 1 := by
-        convert div_mul_eventually_cancel 1 (Tendsto.num hψ_mono.tendsto_atTop ha_pos hψ_lim)
-          using 1
-        · simp only [Pi.one_apply, cast_one]
-        · simp only [Pi.one_apply, cast_one]; rfl
+        apply Filter.EventuallyEq.div_mul_cancel_atTop
+        exact  (Tendsto.num (tendsto_natCast_atTop_atTop.comp hψ_mono.tendsto_atTop) ha_pos hψ_lim)
       simp_rw [← rpow_mul (apply_nonneg f _), mul_div]
       exact EventuallyEq.comp₂ EventuallyEq.rfl HPow.hPow (h.div EventuallyEq.rfl)
-    exact le_of_eq (Tendsto.limsup_eq (Tendsto.congr' h_eq (Tendsto.rpow
-      ((smoothingSeminorm'_isLimit f hf1 x).comp (Tendsto.num hψ_mono.tendsto_atTop ha_pos hψ_lim))
-      hψ_lim (Or.inr ha_pos))))
+    exact le_of_eq (Tendsto.limsup_eq (Tendsto.congr' h_eq
+      ((((smoothingSeminorm'_isLimit f hf1 x).comp ((tendsto_natCast_atTop_iff (R := ℝ)).mp <|
+      Tendsto.num (tendsto_natCast_atTop_atTop.comp hψ_mono.tendsto_atTop)
+        ha_pos hψ_lim)).rpow hψ_lim (Or.inr ha_pos)))))
 
 /-- If `f 1 ≤ 1` and `f` is nonarchimedean, then `smoothingSeminorm'` is nonarchimedean. -/
 theorem smoothingSeminorm_isNonarchimedean (hf1 : f 1 ≤ 1) (hna : IsNonarchimedean f) :
@@ -559,7 +561,7 @@ theorem smoothingSeminorm_isNonarchimedean (hf1 : f 1 ≤ 1) (hna : IsNonarchime
   intro x y
   have hn : ∀ n : ℕ, ∃ (m : ℕ) (_hm : m ∈ Finset.range (n + 1)),
         f ((x + y) ^ (n : ℕ)) ^ (1 / (n : ℝ)) ≤ (f (x ^ m) * f (y ^ (n - m : ℕ))) ^ (1 / (n : ℝ)) :=
-    fun n => exists_index_le f hna x y n
+    fun n => exists_index_pow_le f hna x y n
   set mu : ℕ → ℕ := fun n => mu f hn n
   set nu : ℕ → ℕ := fun n => n - mu n with hnu
   have hmu_le : ∀ n : ℕ, mu n ≤ n := fun n => mu_le f hn n
@@ -582,7 +584,7 @@ theorem smoothingSeminorm_isNonarchimedean (hf1 : f 1 ≤ 1) (hna : IsNonarchime
       smoothingSeminorm' f x ^ a := limsup_mu_le f hf1 hmu_le hn a_in hψ_mono hψ_lim
   have hy : limsup (fun n : ℕ => f (y ^ nu (ψ n)) ^ (1 / (ψ n : ℝ))) atTop ≤
       smoothingSeminorm' f y ^ b :=
-    limsup_mu_le f hf1 hnu_le (exists_index_le f hna y x) b_in hψ_mono hb_lim
+    limsup_mu_le f hf1 hnu_le (exists_index_pow_le f hna y x) b_in hψ_mono hb_lim
   have hxy : limsup
       (fun n : ℕ => f (x ^ mu (ψ n)) ^ (1 / (ψ n : ℝ)) * f (y ^ nu (ψ n)) ^ (1 / (ψ n : ℝ))) atTop ≤
       smoothingSeminorm' f x ^ a * smoothingSeminorm' f y ^ b := by
@@ -619,7 +621,7 @@ theorem smoothingSeminorm_isNonarchimedean (hf1 : f 1 ≤ 1) (hna : IsNonarchime
   apply le_trans _ h_mul
   have hex : ∃ n : PNat, f (x ^ mu (ψ n)) ^ (1 / (ψ n : ℝ)) * f (y ^ nu (ψ n)) ^ (1 / (ψ n : ℝ)) <
       smoothingSeminorm' f x ^ a * smoothingSeminorm' f y ^ b + ε :=
-    exists_lt_of_limsup_le (range_bddAbove_mul (f_bddAbove f hf1 hmu_le _ _)
+    exists_lt_of_limsup_le (bddAbove_range_mul (f_bddAbove f hf1 hmu_le _ _)
         (fun n => rpow_nonneg (apply_nonneg _ _) _) (f_bddAbove f hf1 hnu_le _ _)
         fun n => rpow_nonneg (apply_nonneg _ _) _).isBoundedUnder_of_range hxy hε
   obtain ⟨N, hN⟩ := hex
@@ -643,7 +645,7 @@ def smoothingSeminorm (hf1 : f 1 ≤ 1) (hna : IsNonarchimedean f) : RingSeminor
     simp only [smoothingSeminormSeq]
     rw [zero_pow (pos_iff_ne_zero.mp hn), map_zero, zero_rpow]
     exact one_div_ne_zero (cast_ne_zero.mpr (one_le_iff_ne_zero.mp hn))
-  add_le' := add_le_of_isNonarchimedean (smoothingSeminorm_nonneg f hf1)
+  add_le' _ _ := IsNonarchimedean.add_le (smoothingSeminorm_nonneg f hf1)
       (smoothingSeminorm_isNonarchimedean f hf1 hna)
   neg' n := by
     simp only [smoothingSeminorm', smoothingSeminorm']

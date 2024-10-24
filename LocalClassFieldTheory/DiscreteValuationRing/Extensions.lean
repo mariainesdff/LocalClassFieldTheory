@@ -5,9 +5,9 @@ Authors: María Inés de Frutos-Fernández, Filippo A. E. Nuccio
 -/
 import LocalClassFieldTheory.DiscreteValuationRing.DiscreteNorm
 import LocalClassFieldTheory.ForMathlib.DiscreteValuationRing
-import LocalClassFieldTheory.ForMathlib.RingTheory.IntegralClosure
-import LocalClassFieldTheory.ForMathlib.RingTheory.Valuation.IntPolynomial
-import LocalClassFieldTheory.ForMathlib.RingTheory.Valuation.Minpoly
+import Mathlib.RingTheory.IntegralClosure.Algebra.Basic
+import Mathlib.RingTheory.IntegralClosure.IsIntegral.Basic
+import Mathlib.RingTheory.Valuation.Minpoly
 
 /-!
 # Extensions of discrete valuations
@@ -95,8 +95,8 @@ theorem map_hMul_aux [FiniteDimensional K L] (x y : Lˣ) :
       Valued.v ((minpoly K (x : L)).coeff 0) ^ (finrank K L / (minpoly K (x : L)).natDegree) *
         Valued.v ((minpoly K (y : L)).coeff 0) ^ (finrank K L / (minpoly K (y : L)).natDegree) := by
   have h_alg : Algebra.IsAlgebraic K L := Algebra.IsAlgebraic.of_finite K L
-  have hinj : Injective (withZeroMultIntToNNReal (base_ne_zero K hv.v)) :=
-    (withZeroMultIntToNNReal_strictMono (one_lt_base K hv.v)).injective
+  have hinj : Injective (WithZeroMulInt.toNNReal (base_ne_zero K hv.v)) :=
+    (WithZeroMulInt.toNNReal_strictMono (one_lt_base K hv.v)).injective
   rw [← Function.Injective.eq_iff hinj, _root_.map_mul, ← Units.val_mul, map_pow_div, map_pow_div,
     map_pow_div, ← mul_rpow, rpow_eq_rpow_iff (Nat.cast_ne_zero.mpr (ne_of_gt finrank_pos))]
   ext
@@ -273,8 +273,8 @@ theorem extensionDef_mul [FiniteDimensional K L] (x y : L) :
     · have hxy : x * y ≠ 0 := mul_ne_zero hx hy
       simp only [extensionDef_apply]
       rw [dif_neg hx, dif_neg hy, dif_neg (mul_ne_zero hx hy)]
-      have hinj : Injective (withZeroMultIntToNNReal (base_ne_zero K hv.v)) :=
-        (withZeroMultIntToNNReal_strictMono (one_lt_base K hv.v)).injective
+      have hinj : Injective (WithZeroMulInt.toNNReal (base_ne_zero K hv.v)) :=
+        (WithZeroMulInt.toNNReal_strictMono (one_lt_base K hv.v)).injective
       rw [← Function.Injective.eq_iff hinj, ← pow_left_inj _ _ (expExtensionOnUnits_ne_zero K L),
         ← NNReal.coe_inj, _root_.map_mul, mul_pow, ← _root_.map_pow,
         (exists_mul_expExtensionOnUnits K (isUnit_iff_ne_zero.mpr hxy).choose).choose_spec,
@@ -333,7 +333,7 @@ theorem extensionDef_add [FiniteDimensional K L] (x y : L) :
         simp_all only [WithZero.coe_pow, WithZero.coe_zpow,
           (exists_mul_expExtensionOnUnits K (isUnit_iff_ne_zero.mpr hxy).unit).choose_spec,
           (exists_mul_expExtensionOnUnits K (isUnit_iff_ne_zero.mpr hy).unit).choose_spec]
-        simp_all only [← (withZeroMultIntToNNReal_strictMono (one_lt_base K hv.v)).le_iff_le, ←
+        simp_all only [← (WithZeroMulInt.toNNReal_strictMono (one_lt_base K hv.v)).le_iff_le, ←
           NNReal.coe_le_coe]
         rw [_root_.map_pow, NNReal.coe_pow, ← Real.rpow_natCast, Nat.cast_div,
           ← pow_eq_pow_root_zero_coeff']
@@ -437,8 +437,8 @@ theorem le_one_iff_discreteNormExtension_le_one [FiniteDimensional K L] (x : L) 
     have h' := (exists_mul_expExtensionOnUnits K (isUnit_iff_ne_zero.mpr hx).choose).choose_spec
     rw [← hn_def, (isUnit_iff_ne_zero.mpr hx).choose_spec] at h'
     rw [← h', ← NNReal.coe_one, NNReal.coe_le_coe,
-      ← _root_.map_one (withZeroMultIntToNNReal (base_ne_zero K hv.v)),
-      (withZeroMultIntToNNReal_strictMono (one_lt_base K hv.v)).le_iff_le, ← WithZero.coe_one, ←
+      ← _root_.map_one (WithZeroMulInt.toNNReal (base_ne_zero K hv.v)),
+      (WithZeroMulInt.toNNReal_strictMono (one_lt_base K hv.v)).le_iff_le, ← WithZero.coe_one, ←
       WithZero.coe_zpow, WithZero.coe_le_coe, ← WithZero.coe_pow, WithZero.coe_le_coe,
       ← zpow_natCast, ← Int.ofAdd_mul, ← Int.ofAdd_mul, ← ofAdd_zero, ofAdd_le, ofAdd_le]
     exact ⟨fun h ↦ mul_nonpos_of_nonpos_of_nonneg h (Nat.cast_nonneg _), fun h ↦
@@ -516,7 +516,7 @@ def valued [FiniteDimensional K L] : Valued L ℤₘ₀ :=
       refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
       · obtain ⟨ε, hε, h⟩ := h
         obtain ⟨δ, hδ⟩ :=
-          Real.exists_lt_of_strictMono (withZeroMultIntToNNReal_strictMono (one_lt_base K hv.v)) hε
+          Real.exists_lt_of_strictMono (WithZeroMulInt.toNNReal_strictMono (one_lt_base K hv.v)) hε
         use δ ^ (finrank K L / expExtensionOnUnits K L)
         intro x hx
         simp only [Set.mem_setOf_eq, Extension.apply] at hx
@@ -530,7 +530,7 @@ def valued [FiniteDimensional K L] : Valued L ℤₘ₀ :=
           simp only [(isUnit_iff_ne_zero.mpr h0).choose_spec] at hx
           rw [← hn_def] at hx
           have hx' := Real.rpow_lt_rpow (NNReal.coe_nonneg _)
-              ((withZeroMultIntToNNReal_strictMono (one_lt_base K hv.v)) hx) hpos
+              ((WithZeroMulInt.toNNReal_strictMono (one_lt_base K hv.v)) hx) hpos
           rw [Real.rpow_natCast, ← NNReal.coe_pow, ← _root_.map_pow, hn, _root_.map_pow,
             NNReal.coe_pow, ← DiscreteNormExtension.pow_eq_pow_root_zero_coeff _
               (minpoly.degree_dvd (h_alg.isAlgebraic ↑(isUnit_iff_ne_zero.mpr h0).unit).isIntegral)]
@@ -543,13 +543,13 @@ def valued [FiniteDimensional K L] : Valued L ℤₘ₀ :=
             ← Real.rpow_natCast, Real.rpow_lt_rpow_iff (NNReal.coe_nonneg _) (le_of_lt hε) hpos']
           exact hδ
       · obtain ⟨ε, hε⟩ := h
-        have hε_pos : 0 < (withZeroMultIntToNNReal (base_ne_zero K hv.v) ε : ℝ) ^
+        have hε_pos : 0 < (WithZeroMulInt.toNNReal (base_ne_zero K hv.v) ε : ℝ) ^
             ((expExtensionOnUnits K L : ℝ) / (finrank K L : ℝ)) := by
           apply rpow_pos
-          rw [← _root_.map_zero (withZeroMultIntToNNReal (base_ne_zero K hv.v)),
-            (withZeroMultIntToNNReal_strictMono (one_lt_base K hv.v)).lt_iff_lt]
+          rw [← _root_.map_zero (WithZeroMulInt.toNNReal (base_ne_zero K hv.v)),
+            (WithZeroMulInt.toNNReal_strictMono (one_lt_base K hv.v)).lt_iff_lt]
           exact Units.zero_lt _
-        use(withZeroMultIntToNNReal (base_ne_zero K hv.v) ε : ℝ) ^
+        use(WithZeroMulInt.toNNReal (base_ne_zero K hv.v) ε : ℝ) ^
             ((expExtensionOnUnits K L : ℝ) / (finrank K L : ℝ)),
           hε_pos
         intro x hx
@@ -562,7 +562,7 @@ def valued [FiniteDimensional K L] : Valued L ℤₘ₀ :=
             hn_def
           set hn := (exists_mul_expExtensionOnUnits K (isUnit_iff_ne_zero.mpr h0).unit).choose_spec
           simp only [IsUnit.unit_spec, ← hn_def] at hn
-          rw [← (withZeroMultIntToNNReal_strictMono (one_lt_base K hv.v)).lt_iff_lt, ←
+          rw [← (WithZeroMulInt.toNNReal_strictMono (one_lt_base K hv.v)).lt_iff_lt, ←
             rpow_lt_rpow_iff hpos, rpow_natCast, ← _root_.map_pow]
           simp only [(isUnit_iff_ne_zero.mpr h0).choose_spec]
           rw [hn, ← NNReal.coe_lt_coe, _root_.map_pow, NNReal.coe_pow,

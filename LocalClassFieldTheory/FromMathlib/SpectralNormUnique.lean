@@ -3,7 +3,7 @@ Copyright (c) 2023 María Inés de Frutos-Fernández. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: María Inés de Frutos-Fernández
 -/
-import LocalClassFieldTheory.FromMathlib.PowMultFaithful
+import Mathlib.Analysis.Normed.Ring.IsPowMulFaithful
 import Mathlib.Analysis.Normed.Ring.SeminormFromConst
 import LocalClassFieldTheory.FromMathlib.SpectralNorm
 import Mathlib.Topology.Algebra.Module.FiniteDimension
@@ -231,8 +231,7 @@ def spectralNormToNormedField [CompleteSpace K] (h : IsNonarchimedean (norm : K 
     dist_triangle := fun x y z => by
       simp only [dist_eq_norm]
       rw [← sub_add_sub_cancel x y z]
-      apply add_le_of_isNonarchimedean spectralNorm_nonneg
-      exact spectralNorm_isNonarchimedean h
+      apply IsNonarchimedean.add_le spectralNorm_nonneg (spectralNorm_isNonarchimedean h)
     eq_of_dist_eq_zero := fun hxy => by
       simp only [← spectral_mul_ring_norm_def h] at hxy
       rw [← sub_eq_zero]

@@ -3,6 +3,7 @@ Copyright (c) 2023 María Inés de Frutos-Fernández. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: María Inés de Frutos-Fernández
 -/
+import Mathlib.Analysis.Normed.Algebra.Norm
 import Mathlib.Analysis.Normed.Operator.BoundedLinearMaps
 import Mathlib.Analysis.Normed.Ring.SeminormFromBounded
 import Mathlib.LinearAlgebra.FiniteDimensional
@@ -201,18 +202,22 @@ theorem norm_is_bdd {ι : Type _} [Fintype ι] [Nonempty ι] {B : Basis ι K L} 
           norms of the summands. -/
     have hk : ∃ (k : ι) (_ : (univ : Finset ι).Nonempty → k ∈ univ ),
         ‖∑ i : ι, (B.equivFun x i • ∑ i_1 : ι, B.equivFun y i_1 • B.equivFun (B i * B i_1)) ixy‖ ≤
-          ‖(B.equivFun x k • ∑ j : ι, B.equivFun y j • B.equivFun (B k * B j)) ixy‖ :=
-      isNonarchimedean_finset_image_add hna'
+          ‖(B.equivFun x k • ∑ j : ι, B.equivFun y j • B.equivFun (B k * B j)) ixy‖ := by
+      obtain ⟨k, hk0, hk⟩ := IsNonarchimedean.finset_image_add hna'
         (fun i ↦ (B.equivFun x i • ∑ i_1 : ι, B.equivFun y i_1 • B.equivFun (B i * B i_1)) ixy)
         (univ : Finset ι)
+      use k, hk0
+      convert hk
     obtain ⟨k, -, hk⟩ := hk
     apply le_trans hk
     -- We use the above property again.
     have hk' : ∃ (k' : ι) (_ : (univ : Finset ι).Nonempty → k' ∈ univ),
         ‖∑ j : ι, B.equivFun y j • B.equivFun (B k * B j) ixy‖ ≤
-          ‖B.equivFun y k' • B.equivFun (B k * B k') ixy‖ :=
-      isNonarchimedean_finset_image_add hna'
+          ‖B.equivFun y k' • B.equivFun (B k * B k') ixy‖ := by
+      obtain ⟨k, hk0, hk⟩ := IsNonarchimedean.finset_image_add hna'
         (fun i ↦ B.equivFun y i • B.equivFun (B k * B i) ixy) (univ : Finset ι)
+      use k, hk0
+      convert hk
     obtain ⟨k', -, hk'⟩ := hk'
     rw [Pi.smul_apply, norm_smul, sum_apply]
     apply le_trans (mul_le_mul_of_nonneg_left hk' (norm_nonneg _))
@@ -295,7 +300,8 @@ theorem finite_extension_pow_mul_seminorm (hfd : FiniteDimensional K L)
   -- g is nonarchimedean
   have hg_na : IsNonarchimedean g := Basis.norm_isNonarchimedean hna
   -- g satisfies the triangle inequality
-  have hg_add : ∀ a b : L, g (a + b) ≤ g a + g b := add_le_of_isNonarchimedean hg_nonneg hg_na
+  have hg_add : ∀ a b : L, g (a + b) ≤ g a + g b :=
+    fun _ _ ↦ IsNonarchimedean.add_le hg_nonneg hg_na
   -- g (-a) = g a
   have hg_neg : ∀ a : L, g (-a) = g a := B.norm_neg
   -- g is multiplicatively bounded

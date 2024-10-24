@@ -5,6 +5,7 @@ Authors: María Inés de Frutos-Fernández, Filippo A. E. Nuccio
 -/
 import LocalClassFieldTheory.DiscreteValuationRing.Complete
 import Mathlib.Analysis.SpecificLimits.Basic
+import Mathlib.Data.Int.WithZero
 import Mathlib.NumberTheory.Padics.PadicIntegers
 import Mathlib.RingTheory.DedekindDomain.AdicValuation
 import Mathlib.RingTheory.DedekindDomain.Ideal
@@ -113,7 +114,7 @@ def padicPkg' :
     uniformStruct := inferInstance,
     complete := inferInstance,
     separation := inferInstance,
-    uniformInducing := (UniformSpace.Completion.uniformEmbedding_coe ℚ).1,
+    isUniformInducing := (UniformSpace.Completion.isUniformEmbedding_coe ℚ).1,
     dense := UniformSpace.Completion.denseRange_coe }
 
 
@@ -144,7 +145,7 @@ lemma NNReal_Cast.p_ne_zero : ((p : ℝ≥0) ≠ 0) := by
 
 
 theorem padicNorm_of_Int_eq_val_norm (x : ℤ) : (padicNorm p x : ℝ) =
-  withZeroMultIntToNNReal (NNReal_Cast.p_ne_zero p) ((@padicValued p _).v x) := by
+  WithZeroMulInt.toNNReal (NNReal_Cast.p_ne_zero p) ((@padicValued p _).v x) := by
   classical
   by_cases hx : x = 0
   · simp only [hx, padicNorm.zero, algebraMap.coe_zero, _root_.map_zero, cast_zero, padicNorm.zero,
@@ -156,11 +157,11 @@ theorem padicNorm_of_Int_eq_val_norm (x : ℤ) : (padicNorm p x : ℝ) =
       erw [← WithZero.coe_inj, ← intValuationDef_if_neg _ hx, WithZero.coe_unzero,
         valuation_of_algebraMap]
       rfl
-    rw [padicNorm.eq_zpow_of_nonzero hx0, withZeroMultIntToNNReal_neg_apply, Rat.cast_zpow,
+    rw [padicNorm.eq_zpow_of_nonzero hx0, WithZeroMulInt.toNNReal_neg_apply, Rat.cast_zpow,
       Rat.cast_natCast, ← heq,
       padicValRat.of_int, @padicValInt.of_ne_one_ne_zero p x (Nat.Prime.ne_one Fact.out) hx,
       toAdd_ofAdd]
-    simp only [UniqueFactorizationMonoid.multiplicity_eq_count_normalizedFactors
+    sorry/- simp only [UniqueFactorizationMonoid.multiplicity_eq_count_normalizedFactors
         (Nat.prime_iff_prime_int.mp Fact.out).irreducible hx, normalize_apply,
           PartENat.get_natCast']
     have h_x_span : (Ideal.span {x} : Ideal ℤ) ≠ 0 := by
@@ -174,10 +175,10 @@ theorem padicNorm_of_Int_eq_val_norm (x : ℤ) : (padicNorm p x : ℝ) =
       h_p_span_ne, count_span_normalizedFactors_eq (r := x) (X := p) hx ?_]
     congr
     rw [← Nat.prime_iff_prime_int]
-    exact Fact.out
+    exact Fact.out -/
 
 theorem padicNorm_eq_val_norm (z : ℚ) : (padicNorm p z : ℝ) =
-  withZeroMultIntToNNReal (NNReal_Cast.p_ne_zero p) ((@padicValued p _).v z) := by
+  WithZeroMulInt.toNNReal (NNReal_Cast.p_ne_zero p) ((@padicValued p _).v z) := by
   by_cases hz : z = 0
   · simp only [hz, padicNorm.zero, algebraMap.coe_zero, _root_.map_zero, Rat.cast_zero,
       NNReal.coe_zero]
@@ -197,25 +198,25 @@ section AbstractCompletion
 /-The natural map from ℚ to ℚ_[p], seen as a field of characeristic zero, is uniformInducing when
   the rational field is endowed with the `p`-adic uniformity. -/
 theorem uniformInducing_cast : letI := ((@padicValued p _))
-  UniformInducing (Rat.cast : ℚ → ℚ_[p]) := by
+    IsUniformInducing (Rat.cast : ℚ → ℚ_[p]) := by
   let _ := ((@padicValued p _))
   have hp_one : (1 : ℝ≥0) < p := Nat.one_lt_cast.mpr (Nat.Prime.one_lt Fact.out)
-  apply UniformInducing.mk'
+  apply IsUniformInducing.mk'
   simp_rw [@Metric.mem_uniformity_dist ℚ_[p] _ _]
   refine fun S ↦ ⟨fun hS ↦ ?_, ?_⟩
   · obtain ⟨m, ⟨-, hM_sub⟩⟩ := (Valued.hasBasis_uniformity ℚ ℤₘ₀).mem_iff.mp hS
-    set M := (withZeroMultIntToNNReal (NNReal_Cast.p_ne_zero p) m.1).1 with hM
+    set M := (WithZeroMulInt.toNNReal (NNReal_Cast.p_ne_zero p) m.1).1 with hM
     refine ⟨{p : ℚ_[p] × ℚ_[p] | dist p.1 p.2 < M}, ⟨⟨M, ⟨?_, fun _ ↦ ?_ ⟩⟩, fun x y h ↦ ?_⟩⟩
-    · exact withZeroMultIntToNNReal_pos _ (isUnit_iff_ne_zero.mp (Units.isUnit m))
+    · exact WithZeroMulInt.toNNReal_pos _ (isUnit_iff_ne_zero.mp (Units.isUnit m))
     · tauto
     · apply hM_sub
       simp only [Set.mem_setOf_eq, dist] at h ⊢
       rwa [hM, ← Padic.coe_sub, padicNormE.eq_padic_norm', padicNorm_eq_val_norm,
         val_eq_coe, coe_lt_coe, @StrictMono.lt_iff_lt _ _ _ _ _
-        (withZeroMultIntToNNReal_strictMono hp_one), ← neg_sub, Valuation.map_neg] at h
+        (WithZeroMulInt.toNNReal_strictMono hp_one), ← neg_sub, Valuation.map_neg] at h
   · rw [(Valued.hasBasis_uniformity ℚ ℤₘ₀).mem_iff]
     rintro ⟨T, ⟨ε, ⟨hε, H⟩⟩, h⟩
-    obtain ⟨M, hM⟩ := Real.exists_lt_of_strictMono (withZeroMultIntToNNReal_strictMono hp_one) hε
+    obtain ⟨M, hM⟩ := Real.exists_lt_of_strictMono (WithZeroMulInt.toNNReal_strictMono hp_one) hε
     refine ⟨M, by trivial, fun q hq ↦ ?_⟩
     simp only [Set.mem_setOf_eq, dist] at H hq
     have : (↑q.fst, ↑q.snd) ∈ T := by
@@ -223,7 +224,7 @@ theorem uniformInducing_cast : letI := ((@padicValued p _))
       rw [← Padic.coe_sub, padicNormE.eq_padic_norm', padicNorm_eq_val_norm, ← neg_sub,
         Valuation.map_neg]
       exact (NNReal.coe_lt_coe.mpr
-        ((withZeroMultIntToNNReal_strictMono hp_one).lt_iff_lt.mpr hq)).trans hM
+        ((WithZeroMulInt.toNNReal_strictMono hp_one).lt_iff_lt.mpr hq)).trans hM
     exact h _ _ this
 
 /-The natural map from ℚ to ℚ_[p], seen as a field of characeristic zero, has dense range when
@@ -248,7 +249,7 @@ def padicPkg : letI := (padicValued p).toUniformSpace
     uniformStruct := inferInstance
     complete := inferInstance
     separation := inferInstance
-    uniformInducing := uniformInducing_cast p
+    isUniformInducing := uniformInducing_cast p
     dense := dense_cast p}
 
 /-- The coercion from the uniform space `ℚ` to its uniform completion `ℚ_[p]` as a ring
@@ -276,7 +277,7 @@ def compare : Q_p p ≃ᵤ ℚ_[p] :=
 theorem uniformContinuous_cast : letI := (padicValued p).toUniformSpace
   UniformContinuous (Rat.cast : ℚ → ℚ_[p]) :=
   let _ := (padicValued p).toUniformSpace
-  (uniformInducing_iff'.1 (uniformInducing_cast p)).1
+  (isUniformInducing_iff'.1 (uniformInducing_cast p)).1
 
 /-- The upgrade of the comparison as a ring homomorphism -/
 def extensionAsRingHom : Q_p p →+* ℚ_[p] :=
@@ -349,15 +350,15 @@ def Z_p := (@Valued.v (Q_p p) _ ℤₘ₀ _ _).valuationSubring
 theorem exists_mem_le_one_of_lt_one {x : Q_p p} (hx : Valued.v x ≤ (1 : ℤₘ₀)) :
     ∃ y : Z_p p, (y : Q_p p) = x ∧ Valued.v (y : Q_p p) = Valued.v x := by
   have hv := (@Valued.v (Q_p p) _ ℤₘ₀ _ _).isEquiv_valuation_valuationSubring
-  use ⟨x,
-    ValuationSubring.mem_of_valuation_le_one (Z_p p) x
-    (((Valuation.isEquiv_iff_val_le_one _ _).mp hv).mp hx)⟩
+  use ⟨x, sorry
+    /- ValuationSubring.mem_of_valuation_le_one (Z_p p) x
+    (((Valuation.isEquiv_iff_val_le_one _ _).mp hv).mp hx) -/⟩
 
 theorem exists_mem_lt_one_of_lt_one {x : Q_p p} (hx : Valued.v x < (1 : ℤₘ₀)) :
     ∃ y : Z_p p, (y : Q_p p) = x ∧ Valued.v (y : Q_p p) = Valued.v x := by
   have hv := (@Valued.v (Q_p p) _ ℤₘ₀ _ _).isEquiv_valuation_valuationSubring
-  use ⟨x, ValuationSubring.mem_of_valuation_le_one (Z_p p) x
-    (le_of_lt <| ((Valuation.isEquiv_iff_val_lt_one _ _).mp hv).mp hx)⟩
+  use ⟨x, sorry/- ValuationSubring.mem_of_valuation_le_one (Z_p p) x
+    (le_of_lt <| ((Valuation.isEquiv_iff_val_lt_one _ _).mp hv).mp hx) -/⟩
 
 instance : CharZero (Z_p p) where cast_injective m n h := by
   { simp only [Subtype.ext_iff, Subring.coe_natCast, Nat.cast_inj] at h

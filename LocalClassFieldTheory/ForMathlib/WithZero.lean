@@ -12,16 +12,16 @@ import Mathlib.RingTheory.Valuation.Basic
 # WithZero
 
 In this file we provide some basic API lemmas for the `WithZero` construction and we define
-the morphism `withZeroMultIntToNNReal`.
+the morphism `WithZeroMulInt.toNNReal`.
 
 ## Main Definitions
 
-* `withZeroMultIntToNNReal` : The `MonoidWithZeroHom` from `ℤₘ₀ → ℝ≥0` sending `0 ↦ 0` and
+* `WithZeroMulInt.toNNReal` : The `MonoidWithZeroHom` from `ℤₘ₀ → ℝ≥0` sending `0 ↦ 0` and
   `x ↦ e^(Multiplicative.toAdd (WithZero.unzero hx)` when `x ≠ 0`, for a nonzero `e : ℝ≥0`.
 
 ## Main Results
 
-* `withZeroMultIntToNNReal_strictMono` : The map `withZeroMultIntToNNReal` is strictly
+* `WithZeroMulInt.toNNReal_strictMono` : The map `WithZeroMulInt.toNNReal` is strictly
    monotone whenever `1 < e`.
 
 
@@ -138,14 +138,15 @@ theorem lt_succ_iff_le (x : ℤₘ₀) (m : ℤ) :
 
 end WithZero
 
+-- From this line, in PR #15741
+
+#exit
 
 open WithZero
 
--- From this line, in PR #15741
-
 /-- Given a nonzero `e : ℝ≥0`, this is the map `ℤₘ₀ → ℝ≥0` sending `0 ↦ 0` and
   `x ↦ e^(Multiplicative.toAdd (WithZero.unzero hx)` when `x ≠ 0` as a `MonoidWithZeroHom`. -/
-def withZeroMultIntToNNReal {e : NNReal} (he : e ≠ 0) : ℤₘ₀ →*₀ ℝ≥0 where
+def WithZeroMulInt.toNNReal {e : NNReal} (he : e ≠ 0) : ℤₘ₀ →*₀ ℝ≥0 where
   toFun := fun x ↦ if hx : x = 0 then 0 else e ^ Multiplicative.toAdd (WithZero.unzero hx)
   map_zero' := rfl
   map_one' := by
@@ -164,32 +165,32 @@ def withZeroMultIntToNNReal {e : NNReal} (he : e ≠ 0) : ℤₘ₀ →*₀ ℝ�
       congr
       rw [← WithZero.coe_inj, WithZero.coe_mul, coe_unzero hx, coe_unzero hy, coe_unzero hxy]
 
-theorem withZeroMultIntToNNReal_pos_apply {e : NNReal} (he : e ≠ 0) {x : ℤₘ₀} (hx : x = 0) :
-    withZeroMultIntToNNReal he x = 0 := by
-  simp only [withZeroMultIntToNNReal, MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk]
+theorem WithZeroMulInt.toNNReal_pos_apply {e : NNReal} (he : e ≠ 0) {x : ℤₘ₀} (hx : x = 0) :
+    WithZeroMulInt.toNNReal he x = 0 := by
+  simp only [WithZeroMulInt.toNNReal, MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk]
   split_ifs; rfl
 
-theorem withZeroMultIntToNNReal_neg_apply {e : NNReal} (he : e ≠ 0) {x : ℤₘ₀} (hx : x ≠ 0) :
-    withZeroMultIntToNNReal he x = e ^ Multiplicative.toAdd (WithZero.unzero hx) := by
-  simp only [withZeroMultIntToNNReal, MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk]
+theorem WithZeroMulInt.toNNReal_neg_apply {e : NNReal} (he : e ≠ 0) {x : ℤₘ₀} (hx : x ≠ 0) :
+    WithZeroMulInt.toNNReal he x = e ^ Multiplicative.toAdd (WithZero.unzero hx) := by
+  simp only [WithZeroMulInt.toNNReal, MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk]
   split_ifs; tauto; rfl
 
-/-- `withZeroMultIntToNNReal` sends nonzero elements to nonzero elements. -/
-theorem withZeroMultIntToNNReal_ne_zero {e : NNReal} {m : ℤₘ₀} (he : e ≠ 0) (hm : m ≠ 0) :
-    withZeroMultIntToNNReal he m ≠ 0 := by
+/-- `WithZeroMulInt.toNNReal` sends nonzero elements to nonzero elements. -/
+theorem WithZeroMulInt.toNNReal_ne_zero {e : NNReal} {m : ℤₘ₀} (he : e ≠ 0) (hm : m ≠ 0) :
+    WithZeroMulInt.toNNReal he m ≠ 0 := by
   simp only [ne_eq, map_eq_zero, hm, not_false_eq_true]
 
-/-- `withZeroMultIntToNNReal` sends nonzero elements to positive elements. -/
-theorem withZeroMultIntToNNReal_pos {e : NNReal} {m : ℤₘ₀} (he : e ≠ 0) (hm : m ≠ 0) :
-    0 < withZeroMultIntToNNReal he m :=
-  lt_of_le_of_ne zero_le' (withZeroMultIntToNNReal_ne_zero he hm).symm
+/-- `WithZeroMulInt.toNNReal` sends nonzero elements to positive elements. -/
+theorem WithZeroMulInt.toNNReal_pos {e : NNReal} {m : ℤₘ₀} (he : e ≠ 0) (hm : m ≠ 0) :
+    0 < WithZeroMulInt.toNNReal he m :=
+  lt_of_le_of_ne zero_le' (WithZeroMulInt.toNNReal_ne_zero he hm).symm
 
 -- [Mathlib.Data.NNReal.Basic]
-/-- The map `withZeroMultIntToNNReal` is strictly monotone whenever `1 < e`. -/
-theorem withZeroMultIntToNNReal_strictMono {e : NNReal} (he : 1 < e) :
-    StrictMono (withZeroMultIntToNNReal (ne_zero_of_lt he)) := by
+/-- The map `WithZeroMulInt.toNNReal` is strictly monotone whenever `1 < e`. -/
+theorem WithZeroMulInt.toNNReal_strictMono {e : NNReal} (he : 1 < e) :
+    StrictMono (WithZeroMulInt.toNNReal (ne_zero_of_lt he)) := by
   intro x y hxy
-  simp only [withZeroMultIntToNNReal, MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk]
+  simp only [WithZeroMulInt.toNNReal, MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk]
   split_ifs with hx hy hy
   · simp only [hy, not_lt_zero'] at hxy
   · exact NNReal.zpow_pos (ne_zero_of_lt he) _

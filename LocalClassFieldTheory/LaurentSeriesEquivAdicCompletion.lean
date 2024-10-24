@@ -699,9 +699,9 @@ end Dense
 section Comparison
 open RatFunc
 
-theorem inducing_coe : UniformInducing (Coe.coe : RatFunc K → LaurentSeries K) := by
+theorem inducing_coe : IsUniformInducing (Coe.coe : RatFunc K → LaurentSeries K) := by
   letI : Ring (LaurentSeries K) := inferInstance -- Porting note: I had to add this
-  rw [uniformInducing_iff, Filter.comap]
+  rw [isUniformInducing_iff, Filter.comap]
   ext S
   simp only [exists_prop, Filter.mem_mk, Set.mem_setOf_eq, uniformity_eq_comap_nhds_zero,
     Filter.mem_comap]
@@ -733,7 +733,7 @@ theorem inducing_coe : UniformInducing (Coe.coe : RatFunc K → LaurentSeries K)
       assumption
 
 theorem continuous_coe : Continuous (Coe.coe : RatFunc K → LaurentSeries K) :=
-  (uniformInducing_iff'.1 (inducing_coe K)).1.continuous
+  (isUniformInducing_iff'.1 (inducing_coe K)).1.continuous
 
 /-- The `X`-adic completion as an abstract completion of `ratfunc K`-/
 abbrev ratfuncAdicComplPkg : AbstractCompletion (RatFunc K) :=
@@ -748,7 +748,7 @@ noncomputable def LaurentSeriesPkg : AbstractCompletion (RatFunc K)
   uniformStruct := inferInstance
   complete := inferInstance
   separation := inferInstance
-  uniformInducing := inducing_coe K
+  isUniformInducing := inducing_coe K
   dense := coe_range_dense K
 
 instance : TopologicalSpace (LaurentSeriesPkg K).space :=

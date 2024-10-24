@@ -258,7 +258,7 @@ theorem isNonarchimedean_finset_powerset_image_add {f : AlgebraNorm K L}
         f (s.val.prod fun i : Fin n ↦ -b i) := by
   set g := fun t : Finset (Fin n) ↦ t.prod fun i : Fin n ↦ -b i
   obtain ⟨b, hb_in, hb⟩ :=
-    isNonarchimedean_finset_image_add hf_na g
+    IsNonarchimedean.finset_image_add hf_na g
       (Finset.powersetCard (Fintype.card (Fin n) - m) Finset.univ)
   have hb_ne :
     (Finset.powersetCard (Fintype.card (Fin n) - m) (Finset.univ : Finset (Fin n))).Nonempty := by
@@ -275,10 +275,11 @@ theorem isNonarchimedean_multiset_powerset_image_add {f : AlgebraNorm K L}
       f (Multiset.map Multiset.prod (powersetCard (card s - m) s)).sum ≤ f t.prod := by
   set g := fun t : Multiset L ↦ t.prod
   obtain ⟨b, hb_in, hb_le⟩ :=
-    isNonarchimedean_multiset_image_add hf_na g (powersetCard (card s - m) s)
+    IsNonarchimedean.multiset_image_add hf_na g (powersetCard (card s - m) s)
   have hb : b ≤ s ∧ card b = card s - m := by
     rw [← Multiset.mem_powersetCard]
     apply hb_in
+    refine card_pos.mp ?_
     rw [card_powersetCard]
     exact Nat.choose_pos ((card s).sub_le m)
   exact ⟨b, hb.2, fun x hx ↦ Multiset.mem_of_le hb.left hx, hb_le⟩
@@ -630,13 +631,11 @@ theorem root_norm_le_spectralValue {f : AlgebraNorm K L} (hf_pm : IsPowMul f)
       obtain ⟨m, hm_in, hm⟩ :=
         isNonarchimedean_finset_range_add_le hf_na p.natDegree fun i : ℕ ↦ p.coeff i • x ^ i
       exact lt_of_le_of_lt hm (hn' m (hm_in h_deg))
-    have h0 : f 0 ≠ 0 :=
-      by
-      have h_eq : f 0 = f (x ^ p.natDegree) :=
-        by
+    have h0 : f 0 ≠ 0 := by
+      have h_eq : f 0 = f (x ^ p.natDegree) := by
         rw [← hx, aeval_eq_sum_range, Finset.sum_range_succ, add_comm, hp.coeff_natDegree,
           one_smul, ← max_eq_left_of_lt h_lt]
-        exact isNonarchimedean_add_eq_max_of_ne hf_na (ne_of_lt h_lt)
+        exact IsNonarchimedean.add_eq_max_of_ne hf_na (ne_of_gt h_lt)
       rw [h_eq]
       exact ne_of_gt (lt_of_le_of_lt (apply_nonneg _ _) h_lt)
     exact h0 (map_zero _)
@@ -1177,7 +1176,7 @@ def spectralAlgNorm (hna : IsNonarchimedean (norm : K → ℝ)) :
     AlgebraNorm K L where
   toFun       := spectralNorm K L
   map_zero'   := spectralNorm_zero
-  add_le'     := add_le_of_isNonarchimedean spectralNorm_nonneg (spectralNorm_isNonarchimedean hna)
+  add_le' _ _ := IsNonarchimedean.add_le spectralNorm_nonneg (spectralNorm_isNonarchimedean hna)
   mul_le' x y := spectralNorm_mul hna (h_alg.isAlgebraic x) (h_alg.isAlgebraic y)
   smul' k x   := spectralNorm_smul hna k (h_alg.isAlgebraic x)
   neg' x      := spectralNorm_neg hna (h_alg.isAlgebraic x)
