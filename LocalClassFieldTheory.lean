@@ -1,5 +1,5 @@
 -- Basic folder *complete*
-import LocalClassFieldTheory.LaurentSeriesEquivAdicCompletion  -- In PR #11720, #13063, #13064, #14418, #16865 (to be cont'd)
+import LocalClassFieldTheory.LaurentSeriesEquivAdicCompletion  -- In PR #11720, #13063, #13064, #14418, #16865, #18346
 import LocalClassFieldTheory.PadicCompare
 import LocalClassFieldTheory.SpectralNorm
 -- DiscreteValuationRing folder *complete*
