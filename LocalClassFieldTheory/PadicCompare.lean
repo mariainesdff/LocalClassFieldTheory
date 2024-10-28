@@ -161,9 +161,9 @@ theorem padicNorm_of_Int_eq_val_norm (x : ℤ) : (padicNorm p x : ℝ) =
       Rat.cast_natCast, ← heq,
       padicValRat.of_int, @padicValInt.of_ne_one_ne_zero p x (Nat.Prime.ne_one Fact.out) hx,
       toAdd_ofAdd]
-    sorry/- simp only [UniqueFactorizationMonoid.multiplicity_eq_count_normalizedFactors
-        (Nat.prime_iff_prime_int.mp Fact.out).irreducible hx, normalize_apply,
-          PartENat.get_natCast']
+    -- simp only [UniqueFactorizationMonoid.emultiplicity_eq_count_normalizedFactors
+    --     (Nat.prime_iff_prime_int.mp Fact.out).irreducible hx, normalize_apply,
+    --       PartENat.get_natCast']
     have h_x_span : (Ideal.span {x} : Ideal ℤ) ≠ 0 := by
       rwa [Ideal.zero_eq_bot, ne_eq, Ideal.span_singleton_eq_bot]
     have h_p_span : (Ideal.span {(p : ℤ)} : Ideal ℤ).IsPrime := by
@@ -174,8 +174,10 @@ theorem padicNorm_of_Int_eq_val_norm (x : ℤ) : (padicNorm p x : ℝ) =
     erw [count_associates_factors_eq (Ideal.span {x}) (pHeightOneIdeal p).asIdeal h_x_span h_p_span
       h_p_span_ne, count_span_normalizedFactors_eq (r := x) (X := p) hx ?_]
     congr
-    rw [← Nat.prime_iff_prime_int]
-    exact Fact.out -/
+    exact multiplicity_eq_of_emultiplicity_eq_some
+      (UniqueFactorizationMonoid.emultiplicity_eq_count_normalizedFactors
+        (Nat.prime_iff_prime_int.mp Fact.out).irreducible hx)
+    exact Nat.prime_iff_prime_int.mp Fact.out
 
 theorem padicNorm_eq_val_norm (z : ℚ) : (padicNorm p z : ℝ) =
   WithZeroMulInt.toNNReal (NNReal_Cast.p_ne_zero p) ((@padicValued p _).v z) := by
@@ -344,21 +346,20 @@ end Comparison
 section Z_p
 
 /-- The unit ball in `Q_p` -/
-@[reducible]
-def Z_p := (@Valued.v (Q_p p) _ ℤₘ₀ _ _).valuationSubring
+abbrev Z_p := (@Valued.v (Q_p p) _ ℤₘ₀ _ _).valuationSubring
 
 theorem exists_mem_le_one_of_lt_one {x : Q_p p} (hx : Valued.v x ≤ (1 : ℤₘ₀)) :
     ∃ y : Z_p p, (y : Q_p p) = x ∧ Valued.v (y : Q_p p) = Valued.v x := by
   have hv := (@Valued.v (Q_p p) _ ℤₘ₀ _ _).isEquiv_valuation_valuationSubring
-  use ⟨x, sorry
-    /- ValuationSubring.mem_of_valuation_le_one (Z_p p) x
-    (((Valuation.isEquiv_iff_val_le_one _ _).mp hv).mp hx) -/⟩
+  exact ⟨⟨x, ValuationSubring.mem_of_valuation_le_one _ _
+    <| ((Valuation.isEquiv_iff_val_le_one).mp hv).mp hx⟩, ⟨rfl, rfl⟩⟩
+
 
 theorem exists_mem_lt_one_of_lt_one {x : Q_p p} (hx : Valued.v x < (1 : ℤₘ₀)) :
     ∃ y : Z_p p, (y : Q_p p) = x ∧ Valued.v (y : Q_p p) = Valued.v x := by
   have hv := (@Valued.v (Q_p p) _ ℤₘ₀ _ _).isEquiv_valuation_valuationSubring
-  use ⟨x, sorry/- ValuationSubring.mem_of_valuation_le_one (Z_p p) x
-    (le_of_lt <| ((Valuation.isEquiv_iff_val_lt_one _ _).mp hv).mp hx) -/⟩
+  exact ⟨⟨x, ValuationSubring.mem_of_valuation_le_one _ _
+    <| ((Valuation.isEquiv_iff_val_le_one).mp hv).mp (le_of_lt hx)⟩, ⟨rfl, rfl⟩⟩
 
 instance : CharZero (Z_p p) where cast_injective m n h := by
   { simp only [Subtype.ext_iff, Subring.coe_natCast, Nat.cast_inj] at h
@@ -522,10 +523,9 @@ theorem valuation_subrings_eq : PadicInt.valuationSubring p = comap_Zp p := by
         (𝓝 0) (𝓝 0) ?_ hx
     -- We postpone the verification of the first assumption in `tendsto.comp`
     · simp_rw [← _root_.map_pow (padicEquiv p).symm x] at hx
-      rw [PadicInt.nonunit_mem_iff_top_nilpotent]
-      sorry/- simp_rw [← _root_.map_pow (padicEquiv p).symm x, Function.comp,
-        RingEquiv.apply_symm_apply] at hx
-      rwa [PadicInt.nonunit_mem_iff_top_nilpotent] -/
+      rw [PadicInt.nonunit_mem_iff_top_nilpotent, tendsto_congr]
+      exact hx
+      simp only [_root_.map_pow, Function.comp_apply, RingEquiv.apply_symm_apply, implies_true]
     · rw [← _root_.map_zero (padicEquiv p)]
       apply Continuous.tendsto (compare p).symm.3.continuous 0
 
