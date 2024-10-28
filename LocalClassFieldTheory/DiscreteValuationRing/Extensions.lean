@@ -5,8 +5,10 @@ Authors: María Inés de Frutos-Fernández, Filippo A. E. Nuccio
 -/
 import LocalClassFieldTheory.DiscreteValuationRing.DiscreteNorm
 import LocalClassFieldTheory.ForMathlib.DiscreteValuationRing
+import Mathlib.Algebra.Ring.Subring.IntPolynomial
 import Mathlib.RingTheory.IntegralClosure.Algebra.Basic
 import Mathlib.RingTheory.IntegralClosure.IsIntegral.Basic
+import Mathlib.RingTheory.Valuation.AlgebraInstances
 import Mathlib.RingTheory.Valuation.Minpoly
 
 /-!
@@ -45,13 +47,10 @@ valuation on `K`.
 valuation, is_discrete, discrete_valuation_ring
 -/
 
-
--- import for_mathlib.field_theory.minpoly.is_integrally_closed
--- import for_mathlib.field_theory.minpoly.is_integrally_closed
 noncomputable section
 
 open AddSubgroup DiscreteValuation DiscreteValuation.DiscreteNormExtension Function Multiplicative
-  NNReal FiniteDimensional minpoly Polynomial Subgroup Valuation WithZero
+  NNReal Module minpoly Polynomial Subgroup Valuation WithZero
 
 open scoped DiscreteValuation NNReal
 
@@ -89,7 +88,7 @@ instance : NoZeroSMulDivisors K₀ (integralClosure K₀ L)
 
 variable [IsDiscrete hv.v] [CompleteSpace K]
 
-theorem map_hMul_aux [FiniteDimensional K L] (x y : Lˣ) :
+theorem map_mul_aux [FiniteDimensional K L] (x y : Lˣ) :
     Valued.v ((minpoly K ((x : L) * ↑y)).coeff 0) ^
         (finrank K L / (minpoly K ((x : L) * ↑y)).natDegree) =
       Valued.v ((minpoly K (x : L)).coeff 0) ^ (finrank K L / (minpoly K (x : L)).natDegree) *
@@ -100,9 +99,8 @@ theorem map_hMul_aux [FiniteDimensional K L] (x y : Lˣ) :
   rw [← Function.Injective.eq_iff hinj, _root_.map_mul, ← Units.val_mul, map_pow_div, map_pow_div,
     map_pow_div, ← mul_rpow, rpow_eq_rpow_iff (Nat.cast_ne_zero.mpr (ne_of_gt finrank_pos))]
   ext
-  sorry
-  -- rw [NNReal.coe_mul, coe_rpow, coe_rpow, coe_rpow, ← eq_root_zero_coeff h_alg, ←
-  --   eq_root_zero_coeff h_alg, ← eq_root_zero_coeff h_alg, Units.val_mul, _root_.map_mul]
+  rw [NNReal.coe_mul, coe_rpow, coe_rpow, coe_rpow, ← eq_root_zero_coeff,
+    ← eq_root_zero_coeff, ← eq_root_zero_coeff, Units.val_mul, _root_.map_mul]
 
 variable (K L)
 
@@ -111,7 +109,7 @@ valuation of the zeroth coefficient of its minimal polynomial, that is, to
 `(v ((minpoly K x.1).coeff 0))^((finrank K L)/(minpoly K x.1).nat_degree)`, as an
 element of `multiplicative ℤ`. -/
 def powExtensionOnUnits [FiniteDimensional K L] : Lˣ →* Multiplicative ℤ where
-  toFun x := WithZero.unzero (Valuation.unit_pow_ne_zero hv.v x)
+  toFun x := WithZero.unzero (Valuation.pow_coeff_zero_ne_zero_of_unit hv.v x.1 x.isUnit)
   map_one' := by
     simp_all only [Units.val_one, minpoly.one, coeff_sub, coeff_X_zero, coeff_one_zero, zero_sub,
       Valuation.map_neg, _root_.map_one, one_pow, unzero_coe]
@@ -120,10 +118,11 @@ def powExtensionOnUnits [FiniteDimensional K L] : Lˣ →* Multiplicative ℤ wh
     simp only [Units.val_mul]
     rw [← WithZero.coe_inj, WithZero.coe_mul, WithZero.coe_unzero, WithZero.coe_unzero,
       WithZero.coe_unzero]
-    exact map_hMul_aux x y
+    exact map_mul_aux x y
 
 theorem powExtensionOnUnits_apply [FiniteDimensional K L] (x : Lˣ) :
-    powExtensionOnUnits K L x = WithZero.unzero (Valuation.unit_pow_ne_zero hv.v x) :=
+    powExtensionOnUnits K L x = WithZero.unzero
+      (Valuation.pow_coeff_zero_ne_zero_of_unit hv.v x.1 x.isUnit) :=
   rfl
 
 /-- The natural number `n` such that the image of the map `powExtensionOnUnits K L` is
@@ -157,7 +156,7 @@ theorem expExtensionOnUnits_ne_zero [FiniteDimensional K L] : expExtensionOnUnit
       Valued.v ((minpoly K ((Units.map (algebraMap K L).toMonoidHom) hx_unit.unit).val).coeff 0) =
         Valued.v (x : K) := by
       rw [RingHom.toMonoidHom_eq_coe, Units.coe_map, IsUnit.unit_spec, MonoidHom.coe_coe,
-        Valuation.coeff_zero]
+        Valuation.coeff_zero_minpoly]
     rw [hz, powExtensionOnUnits_apply, ne_eq, ← WithZero.coe_inj, coe_unzero, hv, hx, ←
       ofAdd_neg_nat, ← ofAdd_zero, WithZero.coe_inj, RingHom.toMonoidHom_eq_coe, Units.coe_map,
         IsUnit.unit_spec, MonoidHom.coe_coe, Int.natCast_div, ofAdd_neg, ofAdd_zero, inv_eq_one,
@@ -196,9 +195,9 @@ theorem exists_mul_expExtensionOnUnits [FiniteDimensional K L] (x : Lˣ) :
       ((ofAdd (-1 : ℤ) ^ n) ^ expExtensionOnUnits K L : ℤₘ₀) =
         Valued.v ((minpoly K (x : L)).coeff 0) ^ (finrank K L / (minpoly K (x : L)).natDegree) :=
   by
-  set y := WithZero.unzero (Valuation.unit_pow_ne_zero hv.v x)
+  set y := WithZero.unzero  (Valuation.pow_coeff_zero_ne_zero_of_unit hv.v x.1 x.isUnit)
   have h_mem :
-    WithZero.unzero (Valuation.unit_pow_ne_zero hv.v x) ∈
+    WithZero.unzero  (Valuation.pow_coeff_zero_ne_zero_of_unit hv.v x.1 x.isUnit) ∈
       Subgroup.closure ({ofAdd (expExtensionOnUnits K L : ℤ)} : Set (Multiplicative ℤ)) :=
     by
     rw [← expExtensionOnUnits_generates_range, Subgroup.mem_map]
@@ -226,7 +225,7 @@ theorem expExtensionOnUnits_dvd [FiniteDimensional K L] :
     exact minpoly.natDegree_pos (h_alg.isAlgebraic _).isIntegral
   have h_dvd : ((minpoly K ((algebraMap K L) ↑π)).natDegree : ℤ) ∣ finrank K L :=
     Int.natCast_dvd.mpr (minpoly.degree_dvd (h_alg.isAlgebraic _).isIntegral)
-  rw [hu, hu_def, Valuation.coeff_zero, IsUniformizer_iff.mp hπ, ← WithZero.coe_pow,
+  rw [hu, hu_def, Valuation.coeff_zero_minpoly, IsUniformizer_iff.mp hπ, ← WithZero.coe_pow,
     ← WithZero.coe_zpow, ← WithZero.coe_pow, WithZero.coe_inj, ← zpow_natCast, ← zpow_mul,
     ← zpow_natCast, ofAdd_pow_comm, ofAdd_pow_comm (-1)] at hn
   simp only [zpow_neg, zpow_one, inv_inj] at hn
@@ -366,7 +365,7 @@ variable (K L)
 
 --Porting note: this lemma has been removed from Mathlib
 theorem or_eq_of_eq_false_right {a b : Prop} (h : b = False) : (a ∨ b) = a :=
-  h.symm ▸ propext (or_false_iff _)
+  h.symm ▸ propext (or_iff_left fun a ↦ a)
 
 theorem extensionDef_one [FiniteDimensional K L] : extensionDef K (1 : L) = 1 := by
   have h1 : (1 : L) ≠ 0 := one_ne_zero
@@ -615,10 +614,11 @@ theorem integralClosure_eq_integer [FiniteDimensional K L] :
   · rw [Extension.le_one_iff_discreteNormExtension_le_one] at hx
     let q := minpoly K x
     have hq : ∀ n : ℕ, q.coeff n ∈ hv.v.valuationSubring := (le_one_iff_integral_minpoly _).mp hx
-    set p : Polynomial hv.v.valuationSubring := intPolynomial hv.v hq
-    exact ⟨intPolynomial hv.v hq, (IntPolynomial.monic_iff hv.v hq).mpr
+    set p : Polynomial hv.v.valuationSubring := Polynomial.int hv.v.valuationSubring.toSubring _ hq
+    exact ⟨Polynomial.int hv.v.valuationSubring.toSubring _ hq,
+      (Polynomial.int_monic_iff hv.v.valuationSubring.toSubring _ hq).mpr
           (minpoly.monic (h_alg.isAlgebraic _).isIntegral),
-        by rw [IntPolynomial.eval₂_eq, minpoly.aeval]⟩
+        by erw [Polynomial.int_eval₂_eq hv.v.valuationSubring.toSubring _ hq, minpoly.aeval]⟩
 
 end Extension
 

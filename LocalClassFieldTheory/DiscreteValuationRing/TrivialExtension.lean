@@ -18,19 +18,19 @@ In this file, we provide some rewrite lemmas for dealing with this trivial exten
 -/
 
 
-open AddSubgroup DiscreteValuation Polynomial Valuation WithZero
+open AddSubgroup DiscreteValuation Module Polynomial Valuation WithZero
 
-open scoped DiscreteValuation
+open scoped Multiplicative
 
 namespace DiscreteValuation.Extension
 
 variable {K : Type _} [Field K] [hv : Valued K ℤₘ₀] [IsDiscrete hv.v] [CompleteSpace K]
 
 theorem trivial_powExtensionOnUnits_eq_valuation (x : Kˣ) :
-    powExtensionOnUnits K K x = unzero (Valuation.unit_ne_zero hv.v x) := by
+    powExtensionOnUnits K K x = unzero (Valuation.ne_zero_of_unit hv.v x) := by
   rw [powExtensionOnUnits_apply]
   congr 1
-  simp only [FiniteDimensional.finrank_self, minpoly.eq_X_sub_C', coeff_sub, coeff_X_zero,
+  simp only [Module.finrank_self, minpoly.eq_X_sub_C', coeff_sub, coeff_X_zero,
     coeff_C_zero, zero_sub, Valuation.map_neg, natDegree_X_sub_C, Nat.div_self,
     Nat.lt_one_iff, pow_one]
 
@@ -66,7 +66,7 @@ theorem trivial_extension_eq_valuation : extendedValuation K K = hv.v := by
     convert (exists_mul_expExtensionOnUnits K u).choose_spec
     · simp_rw [zpow_eq_pow, trivial_expExtensionOnUnits_eq_one, pow_one,
         (isUnit_iff_ne_zero.mpr hx).choose_spec]
-    · simp only [FiniteDimensional.finrank_self, minpoly.eq_X_sub_C', IsUnit.unit_spec, coeff_sub,
+    · simp only [Module.finrank_self, minpoly.eq_X_sub_C', IsUnit.unit_spec, coeff_sub,
         coeff_X_zero, coeff_C_zero, zero_sub, Valuation.map_neg, natDegree_X_sub_C, Nat.div_self,
         Nat.lt_one_iff, pow_one]
       rfl

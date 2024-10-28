@@ -8,9 +8,7 @@ import LocalClassFieldTheory.DiscreteValuationRing.Ramification
 import LocalClassFieldTheory.LocalField.Basic
 import Mathlib.Algebra.Algebra.Equiv
 
-open BigOperators DiscreteValuation
-
-open Valued Valuation Extension
+open BigOperators DiscreteValuation Extension Multiplicative Valued Valuation
 namespace LocalField
 
 variable (K : Type*) [Field K] [LocalField K]
@@ -88,7 +86,7 @@ local instance (L : Type*) [Field L] [Algebra K L] [FiniteDimensional K L] :
 /-- The extension `Kn K hn` of `K` is the unique unramified extension of degree `n`. -/
 def Kn_unique (L : Type*) [Field L] [LocalField L] [Algebra K L]
   --[FiniteDimensional K L] replaced by `LocalField L`
-  (hn' : FiniteDimensional.finrank K L = n)
+  (hn' : Module.finrank K L = n)
   (he : e(L, K) = 1) :
     (Kn K hn) ≃ₐ[K] L  :=
   sorry

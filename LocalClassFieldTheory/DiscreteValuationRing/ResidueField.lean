@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: María Inés de Frutos-Fernández, Filippo A. E. Nuccio
 -/
 import LocalClassFieldTheory.DiscreteValuationRing.Extensions
-import LocalClassFieldTheory.ForMathlib.RingTheory.Ideal.LocalRing
+--import LocalClassFieldTheory.ForMathlib.RingTheory.Ideal.LocalRing
 import Mathlib.RingTheory.DedekindDomain.IntegralClosure
 
 /-! # The residue field of a DVR
@@ -51,7 +51,7 @@ consequence, when the residue field of `K₀` is finite, so is the residue field
   finiteness to `L₀`.
 -/
 
-open LocalRing Valuation Ideal DiscreteValuation Valuation Integer Extension
+open LocalRing Valuation Ideal DiscreteValuation Multiplicative Integer Extension
 
 noncomputable section
 
@@ -74,7 +74,7 @@ instance : DiscreteValuationRing S :=
 
 instance [Algebra.IsSeparable K L] : IsNoetherian K₀ S := IsIntegralClosure.isNoetherian K₀ K L S
 
-instance : IsLocalRingHom (algebraMap K₀ S) := by
+instance : IsLocalHom (algebraMap K₀ S) := by
   constructor
   intro _ ha
   obtain ⟨Q, hQ_max, hQ⟩ := exists_ideal_over_maximal_of_isIntegral _
@@ -82,9 +82,10 @@ instance : IsLocalRingHom (algebraMap K₀ S) := by
   rw [← @not_not (IsUnit _), ← mem_nonunits_iff, ← mem_maximalIdeal] at ha ⊢
   rwa [← hQ, mem_comap, eq_maximalIdeal hQ_max]
 
+-- NOTE: probably this is not needed anymore.
 theorem FiniteDimensional_residueField_of_integralClosure [Algebra.IsSeparable K L] :
     FiniteDimensional (ResidueField K₀) (ResidueField (integralClosure K₀ L)) :=
-  FiniteDimensional_of_finite
+  ResidueField.finiteDimensional_of_noetherian
 
 theorem finiteResidueFieldOfIntegralClosure [Algebra.IsSeparable K L]
     (hfin : Finite (ResidueField K₀)) : Finite (ResidueField S) :=

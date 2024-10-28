@@ -27,7 +27,7 @@ the finiteness of the ring of integers.
 -/
 
 
-open Valuation DiscreteValuation
+open DiscreteValuation Multiplicative Valuation
 
 open scoped DiscreteValuation
 
@@ -66,6 +66,7 @@ noncomputable def localField [Fact (Algebra.IsSeparable (FpXCompletion p) K)] : 
     isDiscrete := valuation.IsDiscrete p K
     finiteResidueField := by
       have : Algebra.IsSeparable (FpXCompletion p) K := @Fact.out _ _
+
       apply finiteResidueFieldOfUnitBall
       apply FpXIntCompletion.residueFieldFiniteOfCompletion }
 

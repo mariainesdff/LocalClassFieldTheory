@@ -159,7 +159,7 @@ local notation "K" => (FractionRing A)
 variable (L : Type*) [Field L] [Algebra (FractionRing A) L]
   [FiniteDimensional (FractionRing A) L] [Algebra A L] [IsScalarTower A (FractionRing A) L]
 
-open FiniteDimensional
+open Module
 
 local notation "B" => integralClosure A L
 
