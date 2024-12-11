@@ -155,14 +155,14 @@ namespace RingOfIntegers
 
 open DiscreteValuation
 
-instance : Fintype (LocalRing.ResidueField (Z_p p)) :=
+instance : Fintype (IsLocalRing.ResidueField (Z_p p)) :=
   Fintype.ofEquiv _ (PadicComparison.residueField p).toEquiv.symm
 
 /-- The `fintype` structure on the residue field of `Z_p`. -/
-def residueFieldFintypeOfCompletion : Fintype (LocalRing.ResidueField (Z_p p)) :=
+def residueFieldFintypeOfCompletion : Fintype (IsLocalRing.ResidueField (Z_p p)) :=
   inferInstance
 
-lemma residueFieldFiniteOfCompletion : Finite (LocalRing.ResidueField (Z_p p)) :=
+lemma residueFieldFiniteOfCompletion : Finite (IsLocalRing.ResidueField (Z_p p)) :=
   Finite.of_fintype _
 
 end RingOfIntegers

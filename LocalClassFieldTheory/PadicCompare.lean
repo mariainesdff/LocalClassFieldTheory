@@ -161,9 +161,6 @@ theorem padicNorm_of_Int_eq_val_norm (x : ℤ) : (padicNorm p x : ℝ) =
       Rat.cast_natCast, ← heq,
       padicValRat.of_int, @padicValInt.of_ne_one_ne_zero p x (Nat.Prime.ne_one Fact.out) hx,
       toAdd_ofAdd]
-    -- simp only [UniqueFactorizationMonoid.emultiplicity_eq_count_normalizedFactors
-    --     (Nat.prime_iff_prime_int.mp Fact.out).irreducible hx, normalize_apply,
-    --       PartENat.get_natCast']
     have h_x_span : (Ideal.span {x} : Ideal ℤ) ≠ 0 := by
       rwa [Ideal.zero_eq_bot, ne_eq, Ideal.span_singleton_eq_bot]
     have h_p_span : (Ideal.span {(p : ℤ)} : Ideal ℤ).IsPrime := by
@@ -171,8 +168,8 @@ theorem padicNorm_of_Int_eq_val_norm (x : ℤ) : (padicNorm p x : ℝ) =
     have h_p_span_ne : (Ideal.span {(p : ℤ)} : Ideal ℤ) ≠ ⊥ := by
       rw [ne_eq, Ideal.span_singleton_eq_bot]
       exact NeZero.ne (p : ℤ)
-    erw [count_associates_factors_eq (Ideal.span {x}) (pHeightOneIdeal p).asIdeal h_x_span h_p_span
-      h_p_span_ne, count_span_normalizedFactors_eq (r := x) (X := p) hx ?_]
+    erw [count_associates_factors_eq h_x_span h_p_span h_p_span_ne,
+      count_span_normalizedFactors_eq (r := x) (X := p) hx ?_]
     congr
     exact multiplicity_eq_of_emultiplicity_eq_some
       (UniqueFactorizationMonoid.emultiplicity_eq_count_normalizedFactors
@@ -367,9 +364,9 @@ instance : CharZero (Z_p p) where cast_injective m n h := by
 
 /-- The maximal ideal of `Z_p p` as an element of the height-one spectrum -/
 def Padic'Int.heightOneIdeal : HeightOneSpectrum (Z_p p) where
-  asIdeal := LocalRing.maximalIdeal (Z_p p)
-  isPrime := Ideal.IsMaximal.isPrime (LocalRing.maximalIdeal.isMaximal _)
-  ne_bot := by simpa [ne_eq, ← LocalRing.isField_iff_maximalIdeal_eq] using
+  asIdeal := IsLocalRing.maximalIdeal (Z_p p)
+  isPrime := Ideal.IsMaximal.isPrime (IsLocalRing.maximalIdeal.isMaximal _)
+  ne_bot := by simpa [ne_eq, ← IsLocalRing.isField_iff_maximalIdeal_eq] using
     DiscreteValuation.not_isField _
 
 theorem Padic'Int.heightOneIdeal_is_principal :
@@ -423,7 +420,7 @@ theorem PadicInt.nonunit_mem_iff_top_nilpotent (x : ℚ_[p]) :
   refine ⟨fun H ↦ ?_, fun H ↦ ?_⟩
   · obtain ⟨h1, h2⟩ := ValuationSubring.mem_nonunits_iff_exists_mem_maximalIdeal.mp H
     exact _root_.tendsto_pow_atTop_nhds_zero_of_lt_one (norm_nonneg _)
-      (PadicInt.mem_nonunits.mp <| (LocalRing.mem_maximalIdeal _).mp h2)
+      (PadicInt.mem_nonunits.mp <| (IsLocalRing.mem_maximalIdeal _).mp h2)
   · have : ‖x‖ < 1 := by
       suffices (⟨‖x‖, norm_nonneg _⟩ : ℝ≥0) < 1 by
         rwa [← NNReal.coe_lt_coe, NNReal.coe_one] at this
@@ -432,7 +429,7 @@ theorem PadicInt.nonunit_mem_iff_top_nilpotent (x : ℚ_[p]) :
     apply ValuationSubring.mem_nonunits_iff_exists_mem_maximalIdeal.mpr
     exact
       ⟨(PadicInt.mem_subring_iff p).mpr (le_of_lt this),
-        (LocalRing.mem_maximalIdeal _).mpr (PadicInt.mem_nonunits.mpr this)⟩
+        (IsLocalRing.mem_maximalIdeal _).mpr (PadicInt.mem_nonunits.mpr this)⟩
 
 theorem mem_unit_ball_of_tendsto_zero {x : Q_p p} (H : Tendsto (fun n : ℕ ↦ ‖x‖ ^ n) atTop (𝓝 0))
     /- (h_go : ‖x‖ < 1)  -/: x ∈ (Z_p p).nonunits := by
@@ -448,7 +445,7 @@ theorem mem_unit_ball_of_tendsto_zero {x : Q_p p} (H : Tendsto (fun n : ℕ ↦ 
   obtain ⟨y, hy₁, hy₂⟩ := exists_mem_lt_one_of_lt_one p this
   rw [← hy₂] at this
   rw [← hy₁]
-  simp only [Subtype.coe_eta, LocalRing.mem_maximalIdeal, mem_nonunits_iff, SetLike.coe_mem,
+  simp only [Subtype.coe_eta, IsLocalRing.mem_maximalIdeal, mem_nonunits_iff, SetLike.coe_mem,
     exists_const]
   rw [← Completion.adic_of_compl_eq_compl_of_adic ℤ (pHeightOneIdeal p) ℚ ↑y] at this
   have v_lt_one :=
@@ -462,7 +459,7 @@ theorem mem_unit_ball_of_tendsto_zero {x : Q_p p} (H : Tendsto (fun n : ℕ ↦ 
 
 theorem UnitBall.nonunit_mem_iff_top_nilpotent (x : Q_p p) :
     x ∈ (Z_p p).nonunits ↔ Filter.Tendsto (fun n : ℕ ↦ x ^ n) atTop (𝓝 0) := by
-  have h_max_ideal : (Padic'Int.heightOneIdeal p).asIdeal = LocalRing.maximalIdeal ↥(Z_p p) :=
+  have h_max_ideal : (Padic'Int.heightOneIdeal p).asIdeal = IsLocalRing.maximalIdeal ↥(Z_p p) :=
     rfl
   have aux : ∀ n : ℕ, ‖x ^ n‖ = ‖x‖ ^ n := fun n ↦ norm_pow _ n
   rw [tendsto_zero_iff_norm_tendsto_zero, Filter.tendsto_congr aux]
@@ -474,8 +471,7 @@ theorem UnitBall.nonunit_mem_iff_top_nilpotent (x : Q_p p) :
     simp only [h_max_ideal, Ideal.dvd_span_singleton, mem_nonunits_iff,
       ValuationSubring.algebraMap_apply, x_mem, forall_true_left] at this
     replace this : Valued.v x < (1 : ℤₘ₀) := by
-      convert this using 1
-      exact (Completion.adic_of_compl_eq_compl_of_adic ℤ (Int.pHeightOneIdeal p) ℚ x).symm
+      apply (Completion.adic_of_compl_eq_compl_of_adic ℤ (Int.pHeightOneIdeal p) ℚ x).symm ▸ this
     exact tendsto_pow_atTop_nhds_zero_of_lt_one (norm_nonneg _)
       ((RankOneValuation.norm_lt_one_iff_val_lt_one _).mpr this)
   · exact mem_unit_ball_of_tendsto_zero p H
@@ -556,8 +552,8 @@ noncomputable def padicIntRingEquiv : Z_p p ≃+* ℤ_[p] :=
   (RingEquiv.subringMap _).trans (RingEquiv.subringCongr (padic_int_ring_equiv_range p))
 
 /-- The ring equivalence between the residue field of `Z_p p` and `ℤ/pℤ`. -/
-def residueField : LocalRing.ResidueField (Z_p p) ≃+* ZMod p :=
-  (LocalRing.ResidueField.mapEquiv (padicIntRingEquiv p)).trans (PadicInt.residueField p)
+def residueField : IsLocalRing.ResidueField (Z_p p) ≃+* ZMod p :=
+  (IsLocalRing.ResidueField.mapEquiv (padicIntRingEquiv p)).trans (PadicInt.residueField p)
 
 end Z_p
 
