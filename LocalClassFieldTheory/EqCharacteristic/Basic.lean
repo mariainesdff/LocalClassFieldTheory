@@ -6,6 +6,7 @@ Authors: María Inés de Frutos-Fernández, Filippo A. E. Nuccio
 import Mathlib.Algebra.CharP.Subring
 import Mathlib.FieldTheory.Finite.GaloisField
 import LocalClassFieldTheory.DiscreteValuationRing.Complete
+import Mathlib.RingTheory.LaurentSeries
 -- import LocalClassFieldTheory.LaurentSeriesEquivAdicCompletion
 import Mathlib.RingTheory.Valuation.AlgebraInstances
 import Mathlib.RingTheory.DedekindDomain.AdicValuation
@@ -41,8 +42,8 @@ noncomputable section
 
 open scoped DiscreteValuation
 
-open Polynomial Multiplicative RatFunc IsDedekindDomain IsDedekindDomain.HeightOneSpectrum
-  RankOneValuation Valuation ValuationSubring
+open Polynomial Multiplicative IsDedekindDomain IsDedekindDomain.HeightOneSpectrum RankOneValuation
+  Valuation ValuationSubring
 
 variable (p : ℕ) [Fact (Nat.Prime p)]
 
@@ -79,7 +80,7 @@ theorem algebraMap_eq_coe (f : RatFunc 𝔽_[p]) :
   rfl
 
 instance charP : CharP (FpXCompletion p) p :=
-  charP_of_injective_algebraMap (algebraMap (RatFunc (GaloisField p 1)) (FpXCompletion p)).injective
+  charP_of_injective_algebraMap (algebraMap (RatFunc 𝔽_[p]) (FpXCompletion p)).injective
     p
 
 /-- The `valued` structure on the adic completion `FpX_completion`. -/
@@ -87,15 +88,17 @@ def WithZero.valued : Valued (FpXCompletion p) ℤₘ₀ :=
   HeightOneSpectrum.valuedAdicCompletion (RatFunc 𝔽_[p]) (Polynomial.idealX 𝔽_[p])
 
 theorem valuation_X :
-    Valued.v ((algebraMap (RatFunc (GaloisField p 1)) (FpXCompletion p)) X) = ofAdd (-1 : ℤ) := by
+    Valued.v ((algebraMap (RatFunc 𝔽_[p]) (FpXCompletion p)) (X : 𝔽_[p][X])) = ofAdd (-1 : ℤ) := by
   erw [valuedAdicCompletion_def, FpXCompletion.algebraMap_eq_coe, Valued.extension_extends,
     Polynomial.valuation_X_eq_neg_one]
+
 
 theorem mem_FpXIntCompletion {x : FpXCompletion p} :
     x ∈ FpXIntCompletion p ↔ (Valued.v x : ℤₘ₀) ≤ 1 :=
   Iff.rfl
 
-theorem X_mem_FpXIntCompletion : algebraMap (RatFunc 𝔽_[p]) _ X ∈ FpXIntCompletion p := by
+theorem X_mem_FpXIntCompletion :
+  algebraMap (RatFunc 𝔽_[p]) _ (X : 𝔽_[p][X]) ∈ FpXIntCompletion p := by
   erw [FpXCompletion.mem_FpXIntCompletion, FpXCompletion.valuation_X, ← WithZero.coe_one,
     WithZero.coe_le_coe, ← ofAdd_zero, ofAdd_le]
   linarith
@@ -114,8 +117,10 @@ theorem mem_FpX_int_completion' {x : FpXCompletion p} : x ∈ FpXIntCompletion p
 
 variable (p)
 
+open LaurentSeries
+
 /-- `isomLaurent` is the ring isomorphism `FpX_completion ≃+* (LaurentSeries 𝔽_[p])`. -/
-def isomLaurent : LaurentSeries 𝔽_[p] ≃+* FpXCompletion p := LaurentSeriesRingEquiv 𝔽_[p]
+def isomLaurent : 𝔽_[p]⸨X⸩ ≃+* FpXCompletion p := LaurentSeriesRingEquiv 𝔽_[p]
 
 end FpXCompletion
 

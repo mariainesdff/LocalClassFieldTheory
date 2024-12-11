@@ -85,7 +85,7 @@
    "type": "git",
    "subDir": null,
    "scope": "",
-   "rev": "11fa569b1b52f987dc5dcea97fd80eaff95c2fce",
+   "rev": "7edf946a4217aa3aa911290811204096e8464ada",
    "name": "checkdecls",
    "manifestFile": "lake-manifest.json",
    "inputRev": null,
