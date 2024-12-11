@@ -49,17 +49,17 @@ namespace Nat
 
 -- This section is in #18171
 
-theorem one_div_cast_pos {n : ℕ} (hn : n ≠ 0) : 0 < 1 / (n : ℝ) := by
-  rw [one_div, inv_pos, cast_pos]
-  exact Nat.pos_of_ne_zero hn
+-- theorem one_div_cast_pos {n : ℕ} (hn : n ≠ 0) : 0 < 1 / (n : ℝ) := by
+--   rw [one_div, inv_pos, cast_pos]
+--   exact Nat.pos_of_ne_zero hn
 
-theorem one_div_cast_nonneg (n : ℕ) : 0 ≤ 1 / (n : ℝ) := by
-  by_cases hn : n = 0
-  · rw [hn, cast_zero, div_zero]
-  · exact le_of_lt (one_div_cast_pos hn)
+-- theorem one_div_cast_nonneg (n : ℕ) : 0 ≤ 1 / (n : ℝ) := by
+--   by_cases hn : n = 0
+--   · rw [hn, cast_zero, div_zero]
+--   · exact le_of_lt (one_div_cast_pos hn)
 
-theorem one_div_cast_ne_zero {n : ℕ} (hn : n ≠ 0) : 1 / (n : ℝ) ≠ 0 :=
-  _root_.ne_of_gt (one_div_cast_pos hn)
+-- theorem one_div_cast_ne_zero {n : ℕ} (hn : n ≠ 0) : 1 / (n : ℝ) ≠ 0 :=
+--   _root_.ne_of_gt (one_div_cast_pos hn)
 
 end Nat
 
