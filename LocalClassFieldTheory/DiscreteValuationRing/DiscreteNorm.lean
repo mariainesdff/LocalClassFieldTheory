@@ -38,7 +38,8 @@ In the meantime, we create definitions for all of the needed structures on `K` (
 
 noncomputable section
 
-open DiscreteValuation Multiplicative FiniteDimensional Module minpoly Polynomial Valuation WithZero
+open DiscreteValuation Multiplicative FiniteDimensional Module minpoly Polynomial Valuation
+  WithZero NNReal
 
 open scoped DiscreteValuation NNReal
 

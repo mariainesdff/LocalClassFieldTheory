@@ -8,6 +8,7 @@ import Mathlib.RingTheory.DedekindDomain.AdicValuation
 import Mathlib.RingTheory.DedekindDomain.PID
 import Mathlib.RingTheory.DiscreteValuationRing.Basic
 import Mathlib.RingTheory.Ideal.Basic
+import Mathlib.RingTheory.PrincipalIdealDomainOfPrime
 import Mathlib.RingTheory.Valuation.RankOne
 import Mathlib.RingTheory.Valuation.ValuationSubring
 import Mathlib.Topology.Algebra.Valued.ValuedField
@@ -206,8 +207,8 @@ open scoped NNReal
 /-- If the residue field is finite, then `valuation_base` is the cardinal of the residue field, and
 otherwise it takes the value `6` which is not a prime power.-/
 noncomputable def base (K : Type w₁) [Field K] (v : Valuation K ℤₘ₀) : ℝ≥0 :=
-  if 1 < Nat.card (LocalRing.ResidueField v.valuationSubring) then
-    Nat.card (LocalRing.ResidueField v.valuationSubring)
+  if 1 < Nat.card (IsLocalRing.ResidueField v.valuationSubring) then
+    Nat.card (IsLocalRing.ResidueField v.valuationSubring)
   else 6
 
 theorem one_lt_base (K : Type w₁) [Field K] (v : Valuation K ℤₘ₀) : 1 < base K v := by
@@ -223,7 +224,7 @@ end Valuation
 
 namespace DiscreteValuation
 
-open Valuation Ideal Multiplicative WithZero LocalRing
+open Valuation Ideal Multiplicative WithZero IsLocalRing
 
 -- is_dedekind_domain
 variable {K : Type w₁} [Field K] (v : Valuation K ℤₘ₀)
@@ -356,11 +357,11 @@ theorem IsUniformizerOfGenerator {r : K₀} (hr : maximalIdeal v.valuationSubrin
 
 theorem val_le_iff_dvd (L : Type w₁) [Field L] {w : Valuation L ℤₘ₀} [IsDiscrete w]
     [DiscreteValuationRing w.valuationSubring] (x : w.valuationSubring) (n : ℕ) :
-    w x ≤ ofAdd (-(n : ℤ)) ↔ LocalRing.maximalIdeal w.valuationSubring ^ n ∣ Ideal.span {x} := by
+    w x ≤ ofAdd (-(n : ℤ)) ↔ IsLocalRing.maximalIdeal w.valuationSubring ^ n ∣ Ideal.span {x} := by
   by_cases hx : x = 0
   · rw [Ideal.span_singleton_eq_bot.mpr hx, hx, Subring.coe_zero, Valuation.map_zero]
     simp only [WithZero.zero_le, true_iff, ← Ideal.zero_eq_bot, dvd_zero]
-  · set r := Submodule.IsPrincipal.generator (LocalRing.maximalIdeal w.valuationSubring) with hr
+  · set r := Submodule.IsPrincipal.generator (IsLocalRing.maximalIdeal w.valuationSubring) with hr
     have hrn : w (r ^ n) = ofAdd (-(n : ℤ)) := by
       replace hr : IsUniformizer w r := DiscreteValuation.IsUniformizerOfGenerator w ?_
       rw [WithZero.ofAdd_zpow, zpow_neg, ← Nat.cast_one, ← WithZero.ofAdd_neg_one_pow_comm ↑n 1,
@@ -373,7 +374,7 @@ theorem val_le_iff_dvd (L : Type w₁) [Field L] {w : Valuation L ℤₘ₀} [Is
     erw [← hrn, this]
     have DD : IsDedekindDomain w.valuationSubring := by
       apply IsPrincipalIdealRing.isDedekindDomain
-    rw [← Ideal.span_singleton_generator (LocalRing.maximalIdeal w.valuationSubring), ← hr,
+    rw [← Ideal.span_singleton_generator (IsLocalRing.maximalIdeal w.valuationSubring), ← hr,
       Ideal.span_singleton_pow, Ideal.dvd_iff_le, Ideal.span_singleton_le_iff_mem,
       Ideal.mem_span_singleton', dvd_iff_exists_eq_mul_left]
     tauto
@@ -412,7 +413,7 @@ theorem ideal_isPrincipal (I : Ideal K₀) : I.IsPrincipal :=
       rw [hu, Ideal.mul_unit_mem_iff_mem P u.isUnit,
         IsPrime.pow_mem_iff_mem hP _ (pos_iff_ne_zero.mpr hn), ← Ideal.span_singleton_le_iff_mem, ←
         Uniformizer_is_generator v π] at hx_mem
-      rw [← Ideal.IsMaximal.eq_of_le (LocalRing.maximalIdeal.isMaximal K₀) hP.ne_top hx_mem]
+      rw [← Ideal.IsMaximal.eq_of_le (IsLocalRing.maximalIdeal.isMaximal K₀) hP.ne_top hx_mem]
       exact ⟨π.1, Uniformizer_is_generator v π⟩
 
 theorem integer_isPrincipalIdealRing : IsPrincipalIdealRing K₀ :=
@@ -422,7 +423,7 @@ theorem integer_isPrincipalIdealRing : IsPrincipalIdealRing K₀ :=
 instance dvr_of_isDiscrete : DiscreteValuationRing K₀
     where
   toIsPrincipalIdealRing := integer_isPrincipalIdealRing v
-  toLocalRing  := inferInstance
+  toIsLocalRing  := inferInstance
   not_a_field' := by rw [ne_eq, ← isField_iff_maximalIdeal_eq]; exact not_isField v
 
 variable (A : Type w₁) [CommRing A] [IsDomain A] [DiscreteValuationRing A]
@@ -432,7 +433,7 @@ open IsDedekindDomain IsDedekindDomain.HeightOneSpectrum Subring DiscreteValuati
 /-- The maximal ideal of a DVR-/
 def maximalIdeal : HeightOneSpectrum A
     where
-  asIdeal := LocalRing.maximalIdeal A
+  asIdeal := IsLocalRing.maximalIdeal A
   isPrime := Ideal.IsMaximal.isPrime (maximalIdeal.isMaximal A)
   ne_bot := by
     simpa [ne_eq, ← isField_iff_maximalIdeal_eq] using DiscreteValuationRing.not_isField A
@@ -449,7 +450,7 @@ theorem exists_of_le_one {x : FractionRing A} (H : Valued.v x ≤ (1 : ℤₘ₀
     ∃ a : A, algebraMap A (FractionRing A) a = x :=
   by
   obtain ⟨π, hπ⟩ := exists_irreducible A
-  obtain ⟨a, ⟨b, ⟨hb, h_frac⟩⟩⟩ := @IsFractionRing.div_surjective A _ _ _ _ _ _ x
+  obtain ⟨a, ⟨b, ⟨hb, h_frac⟩⟩⟩ := IsFractionRing.div_surjective (A := A) x
   by_cases ha : a = 0
   · rw [← h_frac]
     use 0
@@ -463,7 +464,7 @@ theorem exists_of_le_one {x : FractionRing A} (H : Valued.v x ≤ (1 : ℤₘ₀
       one_mul, mul_inv, ← mul_assoc, Valuation.map_mul, _root_.map_mul] at H
     simp only [map_inv₀] at H
     rw [Integers.one_of_isUnit' w.isUnit, inv_one, mul_one, ← div_eq_mul_inv, ← map_div₀,
-      ← @IsFractionRing.mk'_mk_eq_div _ _ _ (FractionRing A) _ _ _ (π ^ n) _ hb] at H
+      ← @IsFractionRing.mk'_mk_eq_div _ _ (FractionRing A) _ _ _ (π ^ n) _ hb] at H
     erw [@valuation_of_mk' A _ _ (FractionRing A) _ _ _ (maximalIdeal A) (π ^ n) ⟨π ^ m, hb⟩,
       _root_.map_pow, _root_.map_pow] at H
     have h_mn : m ≤ n :=

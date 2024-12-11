@@ -17,15 +17,15 @@ theorem RingEquiv.discreteValuationRing {A B : Type _} [CommRing A] [IsDomain A]
     [IsDomain B] [DiscreteValuationRing A] (e : A ≃+* B) : DiscreteValuationRing B where
   principal := (isPrincipalIdealRing_iff _).1 <| IsPrincipalIdealRing.of_surjective
     e.toRingHom e.surjective
-  __ : LocalRing B := e.localRing
+  __ : IsLocalRing B := e.isLocalRing
   not_a_field' := by
-    have hA : LocalRing.maximalIdeal A ≠ ⊥ := DiscreteValuationRing.not_a_field A
+    have hA : IsLocalRing.maximalIdeal A ≠ ⊥ := DiscreteValuationRing.not_a_field A
     obtain ⟨a, ha⟩ := Submodule.nonzero_mem_of_bot_lt (bot_lt_iff_ne_bot.mpr hA)
     rw [Submodule.ne_bot_iff]
     use e a
     constructor
-    · erw [LocalRing.mem_maximalIdeal, map_mem_nonunits_iff (e : A →+* B), ←
-        LocalRing.mem_maximalIdeal]
+    · erw [IsLocalRing.mem_maximalIdeal, map_mem_nonunits_iff (e : A →+* B), ←
+        IsLocalRing.mem_maximalIdeal]
       exact a.2
     · apply (@map_ne_zero_iff _ _ _ _ e a).2
       simp only [ne_eq, Submodule.coe_eq_zero]; exact ha

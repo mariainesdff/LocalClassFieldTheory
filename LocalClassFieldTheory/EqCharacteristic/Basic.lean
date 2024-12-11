@@ -7,7 +7,6 @@ import Mathlib.Algebra.CharP.Subring
 import Mathlib.FieldTheory.Finite.GaloisField
 import LocalClassFieldTheory.DiscreteValuationRing.Complete
 import Mathlib.RingTheory.LaurentSeries
--- import LocalClassFieldTheory.LaurentSeriesEquivAdicCompletion
 import Mathlib.RingTheory.Valuation.AlgebraInstances
 import Mathlib.RingTheory.DedekindDomain.AdicValuation
 import Mathlib.RingTheory.Valuation.RankOne
@@ -62,8 +61,10 @@ def FpXIntCompletion :=
 
 open PowerSeries GaloisField
 
-instance : Fintype (LocalRing.ResidueField (PowerSeries 𝔽_[p])) :=
-  Fintype.ofEquiv _ (residueFieldOfPowerSeries).toEquiv.symm
+-- **FAE** : Is it worth trying to replace all `Fintype` with `Finite`?
+instance : Fintype (IsLocalRing.ResidueField 𝔽_[p]⟦X⟧) := by
+  let _ : Fintype 𝔽_[p] := Fintype.ofFinite _
+  exact Fintype.ofEquiv 𝔽_[p] (residueFieldOfPowerSeries).toEquiv.symm
 
 instance RatFunc.charP : CharP (RatFunc 𝔽_[p]) p :=
   charP_of_injective_algebraMap (algebraMap 𝔽_[p] (RatFunc 𝔽_[p])).injective p
@@ -126,36 +127,39 @@ end FpXCompletion
 
 namespace FpXIntCompletion
 
+open LaurentSeries
+
 /-- `integers_equiv_power_series` is the ring isomorphism `(power_series 𝔽_[p])` ≃+*
   `FpX_int_completion`. -/
-noncomputable def integers_equiv_powerSeries : PowerSeries 𝔽_[p] ≃+* FpXIntCompletion p :=
+noncomputable def integers_equiv_powerSeries : 𝔽_[p]⟦X⟧ ≃+* FpXIntCompletion p :=
   powerSeriesRingEquiv 𝔽_[p]
 
 theorem residueField_powerSeries_card :
-    Fintype.card (LocalRing.ResidueField (PowerSeries 𝔽_[p])) = p := by
+    Fintype.card (IsLocalRing.ResidueField 𝔽_[p]⟦X⟧) = p := by
   convert Fintype.ofEquiv_card (residueFieldOfPowerSeries).toEquiv.symm
-  rw [GaloisField.card p 1 one_ne_zero, pow_one]
+  rw [Fintype.card_eq_nat_card, GaloisField.card p 1 one_ne_zero, pow_one]
+
 
 variable {p}
 
 theorem residueField_card_eq_char :
-    Nat.card (LocalRing.ResidueField (FpXIntCompletion p)) = p := by
+    Nat.card (IsLocalRing.ResidueField (FpXIntCompletion p)) = p := by
   simp only [← Nat.card_congr
-    (LocalRing.ResidueField.mapEquiv (integers_equiv_powerSeries p)).toEquiv,
+    (IsLocalRing.ResidueField.mapEquiv (integers_equiv_powerSeries p)).toEquiv,
     Nat.card_eq_fintype_card, residueField_powerSeries_card p]
 
 variable (p)
 
-noncomputable instance : Fintype (LocalRing.ResidueField (FpXIntCompletion p)) :=
-  Fintype.ofEquiv _ (LocalRing.ResidueField.mapEquiv (integers_equiv_powerSeries p)).toEquiv
+noncomputable instance : Fintype (IsLocalRing.ResidueField (FpXIntCompletion p)) :=
+  Fintype.ofEquiv _ (IsLocalRing.ResidueField.mapEquiv (integers_equiv_powerSeries p)).toEquiv
 
-/-- The `fintype` structure on the residue field of `FpX_int_completion`. -/
+/-- The `Fintype` structure on the residue field of `FpX_int_completion`. -/
 noncomputable def residueFieldFintypeOfCompletion :
-    Fintype (LocalRing.ResidueField (FpXIntCompletion p)) :=
+    Fintype (IsLocalRing.ResidueField (FpXIntCompletion p)) :=
   inferInstance
 
 lemma residueFieldFiniteOfCompletion :
-    Finite (LocalRing.ResidueField (FpXIntCompletion p)) := Finite.of_fintype _
+    Finite (IsLocalRing.ResidueField (FpXIntCompletion p)) := Finite.of_fintype _
 
 end FpXIntCompletion
 
@@ -269,7 +273,7 @@ theorem dvd_of_norm_lt_one {F : FpXIntCompletion p} :
   have h_gf : (LaurentSeriesRingEquiv 𝔽_[p]) g = f := by rw [h_fg, RingEquiv.symm_apply_apply]
   erw [← h_gf, valuation_compare 𝔽_[p] g, ← WithZero.coe_one, ← ofAdd_zero, ← neg_zero]
   intro h
-  obtain ⟨G, h_Gg⟩ : ∃ G : PowerSeries 𝔽_[p], ↑G = g :=
+  obtain ⟨G, h_Gg⟩ : ∃ G : 𝔽_[p]⟦X⟧, ↑G = g :=
     by
     replace h := le_of_lt h
     rwa [neg_zero, ofAdd_zero, WithZero.coe_one, val_le_one_iff_eq_coe] at h
@@ -413,8 +417,8 @@ namespace RingOfIntegers
 variable {K}
 
 instance : IsFractionRing (𝓞 p K) K :=
-  @integralClosure.isFractionRing_of_finite_extension (FpXIntCompletion p) (FpXCompletion p) _ _ K _
-    _ _ FpXIntCompletion.isFractionRing _ _ _ _
+  @integralClosure.isFractionRing_of_finite_extension (FpXIntCompletion p) (FpXCompletion p) _ K _
+    _ _ FpXIntCompletion.isFractionRing _ _ _ _ _
 
 instance : IsIntegralClosure (𝓞 p K) (FpXIntCompletion p) K :=
   integralClosure.isIntegralClosure _ _
@@ -478,7 +482,7 @@ def ringOfIntegersEquiv (p : ℕ) [Fact (Nat.Prime p)] :
 
 
 theorem open_unit_ball_def :
-    LocalRing.maximalIdeal (FpXIntCompletion p) = Ideal.span {FpXIntCompletion.X p} := by
+    IsLocalRing.maximalIdeal (FpXIntCompletion p) = Ideal.span {FpXIntCompletion.X p} := by
   apply DiscreteValuation.IsUniformizer_is_generator; exact valuation_X
 
 end FpXCompletion

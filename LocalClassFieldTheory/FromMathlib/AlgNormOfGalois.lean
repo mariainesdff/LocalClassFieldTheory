@@ -166,7 +166,7 @@ theorem Real.iSup_pow {ι : Type _} [Nonempty ι] [Finite ι] {f : ι → ℝ} (
       by_cases hij : f i < f j
       · have hj : f i ^n * f j ≤ f j ^ n.succ := by
           rw [pow_succ]
-          exact mul_le_mul (pow_le_pow_left (hf_nn _) (le_of_lt hij) _) (le_refl _) (hf_nn _)
+          exact mul_le_mul (pow_le_pow_left₀ (hf_nn _) (le_of_lt hij) _) (le_refl _) (hf_nn _)
             (pow_nonneg (hf_nn _) _)
         exact le_trans hj (le_ciSup_of_le (Set.Finite.bddAbove (Set.finite_range _)) j (le_refl _))
       · have hi : f i ^ n * f j ≤ f i ^ n.succ := by
@@ -189,12 +189,12 @@ extending the norm on `K`, is an algebra norm on `K`. -/
 def algNormOfAuto (hna : IsNonarchimedean (norm : K → ℝ)) (σ : L ≃ₐ[K] L) : AlgebraNorm K L
     where
   toFun x     := Classical.choose (finite_extension_pow_mul_seminorm h_fin hna) (σ x)
-  map_zero'   := by simp only [map_eq_zero_iff_eq_zero, AddEquivClass.map_eq_zero_iff]
+  map_zero'   := by simp only [map_eq_zero_iff_eq_zero, EmbeddingLike.map_eq_zero_iff]
   add_le' x y := by simp only [map_add σ, map_add_le_add]
   neg' x      := by simp only [map_neg σ, map_neg_eq_map]
   mul_le' x y := by simp only [map_mul σ, map_mul_le_mul]
   smul' x y   := by simp only [map_smul σ, map_smul_eq_mul]
-  eq_zero_of_map_eq_zero' x hx := (AddEquivClass.map_eq_zero_iff _).mp (eq_zero_of_map_eq_zero _ hx)
+  eq_zero_of_map_eq_zero' x hx := EmbeddingLike.map_eq_zero_iff.mp (eq_zero_of_map_eq_zero _ hx)
 
 theorem algNormOfAuto_apply (σ : L ≃ₐ[K] L) (hna : IsNonarchimedean (norm : K → ℝ)) (x : L) :
     algNormOfAuto h_fin hna σ x =

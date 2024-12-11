@@ -74,7 +74,7 @@ instance isDiscrete : IsDiscrete (@Valued.v K_v _ ℤₘ₀ _ _) :=
 
 /-- The maximal ideal of `R_v`, that is a discrete valuation ring. -/
 def maxIdealOfCompletionDef : Ideal R_v :=
-  LocalRing.maximalIdeal R_v
+  IsLocalRing.maximalIdeal R_v
 
 instance : DiscreteValuationRing R_v := DiscreteValuation.dvr_of_isDiscrete _
 
@@ -107,22 +107,22 @@ theorem adicCompletionIntegers_not_isField :
     obtain ⟨π, hπ⟩ :=
       IsDedekindDomain.HeightOneSpectrum.valuation_completion_integers_exists_uniformizer R v K
     have h1 : π ∈ maxIdealOfCompletionDef R v K := by
-      rw [maxIdealOfCompletionDef, LocalRing.mem_maximalIdeal, mem_nonunits_iff,
+      rw [maxIdealOfCompletionDef, IsLocalRing.mem_maximalIdeal, mem_nonunits_iff,
         Valuation.Integer.not_isUnit_iff_valuation_lt_one, hπ]
       exact WithZero.ofAdd_neg_one_lt_one
     rw [h, Ideal.mem_bot] at h1
     simp only [h1, ZeroMemClass.coe_zero, _root_.map_zero, ofAdd_neg, WithZero.coe_inv,
       zero_eq_inv, WithZero.zero_ne_coe] at hπ
   · simp only [lt_top_iff_ne_top, ne_eq, Ideal.eq_top_iff_one, maxIdealOfCompletionDef,
-      LocalRing.mem_maximalIdeal, one_not_mem_nonunits, not_false_iff]
+      IsLocalRing.mem_maximalIdeal, one_not_mem_nonunits, not_false_iff]
 
 /-- The maximal ideal of `R_v`, as a term of the `height_one_spectrum` of `R_v`.
 The underlying ideal is `height_one_spectrum_def`. -/
 def maxIdealOfCompletion : HeightOneSpectrum R_v where
   asIdeal := maxIdealOfCompletionDef R v K
-  isPrime := Ideal.IsMaximal.isPrime (LocalRing.maximalIdeal.isMaximal R_v)
+  isPrime := Ideal.IsMaximal.isPrime (IsLocalRing.maximalIdeal.isMaximal R_v)
   ne_bot := by
-    rw [ne_eq, maxIdealOfCompletionDef, ← LocalRing.isField_iff_maximalIdeal_eq]
+    rw [ne_eq, maxIdealOfCompletionDef, ← IsLocalRing.isField_iff_maximalIdeal_eq]
     exact adicCompletionIntegers_not_isField R v K
 
 local notation "v_adic_of_compl" =>
