@@ -6,7 +6,7 @@ Authors: María Inés de Frutos-Fernández, Filippo A. E. Nuccio
 import Mathlib.Algebra.CharP.Subring
 import Mathlib.FieldTheory.Finite.GaloisField
 import LocalClassFieldTheory.DiscreteValuationRing.Complete
-import LocalClassFieldTheory.LaurentSeriesEquivAdicCompletion
+-- import LocalClassFieldTheory.LaurentSeriesEquivAdicCompletion
 import Mathlib.RingTheory.Valuation.AlgebraInstances
 import Mathlib.RingTheory.DedekindDomain.AdicValuation
 import Mathlib.RingTheory.Valuation.RankOne
