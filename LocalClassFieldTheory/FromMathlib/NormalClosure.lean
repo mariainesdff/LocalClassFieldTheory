@@ -5,7 +5,6 @@ Authors: María Inés de Frutos-Fernández
 -/
 import Mathlib.FieldTheory.NormalClosure
 import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
-import Mathlib.RingTheory.Algebraic
 
 /-!
 # Normal closures

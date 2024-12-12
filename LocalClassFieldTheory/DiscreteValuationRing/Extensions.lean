@@ -160,9 +160,9 @@ theorem expExtensionOnUnits_ne_zero [FiniteDimensional K L] : expExtensionOnUnit
     rw [hz, powExtensionOnUnits_apply, ne_eq, ← WithZero.coe_inj, coe_unzero, hv, hx, ←
       ofAdd_neg_nat, ← ofAdd_zero, WithZero.coe_inj, RingHom.toMonoidHom_eq_coe, Units.coe_map,
         IsUnit.unit_spec, MonoidHom.coe_coe, Int.natCast_div, ofAdd_neg, ofAdd_zero, inv_eq_one,
-        ofAdd_eq_one, ← Int.natCast_div, Int.natCast_eq_zero,
-        Nat.div_eq_zero_iff (minpoly.natDegree_pos (h_alg.isAlgebraic _).isIntegral)]
-    exact not_lt.mpr (minpoly.natDegree_le z.1)
+        ofAdd_eq_one, ← Int.natCast_div, Int.natCast_eq_zero, Nat.div_eq_zero_iff, not_or]
+    exact ⟨ne_of_gt (minpoly.natDegree_pos (h_alg.isAlgebraic _).isIntegral),
+      not_lt.mpr (minpoly.natDegree_le (K := K) z.1)⟩
   exact hzne1 hz1
 
 variable (K L)
@@ -274,7 +274,7 @@ theorem extensionDef_mul [FiniteDimensional K L] (x y : L) :
       rw [dif_neg hx, dif_neg hy, dif_neg (mul_ne_zero hx hy)]
       have hinj : Injective (WithZeroMulInt.toNNReal (base_ne_zero K hv.v)) :=
         (WithZeroMulInt.toNNReal_strictMono (one_lt_base K hv.v)).injective
-      rw [← Function.Injective.eq_iff hinj, ← pow_left_inj _ _ (expExtensionOnUnits_ne_zero K L),
+      rw [← Function.Injective.eq_iff hinj, ← pow_left_inj₀ _ _ (expExtensionOnUnits_ne_zero K L),
         ← NNReal.coe_inj, _root_.map_mul, mul_pow, ← _root_.map_pow,
         (exists_mul_expExtensionOnUnits K (isUnit_iff_ne_zero.mpr hxy).choose).choose_spec,
         NNReal.coe_mul]
@@ -320,14 +320,14 @@ theorem extensionDef_add [FiniteDimensional K L] (x y : L) :
         have hd : 0 < (expExtensionOnUnits K L : ℤ) := by
           rw [Int.natCast_pos]
           exact Nat.pos_of_ne_zero (expExtensionOnUnits_ne_zero K L)
-        rw [← zpow_le_zpow_iff' hd, zpow_natCast, zpow_natCast, ← WithZero.coe_le_coe, WithZero.coe_pow,
+        rw [← zpow_le_zpow_iff_left hd, zpow_natCast, zpow_natCast, ← WithZero.coe_le_coe, WithZero.coe_pow,
            WithZero.coe_zpow]
         simp_all only [(isUnit_iff_ne_zero.mpr hx).choose_spec, (isUnit_iff_ne_zero.mpr hy).choose_spec,
           (isUnit_iff_ne_zero.mpr hxy).choose_spec]
         rw [(exists_mul_expExtensionOnUnits K (isUnit_iff_ne_zero.mpr hxy).unit).choose_spec]
         rw [WithZero.coe_pow, WithZero.coe_zpow,
           (exists_mul_expExtensionOnUnits K (isUnit_iff_ne_zero.mpr hx).unit).choose_spec]
-        rw [← zpow_le_zpow_iff' hd, zpow_natCast, zpow_natCast]
+        rw [← zpow_le_zpow_iff_left hd, zpow_natCast, zpow_natCast]
         nth_rw 2 [← WithZero.coe_le_coe]
         simp_all only [WithZero.coe_pow, WithZero.coe_zpow,
           (exists_mul_expExtensionOnUnits K (isUnit_iff_ne_zero.mpr hxy).unit).choose_spec,
@@ -353,9 +353,9 @@ theorem extensionDef_add [FiniteDimensional K L] (x y : L) :
           exact (isNonarchimedean) _ _
         cases' h_le with hlex hley
         · left
-          exact pow_le_pow_left (nonneg _) hlex _
+          exact pow_le_pow_left₀ (nonneg _) hlex _
         · right
-          exact pow_le_pow_left (nonneg _) hley _
+          exact pow_le_pow_left₀ (nonneg _) hley _
         repeat' exact minpoly.degree_dvd (h_alg.isAlgebraic _).isIntegral
         repeat'
           rw [Nat.cast_ne_zero]
@@ -420,7 +420,7 @@ theorem apply_if_neg [FiniteDimensional K L] {x : L} (hx : x ≠ 0) :
 
 theorem le_one_iff_discreteNormExtension_le_one [FiniteDimensional K L] (x : L) :
     extendedValuation K L x ≤ (1 : ℤₘ₀) ↔
-      discreteNormExtension (K := K) x ≤ 1 := by
+      discreteNormExtension (h_alg := Algebra.IsAlgebraic.of_finite K L) x ≤ 1 := by
   set h_alg := Algebra.IsAlgebraic.of_finite K L
   rw [apply]
   split_ifs with hx

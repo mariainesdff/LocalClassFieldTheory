@@ -5,6 +5,7 @@ Authors: María Inés de Frutos-Fernández
 -/
 import Mathlib.RingTheory.Polynomial.Vieta
 import Mathlib.FieldTheory.Minpoly.Basic
+import Mathlib.RingTheory.Algebraic.Basic
 import LocalClassFieldTheory.FromMathlib.NormalClosure
 import LocalClassFieldTheory.FromMathlib.AlgNormOfGalois
 
@@ -308,10 +309,10 @@ attribute [-instance]
 -- Auxiliary instances to avoid timeouts
 set_option synthInstance.maxHeartbeats 400000
 instance : Algebra E ↥(normalClosure K E (AlgebraicClosure E)) :=
-  inferInstance
+  normalClosure.algebra K (↥E) (AlgebraicClosure ↥E) -- inferInstance used to work
 
 instance :  SMul ↥E ↥(normalClosure K (↥E) (AlgebraicClosure ↥E)) :=
-  inferInstance
+  Algebra.toSMul -- inferInstance used to work
 
 instance : AddGroup ↥(normalClosure K E (AlgebraicClosure E)) :=
   inferInstance
@@ -799,7 +800,7 @@ theorem max_root_norm_eq_spectral_value' {f : AlgebraNorm K L} (hf_pm : IsPowMul
         · exact hy_max _ h
         · exact apply_nonneg _ _
       apply le_trans this
-      apply pow_le_pow_left (apply_nonneg _ _)
+      apply pow_le_pow_left₀ (apply_nonneg _ _)
       apply le_trans _ (le_ciSup h_bdd y)
       rw [if_pos hyx]
     · simp only [spectralValueTerms]

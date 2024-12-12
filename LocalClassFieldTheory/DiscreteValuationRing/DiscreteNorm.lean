@@ -104,7 +104,7 @@ theorem norm_le_one_iff_val_le_one (x : K) :
     (@norm K (hasDiscreteNorm K)) x ≤ 1 ↔ Valued.v x ≤ (1 : ℤₘ₀) :=
   RankOneValuation.norm_le_one_iff_val_le_one x
 
-variable [CompleteSpace K] {L : Type _} [Field L] [Algebra K L] [Algebra.IsAlgebraic K L]
+variable [CompleteSpace K] {L : Type _} [Field L] [Algebra K L] [h_alg : Algebra.IsAlgebraic K L]
 
 variable {K}
 /-- The unique norm on `L` extending the norm on `K`. -/
