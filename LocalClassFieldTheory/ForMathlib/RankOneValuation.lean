@@ -3,12 +3,13 @@ Copyright (c) 2024 María Inés de Frutos-Fernández, Filippo A. E. Nuccio. All 
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: María Inés de Frutos-Fernández, Filippo A. E. Nuccio
 -/
-import LocalClassFieldTheory.FromMathlib.RingSeminorm
+-- import LocalClassFieldTheory.FromMathlib.RingSeminorm
 import Mathlib.Analysis.Normed.Ring.Seminorm
 import Mathlib.Data.Real.IsNonarchimedean
 import Mathlib.RingTheory.DedekindDomain.AdicValuation
 import Mathlib.RingTheory.Valuation.RankOne
 import Mathlib.Topology.Algebra.Valued.NormedValued
+
 
 /-!
 # Rank one valuations
@@ -42,25 +43,21 @@ open scoped Multiplicative
 
 namespace RankOneValuation
 
-variable {L : Type _} [Field L] [Valued L ℤₘ₀] [hv : RankOne (@Valued.v L _ ℤₘ₀ _ _)]
+variable {L : Type*} [Field L] [Valued L ℤₘ₀] [hv : RankOne (Valued.v (R := L))]
 
-theorem norm_le_one_iff_val_le_one (x : L) :
-    Valued.norm x ≤ 1 ↔ Valued.v x ≤ (1 : ℤₘ₀) := by
+theorem norm_le_one_iff_val_le_one (x : L) : Valued.norm x ≤ 1 ↔ Valued.v x ≤ (1 : ℤₘ₀) := by
   have hx : Valued.norm x = hv.hom (Valued.v x) := rfl
-  rw [hx, ← coe_one, coe_le_coe, ← _root_.map_one (RankOne.hom (@Valued.v L _ ℤₘ₀ _ _)),
-    StrictMono.le_iff_le]
+  rw [hx, ← coe_one, coe_le_coe, ← map_one (RankOne.hom (Valued.v (R := L))), StrictMono.le_iff_le]
   exact RankOne.strictMono Valued.v
 
-theorem norm_lt_one_iff_val_lt_one (x : L) :
-    Valued.norm x < 1 ↔ Valued.v x < (1 : ℤₘ₀) := by
+theorem norm_lt_one_iff_val_lt_one (x : L) : Valued.norm x < 1 ↔ Valued.v x < (1 : ℤₘ₀) := by
   have hx : Valued.norm x = hv.hom (Valued.v x) := rfl
-  rw [hx, ← coe_one, coe_lt_coe, ← _root_.map_one (RankOne.hom (@Valued.v L _ ℤₘ₀ _ _)),
-    StrictMono.lt_iff_lt]
+  rw [hx, ← coe_one, coe_lt_coe, ← map_one (RankOne.hom (Valued.v (R := L))), StrictMono.lt_iff_lt]
   exact RankOne.strictMono Valued.v
 
 theorem norm_pos_iff_val_pos (x : L) : 0 < Valued.norm x ↔ (0 : ℤₘ₀) < Valued.v x := by
   have hx : Valued.norm x = hv.hom (Valued.v x) := rfl
-  rw [hx, ← coe_zero, coe_lt_coe, ← _root_.map_zero (RankOne.hom (@Valued.v L _ ℤₘ₀ _ _)),
+  rw [hx, ← coe_zero, coe_lt_coe, ← map_zero (RankOne.hom (Valued.v (R := L))),
     StrictMono.lt_iff_lt]
   exact RankOne.strictMono Valued.v
 
@@ -68,20 +65,19 @@ end RankOneValuation
 
 namespace Valued
 
-variable (L : Type _) [Field L] (Γ₀ : Type _) [LinearOrderedCommGroupWithZero Γ₀]
+variable (L : Type _) [Field L] (Γ₀ : Type*) [LinearOrderedCommGroupWithZero Γ₀]
   [val : Valued L Γ₀] [hv : RankOne val.v]
 
-theorem norm_isNonarchimedean : IsNonarchimedean (@norm L _ Γ₀ _ val hv) :=
-  norm_add_le
+theorem norm_isNonarchimedean : IsNonarchimedean (norm (hv := hv)) := norm_add_le
 
-/-- If `L` is a valued field with respect to a rank one valuation, `mul_ring_norm_def` is the
+/-- If `L` is a valued field with respect to a rank one valuation, `mulRingNormDef` is the
   multiplicative norm on `L` induced by this valuation. -/
 def mulRingNormDef : MulRingNorm L where
   toFun        := norm
-  map_zero'    := by simp only [norm, _root_.map_zero, Nonneg.coe_zero, coe_zero]
-  add_le' x y  := IsNonarchimedean.add_le norm_nonneg (norm_isNonarchimedean L Γ₀)
+  map_zero'    := by simp only [norm, _root_.map_zero, coe_zero, coe_zero]
+  add_le' x y  := IsNonarchimedean.add_le norm_nonneg (norm_isNonarchimedean _ _)
   neg' x       := by simp only [norm, Valuation.map_neg]
-  map_one'     := by simp only [norm, _root_.map_one, Nonneg.coe_one, coe_one]
+  map_one'     := by simp only [norm, _root_.map_one, coe_one, coe_one]
   map_mul' x y := by simp only [norm, _root_.map_mul, Nonneg.coe_mul, NNReal.coe_mul]
   eq_zero_of_map_eq_zero' x := norm_eq_zero
 
