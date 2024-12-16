@@ -36,7 +36,7 @@ valuation is discrete, and that the residue field of the unit ball is finite. -/
 class LocalField (K : Type*) [Field K] extends Valued K ℤₘ₀ where
   complete : CompleteSpace K
   isDiscrete : IsDiscrete (@Valued.v K _ ℤₘ₀ _ _)
-  finiteResidueField : Finite (LocalRing.ResidueField (@Valued.v K _ ℤₘ₀ _ _).valuationSubring)
+  finiteResidueField : Finite (IsLocalRing.ResidueField (@Valued.v K _ ℤₘ₀ _ _).valuationSubring)
 
 attribute [instance] LocalField.complete LocalField.isDiscrete LocalField.finiteResidueField
 -- NOTE: instances added on 15/4/24

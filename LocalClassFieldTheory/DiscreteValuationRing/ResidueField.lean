@@ -51,7 +51,7 @@ consequence, when the residue field of `K₀` is finite, so is the residue field
   finiteness to `L₀`.
 -/
 
-open LocalRing Valuation Ideal DiscreteValuation Multiplicative Integer Extension
+open IsLocalRing Valuation Ideal DiscreteValuation Multiplicative Integer Extension
 
 noncomputable section
 
@@ -94,11 +94,11 @@ theorem finiteResidueFieldOfIntegralClosure [Algebra.IsSeparable K L]
 lemma finiteResidueFieldOfUnitBall [Algebra.IsSeparable K L]
     (hfin : Finite (ResidueField K₀)) :
     Finite (ResidueField (extendedValuation K L).valuationSubring) :=
-  letI : LocalRing (extendedValuation K L).valuationSubring := inferInstance -- Needed to avoid error
-  letI : LocalRing ↥(Subalgebra.toSubring (integralClosure (↥K₀) L)) :=
-    inferInstanceAs (LocalRing (integralClosure (↥K₀) L))
+  let _ : IsLocalRing (extendedValuation K L).valuationSubring := inferInstance -- Needed to avoid error
+  let _ : IsLocalRing ↥(Subalgebra.toSubring (integralClosure (↥K₀) L)) :=
+    inferInstanceAs (IsLocalRing (integralClosure (↥K₀) L))
   @Finite.of_equiv _ _ (finiteResidueFieldOfIntegralClosure K L hfin)
-    (LocalRing.ResidueField.mapEquiv
+    (ResidueField.mapEquiv
         (RingEquiv.subringCongr
           (DiscreteValuation.Extension.integralClosure_eq_integer K L))).toEquiv
 
@@ -111,11 +111,11 @@ def fintypeResidueFieldOfIntegralClosure [Algebra.IsSeparable K L]
 def fintypeResidueFieldOfUnitBall [Algebra.IsSeparable K L]
     (hfin : Fintype (ResidueField K₀)) :
     Fintype (ResidueField (extendedValuation K L).valuationSubring) :=
-  letI : LocalRing (extendedValuation K L).valuationSubring := inferInstance -- Needed to avoid error
-  letI : LocalRing ↥(Subalgebra.toSubring (integralClosure (↥K₀) L)) :=
-    inferInstanceAs (LocalRing (integralClosure (↥K₀) L))
+  let _ : IsLocalRing (extendedValuation K L).valuationSubring := inferInstance -- Needed to avoid error
+  let _ : IsLocalRing ↥(Subalgebra.toSubring (integralClosure (↥K₀) L)) :=
+    inferInstanceAs (IsLocalRing (integralClosure (↥K₀) L))
   @Fintype.ofEquiv _ _ (fintypeResidueFieldOfIntegralClosure K L hfin)
-    (LocalRing.ResidueField.mapEquiv
+    (ResidueField.mapEquiv
         (RingEquiv.subringCongr
           (DiscreteValuation.Extension.integralClosure_eq_integer K L))).toEquiv
 

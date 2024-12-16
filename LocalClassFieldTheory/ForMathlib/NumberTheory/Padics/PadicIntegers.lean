@@ -17,10 +17,10 @@ variable (p : outParam ℕ) [Fact p.Prime]
 
 namespace PadicInt
 
+
 /-- The equivalence between the residue field of the `p`-adic integers and `ℤ/pℤ` -/
 noncomputable def residueField : IsLocalRing.ResidueField ℤ_[p] ≃+* ZMod p := by
-  let α := RingHom.quotientKerEquivOfSurjective (ZMod.ringHom_surjective (@PadicInt.toZMod p _))
-  rw [PadicInt.ker_toZMod] at α
-  exact α
+  exact_mod_cast (@PadicInt.ker_toZMod p _) ▸ RingHom.quotientKerEquivOfSurjective
+    (ZMod.ringHom_surjective PadicInt.toZMod)
 
 end PadicInt

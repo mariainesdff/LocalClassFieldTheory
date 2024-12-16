@@ -5,7 +5,7 @@ Authors: María Inés de Frutos-Fernández, Filippo A. E. Nuccio
 -/
 
 import LocalClassFieldTheory.DiscreteValuationRing.Extensions
-import Mathlib.NumberTheory.RamificationInertia
+import Mathlib.NumberTheory.RamificationInertia.Basic
 
 namespace DiscreteValuationRing
 
@@ -17,7 +17,7 @@ variable {A : Type*} [CommRing A] [IsDomain A] [DiscreteValuationRing A]
 variable {B : Type*} [CommRing B] [IsDomain B] [DiscreteValuationRing B] [Algebra A B] /-  (h_alg : Algebra A B) -/
 
 scoped notation "e("B","A")" => Ideal.ramificationIdx (algebraMap A B)
-  (LocalRing.maximalIdeal A) (LocalRing.maximalIdeal B)
+  (IsLocalRing.maximalIdeal A) (IsLocalRing.maximalIdeal B)
 
 --NOTE: Missing in Lean 4 (?)
 instance : Coe A (FractionRing A) := ⟨fun a => Localization.mk a 1⟩

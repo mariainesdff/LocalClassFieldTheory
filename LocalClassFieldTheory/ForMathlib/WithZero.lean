@@ -81,9 +81,9 @@ theorem one_lt_zpow {α : Type _} [LinearOrderedCommGroupWithZero α] {a : α} (
 theorem mul_lt_mul_right₀ {α : Type*} {a b c : α} [LinearOrderedCommGroupWithZero α]
     (hc : 0 < c) : a * c < b * c ↔ a < b := by
   rw [mul_comm a, mul_comm b]
-  exact ⟨fun h ↦ lt_of_mul_lt_mul_of_le₀ h hc (le_refl _),
-    fun h ↦ mul_lt_mul_of_lt_of_le₀ (le_refl _) (ne_of_gt hc) h⟩
+  refine ⟨fun h ↦ lt_of_mul_lt_mul_of_le₀ h hc (le_refl _), ?_⟩
 
+    -- fun h ↦ mul_lt_mul_of_le_of_lt_of_nonneg_of_pos hc (le_refl _) (ne_of_gt hc)⟩
 --[Mathlib.Algebra.Order.GroupWithZero.Canonical]
 -- *FAE* The lemma below was used only once and was basically already in mathlib: removed
 -- theorem lt_mul_left₀ {α : Type _} {b c : α} [LinearOrderedCommGroupWithZero α] {a : α} (h : b < c)
