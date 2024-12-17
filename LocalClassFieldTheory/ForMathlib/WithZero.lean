@@ -81,7 +81,7 @@ theorem one_lt_zpow {α : Type _} [LinearOrderedCommGroupWithZero α] {a : α} (
 theorem mul_lt_mul_right₀ {α : Type*} {a b c : α} [LinearOrderedCommGroupWithZero α]
     (hc : 0 < c) : a * c < b * c ↔ a < b := by
   rw [mul_comm a, mul_comm b]
-  refine ⟨fun h ↦ lt_of_mul_lt_mul_of_le₀ h hc (le_refl _), ?_⟩
+  exact mul_lt_mul_left hc
 
     -- fun h ↦ mul_lt_mul_of_le_of_lt_of_nonneg_of_pos hc (le_refl _) (ne_of_gt hc)⟩
 --[Mathlib.Algebra.Order.GroupWithZero.Canonical]
