@@ -356,7 +356,7 @@ theorem IsUniformizerOfGenerator {r : K₀} (hr : maximalIdeal v.valuationSubrin
 --   IsNoetherianRing A := IsDedekindRing.toIsNoetherian
 
 theorem val_le_iff_dvd (L : Type w₁) [Field L] {w : Valuation L ℤₘ₀} [IsDiscrete w]
-    [DiscreteValuationRing w.valuationSubring] (x : w.valuationSubring) (n : ℕ) :
+    [IsDiscreteValuationRing w.valuationSubring] (x : w.valuationSubring) (n : ℕ) :
     w x ≤ ofAdd (-(n : ℤ)) ↔ IsLocalRing.maximalIdeal w.valuationSubring ^ n ∣ Ideal.span {x} := by
   by_cases hx : x = 0
   · rw [Ideal.span_singleton_eq_bot.mpr hx, hx, Subring.coe_zero, Valuation.map_zero]
@@ -420,15 +420,15 @@ theorem integer_isPrincipalIdealRing : IsPrincipalIdealRing K₀ :=
   ⟨fun I ↦ ideal_isPrincipal v I⟩
 
 /-- This is Chapter I, Section 1, Proposition 1 in Serre's Local Fields -/
-instance dvr_of_isDiscrete : DiscreteValuationRing K₀
+instance dvr_of_isDiscrete : IsDiscreteValuationRing K₀
     where
   toIsPrincipalIdealRing := integer_isPrincipalIdealRing v
   toIsLocalRing  := inferInstance
   not_a_field' := by rw [ne_eq, ← isField_iff_maximalIdeal_eq]; exact not_isField v
 
-variable (A : Type w₁) [CommRing A] [IsDomain A] [DiscreteValuationRing A]
+variable (A : Type w₁) [CommRing A] [IsDomain A] [IsDiscreteValuationRing A]
 
-open IsDedekindDomain IsDedekindDomain.HeightOneSpectrum Subring DiscreteValuationRing
+open IsDedekindDomain IsDedekindDomain.HeightOneSpectrum Subring IsDiscreteValuationRing
 
 /-- The maximal ideal of a DVR-/
 def maximalIdeal : HeightOneSpectrum A
@@ -436,7 +436,7 @@ def maximalIdeal : HeightOneSpectrum A
   asIdeal := IsLocalRing.maximalIdeal A
   isPrime := Ideal.IsMaximal.isPrime (maximalIdeal.isMaximal A)
   ne_bot := by
-    simpa [ne_eq, ← isField_iff_maximalIdeal_eq] using DiscreteValuationRing.not_isField A
+    simpa [ne_eq, ← isField_iff_maximalIdeal_eq] using IsDiscreteValuationRing.not_isField A
 
 variable {A}
 

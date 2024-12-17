@@ -76,7 +76,7 @@ instance isDiscrete : IsDiscrete (@Valued.v K_v _ ℤₘ₀ _ _) :=
 def maxIdealOfCompletionDef : Ideal R_v :=
   IsLocalRing.maximalIdeal R_v
 
-instance : DiscreteValuationRing R_v := DiscreteValuation.dvr_of_isDiscrete _
+instance : IsDiscreteValuationRing R_v := DiscreteValuation.dvr_of_isDiscrete _
 
 theorem IsDedekindDomain.HeightOneSpectrum.valuation_completion_integers_exists_uniformizer :
     ∃ π : R_v, Valued.v (π : K_v) = ofAdd (-1 : ℤ) := by

@@ -9,7 +9,7 @@ import LocalClassFieldTheory.ForMathlib.RingTheory.Test
 import Mathlib.Algebra.Field.Equiv
 import Mathlib.RingTheory.Polynomial.IrreducibleRing
 
-variable {A : Type*} [CommRing A] [IsDomain A] [DiscreteValuationRing A]
+variable {A : Type*} [CommRing A] [IsDomain A] [IsDiscreteValuationRing A]
 
 open Polynomial
 section Polynomial
@@ -33,7 +33,7 @@ lemma Polynomial.mapAlgHom_eq {A R S : Type*} [CommRing A] [Semiring R] [Algebra
     Polynomial.mapAlgHom' f hf = Polynomial.map f := rfl
 
 end Polynomial
-namespace DiscreteValuationRing
+namespace IsDiscreteValuationRing
 
 open IsLocalRing
 
@@ -137,13 +137,13 @@ lemma not_isField_of_irreducible {f : A[X]}
   exact hπ.ne_zero (hinj hf0)
 
 -- Ch. I, Section 6, Prop. 15 of Serre's "Local Fields"
-lemma discreteValuationRing_of_irreducible {f : A[X]} (hf1 : f.Monic)
+lemma IsDiscreteValuationRing_of_irreducible {f : A[X]} (hf1 : f.Monic)
     (hf : Irreducible (map (residue A) f)) :
-    @DiscreteValuationRing (AdjoinRoot f) _ (isDomain_of_irreducible hf1 hf) := by
+    @IsDiscreteValuationRing (AdjoinRoot f) _ (isDomain_of_irreducible hf1 hf) := by
   have not_field : ¬ IsField (AdjoinRoot f) := not_isField_of_irreducible hf
   let _ : IsDomain (AdjoinRoot f) := isDomain_of_irreducible hf1 hf
   let _ : IsLocalRing (AdjoinRoot f) := localRing_of_irreducible hf
-  have h := ((DiscreteValuationRing.TFAE (AdjoinRoot f) not_field).out 0 4)
+  have h := ((IsDiscreteValuationRing.TFAE (AdjoinRoot f) not_field).out 0 4)
   obtain ⟨π, hπ⟩ := exists_irreducible A
   rw [h]
   exact ⟨algebraMap A (AdjoinRoot f) π, maximalIdeal_of_irreducible hf hπ⟩
@@ -168,7 +168,7 @@ local notation "B" => integralClosure A L
 -- Serre's Proposition 16 in Chapter I, Section 6: we may want the algebra instance to become an
 -- explicit variable so that when we use the definition we do not need `@`.
 noncomputable def integralClosure_equiv_algebra_adjoin
-    (hB : DiscreteValuationRing B)
+    (hB : IsDiscreteValuationRing B)
     [h_alg : Algebra k (ResidueField B)]
     (hpb : PowerBasis k (ResidueField B))
     (hdeg : finrank (FractionRing A) L = hpb.dim) (x : B)
@@ -177,7 +177,7 @@ noncomputable def integralClosure_equiv_algebra_adjoin
   sorry
 
 noncomputable def integralClosure_equiv_adjoinRoot
-    (hB : DiscreteValuationRing B)
+    (hB : IsDiscreteValuationRing B)
     [Algebra k (ResidueField B)]
     (hpb : PowerBasis k (ResidueField B))
     (hdeg : finrank (FractionRing A) L = hpb.dim) (x : B)
@@ -185,4 +185,4 @@ noncomputable def integralClosure_equiv_adjoinRoot
     (integralClosure A L) ≃+* AdjoinRoot (minpoly A x) :=
   sorry
 
-end DiscreteValuationRing
+end IsDiscreteValuationRing

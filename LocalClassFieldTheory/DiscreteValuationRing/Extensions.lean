@@ -634,12 +634,12 @@ instance :  Add (integralClosure hv.v.valuationSubring L) :=
 /-- The integral closure of the the valuation subring of `K` in `L` is a discrete valuation ring.
   (Chapter 2, Section 2, Proposition 3 in Serre's Local Fields) -/
 instance discreteValuationRing_of_finite_extension [FiniteDimensional K L] :
-    DiscreteValuationRing (integralClosure hv.v.valuationSubring L) := by
+    IsDiscreteValuationRing (integralClosure hv.v.valuationSubring L) := by
   letI hw : Valued L ℤₘ₀ := Valued.mk' (extendedValuation K L)
   letI hw_disc : IsDiscrete hw.v := Extension.isDiscrete_of_finite K L
   let e : (extendedValuation K L).valuationSubring ≃+* integralClosure hv.v.valuationSubring L :=
     RingEquiv.subringCongr (integralClosure_eq_integer K L).symm
-  exact RingEquiv.discreteValuationRing e
+  exact RingEquiv.isDiscreteValuationRing e
 
 end integralClosure
 

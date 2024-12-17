@@ -1,3 +1,5 @@
+/- PR #19922
+
 /-
 Copyright (c) 2024 María Inés de Frutos-Fernández, Filippo A. E. Nuccio. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
@@ -24,3 +26,6 @@ noncomputable def residueField : IsLocalRing.ResidueField ℤ_[p] ≃+* ZMod p :
     (ZMod.ringHom_surjective PadicInt.toZMod)
 
 end PadicInt
+
+
+-/

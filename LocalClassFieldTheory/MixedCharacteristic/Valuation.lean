@@ -74,7 +74,7 @@ instance valuation.IsDiscrete : Valuation.IsDiscrete (MixedCharLocalField.WithZe
   Extension.isDiscrete_of_finite (Q_p p) K
 
 /-- The ring of integers of a mixed characteristic local field is a discrete valuation ring. -/
-instance : DiscreteValuationRing (𝓞 p K) :=
+instance : IsDiscreteValuationRing (𝓞 p K) :=
   integralClosure.discreteValuationRing_of_finite_extension (Q_p p) K
 
 variable {p}

@@ -7,14 +7,14 @@ Authors: María Inés de Frutos-Fernández, Filippo A. E. Nuccio
 import LocalClassFieldTheory.DiscreteValuationRing.Extensions
 import Mathlib.NumberTheory.RamificationInertia.Basic
 
-namespace DiscreteValuationRing
+namespace IsDiscreteValuationRing
 
 open Valuation
 
-variable {A : Type*} [CommRing A] [IsDomain A] [DiscreteValuationRing A]
+variable {A : Type*} [CommRing A] [IsDomain A] [IsDiscreteValuationRing A]
 -- We need to indicate in the docstring that h_alg is not an instance so when we apply it
 -- with local fields...
-variable {B : Type*} [CommRing B] [IsDomain B] [DiscreteValuationRing B] [Algebra A B] /-  (h_alg : Algebra A B) -/
+variable {B : Type*} [CommRing B] [IsDomain B] [IsDiscreteValuationRing B] [Algebra A B]
 
 scoped notation "e("B","A")" => Ideal.ramificationIdx (algebraMap A B)
   (IsLocalRing.maximalIdeal A) (IsLocalRing.maximalIdeal B)
@@ -27,4 +27,4 @@ lemma Extension_IsUniformizer_iff_unramified {a : A}
     IsUniformizer Valued.v (↑(algebraMap A B a) : FractionRing B) ↔ e(B,A) = 1 :=
 sorry
 
-end DiscreteValuationRing
+end IsDiscreteValuationRing

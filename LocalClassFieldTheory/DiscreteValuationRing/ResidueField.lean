@@ -69,7 +69,7 @@ local notation3 "S" => (integralClosure K₀ L)
 -- Porting note: needed to add this to avoid timeouts *FAE*: Re-check
 instance : Module K₀ S := Algebra.toModule
 
-instance : DiscreteValuationRing S :=
+instance : IsDiscreteValuationRing S :=
   DiscreteValuation.integralClosure.discreteValuationRing_of_finite_extension K L
 
 instance [Algebra.IsSeparable K L] : IsNoetherian K₀ S := IsIntegralClosure.isNoetherian K₀ K L S

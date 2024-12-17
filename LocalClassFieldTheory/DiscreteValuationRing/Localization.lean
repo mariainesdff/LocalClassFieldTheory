@@ -58,7 +58,7 @@ instance isDiscrete : IsDiscrete (@Valued.v K_v _ ℤₘ₀ _ _) :=
     (valuation_completion_integers_exists_uniformizer R K v).choose_spec
 
 /-- The unit ball `R_v` of `K_v` is a discrete valuation ring. -/
-instance discreteValuationRing : DiscreteValuationRing R_v :=
+instance discreteValuationRing : IsDiscreteValuationRing R_v :=
   DiscreteValuation.dvr_of_isDiscrete (Valued.v  (R := K_v))
 
 end IsDedekindDomain.HeightOneSpectrum

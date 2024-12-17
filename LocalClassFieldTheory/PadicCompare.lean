@@ -6,10 +6,9 @@ Authors: María Inés de Frutos-Fernández, Filippo A. E. Nuccio
 import LocalClassFieldTheory.DiscreteValuationRing.Complete
 import Mathlib.Analysis.SpecificLimits.Basic
 import Mathlib.Data.Int.WithZero
-import Mathlib.NumberTheory.Padics.PadicIntegers
+import Mathlib.NumberTheory.Padics.RingHoms
 import Mathlib.RingTheory.DedekindDomain.AdicValuation
 import Mathlib.RingTheory.DedekindDomain.Ideal
-import LocalClassFieldTheory.ForMathlib.NumberTheory.Padics.PadicIntegers
 import LocalClassFieldTheory.FromMathlib.SpecificLimits
 
 /-!
@@ -379,9 +378,9 @@ instance : Valued (Q_p p) ℤₘ₀ := HeightOneSpectrum.valuedAdicCompletion �
 def PadicInt.valuationSubring : ValuationSubring ℚ_[p] where
   toSubring := PadicInt.subring p
   mem_or_inv_mem' := by
-    have not_field : ¬IsField ℤ_[p] := DiscreteValuationRing.not_isField _
+    have not_field : ¬IsField ℤ_[p] := IsDiscreteValuationRing.not_isField _
     -- Marking `not_field` as a separate assumption makes the computation faster
-    have := ((DiscreteValuationRing.TFAE ℤ_[p] not_field).out 0 1).mp (by infer_instance)
+    have := ((IsDiscreteValuationRing.TFAE ℤ_[p] not_field).out 0 1).mp (by infer_instance)
     intro x
     rcases(ValuationRing.iff_isInteger_or_isInteger ℤ_[p] ℚ_[p]).mp this x with (hx | hx)
     · apply Or.intro_left
@@ -553,7 +552,7 @@ noncomputable def padicIntRingEquiv : Z_p p ≃+* ℤ_[p] :=
 
 /-- The ring equivalence between the residue field of `Z_p p` and `ℤ/pℤ`. -/
 def residueField : IsLocalRing.ResidueField (Z_p p) ≃+* ZMod p :=
-  (IsLocalRing.ResidueField.mapEquiv (padicIntRingEquiv p)).trans (PadicInt.residueField p)
+  (IsLocalRing.ResidueField.mapEquiv (padicIntRingEquiv p)).trans PadicInt.residueField
 
 end Z_p
 

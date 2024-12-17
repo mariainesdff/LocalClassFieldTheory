@@ -18,7 +18,7 @@ import LocalClassFieldTheory.EqCharacteristic.Valuation
 -- ForMathlib folder *complete*
 -- import LocalClassFieldTheory.ForMathlib.Data.Set.Lattice -- In PR #12961 I got convinced it was useless
 -- import LocalClassFieldTheory.ForMathlib.FieldTheory.Minpoly.IsIntegrallyClosed -- In PR #15723
-import LocalClassFieldTheory.ForMathlib.NumberTheory.Padics.PadicIntegers
+-- import LocalClassFieldTheory.ForMathlib.NumberTheory.Padics.PadicIntegers -- In PR #19922
 -- import LocalClassFieldTheory.ForMathlib.RingTheory.DedekindDomain.Ideal --In PR #13065
 -- import LocalClassFieldTheory.ForMathlib.RingTheory.Ideal.LocalRing -- In PR #15725
 -- import LocalClassFieldTheory.ForMathlib.RingTheory.Valuation.AlgebraInstances -- In PR #15734

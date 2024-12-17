@@ -34,7 +34,7 @@ noncomputable def _root_.Ideal.polynomialQuotientAlgEquivQuotientPolynomial {R :
       rfl }
 
 noncomputable def _root_.Ideal.polynomialQuotientIrreducibleAlgEquivResidueFieldPolynomial
-    [DiscreteValuationRing A] {ϖ : A} (h : Irreducible ϖ) :
+    [IsDiscreteValuationRing A] {ϖ : A} (h : Irreducible ϖ) :
     (A[X] ⧸ Ideal.span {Polynomial.C ϖ}) ≃+* (ResidueField A)[X] :=
   let φ := ((maximalIdeal A).polynomialQuotientEquivQuotientPolynomial).symm
   let β := Ideal.quotientEquiv (Ideal.map Polynomial.C (maximalIdeal A))
@@ -44,7 +44,7 @@ noncomputable def _root_.Ideal.polynomialQuotientIrreducibleAlgEquivResidueField
 
 --set_option profiler true
 
-noncomputable def DoubleQuot.quotSpanQuotEquivResidueFieldPolynomialQuot [DiscreteValuationRing A]
+noncomputable def DoubleQuot.quotSpanQuotEquivResidueFieldPolynomialQuot [IsDiscreteValuationRing A]
     {ϖ : A} (h : Irreducible ϖ) (I : Ideal A[X]) :
     (A[X] ⧸ Ideal.span {Polynomial.C ϖ}) ⧸
       (I.map (Ideal.Quotient.mk (Ideal.span {Polynomial.C ϖ}))) ≃+*
@@ -53,7 +53,7 @@ noncomputable def DoubleQuot.quotSpanQuotEquivResidueFieldPolynomialQuot [Discre
       (Ideal.polynomialQuotientIrreducibleAlgEquivResidueFieldPolynomial h) :=
   Ideal.quotientEquiv _ _ (Ideal.polynomialQuotientIrreducibleAlgEquivResidueFieldPolynomial h) rfl
 
-noncomputable def DoubleQuot.quotQuotSpanEquivResidueFieldPolynomialQuot [DiscreteValuationRing A]
+noncomputable def DoubleQuot.quotQuotSpanEquivResidueFieldPolynomialQuot [IsDiscreteValuationRing A]
     {ϖ : A} (h : Irreducible ϖ) (I : Ideal A[X]) :
     (A[X] ⧸ I) ⧸ ((Ideal.span {Polynomial.C ϖ}).map (Ideal.Quotient.mk I)) ≃+*
     (ResidueField A)[X] ⧸

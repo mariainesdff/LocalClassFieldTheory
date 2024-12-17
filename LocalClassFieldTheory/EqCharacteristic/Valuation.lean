@@ -64,7 +64,7 @@ instance valuation.IsDiscrete : Valuation.IsDiscrete (EqCharLocalField.WithZero.
   Extension.isDiscrete_of_finite (FpXCompletion p) K
 
 /-- The ring of integers of an equal characteristic local field is a discrete valuation ring. -/
-instance : DiscreteValuationRing (𝓞 p K) :=
+instance : IsDiscreteValuationRing (𝓞 p K) :=
   integralClosure.discreteValuationRing_of_finite_extension (FpXCompletion p) K
 
 variable {p}

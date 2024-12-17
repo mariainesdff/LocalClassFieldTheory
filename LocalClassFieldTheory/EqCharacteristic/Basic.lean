@@ -177,7 +177,7 @@ namespace FpXIntCompletion
 
 variable {p}
 
-instance : DiscreteValuationRing (FpXIntCompletion p) :=
+instance : IsDiscreteValuationRing (FpXIntCompletion p) :=
   DiscreteValuation.dvr_of_isDiscrete _
 
 instance : Algebra (FpXIntCompletion p) (FpXCompletion p) :=
