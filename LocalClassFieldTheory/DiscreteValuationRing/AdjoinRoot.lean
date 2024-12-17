@@ -35,7 +35,9 @@ lemma Polynomial.mapAlgHom_eq {A R S : Type*} [CommRing A] [Semiring R] [Algebra
 end Polynomial
 namespace DiscreteValuationRing
 
-local notation "k" => LocalRing.ResidueField A
+open IsLocalRing
+
+local notation "k" => ResidueField A
 
 namespace AdjoinRoot
 
@@ -46,13 +48,13 @@ lemma degree_ne_zero_of_irreducible {f : A[X]} (hf : Irreducible (map (algebraMa
   exact (Polynomial.not_irreducible_C _) hf
 
 lemma irreducible_of_irreducible_quot {f : A[X]} (hf1 : f.Monic)
-    (hf : Irreducible (map (LocalRing.residue A) f)) : Irreducible f :=
+    (hf : Irreducible (map (residue A) f)) : Irreducible f :=
   letI : (nilradical A).IsPrime := by
     simp only [nilradical_eq_zero, Submodule.zero_eq_bot, Ideal.isPrime_iff_bot_or_prime, true_or]
-  Monic.irreducible_of_irreducible_map_of_isPrime_nilradical (LocalRing.residue A) f hf1 hf
+  Monic.irreducible_of_irreducible_map_of_isPrime_nilradical (residue A) f hf1 hf
 
 lemma isDomain_of_irreducible {f : A[X]} (hf1 : f.Monic)
-    (hf : Irreducible (map (LocalRing.residue A) f)) :
+    (hf : Irreducible (map (residue A) f)) :
     IsDomain (AdjoinRoot f) := by
   simp only [AdjoinRoot, Ideal.Quotient.isDomain_iff_prime]
   rw [Ideal.span_singleton_prime]
@@ -65,7 +67,7 @@ noncomputable def ResidueField_to_AdjoinRoot_quot (f : A[X]) {π : A} (hπ : Irr
   let g : A →ₐ[A] AdjoinRoot f :=
   { algebraMap A (AdjoinRoot f) with
     commutes' := fun r => rfl }
-  apply Ideal.Quotient.liftₐ (LocalRing.maximalIdeal A)
+  apply Ideal.Quotient.liftₐ (maximalIdeal A)
     ((Ideal.Quotient.mkₐ (R₁ := A) (Ideal.span {(AdjoinRoot.of f) π})).comp g)
   intro a ha
   rw [AlgHom.coe_comp, Ideal.Quotient.mkₐ_eq_mk, Function.comp_apply, ← map_zero
@@ -80,7 +82,7 @@ variable {π : A} (hπ : Irreducible π) (f : A[X])
 
 noncomputable def fooEquiv {π : A} (hπ : Irreducible π) (f : A[X]) :
     AdjoinRoot f ⧸ Ideal.span {(AdjoinRoot.of f) π} ≃+*
-    AdjoinRoot (map (LocalRing.residue A) f) := by
+    AdjoinRoot (map (residue A) f) := by
   --simp only [AdjoinRoot, AdjoinRoot.of, RingHom.coe_comp, Function.comp_apply]
   --Set.image_singleton ▸ Ideal.map_span C
 
@@ -98,15 +100,15 @@ open Ideal.Quotient
 variable (f : A[X]) {π : A} (hπ : Irreducible π) (p : A[X])
 
 lemma isMaximal_of_irreducible {f : A[X]}
-    (hf : Irreducible (map (LocalRing.residue A) f)) {π : A} (hπ : Irreducible π) :
+    (hf : Irreducible (map (residue A) f)) {π : A} (hπ : Irreducible π) :
     (Ideal.span {AdjoinRoot.of f π}).IsMaximal :=
-  Ideal.Quotient.maximal_of_isField _ (MulEquiv.isField (AdjoinRoot (map (LocalRing.residue A) f))
+  Ideal.Quotient.maximal_of_isField _ (MulEquiv.isField (AdjoinRoot (map (residue A) f))
     (@AdjoinRoot.instField _ _ _ (fact_iff.mpr hf)).toIsField (fooEquiv hπ f))
 
 lemma localRing_of_irreducible {f : A[X]}
-    (hf : Irreducible (map (LocalRing.residue A) f)) :
-    LocalRing (AdjoinRoot f) := by
-  apply LocalRing.of_unique_max_ideal
+    (hf : Irreducible (map (residue A) f)) :
+    IsLocalRing (AdjoinRoot f) := by
+  apply of_unique_max_ideal
   obtain ⟨π, hπ⟩ := exists_irreducible A
   use Ideal.span {AdjoinRoot.of f π}
   refine ⟨isMaximal_of_irreducible hf hπ, ?_⟩
@@ -115,20 +117,20 @@ lemma localRing_of_irreducible {f : A[X]}
   sorry
 
 lemma maximalIdeal_of_irreducible {f : A[X]}
-    (hf : Irreducible (map (LocalRing.residue A) f))
+    (hf : Irreducible (map (residue A) f))
     {π : A} (hπ : Irreducible π) :
-    @LocalRing.maximalIdeal (AdjoinRoot f) _ (localRing_of_irreducible hf) =
+    @maximalIdeal (AdjoinRoot f) _ (localRing_of_irreducible hf) =
       Ideal.span {AdjoinRoot.of f π} :=
-  letI : LocalRing (AdjoinRoot f) := localRing_of_irreducible hf
-  (LocalRing.eq_maximalIdeal (isMaximal_of_irreducible hf hπ)).symm
+  let _ : IsLocalRing (AdjoinRoot f) := localRing_of_irreducible hf
+  (eq_maximalIdeal (isMaximal_of_irreducible hf hπ)).symm
 
 lemma not_isField_of_irreducible {f : A[X]}
-    (hf : Irreducible (map (LocalRing.residue A) f)) :
+    (hf : Irreducible (map (residue A) f)) :
     ¬ IsField (AdjoinRoot f) := by
-  letI : LocalRing (AdjoinRoot f) := localRing_of_irreducible hf
+  let _ : IsLocalRing (AdjoinRoot f) := localRing_of_irreducible hf
   obtain ⟨π, hπ⟩ := exists_irreducible A
   have hinj := AdjoinRoot.of.injective_of_degree_ne_zero (degree_ne_zero_of_irreducible hf)
-  rw [LocalRing.isField_iff_maximalIdeal_eq, maximalIdeal_of_irreducible hf hπ,
+  rw [isField_iff_maximalIdeal_eq, maximalIdeal_of_irreducible hf hπ,
     Ideal.span_singleton_eq_bot]
   intro hf0
   rw [← map_zero (AdjoinRoot.of f)] at hf0
@@ -136,11 +138,11 @@ lemma not_isField_of_irreducible {f : A[X]}
 
 -- Ch. I, Section 6, Prop. 15 of Serre's "Local Fields"
 lemma discreteValuationRing_of_irreducible {f : A[X]} (hf1 : f.Monic)
-    (hf : Irreducible (map (LocalRing.residue A) f)) :
+    (hf : Irreducible (map (residue A) f)) :
     @DiscreteValuationRing (AdjoinRoot f) _ (isDomain_of_irreducible hf1 hf) := by
   have not_field : ¬ IsField (AdjoinRoot f) := not_isField_of_irreducible hf
-  letI : IsDomain (AdjoinRoot f) := isDomain_of_irreducible hf1 hf
-  letI : LocalRing (AdjoinRoot f) := localRing_of_irreducible hf
+  let _ : IsDomain (AdjoinRoot f) := isDomain_of_irreducible hf1 hf
+  let _ : IsLocalRing (AdjoinRoot f) := localRing_of_irreducible hf
   have h := ((DiscreteValuationRing.TFAE (AdjoinRoot f) not_field).out 0 4)
   obtain ⟨π, hπ⟩ := exists_irreducible A
   rw [h]
@@ -148,7 +150,7 @@ lemma discreteValuationRing_of_irreducible {f : A[X]} (hf1 : f.Monic)
 
 -- Ch. I, Section 6, Cor. 1 of Serre's "Local Fields"
 lemma is_integral_closure_of_irreducible {f : A[X]}
-    (hf : Irreducible (map (LocalRing.residue A) f)) :
+    (hf : Irreducible (map (residue A) f)) :
     IsIntegralClosure (AdjoinRoot f) A (FractionRing (AdjoinRoot f)) :=
   sorry
 
@@ -167,19 +169,19 @@ local notation "B" => integralClosure A L
 -- explicit variable so that when we use the definition we do not need `@`.
 noncomputable def integralClosure_equiv_algebra_adjoin
     (hB : DiscreteValuationRing B)
-    [h_alg : Algebra k (LocalRing.ResidueField B)]
-    (hpb : PowerBasis k (LocalRing.ResidueField B))
+    [h_alg : Algebra k (ResidueField B)]
+    (hpb : PowerBasis k (ResidueField B))
     (hdeg : finrank (FractionRing A) L = hpb.dim) (x : B)
-    (hx : Ideal.Quotient.mk (LocalRing.maximalIdeal B) x = hpb.gen) :
+    (hx : Ideal.Quotient.mk (maximalIdeal B) x = hpb.gen) :
     B ≃+* Algebra.adjoin A ({x} : Set B) :=
   sorry
 
 noncomputable def integralClosure_equiv_adjoinRoot
     (hB : DiscreteValuationRing B)
-    [Algebra k (LocalRing.ResidueField B)]
-    (hpb : PowerBasis k (LocalRing.ResidueField B))
+    [Algebra k (ResidueField B)]
+    (hpb : PowerBasis k (ResidueField B))
     (hdeg : finrank (FractionRing A) L = hpb.dim) (x : B)
-    (hx : Ideal.Quotient.mk (LocalRing.maximalIdeal B) x = hpb.gen) :
+    (hx : Ideal.Quotient.mk (maximalIdeal B) x = hpb.gen) :
     (integralClosure A L) ≃+* AdjoinRoot (minpoly A x) :=
   sorry
 

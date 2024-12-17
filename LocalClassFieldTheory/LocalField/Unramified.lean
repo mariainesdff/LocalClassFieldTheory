@@ -43,8 +43,8 @@ instance : Algebra K₀ L₀ := by
 scoped notation "e("L","K")" => Ideal.ramificationIdx
   (algebraMap (Valuation.valuationSubring (@Valued.v K _ ℤₘ₀ _ _))
     (Valuation.valuationSubring (@Valued.v L _ ℤₘ₀ _ _)))
-  (LocalRing.maximalIdeal (Valuation.valuationSubring (@Valued.v K _ ℤₘ₀ _ _)))
-  (LocalRing.maximalIdeal (Valuation.valuationSubring (@Valued.v L _ ℤₘ₀ _ _)))
+  (IsLocalRing.maximalIdeal (Valuation.valuationSubring (@Valued.v K _ ℤₘ₀ _ _)))
+  (IsLocalRing.maximalIdeal (Valuation.valuationSubring (@Valued.v L _ ℤₘ₀ _ _)))
 
 end LocalField
 
