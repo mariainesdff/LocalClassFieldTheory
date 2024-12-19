@@ -3,29 +3,26 @@ Copyright (c) 2024 María Inés de Frutos-Fernández, Filippo A. E. Nuccio. All 
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: María Inés de Frutos-Fernández, Filippo A. E. Nuccio
 -/
+import LocalClassFieldTheory.ForMathlib.WithZero
+import Mathlib.Analysis.Normed.Field.Lemmas
 import Mathlib.Data.Int.WithZero
 import Mathlib.RingTheory.DedekindDomain.AdicValuation
-import Mathlib.RingTheory.DedekindDomain.PID
 import Mathlib.RingTheory.DiscreteValuationRing.Basic
-import Mathlib.RingTheory.Ideal.Basic
 import Mathlib.RingTheory.PrincipalIdealDomainOfPrime
 import Mathlib.RingTheory.Valuation.RankOne
-import Mathlib.RingTheory.Valuation.ValuationSubring
-import Mathlib.Topology.Algebra.Valued.ValuedField
-import Mathlib.Topology.Algebra.WithZeroTopology
-import LocalClassFieldTheory.ForMathlib.RankOneValuation
-import LocalClassFieldTheory.ForMathlib.WithZero
 
 /-!
 # Discrete Valuation Rings
 
 In this file we prove basic results about Discrete Valuation Rings, building on the main definitions
 provided in `RingTheory.DiscreteValuationRing.Basic`. We focus in particular on discrete
-valuations and on `valued` structures on the field of fractions of a DVR, as well as on a DVR
-structure on the unit ball of a `valued` field whose valuation is discrete.
+valuations and on `Valued` structures on the field of fractions of a DVR, as well as on a DVR
+structure on the unit ball of a `Valued` field whose valuation is discrete.
 
 ## Main Definitions
-* `IsDiscrete`: We define a valuation to be discrete if it is ℤₘ₀-valued and surjective.
+* `IsDiscrete`: We define a valuation to be discrete if it is ℤₘ₀-valued and
+  `Multiplicative.ofAdd (- 1 : ℤ)` belongs to the image.
+  --TODO
 * `IsUniformizer`: Given a ℤₘ₀-valued valuation `v` on a ring `R`, an element `π : R` is a
   uniformizer if `v π = multiplicative.of_add (- 1 : ℤ) : ℤₘ₀`.
 * `Uniformizer`: A strucure bundling an element of a ring and a proof that it is a uniformizer.
@@ -65,38 +62,6 @@ namespace Valuation
 
 variable {A : Type w₁} [CommRing A]
 
-theorem add_eq_max_of_ne {Γ₀ : Type w₂} [LinearOrderedCommGroupWithZero Γ₀] {v : Valuation A Γ₀}
-    {a b : A} (hne : v a ≠ v b) : v (a + b) = max (v a) (v b) :=
-  by
-  wlog hle : v b ≤ v a generalizing b a with H
-  · rw [add_comm, max_comm]
-    exact H hne.symm (le_of_lt (not_le.mp hle))
-  · have hlt : v b < v a := lt_of_le_of_ne hle hne.symm
-    have : v a ≤ max (v (a + b)) (v b) :=
-      calc
-        v a = v (a + b + -b) := by rw [add_neg_cancel_right]
-        _ ≤ max (v (a + b)) (v (-b)) := (Valuation.map_add _ _ _)
-        _ = max (v (a + b)) (v b) := by rw [Valuation.map_neg _ _]
-    have hnge : v b ≤ v (a + b) := by
-      apply le_of_not_gt
-      intro hgt
-      rw [max_eq_right_of_lt hgt] at this
-      apply not_lt_of_ge this
-      assumption
-    have : v a ≤ v (a + b) := by rwa [max_eq_left hnge] at this
-    apply le_antisymm
-    · exact Valuation.map_add _ _ _
-    · rw [max_eq_left_of_lt hlt]
-      assumption
-
-theorem add_eq_max_of_lt {Γ₀ : Type w₂} [LinearOrderedCommGroupWithZero Γ₀] {v : Valuation A Γ₀}
-    {a b : A} (hlt : v a < v b) : v (a + b) = max (v a) (v b) :=
-  add_eq_max_of_ne (ne_of_lt hlt)
-
-theorem mem_integer {Γ₀ : Type w₂} [LinearOrderedCommGroupWithZero Γ₀] (v : Valuation A Γ₀) (a : A) :
-    a ∈ v.integer ↔ v a ≤ 1 :=
-  Iff.rfl
-
 namespace Integer
 
 theorem isUnit_iff_valuation_eq_one {K : Type w₁} [Field K] {Γ₀ : Type w₂}
@@ -110,29 +75,204 @@ theorem isUnit_iff_valuation_eq_one {K : Type w₁} [Field K] {Γ₀ : Type w₂
     exact zero_ne_one hx
   have hx' : v (x : K)⁻¹ = (1 : Γ₀) := by rw [map_inv₀, inv_eq_one]; exact hx
   rw [isUnit_iff_exists_inv]
-  use! (x : K)⁻¹
-  · rw [mem_integer]
-    exact le_of_eq hx'
+  use! (x : K)⁻¹, le_of_eq hx'
   · ext; simp only [Subring.coe_mul, ne_eq, ZeroMemClass.coe_eq_zero, OneMemClass.coe_one,
       mul_inv_cancel₀ hx0]
 
 theorem not_isUnit_iff_valuation_lt_one {K : Type w₁} [Field K] {Γ₀ : Type w₂}
     [LinearOrderedCommGroupWithZero Γ₀] {v : Valuation K Γ₀} (x : v.integer) :
-    ¬IsUnit x ↔ v x < 1 :=
-  by
+    ¬IsUnit x ↔ v x < 1 := by
   rw [← not_le, not_iff_not, isUnit_iff_valuation_eq_one, le_antisymm_iff]
   exact and_iff_right x.2
 
 end Integer
 
+open Function Set
+
 /-- We insist that `v` takes values in ℤₘ₀ in order to define uniformizers as the elements in `K`
-whose valuation is exactly `with_zero.multiplicative (- 1) : ℤₘ₀`-/
+whose valuation is exactly `WithZero.multiplicative (- 1) : ℤₘ₀`-/
 class IsDiscrete (v : Valuation A ℤₘ₀) : Prop where
-  surj : Function.Surjective v
+  one_mem_range : (↑(Multiplicative.ofAdd (-1 : ℤ)) : ℤₘ₀) ∈ range v
+
+lemma IsDiscrete.surj {K : Type*} [Field K] (v : Valuation K ℤₘ₀) [hv : IsDiscrete v] :
+    Surjective v := by
+  intro c
+  refine WithOne.cases_on c ⟨0, map_zero _⟩ ?_
+  obtain ⟨π, hπ⟩ := hv
+  intro a
+  use π ^ (- a.toAdd)
+  rw [map_zpow₀, hπ]
+  simp only [ofAdd_neg, WithZero.coe_inv, zpow_neg, inv_zpow', inv_inv, ← WithZero.ofAdd_zpow]
+  rfl
+
+lemma isDiscrete_iff_surjective {K : Type*} [Field K] (v : Valuation K ℤₘ₀) :
+    IsDiscrete v ↔ Surjective v :=
+  ⟨fun _ ↦ IsDiscrete.surj v, fun hv ↦ ⟨hv (↑(Multiplicative.ofAdd (-1 : ℤ)) : ℤₘ₀)⟩⟩
+
 
 open Valuation Ideal Multiplicative WithZero
 
 variable {R : Type w₁} [CommRing R] (vR : Valuation R ℤₘ₀)
+
+def unzero' (h0 : ∀ {x : R}, x ≠ 0 → vR x ≠ 0) : {x : R // x ≠ 0} → Multiplicative ℤ :=
+    fun x ↦ WithZero.unzero (h0 x.2)
+
+def unzero_range' [Nontrivial R] [IsDomain R] [IsDiscrete vR]
+    (h0 : ∀ {x : R}, x ≠ 0 → vR x ≠ 0) :
+    Submonoid (Multiplicative ℤ) where
+  carrier := range (vR.unzero' h0)
+  mul_mem' hx hy := by
+    simp only [mem_range, Subtype.exists] at *
+    obtain ⟨a, ha, rfl⟩ := hx
+    obtain ⟨b, hb, rfl⟩ := hy
+    use a*b, mul_ne_zero ha hb
+    simp only [unzero', _root_.map_mul, unzero_mul]
+  one_mem' := by
+    use ⟨(1 : R), one_ne_zero⟩
+    simp only [unzero', _root_.map_one, unzero_coe]
+    rfl
+section Subgroup
+--TODO: move, PR
+
+theorem AddSubgroup.toSubgroup_closure {A : Type} [AddGroup A] (S : Set A) :
+    AddSubgroup.toSubgroup (AddSubgroup.closure S) =
+      Subgroup.closure (Multiplicative.toAdd ⁻¹' S) :=
+  le_antisymm
+    (AddSubgroup.toSubgroup.to_galoisConnection.l_le <|
+      (AddSubgroup.closure_le _).2 <| Subgroup.subset_closure (G := Multiplicative A))
+    ((Subgroup.closure_le _).2 <| AddSubgroup.subset_closure (G := A))
+
+theorem Subgroup.toAddSubgroup_closure {G : Type} [Group G] (S : Set G) :
+    Subgroup.toAddSubgroup (Subgroup.closure S) =
+      AddSubgroup.closure (Additive.toMul ⁻¹' S) :=
+  le_antisymm
+    (Subgroup.toAddSubgroup.le_symm_apply.1 <|
+      (Subgroup.closure_le _).2 (AddSubgroup.subset_closure (G := Additive G)))
+    ((AddSubgroup.closure_le _).2 (Subgroup.subset_closure (G := G)))
+
+theorem Subgroup.toAddSubgroup_toSubgroup' {G : Type*} [Group G] (H : Subgroup G) :
+    AddSubgroup.toSubgroup' (Subgroup.toAddSubgroup H) = H := by
+  ext x
+  simp only [OrderIso.symm_apply_apply]
+
+--TODO: use this in DVR.Extensions.
+lemma _root_.MultInt.subgroup_cyclic (H : Subgroup (Multiplicative ℤ)) :
+    ∃ (a : Multiplicative ℤ), H = Subgroup.closure {a} := by
+  obtain ⟨g, hg⟩ := Int.subgroup_cyclic H.toAddSubgroup
+  have hg' : H =  AddSubgroup.toSubgroup (AddSubgroup.closure {g}) := by
+    erw [← hg, Subgroup.toAddSubgroup_toSubgroup' (G := Multiplicative ℤ)]
+  use ofAdd g
+  rw [hg', AddSubgroup.toSubgroup_closure]
+  congr
+
+lemma _root_.MultInt.exists_generator_le_one {H : Subgroup (Multiplicative ℤ)} (h : H ≠ ⊥) :
+    ∃ (a : Multiplicative ℤ), a < 1 ∧ H = Subgroup.closure {a} := by
+  obtain ⟨a, ha⟩ := MultInt.subgroup_cyclic H
+  by_cases ha1 : a < 1
+  · use a, ha1, ha
+  · simp only [not_lt, le_iff_eq_or_lt] at ha1
+    rcases ha1 with (ha1 | ha1)
+    · rw [← ha1, Subgroup.closure_singleton_one] at ha
+      exact absurd ha h
+    · use a⁻¹, Left.inv_lt_one_iff.mpr ha1
+      rw [Subgroup.closure_singleton_inv, ha]
+
+end Subgroup
+
+open Polynomial
+
+-- Example of nontrivial ℤₘ₀-valued valuation with no good notion of uniformizer.
+open Classical in
+noncomputable example {K : Type*} [Field K] :
+    Valuation (K[X]⧸ (Ideal.span {(X^2 : K[X])})) ℤₘ₀ where
+  toFun := fun p ↦ if (Ideal.Quotient.mk (Ideal.span {(X^2 : K[X])}) X ∣ p) then 0 else 1
+  map_zero' := by
+    simp only [dvd_zero, ↓reduceIte]
+  map_one' := by
+    simp only [ite_eq_right_iff, zero_ne_one, imp_false]
+    sorry
+  map_mul' := by
+    intro p q
+    simp only [mul_ite, mul_zero, mul_one]
+    split_ifs
+    · rfl
+    · rfl
+    · sorry --contradiction bc X is prime
+    · sorry --by contradiction
+    · sorry --by contradiction
+    · rfl
+  map_add_le_max' := by
+    intro p q
+    simp only [le_sup_iff]
+    split_ifs -- 8 trivial cases
+    all_goals sorry
+
+section Field
+
+variable {K : Type*} [Field K] (v : Valuation K ℤₘ₀)
+
+def unzero : Kˣ → Multiplicative ℤ :=
+  fun x ↦ WithZero.unzero (ne_zero_of_unit v x)
+
+def unzero_range : Subgroup (Multiplicative ℤ) where
+  carrier := range v.unzero
+  mul_mem' hx hy := by
+    simp only [mem_range] at *
+    obtain ⟨a, ha, rfl⟩ := hx
+    obtain ⟨b, hb, rfl⟩ := hy
+    use a*b
+    simp only [unzero, Units.val_mul, _root_.map_mul, unzero_mul]
+  one_mem' := by
+    use 1
+    simp only [unzero, Units.val_one, _root_.map_one, unzero_coe]
+    rfl
+  inv_mem' hx := by
+    simp only [mem_range] at *
+    obtain ⟨a, ha, rfl⟩ := hx
+    use a⁻¹
+    simp only [unzero, Units.val_inv_eq_inv_val, map_inv₀]
+    rw [eq_inv_iff_mul_eq_one]
+    simp only [isUnit_iff_ne_zero, ne_eq, _root_.map_eq_zero, Units.ne_zero, not_false_eq_true,
+      IsUnit.inv_mul_cancel, one_ne_zero, ← unzero_mul, unzero_coe]
+    rfl
+
+lemma unzero_mem_unzero_range (x : Kˣ) : v.unzero x ∈ v.unzero_range := by
+  simp only [unzero_range, Subgroup.mem_mk, mem_range, exists_apply_eq_apply]
+
+variable {v}
+
+lemma unzero_range_ne_bot (hv : ∃ x : K, v x ≠ 0 ∧ v x ≠ 1) :
+    v.unzero_range ≠ ⊥ := by
+  obtain ⟨x, hx0, hx1⟩ := hv
+  simp only [ne_eq, _root_.map_eq_zero] at hx0
+  rw [Subgroup.ne_bot_iff_exists_ne_one]
+  use ⟨unzero v (Units.mk0 x hx0), unzero_mem_unzero_range _ _⟩
+  simp only [ne_eq, Subgroup.mk_eq_one, unzero]
+  rw [← WithZero.coe_inj]
+  convert hx1
+  rw [coe_unzero, Units.val_mk0]
+
+/-- An element `π : K` is a pre-uniformizer if `v π` generates `v.unzero_range` .-/
+def IsPreuniformizer (hv : ∃ x : K, v x ≠ 0 ∧ v x ≠ 1) (π : K) : Prop :=
+  v π = (MultInt.exists_generator_le_one (unzero_range_ne_bot hv)).choose
+
+lemma IsPreuniformizer_val_lt_one (hv : ∃ x : K, v x ≠ 0 ∧ v x ≠ 1) {π : K}
+    (hπ : IsPreuniformizer hv π) : v π < 1 := by
+  rw [hπ, ← WithZero.coe_one, WithZero.coe_lt_coe]
+  exact (MultInt.exists_generator_le_one (unzero_range_ne_bot hv)).choose_spec.1
+
+lemma IsPreuniformizer_val_ne_zero (hv : ∃ x : K, v x ≠ 0 ∧ v x ≠ 1) {π : K}
+    (hπ : IsPreuniformizer hv π) : v π ≠ 0 := by
+  by_contra h0
+  simp only [IsPreuniformizer, h0, zero_ne_coe] at hπ
+
+lemma IsPreuniformizer_val_generates_unzero_range (hv : ∃ x : K, v x ≠ 0 ∧ v x ≠ 1) {π : K}
+    (hπ : IsPreuniformizer hv π) :
+    unzero_range v = Subgroup.closure {WithZero.unzero (IsPreuniformizer_val_ne_zero hv hπ )} := by
+  convert (MultInt.exists_generator_le_one (unzero_range_ne_bot hv)).choose_spec.2
+  rw [← WithZero.coe_inj, ← hπ, coe_unzero]
+
+end Field
 
 /-- An element `π : R` is a uniformizer if `v π = multiplicative.of_add (- 1 : ℤ) : ℤₘ₀`.-/
 def IsUniformizer (π : R) : Prop :=
@@ -154,12 +294,9 @@ structure Uniformizer where
   valuationEqNegOne : IsUniformizer vR val
 
 /-- A constructor for uniformizers.-/
-def Uniformizer.mk' (x : R) (hx : IsUniformizer vR x) : Uniformizer vR
-    where
-  val :=
-    ⟨x, by
-      rw [mem_integer, IsUniformizer_iff.mp hx]
-      exact le_of_lt WithZero.ofAdd_neg_one_lt_one⟩
+def Uniformizer.mk' (x : R) (hx : IsUniformizer vR x) : Uniformizer vR where
+  val := ⟨x, by
+      rw [mem_integer_iff, IsUniformizer_iff.mp hx]; exact le_of_lt WithZero.ofAdd_neg_one_lt_one⟩
   valuationEqNegOne := hx
 
 @[simp]
@@ -167,9 +304,8 @@ instance : Coe (Uniformizer vR) vR.integer :=
   ⟨fun π ↦ π.val⟩
 
 theorem isDiscreteOfExistsUniformizer {K : Type w₁} [Field K] (v : Valuation K ℤₘ₀) {π : K}
-    (hπ : IsUniformizer v π) : IsDiscrete v :=
-  by
-  constructor
+    (hπ : IsUniformizer v π) : IsDiscrete v := by
+  rw [isDiscrete_iff_surjective]
   intro x
   apply @WithZero.cases_on (x := x)
   · exact ⟨0, Valuation.map_zero v⟩
@@ -179,8 +315,7 @@ theorem isDiscreteOfExistsUniformizer {K : Type w₁} [Field K] (v : Valuation K
     rw [map_zpow₀, hπ, ← coe_zpow, coe_inj, ← ofAdd_zsmul, ← zsmul_neg', neg_neg, zsmul_one,
       Int.cast_id, ofAdd_toAdd]
 
-theorem Uniformizer_ne_zero {π : R} (hπ : IsUniformizer vR π) : π ≠ 0 :=
-  by
+theorem Uniformizer_ne_zero {π : R} (hπ : IsUniformizer vR π) : π ≠ 0 := by
   intro h0
   rw [h0, IsUniformizer, Valuation.map_zero] at hπ
   exact WithZero.zero_ne_coe hπ
@@ -240,13 +375,12 @@ theorem UniformizerOfAssociated {π₁ π₂ : K₀} (h1 : IsUniformizer v π₁
   rwa [IsUniformizer_iff, ← hu, Subring.coe_mul, Valuation.map_mul,
     (Integer.isUnit_iff_valuation_eq_one u.1).mp u.isUnit, mul_one, ← IsUniformizer_iff]
 
-
 theorem associatedOfUniformizer {π₁ π₂ : Uniformizer v} : Associated π₁.1 π₂.1 := by
   have hval : v ((π₁.1 : K)⁻¹ * π₂.1) = 1 := by
     simp only [Valuation.map_mul, map_inv₀, IsUniformizer_iff.mp π₁.2,
     IsUniformizer_iff.mp π₂.2, ofAdd_neg, coe_inv, inv_inv, mul_inv_cancel₀, ne_eq, coe_ne_zero,
     not_false_iff]
-  let p : v.integer := ⟨(π₁.1 : K)⁻¹ * π₂.1, (Valuation.mem_integer v _).mpr (le_of_eq hval)⟩
+  let p : v.integer := ⟨(π₁.1 : K)⁻¹ * π₂.1, (v.mem_integer_iff _).mpr (le_of_eq hval)⟩
   use ((Integer.isUnit_iff_valuation_eq_one p).mpr hval).unit
   simp only [IsUnit.unit_spec]
   apply_fun ((↑·) : K₀ → K) using Subtype.val_injective
@@ -317,12 +451,13 @@ theorem pow_Uniformizer_is_pow_generator {π : Uniformizer v} (n : ℕ) :
 variable [IsDiscrete v]
 
 theorem exists_Uniformizer_ofDiscrete : ∃ π : K₀, IsUniformizer v (π : K) := by
-  let surj_v : IsDiscrete v := by infer_instance
+  sorry/- let surj_v : IsDiscrete v := by infer_instance
+  rw [isDiscrete_iff_surjective] at surj_v
   refine
     ⟨⟨(surj_v.surj (↑(Multiplicative.ofAdd (-1 : ℤ)) : ℤₘ₀)).choose, ?_⟩,
       (surj_v.surj (↑(Multiplicative.ofAdd (-1 : ℤ)) : ℤₘ₀)).choose_spec⟩
   rw [mem_valuationSubring_iff, (surj_v.surj (↑(Multiplicative.ofAdd (-1 : ℤ)) : ℤₘ₀)).choose_spec]
-  exact le_of_lt ofAdd_neg_one_lt_one
+  exact le_of_lt ofAdd_neg_one_lt_one -/
 
 instance : Nonempty (Uniformizer v) :=
   ⟨⟨(exists_Uniformizer_ofDiscrete v).choose, (exists_Uniformizer_ofDiscrete v).choose_spec⟩⟩
