@@ -54,14 +54,58 @@ loops in the type-class inference mechanism.
 -/
 universe w₁ w₂
 
-open scoped Multiplicative
-
 open Multiplicative
+
+section Subgroup
+
+theorem AddSubgroup.toSubgroup_closure {A : Type} [AddGroup A] (S : Set A) :
+    AddSubgroup.toSubgroup (AddSubgroup.closure S) =
+      Subgroup.closure (Multiplicative.toAdd ⁻¹' S) :=
+  le_antisymm
+    (AddSubgroup.toSubgroup.to_galoisConnection.l_le <|
+      (AddSubgroup.closure_le _).2 <| Subgroup.subset_closure (G := Multiplicative A))
+    ((Subgroup.closure_le _).2 <| AddSubgroup.subset_closure (G := A))
+
+theorem Subgroup.toAddSubgroup_closure {G : Type} [Group G] (S : Set G) :
+    Subgroup.toAddSubgroup (Subgroup.closure S) =
+      AddSubgroup.closure (Additive.toMul ⁻¹' S) :=
+  le_antisymm
+    (Subgroup.toAddSubgroup.le_symm_apply.1 <|
+      (Subgroup.closure_le _).2 (AddSubgroup.subset_closure (G := Additive G)))
+    ((AddSubgroup.closure_le _).2 (Subgroup.subset_closure (G := G)))
+
+theorem Subgroup.toAddSubgroup_toSubgroup' {G : Type*} [Group G] (H : Subgroup G) :
+    AddSubgroup.toSubgroup' (Subgroup.toAddSubgroup H) = H := by
+  ext x
+  simp only [OrderIso.symm_apply_apply]
+
+--TODO: use this in DVR.Extensions.
+lemma MultInt.subgroup_cyclic (H : Subgroup (Multiplicative ℤ)) :
+    ∃ (a : Multiplicative ℤ), H = Subgroup.closure {a} := by
+  obtain ⟨g, hg⟩ := Int.subgroup_cyclic H.toAddSubgroup
+  have hg' : H =  AddSubgroup.toSubgroup (AddSubgroup.closure {g}) := by
+    erw [← hg, Subgroup.toAddSubgroup_toSubgroup' (G := Multiplicative ℤ)]
+  use ofAdd g
+  rw [hg', AddSubgroup.toSubgroup_closure]
+  congr
+
+lemma MultInt.exists_generator_le_one {H : Subgroup (Multiplicative ℤ)} (h : H ≠ ⊥) :
+    ∃ (a : Multiplicative ℤ), a < 1 ∧ H = Subgroup.closure {a} := by
+  obtain ⟨a, ha⟩ := MultInt.subgroup_cyclic H
+  by_cases ha1 : a < 1
+  · use a, ha1, ha
+  · simp only [not_lt, le_iff_eq_or_lt] at ha1
+    rcases ha1 with (ha1 | ha1)
+    · rw [← ha1, Subgroup.closure_singleton_one] at ha
+      exact absurd ha h
+    · use a⁻¹, Left.inv_lt_one_iff.mpr ha1
+      rw [Subgroup.closure_singleton_inv, ha]
+
+end Subgroup
 
 namespace Valuation
 
 variable {A : Type w₁} [CommRing A]
-
 namespace Integer
 
 theorem isUnit_iff_valuation_eq_one {K : Type w₁} [Field K] {Γ₀ : Type w₂}
@@ -109,76 +153,6 @@ lemma isDiscrete_iff_surjective {K : Type*} [Field K] (v : Valuation K ℤₘ₀
     IsDiscrete v ↔ Surjective v :=
   ⟨fun _ ↦ IsDiscrete.surj v, fun hv ↦ ⟨hv (↑(Multiplicative.ofAdd (-1 : ℤ)) : ℤₘ₀)⟩⟩
 
-
-open Valuation Ideal Multiplicative WithZero
-
-variable {R : Type w₁} [CommRing R] (vR : Valuation R ℤₘ₀)
-
-def unzero' (h0 : ∀ {x : R}, x ≠ 0 → vR x ≠ 0) : {x : R // x ≠ 0} → Multiplicative ℤ :=
-    fun x ↦ WithZero.unzero (h0 x.2)
-
-def unzero_range' [Nontrivial R] [IsDomain R] [IsDiscrete vR]
-    (h0 : ∀ {x : R}, x ≠ 0 → vR x ≠ 0) :
-    Submonoid (Multiplicative ℤ) where
-  carrier := range (vR.unzero' h0)
-  mul_mem' hx hy := by
-    simp only [mem_range, Subtype.exists] at *
-    obtain ⟨a, ha, rfl⟩ := hx
-    obtain ⟨b, hb, rfl⟩ := hy
-    use a*b, mul_ne_zero ha hb
-    simp only [unzero', _root_.map_mul, unzero_mul]
-  one_mem' := by
-    use ⟨(1 : R), one_ne_zero⟩
-    simp only [unzero', _root_.map_one, unzero_coe]
-    rfl
-section Subgroup
---TODO: move, PR
-
-theorem AddSubgroup.toSubgroup_closure {A : Type} [AddGroup A] (S : Set A) :
-    AddSubgroup.toSubgroup (AddSubgroup.closure S) =
-      Subgroup.closure (Multiplicative.toAdd ⁻¹' S) :=
-  le_antisymm
-    (AddSubgroup.toSubgroup.to_galoisConnection.l_le <|
-      (AddSubgroup.closure_le _).2 <| Subgroup.subset_closure (G := Multiplicative A))
-    ((Subgroup.closure_le _).2 <| AddSubgroup.subset_closure (G := A))
-
-theorem Subgroup.toAddSubgroup_closure {G : Type} [Group G] (S : Set G) :
-    Subgroup.toAddSubgroup (Subgroup.closure S) =
-      AddSubgroup.closure (Additive.toMul ⁻¹' S) :=
-  le_antisymm
-    (Subgroup.toAddSubgroup.le_symm_apply.1 <|
-      (Subgroup.closure_le _).2 (AddSubgroup.subset_closure (G := Additive G)))
-    ((AddSubgroup.closure_le _).2 (Subgroup.subset_closure (G := G)))
-
-theorem Subgroup.toAddSubgroup_toSubgroup' {G : Type*} [Group G] (H : Subgroup G) :
-    AddSubgroup.toSubgroup' (Subgroup.toAddSubgroup H) = H := by
-  ext x
-  simp only [OrderIso.symm_apply_apply]
-
---TODO: use this in DVR.Extensions.
-lemma _root_.MultInt.subgroup_cyclic (H : Subgroup (Multiplicative ℤ)) :
-    ∃ (a : Multiplicative ℤ), H = Subgroup.closure {a} := by
-  obtain ⟨g, hg⟩ := Int.subgroup_cyclic H.toAddSubgroup
-  have hg' : H =  AddSubgroup.toSubgroup (AddSubgroup.closure {g}) := by
-    erw [← hg, Subgroup.toAddSubgroup_toSubgroup' (G := Multiplicative ℤ)]
-  use ofAdd g
-  rw [hg', AddSubgroup.toSubgroup_closure]
-  congr
-
-lemma _root_.MultInt.exists_generator_le_one {H : Subgroup (Multiplicative ℤ)} (h : H ≠ ⊥) :
-    ∃ (a : Multiplicative ℤ), a < 1 ∧ H = Subgroup.closure {a} := by
-  obtain ⟨a, ha⟩ := MultInt.subgroup_cyclic H
-  by_cases ha1 : a < 1
-  · use a, ha1, ha
-  · simp only [not_lt, le_iff_eq_or_lt] at ha1
-    rcases ha1 with (ha1 | ha1)
-    · rw [← ha1, Subgroup.closure_singleton_one] at ha
-      exact absurd ha h
-    · use a⁻¹, Left.inv_lt_one_iff.mpr ha1
-      rw [Subgroup.closure_singleton_inv, ha]
-
-end Subgroup
-
 open Polynomial
 
 -- Example of nontrivial ℤₘ₀-valued valuation with no good notion of uniformizer.
@@ -206,6 +180,29 @@ noncomputable example {K : Type*} [Field K] :
     simp only [le_sup_iff]
     split_ifs -- 8 trivial cases
     all_goals sorry
+
+open Valuation Ideal Multiplicative WithZero
+
+variable {R : Type w₁} [CommRing R] (vR : Valuation R ℤₘ₀)
+
+def unzero' (h0 : ∀ {x : R}, x ≠ 0 → vR x ≠ 0) : {x : R // x ≠ 0} → Multiplicative ℤ :=
+    fun x ↦ WithZero.unzero (h0 x.2)
+
+def unzero_range' [Nontrivial R] [IsDomain R] [IsDiscrete vR]
+    (h0 : ∀ {x : R}, x ≠ 0 → vR x ≠ 0) :
+    Submonoid (Multiplicative ℤ) where
+  carrier := range (vR.unzero' h0)
+  mul_mem' hx hy := by
+    simp only [mem_range, Subtype.exists] at *
+    obtain ⟨a, ha, rfl⟩ := hx
+    obtain ⟨b, hb, rfl⟩ := hy
+    use a*b, mul_ne_zero ha hb
+    simp only [unzero', _root_.map_mul, unzero_mul]
+  one_mem' := by
+    use ⟨(1 : R), one_ne_zero⟩
+    simp only [unzero', _root_.map_one, unzero_coe]
+    rfl
+
 
 section Field
 
