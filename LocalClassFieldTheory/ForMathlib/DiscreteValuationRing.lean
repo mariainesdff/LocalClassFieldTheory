@@ -9,7 +9,7 @@ import Mathlib.RingTheory.LocalRing.RingHom.Basic
 /-!
 ## Main result
 
-* `RingEquiv.discreteValuationRing` shows that if a ring is equivalent to a DVR, it is itself
+* `RingEquiv.isDiscreteValuationRing` shows that if a ring is equivalent to a DVR, it is itself
   a DVR
 -/
 
