@@ -639,7 +639,7 @@ instance discreteValuationRing_of_finite_extension [FiniteDimensional K L] :
   letI hw_disc : IsDiscrete hw.v := Extension.isDiscrete_of_finite K L
   let e : (extendedValuation K L).valuationSubring ≃+* integralClosure hv.v.valuationSubring L :=
     RingEquiv.subringCongr (integralClosure_eq_integer K L).symm
-  exact RingEquiv.isDiscreteValuationRing e
+  exact RingEquivClass.isDiscreteValuationRing e
 
 end integralClosure
 
