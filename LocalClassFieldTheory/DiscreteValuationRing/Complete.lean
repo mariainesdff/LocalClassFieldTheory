@@ -145,7 +145,7 @@ theorem int_adic_of_compl_eq_int_compl_of_adic (a : R_v) :
     · obtain ⟨n, hn⟩ : ∃ n : ℕ, v_compl_of_adic a = ofAdd (-n : ℤ) := by
         replace ha : v_compl_of_adic a ≠ 0 := by rwa [Valuation.ne_zero_iff, ne_eq,
           Subring.coe_eq_zero_iff]
-        have := (mem_integer v_compl_of_adic ↑a).mp a.2
+        have := (mem_integer_iff v_compl_of_adic ↑a).mp a.2
         obtain ⟨α, hα⟩ := WithZero.ne_zero_iff_exists.mp ha
         rw [← hα, ← WithZero.coe_one, ← ofAdd_zero, WithZero.coe_le_coe, ← ofAdd_toAdd α,
           Multiplicative.ofAdd_le] at this

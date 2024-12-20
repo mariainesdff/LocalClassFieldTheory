@@ -7,6 +7,7 @@ Authors: María Inés de Frutos-Fernández, Filippo A. E. Nuccio
 import LocalClassFieldTheory.DiscreteValuationRing.Extensions
 import LocalClassFieldTheory.ForMathlib.RingTheory.Test
 import Mathlib.Algebra.Field.Equiv
+import Mathlib.RingTheory.DiscreteValuationRing.TFAE
 import Mathlib.RingTheory.Polynomial.IrreducibleRing
 
 variable {A : Type*} [CommRing A] [IsDomain A] [IsDiscreteValuationRing A]

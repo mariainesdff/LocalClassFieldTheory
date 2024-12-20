@@ -4,12 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: María Inés de Frutos-Fernández, Filippo A. E. Nuccio
 -/
 import LocalClassFieldTheory.DiscreteValuationRing.Complete
-import Mathlib.Analysis.SpecificLimits.Basic
-import Mathlib.Data.Int.WithZero
-import Mathlib.NumberTheory.Padics.RingHoms
-import Mathlib.RingTheory.DedekindDomain.AdicValuation
-import Mathlib.RingTheory.DedekindDomain.Ideal
+import LocalClassFieldTheory.ForMathlib.RankOneValuation
 import LocalClassFieldTheory.FromMathlib.SpecificLimits
+import Mathlib.NumberTheory.Padics.RingHoms
+import Mathlib.RingTheory.DiscreteValuationRing.TFAE
 
 /-!
 

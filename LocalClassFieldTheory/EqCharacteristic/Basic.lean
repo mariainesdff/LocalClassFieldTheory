@@ -3,13 +3,13 @@ Copyright (c) 2024 María Inés de Frutos-Fernández, Filippo A. E. Nuccio. All 
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: María Inés de Frutos-Fernández, Filippo A. E. Nuccio
 -/
+import LocalClassFieldTheory.DiscreteValuationRing.Complete
+import LocalClassFieldTheory.ForMathlib.RankOneValuation
 import Mathlib.Algebra.CharP.Subring
 import Mathlib.FieldTheory.Finite.GaloisField
-import LocalClassFieldTheory.DiscreteValuationRing.Complete
 import Mathlib.RingTheory.LaurentSeries
 import Mathlib.RingTheory.Valuation.AlgebraInstances
-import Mathlib.RingTheory.DedekindDomain.AdicValuation
-import Mathlib.RingTheory.Valuation.RankOne
+
 
 /-!
 # Equal characteristic local fields
