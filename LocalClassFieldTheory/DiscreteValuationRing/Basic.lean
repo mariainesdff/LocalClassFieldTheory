@@ -87,36 +87,47 @@ theorem Subgroup.toAddSubgroup_toSubgroup' {G : Type*} [Group G] (H : Subgroup G
 
 --NOTE: this lemma exists in current Mathlib
 @[to_additive]
-theorem isCyclic_iff_exists_zpowers_eq_top {α : Type*} [Group α] :
+theorem isCyclic_iff_exists_zpowers_eq_top (α : Type*) [Group α] :
     IsCyclic α ↔ ∃ g : α, Subgroup.zpowers g = ⊤ := by
   sorry
+
 
 -- But this one is missing
 @[to_additive]
 theorem Subgroup.isCyclic_iff_exists_zpowers_eq_top {α : Type*} [Group α] (H : Subgroup α) :
     IsCyclic H ↔ ∃ g : α, Subgroup.zpowers g = H := by
-  rw [_root_.isCyclic_iff_exists_zpowers_eq_top]
-  simp only [Subgroup.eq_top_iff']
-  refine ⟨fun ⟨g, hg⟩ ↦ ?_, fun ⟨g, hg⟩ ↦ ?_⟩
-  · use g
-    ext x
-    simp only [Subgroup.mem_zpowers_iff] at hg ⊢
-    refine ⟨fun hx ↦ ?_, fun hx ↦ ?_⟩
-    · obtain ⟨k, rfl⟩ := hx
-      rw [← Subgroup.coe_zpow]
-      exact SetLike.coe_mem (g ^ k)
-    · obtain ⟨k, hk⟩ := hg ⟨x, hx⟩
-      use k
-      rw [← Subgroup.coe_zpow, hk]
-  · have hgH : g ∈ H := by rw [← hg]; exact mem_zpowers g
-    use ⟨g, hgH⟩
-    intro x
-    have hx : ↑x ∈ zpowers g := by rw [hg]; exact x.2
-    simp only [Subgroup.mem_zpowers_iff] at hx ⊢
-    obtain ⟨k, hk⟩ := hx
-    use k
-    ext
-    simp only [SubgroupClass.coe_zpow, hk]
+    rw [_root_.isCyclic_iff_exists_zpowers_eq_top]
+    refine ⟨fun ⟨⟨k, k_mem⟩, hk⟩ ↦ ⟨k, ?_⟩, fun ⟨k, hk⟩ ↦ ⟨⟨k, zpowers_le.mp <| le_of_eq hk⟩, ?_⟩⟩
+    · simp [← range_subtype H, ← Subgroup.map_eq_range_iff.mpr, hk,
+        ← (coeSubtype H ▸ (H.subtype).map_zpowers ⟨k, k_mem⟩)]
+    · apply_fun Subgroup.map H.subtype using Subgroup.map_injective <| subtype_injective H
+      simp [(H.subtype).map_zpowers ⟨k, _⟩, coeSubtype, hk, Subgroup.map_eq_range_iff.mpr,
+        range_subtype]
+
+
+
+  -- rw [_root_.isCyclic_iff_exists_zpowers_eq_top H]
+  -- simp only [Subgroup.eq_top_iff']
+  -- refine ⟨fun ⟨g, hg⟩ ↦ ?_, fun ⟨g, hg⟩ ↦ ?_⟩
+  -- · use g
+  --   ext x
+  --   simp only [Subgroup.mem_zpowers_iff] at hg ⊢
+  --   refine ⟨fun hx ↦ ?_, fun hx ↦ ?_⟩
+  --   · obtain ⟨k, rfl⟩ := hx
+  --     rw [← Subgroup.coe_zpow]
+  --     exact SetLike.coe_mem (g ^ k)
+  --   · obtain ⟨k, hk⟩ := hg ⟨x, hx⟩
+  --     use k
+  --     rw [← Subgroup.coe_zpow, hk]
+  -- · have hgH : g ∈ H := by rw [← hg]; exact mem_zpowers g
+  --   use ⟨g, hgH⟩
+  --   intro x
+  --   have hx : ↑x ∈ zpowers g := by rw [hg]; exact x.2
+  --   simp only [Subgroup.mem_zpowers_iff] at hx ⊢
+  --   obtain ⟨k, hk⟩ := hx
+  --   use k
+  --   ext
+  --   simp only [SubgroupClass.coe_zpow, hk]
 
 lemma MultInt.exists_generator_le_one {H : Subgroup (Multiplicative ℤ)} (h : H ≠ ⊥) :
     ∃ (a : Multiplicative ℤ), a < 1 ∧ Subgroup.zpowers a = H := by
