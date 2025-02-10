@@ -60,6 +60,7 @@ theorem isContinuousLinearMap_iff_isBoundedLinearMap' {K : Type*} [NontriviallyN
     exact ContinuousLinearMap.isBoundedLinearMap F -/
 
 -- It seems like we are not using this
+-- In PR #21637.
 /-- A linear map between normed spaces is continuous if and only if it is bounded,-/
 theorem isContinuousLinearMap_iff_isBoundedLinearMap {K M N : Type*} [NontriviallyNormedField K]
     [NormedAddCommGroup M] [NormedSpace K M] [NormedAddCommGroup N] [NormedSpace K N] (f : M → N) :
@@ -77,12 +78,14 @@ variable {R S : Type*} {α : Type*} [Semiring R] [Semiring S] (σ : R →+* S)
     {σ' : S →+* R} [RingHomInvPair σ σ'] [RingHomInvPair σ' σ] (M N : Type*) [AddCommMonoid M]
     [AddCommMonoid N] [Module R M] [Module S N] (g : M ≃ₛₗ[σ] N) (f : α → M)
 
+-- In PR #21638
 -- Mathlib.LinearAlgebra.DFinsupp
 /-- Given a linear equivalence `g : M ≃ₛₗ[σ] N` and a function `f : α → M`, we have
   `g ∑ᶠ f i = ∑ᶠ g(f i)`.  -/
 theorem LinearEquiv.map_finsum : g (finsum fun i : α ↦ f i) = finsum fun i : α ↦ g (f i) :=
   AddEquiv.map_finsum g.toAddEquiv f
 
+-- In PR #21638
 /-- Given a fintype `α`, a function `f : α → M` and a linear equivalence `g : M ≃ₛₗ[σ] N`, we have
   `g (∑ (i : α), f i) = ∑ (i : α), g (f i)`.  -/
 theorem LinearEquiv.map_finset_sum [Fintype α] :
@@ -97,7 +100,7 @@ theorem LinearEquiv.map_finset_sum [Fintype α] :
   cases nonempty_fintype γ
   simp only [finsum_eq_sum_of_fintype, sum_apply] -/
 
--- [Mathlib.LinearAlgebra.LinearIndependent]
+-- In PR #21642
 /-- If `∑ i, f i • v i = ∑ i, g i • v i`, then for all `i`, `f i = g i`. -/
 theorem LinearIndependent.eq_coords_of_eq {R M ι: Type*} [Ring R] [AddCommGroup M] [Module R M]
     [Fintype ι] {v : ι → M} (hv : LinearIndependent R v) {f : ι → R}
@@ -113,7 +116,7 @@ section Ring
 
 variable {K L : Type*} [CommRing K] [Ring L] [Algebra K L]
 
--- [Mathlib.LinearAlgebra.FreeModule.Basic, Mathlib.LinearAlgebra.Dimension.StrongRankCondition]
+-- In PR #21642
 /-- If `B` is a basis of the `K`-vector space `L` such that `B i = 1` for some index `i`, then
 each `k:K` gets represented as `k • B i` as an element of `L`. -/
 theorem equivFun_algebraMap {ι : Type*} [Fintype ι] [DecidableEq ι] {B : Basis ι K L} {i : ι}
