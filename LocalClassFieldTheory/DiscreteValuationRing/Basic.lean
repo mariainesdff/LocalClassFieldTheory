@@ -188,10 +188,8 @@ class IsDiscrete (v : Valuation A ℤₘ₀) : Prop where
 -- In PR #21371
 lemma IsDiscrete.surj {K : Type*} [Field K] (v : Valuation K ℤₘ₀) [hv : IsDiscrete v] :
     Surjective v := by
-  intro c
-  refine WithOne.cases_on c ⟨0, map_zero _⟩ ?_
+  refine fun c ↦ WithOne.cases_on c ⟨0, map_zero _⟩ (fun a ↦ ?_)
   obtain ⟨π, hπ⟩ := hv
-  intro a
   use π ^ (- a.toAdd)
   rw [map_zpow₀, hπ]
   simp only [ofAdd_neg, WithZero.coe_inv, zpow_neg, inv_zpow', inv_inv, ← WithZero.ofAdd_zpow]
@@ -218,8 +216,8 @@ def unzero_range' [Nontrivial R] [IsDomain R] (h0 : ∀ {x : R}, x ≠ 0 → vR 
     simp only [mem_range, Subtype.exists] at *
     obtain ⟨a, ha, rfl⟩ := hx
     obtain ⟨b, hb, rfl⟩ := hy
-    use a*b, mul_ne_zero ha hb
-    simp only [unzero', _root_.map_mul, unzero_mul]
+    use a * b, mul_ne_zero ha hb
+    simp [unzero', _root_.map_mul, unzero_mul]
   one_mem' := by
     use ⟨(1 : R), one_ne_zero⟩
     simp only [unzero', _root_.map_one, unzero_coe]
@@ -300,7 +298,7 @@ lemma isPreuniformizer_val_lt_one {π : K} (hπ : v.IsPreuniformizer π) : v π 
 
 lemma isPreuniformizer_val_ne_zero {π : K} (hπ : v.IsPreuniformizer π) : v π ≠ 0 := by
   by_contra h0
-  simp only [IsPreuniformizer, h0, zero_ne_coe] at hπ
+  simp [IsPreuniformizer, h0, zero_ne_coe] at hπ
 
 lemma isPreuniformizer_val_generates_unzero_range {π : K} (hπ : v.IsPreuniformizer π) :
     unzero_range v = Subgroup.zpowers (WithZero.unzero (v.isPreuniformizer_val_ne_zero hπ)) := by
@@ -340,7 +338,7 @@ theorem preuniformizer_ne_zero' (π : Preuniformizer v) : π.1.1 ≠ 0 :=
   isPreuniformizer_ne_zero π.2
 
 theorem isPreuniformizer_val_pos {π : K} (hπ : IsPreuniformizer v π) : 0 < v π := by
-  rw [isPreuniformizer_iff] at hπ ; simp only [zero_lt_iff, ne_eq, hπ, coe_ne_zero, not_false_iff]
+  rw [isPreuniformizer_iff] at hπ ; simp [zero_lt_iff, ne_eq, hπ, coe_ne_zero, not_false_iff]
 
 theorem isPreuniformizer_not_isUnit {π : v.integer} (hπ : IsPreuniformizer v π) : ¬ IsUnit π := by
   intro h
