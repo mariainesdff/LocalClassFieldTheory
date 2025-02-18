@@ -27,10 +27,8 @@ variable (R : Type*) [CommRing R] [IsDedekindDomain R] (K : Type*) [Field K]
 
 theorem adicValuedIsDiscrete : IsDiscrete (@adicValued R _ _ K _ _ _ v).v := by
   obtain ⟨π, hπ⟩ := valuation_exists_uniformizer K v
-  apply isDiscreteOfExistsUniformizer
-  swap
-  use π
-  rw [IsUniformizer_iff, ← hπ]
+  apply isDiscrete_of_exists_isUniformizer (π := π)
+  rw [isUniformizer_iff, ← hπ]
   rfl
 
 local notation "R_v" => IsDedekindDomain.HeightOneSpectrum.adicCompletionIntegers K v
@@ -54,7 +52,7 @@ theorem valuation_completion_integers_exists_uniformizer :
 
 /-- The valuation on the `v`-adic completion `K_v` of `K` is discrete. -/
 instance isDiscrete : IsDiscrete (@Valued.v K_v _ ℤₘ₀ _ _) :=
-  isDiscreteOfExistsUniformizer _
+  isDiscrete_of_exists_isUniformizer
     (valuation_completion_integers_exists_uniformizer R K v).choose_spec
 
 /-- The unit ball `R_v` of `K_v` is a discrete valuation ring. -/

@@ -142,8 +142,8 @@ theorem expExtensionOnUnits_generates_range' [FiniteDimensional K L] :
 variable (K L) in
 theorem expExtensionOnUnits_ne_zero [FiniteDimensional K L] : expExtensionOnUnits K L ≠ 0 := by
   have h_alg : Algebra.IsAlgebraic K L := Algebra.IsAlgebraic.of_finite K L
-  obtain ⟨x, hx⟩ := exists_Uniformizer_ofDiscrete hv.v
-  have hx_unit : IsUnit (x : K) := isUnit_iff_ne_zero.mpr (Uniformizer_ne_zero hv.v hx)
+  obtain ⟨x, hx⟩ := exists_isUniformizer_of_isDiscrete hv.v
+  have hx_unit : IsUnit (x : K) := isUnit_iff_ne_zero.mpr (uniformizer_ne_zero hv.v hx)
   rw [IsUniformizer] at hx
   set z : Lˣ := Units.map (algebraMap K L).toMonoidHom (IsUnit.unit hx_unit) with hz
   by_contra h0
@@ -213,11 +213,11 @@ variable (L)
 theorem expExtensionOnUnits_dvd [FiniteDimensional K L] :
   expExtensionOnUnits K L ∣ finrank K L := by
   have h_alg := Algebra.IsAlgebraic.of_finite K L
-  obtain ⟨π, hπ⟩ := exists_Uniformizer_ofDiscrete hv.v
+  obtain ⟨π, hπ⟩ := exists_isUniformizer_of_isDiscrete hv.v
   set u : L := algebraMap K L (π : K) with hu_def
   have hu0 : u ≠ 0 := by
     rw [hu_def, ne_eq, _root_.map_eq_zero]
-    exact Uniformizer_ne_zero hv.v hπ
+    exact uniformizer_ne_zero hv.v hπ
   obtain ⟨n, hn⟩ := exists_mul_expExtensionOnUnits K (isUnit_iff_ne_zero.mpr hu0).choose
   have hu := (isUnit_iff_ne_zero.mpr hu0).choose_spec
   have hne_zero : ((minpoly K ((algebraMap K L) ↑π)).natDegree : ℤ) ≠ 0 := by
@@ -225,7 +225,7 @@ theorem expExtensionOnUnits_dvd [FiniteDimensional K L] :
     exact minpoly.natDegree_pos (h_alg.isAlgebraic _).isIntegral
   have h_dvd : ((minpoly K ((algebraMap K L) ↑π)).natDegree : ℤ) ∣ finrank K L :=
     Int.natCast_dvd.mpr (minpoly.degree_dvd (h_alg.isAlgebraic _).isIntegral)
-  rw [hu, hu_def, Valuation.coeff_zero_minpoly, IsUniformizer_iff.mp hπ, ← WithZero.coe_pow,
+  rw [hu, hu_def, Valuation.coeff_zero_minpoly, isUniformizer_iff.mp hπ, ← WithZero.coe_pow,
     ← WithZero.coe_zpow, ← WithZero.coe_pow, WithZero.coe_inj, ← zpow_natCast, ← zpow_mul,
     ← zpow_natCast, ofAdd_pow_comm, ofAdd_pow_comm (-1)] at hn
   simp only [zpow_neg, zpow_one, inv_inj] at hn
@@ -476,7 +476,7 @@ instance isDiscrete_of_finite [FiniteDimensional K L] : IsDiscrete (extendedValu
     ⟨(exists_generating_Unit K L).choose, by
       rw [mem_valuationSubring_iff, hπ1]; exact le_of_lt WithZero.ofAdd_neg_one_lt_one⟩
   have hπ : extendedValuation K L (π : L) = Multiplicative.ofAdd (-1 : ℤ) := hπ1
-  apply isDiscreteOfExistsUniformizer (extendedValuation K L) hπ
+  apply isDiscrete_of_exists_isUniformizer hπ
 
 variable {K L}
 

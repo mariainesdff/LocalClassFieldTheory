@@ -63,14 +63,11 @@ local notation "R_v" => adicCompletionIntegers K v
 
 local notation "K_v" => adicCompletion K v
 
-instance isDiscrete : IsDiscrete (@Valued.v K_v _ ℤₘ₀ _ _) :=
-  by
+instance isDiscrete : IsDiscrete (@Valued.v K_v _ ℤₘ₀ _ _) := by
   obtain ⟨π, hπ⟩ := valuation_exists_uniformizer K v
-  apply isDiscreteOfExistsUniformizer
-  swap
-  use(↑π : K_v)
-  rw [IsUniformizer_iff, ← hπ]
-  convert @Valued.extension_extends K _ _ _ (Valued.mk' v.valuation) π
+  apply isDiscrete_of_exists_isUniformizer (π := (↑π : K_v))
+  rw [isUniformizer_iff, ← hπ]
+  exact @Valued.extension_extends K _ _ _ (Valued.mk' v.valuation) π
 
 /-- The maximal ideal of `R_v`, that is a discrete valuation ring. -/
 def maxIdealOfCompletionDef : Ideal R_v :=

@@ -68,7 +68,7 @@ noncomputable def ResidueField_to_AdjoinRoot_quot (f : A[X]) {π : A} (hπ : Irr
   let g : A →ₐ[A] AdjoinRoot f :=
   { algebraMap A (AdjoinRoot f) with
     commutes' := fun r => rfl }
-  apply Ideal.Quotient.liftₐ (maximalIdeal A)
+  apply Ideal.Quotient.liftₐ (IsLocalRing.maximalIdeal A)
     ((Ideal.Quotient.mkₐ (R₁ := A) (Ideal.span {(AdjoinRoot.of f) π})).comp g)
   intro a ha
   rw [AlgHom.coe_comp, Ideal.Quotient.mkₐ_eq_mk, Function.comp_apply, ← map_zero
@@ -120,7 +120,7 @@ lemma localRing_of_irreducible {f : A[X]}
 lemma maximalIdeal_of_irreducible {f : A[X]}
     (hf : Irreducible (map (residue A) f))
     {π : A} (hπ : Irreducible π) :
-    @maximalIdeal (AdjoinRoot f) _ (localRing_of_irreducible hf) =
+    @IsLocalRing.maximalIdeal (AdjoinRoot f) _ (localRing_of_irreducible hf) =
       Ideal.span {AdjoinRoot.of f π} :=
   let _ : IsLocalRing (AdjoinRoot f) := localRing_of_irreducible hf
   (eq_maximalIdeal (isMaximal_of_irreducible hf hπ)).symm
@@ -173,7 +173,7 @@ noncomputable def integralClosure_equiv_algebra_adjoin
     [h_alg : Algebra k (ResidueField B)]
     (hpb : PowerBasis k (ResidueField B))
     (hdeg : finrank (FractionRing A) L = hpb.dim) (x : B)
-    (hx : Ideal.Quotient.mk (maximalIdeal B) x = hpb.gen) :
+    (hx : Ideal.Quotient.mk (IsLocalRing.maximalIdeal B) x = hpb.gen) :
     B ≃+* Algebra.adjoin A ({x} : Set B) :=
   sorry
 
@@ -182,7 +182,7 @@ noncomputable def integralClosure_equiv_adjoinRoot
     [Algebra k (ResidueField B)]
     (hpb : PowerBasis k (ResidueField B))
     (hdeg : finrank (FractionRing A) L = hpb.dim) (x : B)
-    (hx : Ideal.Quotient.mk (maximalIdeal B) x = hpb.gen) :
+    (hx : Ideal.Quotient.mk (IsLocalRing.maximalIdeal B) x = hpb.gen) :
     (integralClosure A L) ≃+* AdjoinRoot (minpoly A x) :=
   sorry
 

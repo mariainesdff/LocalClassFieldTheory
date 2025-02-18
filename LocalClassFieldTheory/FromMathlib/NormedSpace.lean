@@ -74,6 +74,29 @@ end Continuous
 
 section finsum
 
+variable {F R S : Type*} {α : Type*} [Semiring R] [Semiring S] (σ : R →+* S)
+    {σ' : S →+* R} [RingHomInvPair σ σ'] [RingHomInvPair σ' σ] (M N : Type*) [AddCommMonoid M]
+    [AddCommMonoid N] [Module R M] [Module S N] [EquivLike F M N] [AddEquivClass F M N] (g : F)
+     (f : α → M)
+
+-- In PR #21638
+-- Mathlib.LinearAlgebra.DFinsupp
+/-- Given a linear equivalence `g : M ≃ₛₗ[σ] N` and a function `f : α → M`, we have
+  `g ∑ᶠ f i = ∑ᶠ g(f i)`.  -/
+theorem AddEquivClass.map_finsum : g (finsum fun i : α ↦ f i) = finsum fun i : α ↦ g (f i) :=
+  AddEquiv.map_finsum (AddEquivClass.toAddEquiv g) f
+
+-- In PR #21638
+/-- Given a fintype `α`, a function `f : α → M` and a linear equivalence `g : M ≃ₛₗ[σ] N`, we have
+  `g (∑ (i : α), f i) = ∑ (i : α), g (f i)`.  -/
+theorem AddEquivClass.map_finset_sum [Fintype α] :
+    g (∑ i : α, f i) = ∑ i : α, g (f i) := by
+  simp only [← finsum_eq_sum_of_fintype, AddEquivClass.map_finsum]
+
+end finsum
+
+section finsum
+
 variable {R S : Type*} {α : Type*} [Semiring R] [Semiring S] (σ : R →+* S)
     {σ' : S →+* R} [RingHomInvPair σ σ'] [RingHomInvPair σ' σ] (M N : Type*) [AddCommMonoid M]
     [AddCommMonoid N] [Module R M] [Module S N] (g : M ≃ₛₗ[σ] N) (f : α → M)
@@ -83,7 +106,7 @@ variable {R S : Type*} {α : Type*} [Semiring R] [Semiring S] (σ : R →+* S)
 /-- Given a linear equivalence `g : M ≃ₛₗ[σ] N` and a function `f : α → M`, we have
   `g ∑ᶠ f i = ∑ᶠ g(f i)`.  -/
 theorem LinearEquiv.map_finsum : g (finsum fun i : α ↦ f i) = finsum fun i : α ↦ g (f i) :=
-  AddEquiv.map_finsum g.toAddEquiv f
+  AddEquivClass.map_finsum M N g f
 
 -- In PR #21638
 /-- Given a fintype `α`, a function `f : α → M` and a linear equivalence `g : M ≃ₛₗ[σ] N`, we have

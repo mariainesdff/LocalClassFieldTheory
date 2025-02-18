@@ -76,12 +76,12 @@ def discretelyNormedField : NormedField K := Valued.toNormedField K ℤₘ₀
 def nontriviallyDiscretelyNormedField : NontriviallyNormedField K :=
   { @Valued.toNormedField K _ ℤₘ₀ _ _ (DiscreteValuation.rankOne _) with
     non_trivial := by
-      obtain ⟨x, hx⟩ := exists_Uniformizer_ofDiscrete hv.v
+      obtain ⟨x, hx⟩ := exists_isUniformizer_of_isDiscrete hv.v
       use x.1⁻¹
       erw [@norm_inv K (@NormedField.toNormedDivisionRing K (discretelyNormedField K)),
         one_lt_inv_iff₀, RankOneValuation.norm_lt_one_iff_val_lt_one,
         RankOneValuation.norm_pos_iff_val_pos]
-      exact ⟨Uniformizer_valuation_pos hv.v hx, Uniformizer_valuation_lt_one hv.v hx⟩ }
+      exact ⟨isUniformizer_val_pos hv.v hx, isUniformizer_val_lt_one hv.v hx⟩ }
 
 /-- The norm on `K` induced by its discrete valuation. -/
 def hasDiscreteNorm : Norm K := by
@@ -180,7 +180,7 @@ theorem of_integer [fr : IsFractionRing hv.v.valuationSubring.toSubring K]
     (Polynomial.map (algebraMap hv.v.valuationSubring.toSubring K)
       (minpoly hv.v.valuationSubring.toSubring x)) := by
   letI := nontriviallyDiscretelyNormedField K
-  letI : IsIntegrallyClosed hv.v.valuationSubring := sorry
+  letI : IsIntegrallyClosed hv.v.valuationSubring := inferInstance
   have is_minpoly : minpoly K (x : L) =
     Polynomial.map (algebraMap hv.v.valuationSubring.toSubring K)
         (minpoly hv.v.valuationSubring.toSubring x) := by

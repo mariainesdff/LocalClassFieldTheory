@@ -38,8 +38,8 @@ structure on the unit ball of a `Valued` field whose valuation is discrete.
 * `Uniformizer_of_associated` If two elements are uniformizers, they are associated.
 * `isUniformizer_is_generator` A generator of the maximal ideal is a uniformizer if the valuation
   is discrete.
-* `isDiscrete_of_exists_uniformizer` If there exists a uniformizer, the valuation is discrete.
-* `exists_Uniformizer_ofDiscrete` Conversely, if the valuation is discrete there exists a
+* `isDiscrete_of_exists_isUniformizer` If there exists a uniformizer, the valuation is discrete.
+* `exists_isUniformizer_of_isDiscrete` Conversely, if the valuation is discrete there exists a
   uniformizer.
 * `IsUniformizer_of_generator` A uniformizer generates the maximal ideal.
 * `discrete_valuation.is_discrete` Given a DVR, the valuation induced on its ring of fractions is
@@ -385,7 +385,7 @@ def Uniformizer.mk' (x : R) (hx : IsUniformizer vR x) : Uniformizer vR where
 @[simp]
 instance : Coe (Uniformizer vR) vR.integer := ⟨fun π ↦ π.val⟩
 
-theorem isDiscrete_of_exists_uniformizer {K : Type w₁} [Field K] {v : Valuation K ℤₘ₀} {π : K}
+theorem isDiscrete_of_exists_isUniformizer {K : Type w₁} [Field K] {v : Valuation K ℤₘ₀} {π : K}
     (hπ : IsUniformizer v π) : IsDiscrete v := by
   rw [isDiscrete_iff_surjective]
   intro x
@@ -405,10 +405,10 @@ theorem uniformizer_ne_zero {π : R} (hπ : IsUniformizer vR π) : π ≠ 0 := b
 theorem uniformizer_ne_zero' (π : Uniformizer vR) : π.1.1 ≠ 0 :=
   uniformizer_ne_zero vR π.2
 
-theorem uniformizer_val_pos {π : R} (hπ : IsUniformizer vR π) : 0 < vR π := by
+theorem isUniformizer_val_pos {π : R} (hπ : IsUniformizer vR π) : 0 < vR π := by
   rw [isUniformizer_iff] at hπ ; simp only [zero_lt_iff, ne_eq, hπ, coe_ne_zero, not_false_iff]
 
-theorem uniformizer_not_isUnit {π : vR.integer} (hπ : IsUniformizer vR π) : ¬ IsUnit π := by
+theorem isUniformizer_not_isUnit {π : vR.integer} (hπ : IsUniformizer vR π) : ¬ IsUnit π := by
   intro h
   have h1 :=
     @Valuation.Integers.one_of_isUnit R ℤₘ₀ _ _ vR vR.integer _ _ (Valuation.integer.integers vR) π
@@ -416,7 +416,7 @@ theorem uniformizer_not_isUnit {π : vR.integer} (hπ : IsUniformizer vR π) : �
   erw [IsUniformizer, h1] at hπ
   exact ne_of_gt ofAdd_neg_one_lt_one hπ
 
-theorem uniformizer_val_lt_one {π : R} (hπ : IsUniformizer vR π) : vR π < 1 := by
+theorem isUniformizer_val_lt_one {π : R} (hπ : IsUniformizer vR π) : vR π < 1 := by
   rw [isUniformizer_iff.mp hπ]; exact ofAdd_neg_one_lt_one
 
 open scoped NNReal
@@ -512,7 +512,7 @@ theorem IsUniformizer.isPreuniformizer {π : K} (hπ : IsUniformizer v π) :
     IsPreuniformizer v π := by
   rw [isPreuniformizer_iff]
   rw [isUniformizer_iff] at hπ
-  haveI := isDiscrete_of_exists_uniformizer hπ
+  haveI := isDiscrete_of_exists_isUniformizer hπ
   set g := (MultInt.exists_generator_le_one v.unzero_range_ne_bot).choose with hg
   obtain ⟨h1, htop⟩ := (MultInt.exists_generator_le_one v.unzero_range_ne_bot).choose_spec
   simp only [← hg] at h1 htop ⊢
@@ -649,7 +649,7 @@ section IsUniformizer
 
 theorem isUniformizer_of_associated {π₁ π₂ : K₀} (h1 : IsUniformizer v π₁) (H : Associated π₁ π₂) :
     IsUniformizer v π₂ :=
-  have : IsDiscrete v := isDiscrete_of_exists_uniformizer h1
+  have : IsDiscrete v := isDiscrete_of_exists_isUniformizer h1
   IsPreuniformizer.isUniformizer
     (isPreuniformizer_of_associated (IsUniformizer.isPreuniformizer h1) H)
 
@@ -658,32 +658,32 @@ end IsUniformizer
 section Uniformizer
 
 theorem associated_of_uniformizer (π₁ π₂ : Uniformizer v) : Associated π₁.1 π₂.1 :=
-  have : IsDiscrete v := isDiscrete_of_exists_uniformizer π₁.2
+  have : IsDiscrete v := isDiscrete_of_exists_isUniformizer π₁.2
   associated_of_isPreuniformizer (Uniformizer.to_preuniformizer π₁)
     (Uniformizer.to_preuniformizer π₂)
 
 theorem pow_uniformizer {r : K₀} (hr : r ≠ 0) (π : Uniformizer v) :
     ∃ n : ℕ, ∃ u : K₀ˣ, r = (π.1 ^ n).1  * u.1 :=
-    have : IsDiscrete v := isDiscrete_of_exists_uniformizer π.2
+    have : IsDiscrete v := isDiscrete_of_exists_isUniformizer π.2
   pow_preuniformizer hr (Uniformizer.to_preuniformizer π)
 
 /-- This lemma does not assume the valuation to be discrete, although the fact
   that a uniformizer exists forces the condition. -/
 theorem uniformizer_is_generator (π : Uniformizer v) :
     maximalIdeal v.valuationSubring = Ideal.span {π.1} :=
-  have : IsDiscrete v := isDiscrete_of_exists_uniformizer π.2
+  have : IsDiscrete v := isDiscrete_of_exists_isUniformizer π.2
   preuniformizer_is_generator (Uniformizer.to_preuniformizer π)
 
 end Uniformizer
 
 theorem isUniformizer_is_generator {π : v.valuationSubring} (hπ : IsUniformizer v π) :
     maximalIdeal v.valuationSubring = Ideal.span {π} :=
-  have : IsDiscrete v := isDiscrete_of_exists_uniformizer hπ
+  have : IsDiscrete v := isDiscrete_of_exists_isUniformizer hπ
   isPreuniformizer_is_generator (IsUniformizer.isPreuniformizer hπ)
 
 theorem pow_uniformizer_is_pow_generator (π : Uniformizer v) (n : ℕ) :
     maximalIdeal v.valuationSubring ^ n = Ideal.span {π.1 ^ n} := by
-  have : IsDiscrete v := isDiscrete_of_exists_uniformizer π.2
+  have : IsDiscrete v := isDiscrete_of_exists_isUniformizer π.2
   exact pow_preuniformizer_is_pow_generator (Uniformizer.to_preuniformizer π) n
 
 instance [IsDiscrete v] : Nonempty (Uniformizer v) :=
@@ -819,7 +819,7 @@ noncomputable instance : Valued (FractionRing A) ℤₘ₀ :=
   (IsDiscreteValuationRing.maximalIdeal A).adicValued
 
 instance : IsDiscrete (A := FractionRing A) Valued.v :=
-  isDiscrete_of_exists_uniformizer
+  isDiscrete_of_exists_isUniformizer
     (valuation_exists_uniformizer (FractionRing A) (maximalIdeal A)).choose_spec
 
 theorem exists_of_le_one {x : FractionRing A} (H : Valued.v x ≤ (1 : ℤₘ₀)) :

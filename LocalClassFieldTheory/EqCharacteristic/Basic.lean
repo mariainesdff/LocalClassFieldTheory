@@ -483,7 +483,7 @@ def ringOfIntegersEquiv (p : ℕ) [Fact (Nat.Prime p)] :
 
 theorem open_unit_ball_def :
     IsLocalRing.maximalIdeal (FpXIntCompletion p) = Ideal.span {FpXIntCompletion.X p} := by
-  apply DiscreteValuation.IsUniformizer_is_generator; exact valuation_X
+  apply DiscreteValuation.isUniformizer_is_generator; exact valuation_X
 
 end FpXCompletion
 

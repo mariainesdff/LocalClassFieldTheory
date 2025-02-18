@@ -368,7 +368,7 @@ def Padic'Int.heightOneIdeal : HeightOneSpectrum (Z_p p) where
 
 theorem Padic'Int.heightOneIdeal_is_principal :
     (Padic'Int.heightOneIdeal p).asIdeal = Ideal.span {(p : Z_p p)} :=
-  DiscreteValuation.IsUniformizer_is_generator _ (Padic'.valuation_p p)
+  DiscreteValuation.isUniformizer_is_generator _ (Padic'.valuation_p p)
 
 instance : Valued (Q_p p) ℤₘ₀ := HeightOneSpectrum.valuedAdicCompletion ℚ (pHeightOneIdeal p)
 
