@@ -112,6 +112,7 @@ lemma MultInt.exists_generator_le_one {H : Subgroup (Multiplicative ℤ)} (h : H
     · use a⁻¹, Left.inv_lt_one_iff.mpr ha1
       rw [Subgroup.zpowers_inv, ha]
 
+@[simp]
 lemma MultInt.zpowers_ofAdd_neg_one : Subgroup.zpowers (ofAdd (-1)) = ⊤ := by
   ext z
   simp only [Subgroup.mem_top, iff_true]
@@ -223,8 +224,22 @@ def unzero_range' [Nontrivial R] [IsDomain R] (h0 : ∀ {x : R}, x ≠ 0 → vR 
     simp only [unzero', _root_.map_one, unzero_coe]
     rfl
 
-section Field
+section Nontrivial
 
+variable {R : Type*} [Ring R] (v : Valuation R ℤₘ₀)
+
+/-- A valuation on a field is nontrivial if there exists a unit with valuation not equal to `1`. -/
+class Nontrivial : Prop where
+  exists_val_ne_one : ∃ x : R, v x ≠ 1 ∧ v x ≠ 0
+
+lemma nontrivial_iff_exists_unit {K : Type*} [Field K] {w : Valuation K ℤₘ₀} :
+    w.Nontrivial ↔ ∃ x : Kˣ, w x ≠ 1 :=
+  ⟨fun ⟨x, hx1, hx0⟩ ↦ ⟨Units.mk0 x (w.ne_zero_iff.mp hx0), hx1⟩,
+    fun ⟨x, hx⟩ ↦ ⟨x, hx, w.ne_zero_iff.mpr (Units.ne_zero x)⟩⟩
+
+end Nontrivial
+
+section Field
 variable {K : Type*} [Field K] (v : Valuation K ℤₘ₀)
 
 @[simps]
@@ -261,20 +276,13 @@ lemma unzero_mem_unzero_range (x : Kˣ) : v.unzero x ∈ v.unzero_range := by
 lemma coe_unzero (x : Kˣ) : (v.unzero x  : ℤₘ₀) = v x:= by
   simp only [unzero_apply, WithZero.coe_unzero]
 
-/-- A valuation on a field is nontrivial if there exists a unit with valuation not equal to `1`. -/
-class Nontrivial : Prop where
-  exists_val_ne_one : ∃ x : Kˣ, v x ≠ 1
-
 instance [hv : IsDiscrete v] : Nontrivial v where
   exists_val_ne_one := by
     obtain ⟨x, hx⟩ := hv
-    have hx0 : x ≠ 0 := by rw [← v.ne_zero_iff, hx]; exact coe_ne_zero
-    use Units.mk0 x hx0
-    rw [Units.val_mk0, hx]
-    exact ne_of_beq_false rfl
+    exact ⟨x, hx ▸ Ne.symm (ne_of_beq_false rfl), hx ▸ coe_ne_zero⟩
 
 lemma unzero_range_ne_bot [hv : Nontrivial v] : v.unzero_range ≠ ⊥ := by
-  obtain ⟨x, hx1⟩ := hv
+  obtain ⟨x, hx1⟩ := nontrivial_iff_exists_unit.mp hv
   rw [Subgroup.ne_bot_iff_exists_ne_one]
   use ⟨unzero v x, unzero_mem_unzero_range _ _⟩
   simp only [ne_eq, Subgroup.mk_eq_one, unzero]
