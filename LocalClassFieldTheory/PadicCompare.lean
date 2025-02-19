@@ -107,7 +107,7 @@ def padicPkg' :
   AbstractCompletion ℚ :=
   let _ := (padicValued p).toUniformSpace
   { space := Q_p p,
-    coe := UniformSpace.Completion.coe' ℚ,
+    coe := UniformSpace.Completion.coe',
     uniformStruct := inferInstance,
     complete := inferInstance,
     separation := inferInstance,

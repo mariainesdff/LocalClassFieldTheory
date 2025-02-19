@@ -133,7 +133,7 @@ instance valuedField : Valued ℂ_[p] ℝ≥0 :=
 instance completeSpace : CompleteSpace ℂ_[p] :=
   UniformSpace.Completion.completeSpace _
 
-instance : Coe (QPAlg p) ℂ_[p] := ⟨UniformSpace.Completion.coe' _⟩
+instance : Coe (QPAlg p) ℂ_[p] := ⟨UniformSpace.Completion.coe'⟩
 
 /-- The valuation on `ℂ_[p]` extends the valuation on `Q_p_alg p`. -/
 theorem valuation_extends (x : QPAlg p) : Valued.v (x : ℂ_[p]) = Valued.v x :=

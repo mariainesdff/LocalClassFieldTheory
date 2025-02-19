@@ -59,7 +59,7 @@ lemma isDomain_of_irreducible {f : A[X]} (hf1 : f.Monic)
     IsDomain (AdjoinRoot f) := by
   simp only [AdjoinRoot, Ideal.Quotient.isDomain_iff_prime]
   rw [Ideal.span_singleton_prime]
-  · exact irreducible_iff_prime.mp (irreducible_of_irreducible_quot hf1 hf)
+  · sorry --exact irreducible_iff_prime.mp (irreducible_of_irreducible_quot hf1 hf)
   · intro hf0
     simp only [hf0, Polynomial.map_zero, not_irreducible_zero] at hf
 

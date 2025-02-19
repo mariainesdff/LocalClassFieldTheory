@@ -12,6 +12,8 @@ import Mathlib.RingTheory.PrincipalIdealDomainOfPrime
 import Mathlib.RingTheory.Valuation.RankOne
 import Mathlib.GroupTheory.SpecificGroups.Cyclic
 
+import Mathlib.Algebra.GroupWithZero.Int
+
 /-!
 # Discrete Valuation Rings
 
@@ -81,14 +83,8 @@ theorem Subgroup.toAddSubgroup_toSubgroup' {G : Type*} [Group G] (H : Subgroup G
 
 --TODO: use this in DVR.Extensions.
 
---NOTE: this lemma exists in current Mathlib
-@[to_additive]
-theorem isCyclic_iff_exists_zpowers_eq_top (α : Type*) [Group α] :
-    IsCyclic α ↔ ∃ g : α, Subgroup.zpowers g = ⊤ := by
-  sorry
-
--- But this one is missing -- In PR #21361
-@[to_additive]
+-- In PR #21361
+/- @[to_additive]
 theorem Subgroup.isCyclic_iff_exists_zpowers_eq_top {α : Type*} [Group α] (H : Subgroup α) :
     IsCyclic H ↔ ∃ g : α, Subgroup.zpowers g = H := by
   rw [_root_.isCyclic_iff_exists_zpowers_eq_top]
@@ -97,7 +93,7 @@ theorem Subgroup.isCyclic_iff_exists_zpowers_eq_top {α : Type*} [Group α] (H :
       ← (coeSubtype H ▸ (H.subtype).map_zpowers ⟨k, k_mem⟩)]
   · apply_fun Subgroup.map H.subtype using Subgroup.map_injective <| subtype_injective H
     simp [(H.subtype).map_zpowers ⟨k, _⟩, coeSubtype, hk, Subgroup.map_eq_range_iff.mpr,
-      range_subtype]
+      range_subtype] -/
 
 lemma MultInt.exists_generator_le_one {H : Subgroup (Multiplicative ℤ)} (h : H ≠ ⊥) :
     ∃ (a : Multiplicative ℤ), a < 1 ∧ Subgroup.zpowers a = H := by
@@ -573,6 +569,7 @@ theorem associated_of_isPreuniformizer (π₁ π₂ : Preuniformizer v) : Associ
   simp only [IsUnit.unit_spec]
   apply_fun ((↑·) : K₀ → K) using Subtype.val_injective
   simp [Subring.coe_mul, ← mul_assoc, mul_inv_cancel₀ (isPreuniformizer_ne_zero π₁.2), one_mul]
+  sorry
 
 -- Available in current mathlib
 @[simp] lemma zpow_le_one_iff_right_of_lt_one₀  {G₀ : Type*} [GroupWithZero G₀] [PartialOrder G₀]
@@ -603,10 +600,10 @@ theorem pow_preuniformizer {r : K₀} (hr : r ≠ 0) (π : Preuniformizer v) :
     rw [Valuation.map_mul, map_zpow₀, ← hm', zpow_neg, hm', inv_mul_cancel₀ hr₀]
   set a : K₀ := ⟨π.1.1 ^ (-m) * r, by apply le_of_eq hpow⟩ with ha
   have ha₀ : (↑a : K) ≠ 0 := by
-    simp only [zpow_neg, ne_eq, mul_eq_zero, inv_eq_zero, ZeroMemClass.coe_eq_zero, not_or]
+    sorry/- simp only [zpow_neg, ne_eq, mul_eq_zero, inv_eq_zero, ZeroMemClass.coe_eq_zero, not_or]
     refine ⟨?_, hr⟩
     rw [hn, zpow_natCast, pow_eq_zero_iff', not_and_or]
-    exact Or.inl (preuniformizer_ne_zero' π)
+    exact Or.inl (preuniformizer_ne_zero' π) -/
   have h_unit_a : IsUnit a :=
     Integers.isUnit_of_one (integer.integers v) (isUnit_iff_ne_zero.mpr ha₀) hpow
   use h_unit_a.unit

@@ -3,9 +3,10 @@ Copyright (c) 2023 María Inés de Frutos-Fernández. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: María Inés de Frutos-Fernández
 -/
+import LocalClassFieldTheory.FromMathlib.SpectralNorm
+import Mathlib.Analysis.Normed.Operator.BoundedLinearMaps
 import Mathlib.Analysis.Normed.Ring.IsPowMulFaithful
 import Mathlib.Analysis.Normed.Ring.SeminormFromConst
-import LocalClassFieldTheory.FromMathlib.SpectralNorm
 import Mathlib.Topology.Algebra.Module.FiniteDimension
 
 /-!

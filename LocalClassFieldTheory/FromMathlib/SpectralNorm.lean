@@ -364,16 +364,17 @@ theorem isAlgebraic [Algebra.IsAlgebraic K L] (E : IntermediateField K L) :
 theorem AdjoinSimple.alg_closure_normal {x : L} (hx : IsAlgebraic K x) :
     Normal K (AlgebraicClosure K⟮x⟯) :=
   have h_alg' : Algebra.IsAlgebraic K (AlgebraicClosure ↥K⟮x⟯) :=
-    @Algebra.IsAlgebraic.trans K K⟮x⟯ (AlgebraicClosure ↥K⟮x⟯) _ _ _ _ _ _ _
-     (isAlgebraic_adjoin_simple hx.isIntegral) (AlgebraicClosure.isAlgebraic K⟮x⟯)
+    sorry
+    /- @Algebra.IsAlgebraic.trans K K⟮x⟯ (AlgebraicClosure ↥K⟮x⟯) _ _ _ _ _ _ _
+     (isAlgebraic_adjoin_simple hx.isIntegral) (AlgebraicClosure.isAlgebraic K⟮x⟯) -/
   normal_iff.mpr fun y ↦ ⟨(h_alg'.isAlgebraic _).isIntegral,
     IsAlgClosed.splits_codomain (minpoly K y)⟩
 
 theorem AdjoinDouble.alg_closure_normal {x y : L} (hx : IsAlgebraic K x) (hy : IsAlgebraic K y) :
     Normal K (AlgebraicClosure K⟮x, y⟯) :=
   have h_alg' : Algebra.IsAlgebraic K (AlgebraicClosure ↥K⟮x, y⟯) :=
-   @Algebra.IsAlgebraic.trans K K⟮x, y⟯ (AlgebraicClosure ↥K⟮x, y⟯) _ _ _ _ _ _ _
-     (AdjoinDouble.isAlgebraic hx hy) (AlgebraicClosure.isAlgebraic K⟮x, y⟯)
+   sorry/- @Algebra.IsAlgebraic.trans K K⟮x, y⟯ (AlgebraicClosure ↥K⟮x, y⟯) _ _ _ _ _ _ _
+     (AdjoinDouble.isAlgebraic hx hy) (AlgebraicClosure.isAlgebraic K⟮x, y⟯) -/
   normal_iff.mpr fun y ↦ ⟨(h_alg'.isAlgebraic _).isIntegral,
     IsAlgClosed.splits_codomain (minpoly K y)⟩
 
@@ -838,6 +839,8 @@ end AlgEquiv
 
 -- In this section we prove Theorem 3.2.1/2 from BGR.
 section spectralNorm
+
+open IntermediateField
 
 variable (K : Type _) [NormedField K] (L : Type _) [Field L] [Algebra K L]
 

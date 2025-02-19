@@ -80,6 +80,9 @@ variable (p : outParam ℕ) [Fact (Nat.Prime p)]
 
 variable (K : Type _) [Field K] [MixedCharLocalField p K]
 
+instance : Algebra.IsSeparable (Padic'.Q_p p) K :=
+  Algebra.IsSeparable.of_integral (Padic'.Q_p p) K
+
 /-- A `mixed_char_local_field` is a local field. -/
 noncomputable def localField : LocalField K :=
   { MixedCharLocalField.WithZero.valued p K with

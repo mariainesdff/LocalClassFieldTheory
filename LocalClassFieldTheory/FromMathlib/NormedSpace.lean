@@ -3,10 +3,10 @@ Copyright (c) 2023 María Inés de Frutos-Fernández. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: María Inés de Frutos-Fernández
 -/
-import LocalClassFieldTheory.FromMathlib.SmoothingSeminorm
+import LocalClassFieldTheory.FromMathlib.RingSeminorm
 import Mathlib.Analysis.Normed.Algebra.Norm
-import Mathlib.Analysis.Normed.Operator.BoundedLinearMaps
 import Mathlib.Analysis.Normed.Ring.SeminormFromBounded
+import Mathlib.Analysis.Normed.Ring.SmoothingSeminorm
 import Mathlib.LinearAlgebra.FiniteDimensional.Defs
 
 
@@ -59,61 +59,59 @@ theorem isContinuousLinearMap_iff_isBoundedLinearMap' {K : Type*} [NontriviallyN
       exact h_cont.2
     exact ContinuousLinearMap.isBoundedLinearMap F -/
 
--- It seems like we are not using this
 -- In PR #21637.
-/-- A linear map between normed spaces is continuous if and only if it is bounded,-/
+/- /-- A linear map between normed spaces is continuous if and only if it is bounded,-/
 theorem isContinuousLinearMap_iff_isBoundedLinearMap {K M N : Type*} [NontriviallyNormedField K]
     [NormedAddCommGroup M] [NormedSpace K M] [NormedAddCommGroup N] [NormedSpace K N] (f : M → N) :
     IsLinearMap K f ∧ Continuous f ↔ IsBoundedLinearMap K f :=
   ⟨fun ⟨hlin, hcont⟩ ↦ ContinuousLinearMap.isBoundedLinearMap
       ⟨⟨⟨f, IsLinearMap.map_add hlin⟩, IsLinearMap.map_smul hlin⟩, hcont⟩,
-        fun h_bdd ↦ ⟨h_bdd.toIsLinearMap, h_bdd.continuous⟩⟩
+        fun h_bdd ↦ ⟨h_bdd.toIsLinearMap, h_bdd.continuous⟩⟩ -/
 
 
 end Continuous
 
-section finsum
+/- section finsum
 
 variable {F R S : Type*} {α : Type*} [Semiring R] [Semiring S] (σ : R →+* S)
     {σ' : S →+* R} [RingHomInvPair σ σ'] [RingHomInvPair σ' σ] (M N : Type*) [AddCommMonoid M]
     [AddCommMonoid N] [Module R M] [Module S N] [EquivLike F M N] [AddEquivClass F M N] (g : F)
-     (f : α → M)
+     (f : α → M) -/
 
 -- In PR #21638
--- Mathlib.LinearAlgebra.DFinsupp
-/-- Given a linear equivalence `g : M ≃ₛₗ[σ] N` and a function `f : α → M`, we have
+/- /-- Given a linear equivalence `g : M ≃ₛₗ[σ] N` and a function `f : α → M`, we have
   `g ∑ᶠ f i = ∑ᶠ g(f i)`.  -/
 theorem AddEquivClass.map_finsum : g (finsum fun i : α ↦ f i) = finsum fun i : α ↦ g (f i) :=
-  AddEquiv.map_finsum (AddEquivClass.toAddEquiv g) f
+  AddEquiv.map_finsum (AddEquivClass.toAddEquiv g) f -/
 
 -- In PR #21638
-/-- Given a fintype `α`, a function `f : α → M` and a linear equivalence `g : M ≃ₛₗ[σ] N`, we have
+/- /-- Given a fintype `α`, a function `f : α → M` and a linear equivalence `g : M ≃ₛₗ[σ] N`, we have
   `g (∑ (i : α), f i) = ∑ (i : α), g (f i)`.  -/
 theorem AddEquivClass.map_finset_sum [Fintype α] :
     g (∑ i : α, f i) = ∑ i : α, g (f i) := by
-  simp only [← finsum_eq_sum_of_fintype, AddEquivClass.map_finsum]
+  simp only [← finsum_eq_sum_of_fintype, AddEquivClass.map_finsum] -/
 
-end finsum
+--end finsum
 
-section finsum
+/- section finsum
 
 variable {R S : Type*} {α : Type*} [Semiring R] [Semiring S] (σ : R →+* S)
     {σ' : S →+* R} [RingHomInvPair σ σ'] [RingHomInvPair σ' σ] (M N : Type*) [AddCommMonoid M]
-    [AddCommMonoid N] [Module R M] [Module S N] (g : M ≃ₛₗ[σ] N) (f : α → M)
+    [AddCommMonoid N] [Module R M] [Module S N] (g : M ≃ₛₗ[σ] N) (f : α → M) -/
 
 -- In PR #21638
 -- Mathlib.LinearAlgebra.DFinsupp
-/-- Given a linear equivalence `g : M ≃ₛₗ[σ] N` and a function `f : α → M`, we have
+/- /-- Given a linear equivalence `g : M ≃ₛₗ[σ] N` and a function `f : α → M`, we have
   `g ∑ᶠ f i = ∑ᶠ g(f i)`.  -/
 theorem LinearEquiv.map_finsum : g (finsum fun i : α ↦ f i) = finsum fun i : α ↦ g (f i) :=
-  AddEquivClass.map_finsum M N g f
+  AddEquivClass.map_finsum g f -/
 
 -- In PR #21638
-/-- Given a fintype `α`, a function `f : α → M` and a linear equivalence `g : M ≃ₛₗ[σ] N`, we have
+/- /-- Given a fintype `α`, a function `f : α → M` and a linear equivalence `g : M ≃ₛₗ[σ] N`, we have
   `g (∑ (i : α), f i) = ∑ (i : α), g (f i)`.  -/
 theorem LinearEquiv.map_finset_sum [Fintype α] :
     g (∑ i : α, f i) = ∑ i : α, g (f i) := by
-  simp only [← finsum_eq_sum_of_fintype, LinearEquiv.map_finsum]
+  simp only [← finsum_eq_sum_of_fintype, LinearEquiv.map_finsum] -/
 
 -- This is now in Mathlib.Algebra.BigOperators.Finprod
 /- theorem finsum_apply {α : Type*} {β : α → Type*} {γ : Type*} [Finite γ]
@@ -124,16 +122,16 @@ theorem LinearEquiv.map_finset_sum [Fintype α] :
   simp only [finsum_eq_sum_of_fintype, sum_apply] -/
 
 -- In PR #21642
-/-- If `∑ i, f i • v i = ∑ i, g i • v i`, then for all `i`, `f i = g i`. -/
+/- /-- If `∑ i, f i • v i = ∑ i, g i • v i`, then for all `i`, `f i = g i`. -/
 theorem LinearIndependent.eq_coords_of_eq {R M ι: Type*} [Ring R] [AddCommGroup M] [Module R M]
     [Fintype ι] {v : ι → M} (hv : LinearIndependent R v) {f : ι → R}
     {g : ι → R} (heq : ∑ i, f i • v i = ∑ i, g i • v i) (i : ι) : f i = g i := by
   rw [← sub_eq_zero, ← sum_sub_distrib] at heq
   simp_rw [← sub_smul] at heq
   rw [linearIndependent_iff'] at hv
-  exact sub_eq_zero.mp (hv univ (fun i ↦ f i - g i) heq i (mem_univ i))
+  exact sub_eq_zero.mp (hv univ (fun i ↦ f i - g i) heq i (mem_univ i)) -/
 
-end finsum
+--end finsum
 
 section Ring
 
@@ -235,8 +233,8 @@ theorem norm_mul_le_const_mul_norm {i : ι} (hBi : B i = (1 : L))
     conv_lhs =>
       simp only [Basis.norm]
       rw [← hixy_def, ← Basis.sum_equivFun B x, ← Basis.sum_equivFun B y]
-    rw [sum_mul, LinearEquiv.map_finset_sum, sum_apply]
-    simp_rw [smul_mul_assoc, LinearEquiv.map_smul, mul_sum, LinearEquiv.map_finset_sum,
+    rw [sum_mul, map_finset_sum, sum_apply]
+    simp_rw [smul_mul_assoc, LinearEquiv.map_smul, mul_sum, map_finset_sum,
       mul_smul_comm, LinearEquiv.map_smul]
     have hna' : IsNonarchimedean (NormedField.toMulRingNorm K) := hna
     /- Since the norm is nonarchimidean, the norm of a finite sum is bounded by the maximum of the
@@ -361,7 +359,7 @@ theorem finite_extension_pow_mul_seminorm (hfd : FiniteDimensional K L)
   have hF'_ext : ∀ k : K, F' ((algebraMap K L) k) = ‖k‖ := by
     intro k
     rw [← hf_ext _]
-    exact smoothingSeminorm_apply_of_is_mul f hf_1 hf_na
+    exact smoothingSeminorm_apply_of_map_mul_eq_mul f hf_1 hf_na
       (seminormFromBounded_of_mul_is_mul hg_nonneg hg_bdd (hg_mul k))
   have hF'_1 : F' 1 = 1 := by
     have h1 : (1 : L) = (algebraMap K L) 1 := by rw [map_one]
@@ -373,14 +371,13 @@ theorem finite_extension_pow_mul_seminorm (hfd : FiniteDimensional K L)
         have hk : ∀ y : L, f (algebraMap K L k * y) = f (algebraMap K L k) * f y :=
           seminormFromBounded_of_mul_is_mul hg_nonneg hg_bdd (hg_mul k)
         have hfk : ‖k‖ = (smoothingSeminorm f hf_1 hf_na) ((algebraMap K L) k) := by
-          rw [← hf_ext k, eq_comm, smoothingSeminorm_apply_of_is_mul f hf_1 hf_na hk]
+          rw [← hf_ext k, eq_comm, smoothingSeminorm_apply_of_map_mul_eq_mul f hf_1 hf_na hk]
         simp only [hfk, hF']
         erw [← smoothingSeminorm_of_mul f hf_1 hf_na hk y, Algebra.smul_def]
         rfl }
   have hF_ext : ∀ k : K, F ((algebraMap K L) k) = ‖k‖ := by
     intro k
     rw [← hf_ext _]
-    exact smoothingSeminorm_apply_of_is_mul f hf_1 hf_na
+    exact smoothingSeminorm_apply_of_map_mul_eq_mul f hf_1 hf_na
       (seminormFromBounded_of_mul_is_mul hg_nonneg hg_bdd (hg_mul k))
-  exact ⟨F, smoothingSeminorm_isPowMul f hf_1, hF_ext,
-      smoothingSeminorm_isNonarchimedean f hf_1 hf_na⟩
+  exact ⟨F, isPowMul_smoothingFun f hf_1, hF_ext, isNonarchimedean_smoothingFun f hf_1 hf_na⟩
