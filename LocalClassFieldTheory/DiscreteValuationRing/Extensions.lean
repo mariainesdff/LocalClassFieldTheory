@@ -6,6 +6,7 @@ Authors: María Inés de Frutos-Fernández, Filippo A. E. Nuccio
 import LocalClassFieldTheory.DiscreteValuationRing.DiscreteNorm
 import LocalClassFieldTheory.ForMathlib.DiscreteValuationRing
 import Mathlib.Algebra.Ring.Subring.IntPolynomial
+import Mathlib.RingTheory.DiscreteValuationRing.Basic
 import Mathlib.RingTheory.IntegralClosure.Algebra.Basic
 import Mathlib.RingTheory.IntegralClosure.IsIntegral.Basic
 import Mathlib.RingTheory.Valuation.AlgebraInstances
@@ -639,7 +640,7 @@ instance discreteValuationRing_of_finite_extension [FiniteDimensional K L] :
   letI hw_disc : IsDiscrete hw.v := Extension.isDiscrete_of_finite K L
   let e : (extendedValuation K L).valuationSubring ≃+* integralClosure hv.v.valuationSubring L :=
     RingEquiv.subringCongr (integralClosure_eq_integer K L).symm
-  exact RingEquivClass.isDiscreteValuationRing e
+  exact IsDiscreteValuationRing.RingEquivClass.isDiscreteValuationRing e
 
 end integralClosure
 
