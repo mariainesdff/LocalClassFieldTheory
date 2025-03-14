@@ -85,8 +85,8 @@ instance charP : CharP (FpXCompletion p) p :=
     p
 
 /-- The `valued` structure on the adic completion `FpX_completion`. -/
-def WithZero.valued : Valued (FpXCompletion p) ℤₘ₀ :=
-  HeightOneSpectrum.valuedAdicCompletion (RatFunc 𝔽_[p]) (Polynomial.idealX 𝔽_[p])
+-- def WithZero.valued : Valued (FpXCompletion p) ℤₘ₀ :=
+--   HeightOneSpectrum.valuedAdicCompletion (RatFunc 𝔽_[p]) (Polynomial.idealX 𝔽_[p])
 
 theorem valuation_X :
     Valued.v ((algebraMap (RatFunc 𝔽_[p]) (FpXCompletion p)) (X : 𝔽_[p][X])) = ofAdd (-1 : ℤ) := by
@@ -107,8 +107,8 @@ theorem X_mem_FpXIntCompletion :
 instance : Inhabited (FpXCompletion p) :=
   ⟨(0 : FpXCompletion p)⟩
 
-instance : RankOne (@FpXCompletion.WithZero.valued p _).v :=
-  DiscreteValuation.rankOne Valued.v
+-- instance : RankOne (@FpXCompletion.WithZero.valued p _).v :=
+--   DiscreteValuation.rankOne Valued.v
 
 instance : NormedField (FpXCompletion p) :=
   Valued.toNormedField (FpXCompletion p) ℤₘ₀
@@ -268,28 +268,29 @@ open /- CompletionLaurentSeries  -/LaurentSeries
 
 theorem dvd_of_norm_lt_one {F : FpXIntCompletion p} :
     Valued.v (F : FpXCompletion p) < (1 : ℤₘ₀) → FpXIntCompletion.X p ∣ F := by
-  set f : FpXCompletion p := ↑F with h_Ff
-  set g := (ratfuncAdicComplRingEquiv 𝔽_[p]) f with h_fg
-  have h_gf : (LaurentSeriesRingEquiv 𝔽_[p]) g = f := by rw [h_fg, RingEquiv.symm_apply_apply]
-  erw [← h_gf, valuation_compare 𝔽_[p] g, ← WithZero.coe_one, ← ofAdd_zero, ← neg_zero]
-  intro h
-  obtain ⟨G, h_Gg⟩ : ∃ G : 𝔽_[p]⟦X⟧, ↑G = g :=
-    by
-    replace h := le_of_lt h
-    rwa [neg_zero, ofAdd_zero, WithZero.coe_one, val_le_one_iff_eq_coe] at h
-  rw [neg_zero, ← neg_add_cancel (1 : ℤ), WithZero.lt_succ_iff_le, ← h_Gg, ← Int.ofNat_one,
-    LaurentSeries.intValuation_le_iff_coeff_lt_eq_zero] at h
-  specialize h 0 zero_lt_one
-  rw [PowerSeries.coeff_zero_eq_constantCoeff, ← PowerSeries.X_dvd_iff] at h
-  obtain ⟨C, rfl⟩ := dvd_iff_exists_eq_mul_left.mp h
-  refine dvd_of_mul_left_eq ⟨(LaurentSeriesRingEquiv 𝔽_[p]) C, ?_⟩ ?_
-  · erw [FpXCompletion.mem_FpXIntCompletion, valuation_compare, val_le_one_iff_eq_coe]
-    use C
-  apply_fun algebraMap (FpXIntCompletion p) (FpXCompletion p) using Subtype.val_injective
-  apply_fun ratfuncAdicComplRingEquiv 𝔽_[p]
-  erw [algebraMap_eq_coe, algebraMap_eq_coe, ← h_Ff, ← h_fg, ← h_Gg, _root_.map_mul]
-  rw [PowerSeries.coe_mul, RingEquiv.apply_symm_apply, ← coe_X_compare 𝔽_[p]]
-  rfl
+  sorry
+  -- set f : FpXCompletion p := ↑F with h_Ff
+  -- set g := (ratfuncAdicComplRingEquiv 𝔽_[p]) f with h_fg
+  -- have h_gf : (LaurentSeriesRingEquiv 𝔽_[p]) g = f := by rw [h_fg, RingEquiv.symm_apply_apply]
+  -- erw [← h_gf, valuation_compare 𝔽_[p] g, ← WithZero.coe_one, ← ofAdd_zero, ← neg_zero]
+  -- intro h
+  -- obtain ⟨G, h_Gg⟩ : ∃ G : 𝔽_[p]⟦X⟧, ↑G = g :=
+  --   by
+  --   replace h := le_of_lt h
+  --   rwa [neg_zero, ofAdd_zero, WithZero.coe_one, val_le_one_iff_eq_coe] at h
+  -- rw [neg_zero, ← neg_add_cancel (1 : ℤ), WithZero.lt_succ_iff_le, ← h_Gg, ← Int.ofNat_one,
+  --   LaurentSeries.intValuation_le_iff_coeff_lt_eq_zero] at h
+  -- specialize h 0 zero_lt_one
+  -- rw [PowerSeries.coeff_zero_eq_constantCoeff, ← PowerSeries.X_dvd_iff] at h
+  -- obtain ⟨C, rfl⟩ := dvd_iff_exists_eq_mul_left.mp h
+  -- refine dvd_of_mul_left_eq ⟨(LaurentSeriesRingEquiv 𝔽_[p]) C, ?_⟩ ?_
+  -- · erw [FpXCompletion.mem_FpXIntCompletion, valuation_compare, val_le_one_iff_eq_coe]
+  --   use C
+  -- apply_fun algebraMap (FpXIntCompletion p) (FpXCompletion p) using Subtype.val_injective
+  -- apply_fun ratfuncAdicComplRingEquiv 𝔽_[p]
+  -- erw [algebraMap_eq_coe, algebraMap_eq_coe, ← h_Ff, ← h_fg, ← h_Gg, _root_.map_mul]
+  -- rw [PowerSeries.coe_mul, RingEquiv.apply_symm_apply, ← coe_X_compare 𝔽_[p]]
+  -- rfl
 
 theorem norm_lt_one_of_dvd {F : FpXIntCompletion p} :
     FpXIntCompletion.X p ∣ F → Valued.v (F : FpXCompletion p) < (1 : ℤₘ₀) := by
@@ -329,7 +330,7 @@ end FpXIntCompletion
 namespace AdicAlgebra
 
 
-variable (K L : Type _) [Field K] [Algebra (FpXCompletion p) K] [Field L]
+variable (K L : Type*) [Field K] [Algebra (FpXCompletion p) K] [Field L]
 
 variable [Algebra (FpXCompletion p) L]
 
@@ -358,14 +359,15 @@ theorem int_algebraMap_def :
     algebraMap (FpXIntCompletion p) K = (AdicAlgebra.toIntAlgebra p K).toRingHom :=
   rfl   -/
 
+-- FAE : inferInstance works again (March 2025)
 --MI : inferInstance now works (August 2024)
 --MI: as of 12 September 2024, this is again broken
 -- I am leaving this here because of the priority, but we should check if it is needed.
 
-set_option synthInstance.maxHeartbeats 100000 --This is now slow...
-instance (priority := 10000) : IsScalarTower (FpXIntCompletion p) (FpXCompletion p) K :=
-  ValuationSubring.instIsScalarTowerSubtypeMemValuationSubringWithZeroMultiplicativeInt
-    (@FpXCompletion.WithZero.valued p _).v _ K
+-- set_option synthInstance.maxHeartbeats 200000 --This is now slow...
+-- instance (priority := 10000) : IsScalarTower (FpXIntCompletion p) (FpXCompletion p) K :=
+--   ValuationSubring.instIsScalarTowerSubtypeMemValuationSubringWithZeroMultiplicativeInt
+--     (@FpXCompletion.WithZero.valued p _).v _ K
 
 --MI : inferInstance now works (August 2024)
 -- I am leaving this here because of the priority, but we should check if it is needed.
@@ -433,12 +435,12 @@ instance : SMul ↥(FpXIntCompletion p) ↥(𝓞 p K) := Algebra.toSMul
 instance : IsScalarTower (FpXIntCompletion p) (𝓞 p K) K :=
   IsScalarTower.subalgebra' (FpXIntCompletion p) K K (𝓞 p K)
 
-theorem isIntegral_coe (x : 𝓞 p K) : IsIntegral (FpXIntCompletion p) (x : K) :=
+theorem isIntegral_coe (x : 𝓞 p K) : IsIntegral (FpXIntCompletion p) (x.1 : K) :=
   x.2
 
 /-- The ring of integers of `K` is equivalent to any integral closure of `FpX_int_completion`
 insie `K` -/
-protected noncomputable def equiv (R : Type _) [CommRing R] [hR : Algebra (FpXIntCompletion p) R]
+protected noncomputable def equiv (R : Type*) [CommRing R] [hR : Algebra (FpXIntCompletion p) R]
     [Algebra R K] [htow : IsScalarTower (FpXIntCompletion p) R K]
     [hic : IsIntegralClosure R (FpXIntCompletion p) K] : 𝓞 p K ≃+* R := by
   letI : Algebra Valued.v.valuationSubring R := hR
@@ -489,7 +491,7 @@ end FpXCompletion
 
 namespace FpXIntCompletion
 
-variable (K : Type _) [Field K] [EqCharLocalField p K]
+variable (K : Type*) [Field K] [EqCharLocalField p K]
 
 open EqCharLocalField
 

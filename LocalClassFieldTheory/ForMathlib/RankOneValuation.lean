@@ -3,12 +3,12 @@ Copyright (c) 2024 María Inés de Frutos-Fernández, Filippo A. E. Nuccio. All 
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: María Inés de Frutos-Fernández, Filippo A. E. Nuccio
 -/
--- import LocalClassFieldTheory.FromMathlib.RingSeminorm
-import Mathlib.Analysis.Normed.Ring.Seminorm
+import Mathlib.Analysis.Normed.Unbundled.RingSeminorm
 import Mathlib.Data.Real.IsNonarchimedean
 import Mathlib.RingTheory.DedekindDomain.AdicValuation
 import Mathlib.RingTheory.Valuation.RankOne
 import Mathlib.Topology.Algebra.Valued.NormedValued
+import Mathlib.Analysis.Normed.Unbundled.RingSeminorm
 
 
 /-!

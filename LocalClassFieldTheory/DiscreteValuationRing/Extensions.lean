@@ -54,14 +54,14 @@ open AddSubgroup DiscreteValuation DiscreteValuation.DiscreteNormExtension Funct
 
 open scoped DiscreteValuation NNReal
 
-theorem Multiplicative.toSubgroup_mem_iff {G : Type _} [AddGroup G] (S : AddSubgroup G)
+theorem Multiplicative.toSubgroup_mem_iff {G : Type*} [AddGroup G] (S : AddSubgroup G)
     (x : Multiplicative G) : x ∈ toSubgroup S ↔ toAdd x ∈ S := by rfl
 
 namespace DiscreteValuation
 
 section Complete
 
-variable {K : Type _} [Field K] [hv : Valued K ℤₘ₀] {L : Type _} [Field L] [Algebra K L]
+variable {K : Type*} [Field K] [hv : Valued K ℤₘ₀] {L : Type*} [Field L] [Algebra K L]
 
 local notation "K₀" => hv.v.valuationSubring
 

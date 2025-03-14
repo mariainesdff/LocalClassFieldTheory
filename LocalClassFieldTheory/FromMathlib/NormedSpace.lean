@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: María Inés de Frutos-Fernández
 -/
 import LocalClassFieldTheory.FromMathlib.RingSeminorm
-import Mathlib.Analysis.Normed.Algebra.Norm
-import Mathlib.Analysis.Normed.Ring.SeminormFromBounded
-import Mathlib.Analysis.Normed.Ring.SmoothingSeminorm
+import Mathlib.Analysis.Normed.Unbundled.AlgebraNorm
+import Mathlib.Analysis.Normed.Unbundled.SeminormFromBounded
+import Mathlib.Analysis.Normed.Unbundled.SmoothingSeminorm
 import Mathlib.LinearAlgebra.FiniteDimensional.Defs
 
 
@@ -272,9 +272,10 @@ theorem norm_mul_le_const_mul_norm {i : ι} (hBi : B i = (1 : L))
 
 /-- For any `k : K`, `y : L`, we have
   `B.equivFun ((algebra_map K L k) * y) i = k * (B.equivFun y i) `. -/
-theorem repr_smul' {ι : Type*} [Fintype ι] (B : Basis ι K L) (i : ι) (k : K) (y : L) :
+theorem repr_smul'' {ι : Type*} [Fintype ι] (B : Basis ι K L) (i : ι) (k : K) (y : L) :
     B.equivFun (algebraMap K L k * y) i = k * B.equivFun y i := by
   rw [← smul_eq_mul, algebraMap_smul, LinearEquiv.map_smul]; rfl
+
 
 /-- For any `k : K`, `y : L`, we have
   `B.norm ((algebra_map K L) k * y) = B.norm ((algebra_map K L) k) * B.norm y`. -/
@@ -295,10 +296,10 @@ theorem norm_smul {ι : Type*} [Fintype ι] [Nonempty ι] {B : Basis ι K L} {i 
     have hij : ‖B.equivFun y i‖ = ‖B.equivFun y j‖ := by
       refine le_antisymm ?_ (hi j)
       specialize hj i
-      rw [← hj_def, repr_smul', norm_mul, repr_smul', norm_mul] at hj
+      rw [← hj_def, repr_smul'', norm_mul, repr_smul'', norm_mul] at hj
       exact (mul_le_mul_left (lt_of_le_of_ne (norm_nonneg _)
         (Ne.symm (norm_ne_zero_iff.mpr hk)))).mp hj
-    rw [repr_smul', norm_mul, hij]
+    rw [repr_smul'', norm_mul, hij]
 
 end Basis
 
@@ -314,12 +315,12 @@ theorem finite_extension_pow_mul_seminorm (hfd : FiniteDimensional K L)
   classical
   -- Choose a basis B = {1, e2,..., en} of the K-vector space L
   set h1 : LinearIndependent K fun x : ({1} : Set L) ↦ (x : L) :=
-    linearIndependent_singleton one_ne_zero
-  set ι := { x // x ∈ h1.extend (Set.subset_univ ({1} : Set L)) }
-  set B : Basis ι K L := Basis.extend h1
+    LinearIndepOn.id_singleton _ one_ne_zero
+  set ι := { x // x ∈ LinearIndepOn.extend h1 (Set.subset_univ ({1} : Set L)) }
+  set B /- : Basis K L -/ := Basis.extend h1
   letI hfin : Fintype ι := FiniteDimensional.fintypeBasisIndex B
   haveI hem : Nonempty ι := B.index_nonempty
-  have h1L : (1 : L) ∈ h1.extend _ := Basis.subset_extend _ (Set.mem_singleton (1 : L))
+  have h1L : (1 : L) ∈ LinearIndepOn.extend h1 _ := Basis.subset_extend _ (Set.mem_singleton (1 : L))
   have hB1 : B ⟨1, h1L⟩ = (1 : L) := by rw [Basis.coe_extend, Subtype.coe_mk]
   -- For every k ∈ K, k = k • 1 + 0 • e2 + ... + 0 • en
  /-  have h_k :

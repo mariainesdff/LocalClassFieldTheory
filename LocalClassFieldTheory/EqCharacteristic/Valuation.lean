@@ -48,7 +48,7 @@ namespace EqCharLocalField
 
 variable (p : outParam ℕ) [hp : Fact p.Prime]
 
-variable (K : Type _) [Field K] [EqCharLocalField p K]
+variable (K : Type*) [Field K] [EqCharLocalField p K]
 
 /-- The valued instance in an equal characteristic local field, induced by the extension of the
   `X`-adic valuation.-/
@@ -74,7 +74,7 @@ theorem valuation_X_ne_zero : Valued.v (algebraMap (RatFunc 𝔽_[p]) K X) ≠ (
 
 /-- The ramification index of an equal characteristic local field `K` is given by the
   additive valuation of the element `(X : K)`. -/
-def ramificationIndex (K : Type _) [Field K] [EqCharLocalField p K] : ℤ :=
+def ramificationIndex (K : Type*) [Field K] [EqCharLocalField p K] : ℤ :=
   - toAdd (WithZero.unzero (valuation_X_ne_zero K))
   -- Porting note: dot notation doesn't work
 

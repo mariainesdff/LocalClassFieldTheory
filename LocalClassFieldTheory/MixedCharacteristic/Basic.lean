@@ -100,7 +100,7 @@ instance : IsIntegralClosure (𝓞 p K) (Z_p p) K :=
 noncomputable instance : IsIntegrallyClosed (𝓞 p K) :=
   integralClosure.isIntegrallyClosedOfFiniteExtension (Q_p p)
 
-theorem isIntegral_coe (x : 𝓞 p K) : IsIntegral (Z_p p) (x : K) :=
+theorem isIntegral_coe (x : 𝓞 p K) : IsIntegral (Z_p p) (x.1 : K) :=
   x.2
 
 /-- The ring of integers of `K` is equivalent to any integral closure of `Z_p` in `K` -/

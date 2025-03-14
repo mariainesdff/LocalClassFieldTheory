@@ -370,7 +370,8 @@ theorem Padic'Int.heightOneIdeal_is_principal :
     (Padic'Int.heightOneIdeal p).asIdeal = Ideal.span {(p : Z_p p)} :=
   DiscreteValuation.isUniformizer_is_generator _ (Padic'.valuation_p p)
 
-instance : Valued (Q_p p) ℤₘ₀ := HeightOneSpectrum.valuedAdicCompletion ℚ (pHeightOneIdeal p)
+-- instance : Valued (Q_p p) ℤₘ₀ := HeightOneSpectrum.valuedAdicCompletion ℚ (pHeightOneIdeal p)
+
 
 /-- The ring `ℤ_[p]` as a valuation subring of `ℚ_[p]`. -/
 def PadicInt.valuationSubring : ValuationSubring ℚ_[p] where
@@ -444,15 +445,16 @@ theorem mem_unit_ball_of_tendsto_zero {x : Q_p p} (H : Tendsto (fun n : ℕ ↦ 
   rw [← hy₁]
   simp only [Subtype.coe_eta, IsLocalRing.mem_maximalIdeal, mem_nonunits_iff, SetLike.coe_mem,
     exists_const]
-  rw [← Completion.adic_of_compl_eq_compl_of_adic ℤ (pHeightOneIdeal p) ℚ ↑y] at this
-  have v_lt_one :=
-    @IsDedekindDomain.HeightOneSpectrum.valuation_lt_one_iff_dvd (Z_p p) _ _ (Q_p p) _ _ _
-      (Completion.maxIdealOfCompletion ℤ (pHeightOneIdeal p) ℚ) y
-  have eq_y : (algebraMap (↥(Z_p p)) (Q_p p)) y = (↑y : Q_p p) := rfl
-  rw [eq_y] at v_lt_one
-  simp only [v_lt_one, Ideal.dvd_span_singleton, mem_nonunits_iff,
-    ValuationSubring.algebraMap_apply, /- SetLike.coe_mk,  -/forall_true_left] at this
-  exact this
+  sorry
+  -- rw [← Completion.adic_of_compl_eq_compl_of_adic ℤ (pHeightOneIdeal p) ℚ ↑y] at this
+  -- have v_lt_one :=
+  --   @IsDedekindDomain.HeightOneSpectrum.valuation_lt_one_iff_dvd (Z_p p) _ _ (Q_p p) _ _ _
+  --     (Completion.maxIdealOfCompletion ℤ (pHeightOneIdeal p) ℚ) y
+  -- have eq_y : (algebraMap (↥(Z_p p)) (Q_p p)) y = (↑y : Q_p p) := rfl
+  -- rw [eq_y] at v_lt_one
+  -- simp only [v_lt_one, Ideal.dvd_span_singleton, mem_nonunits_iff,
+  --   ValuationSubring.algebraMap_apply, /- SetLike.coe_mk,  -/forall_true_left] at this
+  -- exact this
 
 theorem UnitBall.nonunit_mem_iff_top_nilpotent (x : Q_p p) :
     x ∈ (Z_p p).nonunits ↔ Filter.Tendsto (fun n : ℕ ↦ x ^ n) atTop (𝓝 0) := by

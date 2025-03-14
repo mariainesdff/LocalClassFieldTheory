@@ -46,7 +46,7 @@ open scoped DiscreteValuation NNReal
 
 section AuxLemma
 
-variable {K : Type _} [Field K] {v : Valuation K ℤₘ₀} {L : Type _} [Field L] [Algebra K L]
+variable {K : Type*} [Field K] {v : Valuation K ℤₘ₀} {L : Type*} [Field L] [Algebra K L]
 
 theorem map_pow_div [FiniteDimensional K L] (x : Lˣ) :
     (WithZeroMulInt.toNNReal (base_ne_zero K v))
@@ -175,7 +175,7 @@ theorem le_one_iff_integral_minpoly (x : L) :
 
 theorem of_integer [fr : IsFractionRing hv.v.valuationSubring.toSubring K]
     (x : integralClosure hv.v.valuationSubring.toSubring L) :
-    discreteNormExtension (K := K) (L := L) x =
+    discreteNormExtension (K := K) (L := L) x.1 =
     @spectralValue K (discretelySemiNormedRing K)
     (Polynomial.map (algebraMap hv.v.valuationSubring.toSubring K)
       (minpoly hv.v.valuationSubring.toSubring x)) := by
@@ -191,7 +191,7 @@ theorem of_integer [fr : IsFractionRing hv.v.valuationSubring.toSubring K]
 
 theorem le_one_of_integer [fr : IsFractionRing hv.v.valuationSubring.toSubring K]
     (x : integralClosure hv.v.valuationSubring.toSubring L) :
-    discreteNormExtension (K := K) (L := L) x ≤ 1 := by
+    discreteNormExtension (K := K) (L := L) x.1 ≤ 1 := by
   letI := nontriviallyDiscretelyNormedField K
   let min_int := minpoly hv.v.valuationSubring.toSubring x
   let min_x : Polynomial K := Polynomial.map (algebraMap _ _) min_int

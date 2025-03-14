@@ -1244,7 +1244,7 @@ def normToNormedRing {A : Type _} [Ring A] (f : RingNorm A) : NormedRing A where
     have hxyz : x - z = x - y + (y - z) := by abel
     simp only [AddGroupSeminorm.toFun_eq_coe, hxyz, map_add_le_add]
   dist_eq x y := rfl
-  norm_mul x y := by
+  norm_mul_le x y := by
     simp only [AddGroupSeminorm.toFun_eq_coe, RingSeminorm.toFun_eq_coe, map_mul_le_mul]
   edist_dist x y := by
     simp only [AddGroupSeminorm.toFun_eq_coe, RingSeminorm.toFun_eq_coe]
@@ -1270,7 +1270,7 @@ def mulNormToNormedField (f : MulRingNorm L) : NormedField L where
     simp only [dist, AddGroupSeminorm.toFun_eq_coe] at hxy
     exact eq_of_sub_eq_zero (MulRingNorm.eq_zero_of_map_eq_zero' _ _ hxy)
   dist_eq x y := rfl
-  norm_mul' x y := by simp only [AddGroupSeminorm.toFun_eq_coe, MulRingSeminorm.toFun_eq_coe,
+  norm_mul x y := by simp only [AddGroupSeminorm.toFun_eq_coe, MulRingSeminorm.toFun_eq_coe,
     map_mul]
   edist_dist x y := by
     simp only [AddGroupSeminorm.toFun_eq_coe, RingSeminorm.toFun_eq_coe]

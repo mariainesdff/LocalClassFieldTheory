@@ -55,9 +55,9 @@ open IsDedekindDomain IsDedekindDomain.HeightOneSpectrum Valuation
 
 namespace IsDedekindDomain.HeightOneSpectrum.Completion
 
-variable (R : Type _) [CommRing R] [IsDedekindDomain R] (v : HeightOneSpectrum R)
+variable (R : Type*) [CommRing R] [IsDedekindDomain R] (v : HeightOneSpectrum R)
 
-variable (K : Type _) [Field K] [Algebra R K] [IsFractionRing R K]
+variable (K : Type*) [Field K] [Algebra R K] [IsFractionRing R K]
 
 local notation "R_v" => adicCompletionIntegers K v
 
@@ -67,13 +67,14 @@ instance isDiscrete : IsDiscrete (@Valued.v K_v _ ℤₘ₀ _ _) := by
   obtain ⟨π, hπ⟩ := valuation_exists_uniformizer K v
   apply isDiscrete_of_exists_isUniformizer (π := (↑π : K_v))
   rw [isUniformizer_iff, ← hπ]
-  exact @Valued.extension_extends K _ _ _ (Valued.mk' v.valuation) π
+  apply Valued.extension_extends
 
 /-- The maximal ideal of `R_v`, that is a discrete valuation ring. -/
 def maxIdealOfCompletionDef : Ideal R_v :=
   IsLocalRing.maximalIdeal R_v
 
 instance : IsDiscreteValuationRing R_v := DiscreteValuation.dvr_of_isDiscrete _
+
 
 theorem IsDedekindDomain.HeightOneSpectrum.valuation_completion_integers_exists_uniformizer :
     ∃ π : R_v, Valued.v (π : K_v) = ofAdd (-1 : ℤ) := by
@@ -154,7 +155,7 @@ theorem int_adic_of_compl_eq_int_compl_of_adic (a : R_v) :
     · obtain ⟨m, hm⟩ : ∃ m : ℕ, v_adic_of_compl a = ofAdd (-m : ℤ) := by
         replace ha : v_adic_of_compl a ≠ 0 := by
           rwa [Valuation.ne_zero_iff, ne_eq, Subring.coe_eq_zero_iff]
-        have : (maxIdealOfCompletion R v K).valuation (algebraMap _ K_v a) ≤ 1 := by
+        have : (maxIdealOfCompletion R v K).valuation K_v (algebraMap _ K_v a) ≤ 1 := by
           exact valuation_le_one _ _
         obtain ⟨α, hα⟩ := WithZero.ne_zero_iff_exists.mp ha
         rw [ValuationSubring.algebraMap_apply, ← hα, ← WithZero.coe_one, ← ofAdd_zero,

@@ -5,8 +5,8 @@ Authors: María Inés de Frutos-Fernández
 -/
 import LocalClassFieldTheory.FromMathlib.SpectralNorm
 import Mathlib.Analysis.Normed.Operator.BoundedLinearMaps
-import Mathlib.Analysis.Normed.Ring.IsPowMulFaithful
-import Mathlib.Analysis.Normed.Ring.SeminormFromConst
+import Mathlib.Analysis.Normed.Unbundled.IsPowMulFaithful
+import Mathlib.Analysis.Normed.Unbundled.SeminormFromConst
 import Mathlib.Topology.Algebra.Module.FiniteDimension
 
 /-!
@@ -238,7 +238,7 @@ def spectralNormToNormedField [CompleteSpace K] (h : IsNonarchimedean (norm : K 
       rw [← sub_eq_zero]
       exact (map_eq_zero_iff_eq_zero (spectralMulAlgNorm h)).mp hxy
     dist_eq := fun x y => by rfl
-    norm_mul' := fun x y => by
+    norm_mul := fun x y => by
       simp only [← spectral_mul_ring_norm_def h]; exact map_mul _ _ _
     edist_dist := fun x y => by
       simp only [AddGroupSeminorm.toFun_eq_coe, RingSeminorm.toFun_eq_coe]
