@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: María Inés de Frutos-Fernández, Filippo A. E. Nuccio
 -/
 import LocalClassFieldTheory.DiscreteValuationRing.DiscreteNorm
-import LocalClassFieldTheory.ForMathlib.DiscreteValuationRing
 import Mathlib.Algebra.Ring.Subring.IntPolynomial
 import Mathlib.RingTheory.DiscreteValuationRing.Basic
 import Mathlib.RingTheory.IntegralClosure.Algebra.Basic
