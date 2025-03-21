@@ -564,12 +564,11 @@ theorem associated_of_isPreuniformizer (π₁ π₂ : Preuniformizer v) : Associ
     simp only [Valuation.map_mul, map_inv₀, isPreuniformizer_iff.mp π₁.2,
       isPreuniformizer_iff.mp π₂.2, isUnit_iff_ne_zero, ne_eq, coe_ne_zero, not_false_eq_true,
       IsUnit.inv_mul_cancel]
-  let p : v.integer := ⟨(π₁.1 : K)⁻¹ * π₂.1, (v.mem_integer_iff _).mpr (le_of_eq hval)⟩
+  set p : v.integer := ⟨(π₁.1 : K)⁻¹ * π₂.1, (v.mem_integer_iff _).mpr (le_of_eq hval)⟩ with hp
   use ((Integer.isUnit_iff_valuation_eq_one p).mpr hval).unit
   simp only [IsUnit.unit_spec]
   apply_fun ((↑·) : K₀ → K) using Subtype.val_injective
-  simp [Subring.coe_mul, ← mul_assoc, mul_inv_cancel₀ (isPreuniformizer_ne_zero π₁.2), one_mul]
-  sorry
+  simp [hp, Subring.coe_mul, ← mul_assoc, mul_inv_cancel₀ (isPreuniformizer_ne_zero π₁.2), one_mul]
 
 -- Available in current mathlib
 @[simp] lemma zpow_le_one_iff_right_of_lt_one₀  {G₀ : Type*} [GroupWithZero G₀] [PartialOrder G₀]

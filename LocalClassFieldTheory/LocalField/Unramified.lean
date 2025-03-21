@@ -95,3 +95,15 @@ def Kn_unique (L : Type*) [Field L] [LocalField L] [Algebra K L]
 def Kn_galoisGroup : ((Kn K hn) ≃ₐ[K] (Kn K hn)) ≃* (ZMod n) := sorry
 
 end LocalField
+
+section Etale
+
+/- By `Algebra.FormallyUnramified.of_map_maximalIdeal` or
+  `Algebra.FormallyUnramified.iff_map_maximalIdeal_eq`, our condition is equivalent to `𝒪 L/𝓞 K`
+  being formally etale. Since it is finite and everything is noetherian,
+  `Algebra.FinitePresentation.of_finiteType` guarantees that it is of finite presentation and thus
+  it is `Algebra.Etale`. All the previous ones are moreover iff.
+
+-/
+
+end Etale
