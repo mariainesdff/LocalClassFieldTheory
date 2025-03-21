@@ -37,6 +37,7 @@ open scoped Multiplicative NNReal
 
 open Multiplicative WithZero Equiv
 
+-- Most of what follows is in **PR #23177**
 namespace Multiplicative
 
 -- Mathlib.Algebra.Ring.Int
@@ -44,7 +45,7 @@ theorem ofAdd_pow_comm (a b : ℤ) : ofAdd a ^ b = ofAdd b ^ a := by
   rw [← Int.ofAdd_mul, mul_comm, Int.ofAdd_mul]
 
 -- [Mathlib.Algebra.Group.TypeTags]
-theorem ofAdd_inj {x y : Multiplicative ℤ} (hxy : ofAdd x = ofAdd y) : x = y := hxy
+-- theorem ofAdd_inj {x y : Multiplicative ℤ} (hxy : ofAdd x = ofAdd y) : x = y := hxy
 
 end Multiplicative
 
@@ -67,21 +68,34 @@ namespace WithZero
   rw [← zpow_natCast, ofAdd_zpow_zpow_comm, ← ofAdd_zpow] -/
 
 -- Q: where?
-instance : Nontrivial ℤₘ₀ˣ := (unitsWithZeroEquiv).toEquiv.nontrivial
+-- **In PR #23177**
+instance (α : Type*) [Group α] [Nontrivial α] : Nontrivial (WithZero α)ˣ := (unitsWithZeroEquiv).toEquiv.nontrivial
+-- instance : Nontrivial ℤₘ₀ˣ := inferInstance
 
 -- [Mathlib.SetTheory.Cardinal.Basic, Mathlib.Data.ENat.Basic, Mathlib.Algebra.Order.Nonneg.Field,
 --Mathlib.Algebra.Order.Ring.Cast, Mathlib.Data.NNRat.Defs, Mathlib.Algebra.Order.Ring.Abs]
-theorem one_lt_zpow {α : Type _} [LinearOrderedCommGroupWithZero α] {a : α} (ha : 1 < a) {k : ℤ}
+-- **In PR #23177**
+lemma one_lt_zpow {G : Type*} [DivInvMonoid G] [Preorder G] [MulLeftMono G] {a : G} (ha : 1 < a) {k : ℤ}
     (hk : 0 < k) : 1 < a ^ k := by
   lift k to ℕ using Int.le_of_lt hk
   rw [zpow_natCast]
   exact one_lt_pow' ha (Int.natCast_pos.mp hk).ne'
 
--- [Mathlib.Algebra.Order.GroupWithZero.Canonical]
-theorem mul_lt_mul_right₀ {α : Type*} {a b c : α} [LinearOrderedCommGroupWithZero α]
-    (hc : 0 < c) : a * c < b * c ↔ a < b := by
-  rw [mul_comm a, mul_comm b]
-  exact mul_lt_mul_left hc
+-- [Mathlib.Algebra.Order.Ring.Cast, Mathlib.Data.NNRat.Defs, Mathlib.Algebra.Order.Ring.Abs]
+-- **In PR #23177**
+theorem lt_succ_iff_le (x : ℤₘ₀) (m : ℤ) :
+    x < (↑(ofAdd (m + 1)) : ℤₘ₀) ↔ x ≤ (↑(ofAdd m) : ℤₘ₀) := by
+  by_cases hx : x = 0
+  · simpa only [hx, zero_le', iff_true, zero_lt_iff] using WithZero.coe_ne_zero
+  · obtain ⟨γ, rfl⟩ := WithZero.ne_zero_iff_exists.mp hx
+    rw [coe_le_coe, coe_lt_coe, ← toAdd_le, ← toAdd_lt, toAdd_ofAdd, toAdd_ofAdd]
+    exact ⟨Int.le_of_lt_add_one, Int.lt_add_one_of_le⟩
+
+-- theorem one_lt_zpow {α : Type _} [LinearOrderedCommGroupWithZero α] {a : α} (ha : 1 < a) {k : ℤ}
+--     (hk : 0 < k) : 1 < a ^ k := by apply foo α ha hk
+--   -- lift k to ℕ using Int.le_of_lt hk
+--   -- rw [zpow_natCast]
+--   -- exact one_lt_pow' ha (Int.natCast_pos.mp hk).ne'
 
     -- fun h ↦ mul_lt_mul_of_le_of_lt_of_nonneg_of_pos hc (le_refl _) (ne_of_gt hc)⟩
 --[Mathlib.Algebra.Order.GroupWithZero.Canonical]
@@ -89,12 +103,22 @@ theorem mul_lt_mul_right₀ {α : Type*} {a b c : α} [LinearOrderedCommGroupWit
 -- theorem lt_mul_left₀ {α : Type _} {b c : α} [LinearOrderedCommGroupWithZero α] {a : α} (h : b < c)
 --     (ha : a ≠ 0) : a * b < a * c := by simpa only [mul_comm a _] using mul_lt_right₀ a h ha
 
---[Mathlib.Algebra.Order.GroupWithZero.Canonical]
-theorem one_lt_div' {α : Type _} [LinearOrderedCommGroupWithZero α] (a : α) {b : α} (hb : b ≠ 0) :
+-- [Mathlib.Algebra.Order.GroupWithZero.Canonical]
+-- **In PR #23177**
+theorem mul_lt_mul_right₀ {α : Type*} {a b c : α} [LinearOrderedCommGroupWithZero α]
+    (hc : 0 < c) : a * c < b * c ↔ a < b := by
+  rw [mul_comm a, mul_comm b]
+  exact mul_lt_mul_left hc
+
+-- **In PR #23177**
+theorem one_lt_div' {α : Type*} [LinearOrderedCommGroupWithZero α] (a : α) {b : α} (hb : b ≠ 0) :
     1 < a / b ↔ b < a := by
   rw [← mul_lt_mul_right₀ (zero_lt_iff.mpr hb), one_mul, div_eq_mul_inv, inv_mul_cancel_right₀ hb]
 
-theorem strictMonoOn_zpow {n : ℤ} (hn : 0 < n) : StrictMonoOn (fun x : ℤₘ₀ ↦ x ^ n) (Set.Ioi 0) :=
+
+-- **In PR #23177**
+theorem strictMonoOn_zpow {α : Type*} [LinearOrderedCommGroup α] {n : ℤ} (hn : 0 < n) :
+    StrictMonoOn (fun x : (WithZero α) ↦ x ^ n) (Set.Ioi 0) :=
   fun a ha b _ hab ↦ by
     have ha0 : a ≠ 0 := ne_of_gt ha
     have han : a ^ n ≠ 0 := by
@@ -105,36 +129,31 @@ theorem strictMonoOn_zpow {n : ℤ} (hn : 0 < n) : StrictMonoOn (fun x : ℤₘ�
     exact one_lt_zpow ((one_lt_div' _ ha0).mpr hab) hn
 
 
--- [Mathlib.Data.Int.Lemmas, Mathlib.Data.ZMod.Defs, Mathlib.Algebra.Order.Field.Basic,
--- Mathlib.Data.NNRat.Defs, Mathlib.Algebra.Order.BigOperators.Group.Finset, Mathlib.Algebra.Order.Module.Pointwise]
-theorem zpow_left_injOn {n : ℤ} (hn : n ≠ 0) : Set.InjOn (fun _x : ℤₘ₀ ↦ _x ^ n) (Set.Ioi 0) := by
+-- **In PR #23177**
+theorem zpow_left_injOn {α : Type*} [LinearOrderedCommGroup α] {n : ℤ} (hn : n ≠ 0) :
+    Set.InjOn (fun x : (WithZero α) ↦ x ^ n) (Set.Ioi 0) := by
   rcases hn.symm.lt_or_lt with h | h
   · exact (strictMonoOn_zpow h).injOn
   · refine fun a ha b hb (hab : a ^ n = b ^ n) ↦ (strictMonoOn_zpow (neg_pos.mpr h)).injOn ha hb ?_
     simp only [zpow_neg, zpow_neg, hab]
 
-theorem zpow_left_inj {n : ℤ} {a b : ℤₘ₀} (ha : a ≠ 0) (hb : b ≠ 0) (hn : n ≠ 0) :
-    a ^ n = b ^ n ↔ a = b :=
+-- **In PR #23177**
+theorem zpow_left_inj {α : Type*} [LinearOrderedCommGroup α] {n : ℤ} {a b : WithZero α}
+    (ha : a ≠ 0) (hb : b ≠ 0) (hn : n ≠ 0) : a ^ n = b ^ n ↔ a = b :=
   Set.InjOn.eq_iff (zpow_left_injOn hn) (Set.mem_Ioi.mpr (zero_lt_iff.mpr ha))
     (Set.mem_Ioi.mpr (zero_lt_iff.mpr hb))
 
--- [Mathlib.Algebra.Order.Ring.Cast, Mathlib.Data.NNRat.Defs, Mathlib.Algebra.Order.Ring.Abs]
+
+-- **In PR #23177**
 theorem ofAdd_neg_nat (n : ℕ) : (↑(ofAdd (-n : ℤ)) : ℤₘ₀) = ofAdd (-1 : ℤ) ^ n := by
   simp only [ofAdd_neg, coe_inv, inv_pow, coe_pow, inv_inj]
   rw [← @WithZero.coe_pow, WithZero.coe_inj, ← one_mul (n : ℤ), Int.ofAdd_mul, zpow_natCast]
 
+-- **In PR #23177**
 theorem ofAdd_neg_one_lt_one : (↑(Multiplicative.ofAdd (-1 : ℤ)) : ℤₘ₀) < (1 : ℤₘ₀) := by
   rw [← WithZero.coe_one, WithZero.coe_lt_coe, ← ofAdd_zero, ofAdd_lt]
   exact neg_one_lt_zero
 
--- [Mathlib.Algebra.Order.Ring.Cast, Mathlib.Data.NNRat.Defs, Mathlib.Algebra.Order.Ring.Abs]
-theorem lt_succ_iff_le (x : ℤₘ₀) (m : ℤ) :
-    x < (↑(ofAdd (m + 1)) : ℤₘ₀) ↔ x ≤ (↑(ofAdd m) : ℤₘ₀) := by
-  by_cases hx : x = 0
-  · simpa only [hx, zero_le', iff_true, zero_lt_iff] using WithZero.coe_ne_zero
-  · obtain ⟨γ, rfl⟩ := WithZero.ne_zero_iff_exists.mp hx
-    rw [coe_le_coe, coe_lt_coe, ← toAdd_le, ← toAdd_lt, toAdd_ofAdd, toAdd_ofAdd]
-    exact ⟨Int.le_of_lt_add_one, Int.lt_add_one_of_le⟩
 
 end WithZero
 

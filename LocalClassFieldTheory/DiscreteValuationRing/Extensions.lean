@@ -229,10 +229,11 @@ theorem expExtensionOnUnits_dvd [FiniteDimensional K L] :
     ← WithZero.coe_zpow, ← WithZero.coe_pow, WithZero.coe_inj, ← zpow_natCast, ← zpow_mul,
     ← zpow_natCast, ofAdd_pow_comm, ofAdd_pow_comm (-1)] at hn
   simp only [zpow_neg, zpow_one, inv_inj] at hn
-  replace hn := ofAdd_inj hn
+  replace hn : (n * ↑(expExtensionOnUnits K L)) =
+    ↑(finrank K L / (minpoly K ((algebraMap K L) ↑π)).natDegree) := hn
   have hn0 : 0 ≤ n := by
     refine nonneg_of_mul_nonneg_left ?_ (Nat.cast_pos.mpr (expExtensionOnUnits_pos K L))
-    rw [hn]
+    simp_rw [hn]
     exact Nat.cast_nonneg _
   rw [Int.natCast_div, eq_comm, Int.ediv_eq_iff_eq_mul_right hne_zero h_dvd] at hn
   use(minpoly K ((algebraMap K L) ↑π)).natDegree * n.toNat
