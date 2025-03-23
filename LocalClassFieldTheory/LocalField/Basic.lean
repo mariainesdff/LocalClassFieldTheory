@@ -49,6 +49,59 @@ attribute [instance] LocalField.complete LocalField.isDiscrete LocalField.finite
 --     Finite (LocalRing.ResidueField (@Valued.v K _ ℤₘ₀ _ _).valuationSubring) :=
 --   LocalField.finiteResidueField
 
+/-instance of_intermediateField [NumberField K] [NumberField L] [Algebra K L]
+    (E : IntermediateField K L) : NumberField E :=
+  of_module_finite K E-/
+variable (K : Type*) [Field K] [Valued K ℤₘ₀] (E : Subfield K)
+
+-- example : True := by
+  -- have : AddSubgroup K := E.toAddSubgroup
+  -- have : UniformAddGroup E := E.toAddSubgroup.uniformAddGroup
+
+#synth TopologicalSpace E
+
+instance : Valued E ℤₘ₀ where
+  __ := E.toAddSubgroup.uniformAddGroup
+  v := Valuation.comap (algebraMap E K) Valued.v
+  is_topological_valuation := by
+    intro S
+    constructor
+    · intro hS
+      obtain ⟨U, hU_nhds, hU_map⟩ := (mem_nhds_induced (algebraMap E K) 0 S).mp hS
+      simp at hU_nhds
+      obtain ⟨γ, hγ⟩ := (Valued.is_topological_valuation U).mp hU_nhds
+      use γ
+      simp only [comap_apply]
+      intro x hx
+      simp at hx
+      have : (algebraMap (↥E) K) x ∈ U := hγ hx
+      apply hU_map
+      simpa
+    · rintro ⟨γ, hγ⟩
+      simp only [comap_apply] at hγ
+      rw [mem_nhds_induced]
+      simp only [ZeroMemClass.coe_zero]
+      use {x | Valued.v x < γ}
+      constructor
+      · apply (Valued.is_topological_valuation _).mpr
+        use γ
+      · simp
+        aesop
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 namespace EqCharLocalField
 
 open FpXCompletion
@@ -78,7 +131,7 @@ open Padic
 
 variable (p : outParam ℕ) [Fact (Nat.Prime p)]
 
-variable (K : Type _) [Field K] [MixedCharLocalField p K]
+variable (K : Type*) [Field K] [MixedCharLocalField p K]
 
 instance : Algebra.IsSeparable (Padic'.Q_p p) K :=
   Algebra.IsSeparable.of_integral (Padic'.Q_p p) K
