@@ -60,33 +60,22 @@ variable (K : Type*) [Field K] [Valued K ℤₘ₀] (E : Subfield K)
 
 #synth TopologicalSpace E
 
-instance : Valued E ℤₘ₀ where
+instance foo : Valued E ℤₘ₀ where
   __ := E.toAddSubgroup.uniformAddGroup
   v := Valuation.comap (algebraMap E K) Valued.v
   is_topological_valuation := by
-    intro S
-    constructor
-    · intro hS
-      obtain ⟨U, hU_nhds, hU_map⟩ := (mem_nhds_induced (algebraMap E K) 0 S).mp hS
-      simp at hU_nhds
-      obtain ⟨γ, hγ⟩ := (Valued.is_topological_valuation U).mp hU_nhds
-      use γ
-      simp only [comap_apply]
-      intro x hx
-      simp at hx
-      have : (algebraMap (↥E) K) x ∈ U := hγ hx
-      apply hU_map
-      simpa
-    · rintro ⟨γ, hγ⟩
-      simp only [comap_apply] at hγ
-      rw [mem_nhds_induced]
-      simp only [ZeroMemClass.coe_zero]
-      use {x | Valued.v x < γ}
-      constructor
-      · apply (Valued.is_topological_valuation _).mpr
-        use γ
-      · simp
-        aesop
+    refine fun S ↦ ⟨fun hS ↦ ?_, ?_⟩
+    · obtain ⟨_, hU_nhds, hU_map⟩ := (mem_nhds_induced (algebraMap E K) _ _).mp hS
+      obtain ⟨γ, hγ⟩ := (Valued.is_topological_valuation _).mp hU_nhds
+      refine ⟨γ, fun _ hx ↦ hU_map (by simp [Set.mem_preimage, hγ hx])⟩
+    · rw [mem_nhds_induced]
+      exact fun ⟨γ, _⟩ ↦ ⟨_, (Valued.is_topological_valuation _).mpr ⟨γ, (by rfl)⟩,
+        by simpa only [Set.preimage_setOf_eq]⟩
+
+instance : LocalField E where
+  complete := sorry
+  isDiscrete := sorry
+  finiteResidueField := sorry
 
 
 
