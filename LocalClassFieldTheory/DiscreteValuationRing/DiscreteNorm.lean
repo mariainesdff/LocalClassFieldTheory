@@ -79,7 +79,7 @@ def nontriviallyDiscretelyNormedField : NontriviallyNormedField K :=
       obtain ⟨x, hx⟩ := exists_isUniformizer_of_isDiscrete hv.v
       use x.1⁻¹
       erw [@norm_inv K (@NormedField.toNormedDivisionRing K (discretelyNormedField K)),
-        one_lt_inv_iff₀, RankOneValuation.norm_lt_one_iff_val_lt_one,
+        one_lt_inv_iff₀, Valued.toNormedField.norm_lt_one_iff,
         RankOneValuation.norm_pos_iff_val_pos]
       exact ⟨isUniformizer_val_pos hv.v hx, isUniformizer_val_lt_one hv.v hx⟩ }
 
@@ -101,9 +101,9 @@ def discretelySemiNormedRing : SeminormedRing K := by
 theorem norm_isNonarchimedean : IsNonarchimedean (@norm K (hasDiscreteNorm K)) := fun x y ↦
   Valued.norm_add_le x y
 
-theorem norm_le_one_iff_val_le_one (x : K) :
-    (@norm K (hasDiscreteNorm K)) x ≤ 1 ↔ Valued.v x ≤ (1 : ℤₘ₀) :=
-  RankOneValuation.norm_le_one_iff_val_le_one x
+-- theorem norm_le_one_iff_val_le_one (x : K) :
+--     (@norm K (hasDiscreteNorm K)) x ≤ 1 ↔ Valued.v x ≤ (1 : ℤₘ₀) :=
+--   Valued.toNormedField.norm_le_one_iff
 
 variable [CompleteSpace K] {L : Type _} [Field L] [Algebra K L] [h_alg : Algebra.IsAlgebraic K L]
 
@@ -171,7 +171,7 @@ theorem le_one_iff_integral_minpoly (x : L) :
     rfl
   rw [discreteNormExtension, h, spectralNorm,
     spectralValue_le_one_iff (minpoly.monic (Algebra.IsAlgebraic.isAlgebraic x).isIntegral)]
-  simp_rw [norm_le_one_iff_val_le_one]
+  simp_rw [Valued.toNormedField.norm_le_one_iff]
 
 theorem of_integer [fr : IsFractionRing hv.v.valuationSubring.toSubring K]
     (x : integralClosure hv.v.valuationSubring.toSubring L) :
@@ -204,7 +204,7 @@ theorem le_one_of_integer [fr : IsFractionRing hv.v.valuationSubring.toSubring K
       rw [Polynomial.coeff_map]; rfl
     rw [coeff_coe n]
     apply Real.rpow_le_one (norm_nonneg _)
-    rw [norm_le_one_iff_val_le_one K]
+    rw [Valued.toNormedField.norm_le_one_iff]
     exact (min_int.coeff n).property
     · simp only [one_div, inv_nonneg, sub_nonneg, Nat.cast_le]
       exact le_of_lt hn

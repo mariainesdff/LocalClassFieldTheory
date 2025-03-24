@@ -439,7 +439,7 @@ theorem mem_unit_ball_of_tendsto_zero {x : Q_p p} (H : Tendsto (fun n : ℕ ↦ 
     rw [← NNReal.tendsto_coe, NNReal.coe_zero]
     exact H
   replace this : Valued.v x < (1 : ℤₘ₀) := by
-    apply (RankOneValuation.norm_lt_one_iff_val_lt_one x).mp this
+    apply (Valued.toNormedField.norm_lt_one_iff).mp this
   obtain ⟨y, hy₁, hy₂⟩ := exists_mem_lt_one_of_lt_one p this
   rw [← hy₂] at this
   rw [← hy₁]
@@ -472,7 +472,7 @@ theorem UnitBall.nonunit_mem_iff_top_nilpotent (x : Q_p p) :
     replace this : Valued.v x < (1 : ℤₘ₀) := by
       apply (Completion.adic_of_compl_eq_compl_of_adic ℤ (Int.pHeightOneIdeal p) ℚ x).symm ▸ this
     exact tendsto_pow_atTop_nhds_zero_of_lt_one (norm_nonneg _)
-      ((RankOneValuation.norm_lt_one_iff_val_lt_one _).mpr this)
+      ((Valued.toNormedField.norm_lt_one_iff).mpr this)
   · exact mem_unit_ball_of_tendsto_zero p H
 
 theorem mem_nonunits_iff (x : Q_p p) :

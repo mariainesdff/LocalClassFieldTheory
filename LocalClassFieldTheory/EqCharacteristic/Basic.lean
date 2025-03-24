@@ -114,7 +114,7 @@ instance : NormedField (FpXCompletion p) :=
   Valued.toNormedField (FpXCompletion p) ℤₘ₀
 
 theorem mem_FpX_int_completion' {x : FpXCompletion p} : x ∈ FpXIntCompletion p ↔ ‖x‖ ≤ 1 := by
-  erw [FpXCompletion.mem_FpXIntCompletion, norm_le_one_iff_val_le_one]
+  rw [FpXCompletion.mem_FpXIntCompletion, Valued.toNormedField.norm_le_one_iff]
 
 variable (p)
 
@@ -249,7 +249,7 @@ instance : NontriviallyNormedField (FpXCompletion p) :=
       exact norm_X_lt_one }
 
 theorem X_mem_int_completion : X p ∈ FpXIntCompletion p := by
-  rw [mem_FpXIntCompletion, ← norm_le_one_iff_val_le_one]
+  rw [mem_FpXIntCompletion, ← Valued.toNormedField.norm_le_one_iff]
   exact le_of_lt norm_X_lt_one
 
 theorem norm_isNonarchimedean : IsNonarchimedean (norm : FpXCompletion p → ℝ) :=
@@ -298,7 +298,9 @@ theorem norm_lt_one_of_dvd {F : FpXIntCompletion p} :
   obtain ⟨G, h_fG⟩ := exists_powerSeries_of_memIntegers 𝔽_[p] f_mem
   rintro ⟨⟨y, y_mem⟩, h⟩
   simp only [ValuationSubring.algebraMap_apply]
-  erw [← h_fG, valuation_compare 𝔽_[p], ← WithZero.coe_one, ← ofAdd_zero, ← neg_zero, neg_zero, ←
+  rw [← h_fG]
+  erw [valuation_compare 𝔽_[p]] -- try to ***fix this***!
+  rw [← WithZero.coe_one, ← ofAdd_zero, ← neg_zero, neg_zero, ←
     neg_add_cancel (1 : ℤ), WithZero.lt_succ_iff_le, ← Int.ofNat_one,
     LaurentSeries.intValuation_le_iff_coeff_lt_eq_zero]
   intro n hn
@@ -322,7 +324,7 @@ theorem norm_lt_one_iff_dvd (F : FpXIntCompletion p) :
     ‖(F : FpXCompletion p)‖ < 1 ↔ FpXIntCompletion.X p ∣ F := by
   have H : ‖(F : FpXCompletion p)‖ = Valued.norm (F : FpXCompletion p) := rfl
   suffices Valued.v (F : FpXCompletion p) < (1 : ℤₘ₀) ↔ FpXIntCompletion.X p ∣ F by
-    rwa [H, RankOneValuation.norm_lt_one_iff_val_lt_one]
+    erw [H, Valued.toNormedField.norm_lt_one_iff, this]
   exact ⟨dvd_of_norm_lt_one p, norm_lt_one_of_dvd p⟩
 
 end FpXIntCompletion
