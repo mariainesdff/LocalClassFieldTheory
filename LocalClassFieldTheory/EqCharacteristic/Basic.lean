@@ -252,8 +252,8 @@ theorem X_mem_int_completion : X p ∈ FpXIntCompletion p := by
   rw [mem_FpXIntCompletion, ← Valued.toNormedField.norm_le_one_iff]
   exact le_of_lt norm_X_lt_one
 
-theorem norm_isNonarchimedean : IsNonarchimedean (norm : FpXCompletion p → ℝ) :=
-  Valued.norm_isNonarchimedean _ _
+-- theorem norm_isNonarchimedean : IsNonarchimedean (norm : FpXCompletion p → ℝ) :=
+--   Valued.norm_isNonarchimedean _ _
 
 end FpXCompletion
 
