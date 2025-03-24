@@ -58,7 +58,7 @@ theorem spectralValue_le_one_iff {P : S[X]} (hP : Monic P) :
           · rw [Monic, leadingCoeff, heq] at hP
             rw [hP, norm_one] at hn
             linarith
-      lt_csupr_of_lt (spectralValueTerms_bddAbove P) n hn'
+      lt_ciSup_of_lt (spectralValueTerms_bddAbove P) n hn'
     linarith
   · apply ciSup_le
     intro n
@@ -107,7 +107,7 @@ theorem IsScalarTower.isAlgebraic {F : Type _} [Field F] [Algebra F L] (x : L) {
     [Field E] [Algebra F E] [Algebra L E] [IsScalarTower F L E] [Algebra.IsAlgebraic F L]
     [IsSplittingField L E (mapAlg F L (minpoly F x))] : Algebra.IsAlgebraic F E := by
   let _ : FiniteDimensional L E := IsSplittingField.finiteDimensional _ (mapAlg F L (minpoly F x))
-  sorry --exact @Algebra.IsAlgebraic.trans _ _ _ _ _ _ _ _ _ _ _ (Algebra.IsAlgebraic.of_finite L E)
+  exact Algebra.IsAlgebraic.trans F L E
 
 /-- Given an algebraic tower of fields `E/L/K` and an element `x : L` whose minimal polynomial `f`
   over `K` splits into linear factors over `E`, the `degree(f)`th power of the spectral norm of `x`

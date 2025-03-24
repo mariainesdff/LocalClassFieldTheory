@@ -34,15 +34,16 @@ import LocalClassFieldTheory.EqCharacteristic.Valuation
 import LocalClassFieldTheory.ForMathlib.RankOneValuation -- Final lemma in PR #13064
 import LocalClassFieldTheory.ForMathlib.WithZero -- Partly in PR #15741
 -- FromMathlib folder *complete*
-import LocalClassFieldTheory.FromMathlib.AlgNormOfGalois
+import LocalClassFieldTheory.FromMathlib.AlgNormOfGalois -- In PR #23178 and PR #23184
 import LocalClassFieldTheory.FromMathlib.CpDef
 -- import LocalClassFieldTheory.FromMathlib.Filter -- In PR #12430
--- TODO: uncomment
+import LocalClassFieldTheory.FromMathlib.IntermediateField -- In PR #23251
 import LocalClassFieldTheory.FromMathlib.Limsup -- Mostly in PR #18172
 --import LocalClassFieldTheory.FromMathlib.Minpoly -- In PR #12450
 import LocalClassFieldTheory.FromMathlib.NormalClosure
-import LocalClassFieldTheory.FromMathlib.NormedSpace
+--import LocalClassFieldTheory.FromMathlib.NormedSpace -- -- In PR #22081
 --import LocalClassFieldTheory.FromMathlib.NormedValued -- In PR #12432
+import LocalClassFieldTheory.FromMathlib.Polynomial -- In PR #23252
 --import LocalClassFieldTheory.FromMathlib.PowMultFaithful -- In PR #15445
 -- import LocalClassFieldTheory.FromMathlib.RankOneValuation -- PRs #12156 and #12159
 import LocalClassFieldTheory.FromMathlib.RingSeminorm -- Partly in PR #15445
@@ -53,7 +54,7 @@ import LocalClassFieldTheory.FromMathlib.SpecificLimits
 import LocalClassFieldTheory.FromMathlib.SpectralNormUnique
 -- LocalFields folder
 import LocalClassFieldTheory.LocalField.Basic
-import LocalClassFieldTheory.LocalField.Unramified -- It has sorrys
+--import LocalClassFieldTheory.LocalField.Unramified -- TODO: uncomment
 -- MixedCharacteristic folder *complete*
 import LocalClassFieldTheory.MixedCharacteristic.Basic
 import LocalClassFieldTheory.MixedCharacteristic.Valuation

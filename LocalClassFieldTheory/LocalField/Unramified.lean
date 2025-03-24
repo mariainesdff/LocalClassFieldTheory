@@ -9,26 +9,49 @@ import LocalClassFieldTheory.LocalField.Basic
 import Mathlib.Algebra.Algebra.Equiv
 
 open BigOperators DiscreteValuation Extension Multiplicative Valued Valuation
+
+noncomputable section
 namespace LocalField
 
-variable (K : Type*) [Field K] [LocalField K]
-  (L : Type*) [Field L] [LocalField L] [Algebra K L] -- use FiniteDimensional K L
+variable (K : Type*) [hK : Field K] [hv : LocalField K]
+  (L : Type*) [hL : Field L] [halg : Algebra K L] [hfin : FiniteDimensional K L]  /- [LocalField L] -/
 
-local notation "v" => (@Valued.v K _ ℤₘ₀ _ _)
+local notation "vK" => (@Valued.v K _ ℤₘ₀ _ _)
 local notation "K₀" => Valuation.valuationSubring v
-local notation "w" => (@Valued.v L _ ℤₘ₀ _ _)
+
+
+instance : Valued K ℤₘ₀ := inferInstance
+instance : CompleteSpace K := inferInstance
+
+#check FiniteDimensional.complete
+
+def valued_L : Valued L ℤₘ₀ := DiscreteValuation.Extension.valued K L
+
+set_option quotPrecheck false
+local notation "w" => (valued_L K L).v
 local notation "L₀" => Valuation.valuationSubring w
 
-instance : FiniteDimensional K L := by
-  sorry
+def uniformSpace_L : UniformSpace L := by
+  apply @Valued.toUniformSpace L _ ℤₘ₀ _ (valued_L K L)
 
-lemma foo : L₀ = (extendedValuation K L).valuationSubring := by
-  ext x
-  simp only [mem_valuationSubring_iff]
-  rw [Extension.apply]
-  split_ifs with h
-  · simp only [h, _root_.map_zero, zero_le']
-  · sorry
+/-
+cannot find synthesization order for instance localField_L with type
+  (K : Type u_1) →
+    [hK : Field K] →
+      [hv : LocalField K] →
+        (L : Type u_2) → [hL : Field L] → [halg : Algebra K L] → [hfin : FiniteDimensional K L] → LocalField L
+all remaining arguments have metavariables:
+  Field ?K
+  @LocalField ?K ?hK
+  @Algebra ?K L Semifield.toCommSemiring DivisionSemiring.toSemiring
+  @FiniteDimensional ?K L NormedDivisionRing.toDivisionRing Ring.toAddCommGroup Algebra.toModule-/
+def localField_L : LocalField L :=
+  letI : Valued L ℤₘ₀ := valued_L K L
+  { complete := DiscreteValuation.Extension.completeSpace K L
+    isDiscrete := DiscreteValuation.Extension.isDiscrete_of_finite K L
+    finiteResidueField := sorry }
+
+lemma foo : (valued_L K L).v.valuationSubring = (extendedValuation K L).valuationSubring := rfl
 
 -- Why is the proof below taken from `DVR.Extensions` broken?
 -- MI: It is because the `L₀` in `DVR.Extensions` is defined as
