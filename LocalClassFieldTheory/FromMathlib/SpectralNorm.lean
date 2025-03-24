@@ -6,8 +6,11 @@ Authors: María Inés de Frutos-Fernández
 import Mathlib.RingTheory.Polynomial.Vieta
 import Mathlib.FieldTheory.Minpoly.Basic
 import Mathlib.RingTheory.Algebraic.Basic
-import LocalClassFieldTheory.FromMathlib.NormalClosure
 import LocalClassFieldTheory.FromMathlib.AlgNormOfGalois
+import LocalClassFieldTheory.FromMathlib.IntermediateField
+import LocalClassFieldTheory.FromMathlib.NormalClosure
+import LocalClassFieldTheory.FromMathlib.Polynomial
+import LocalClassFieldTheory.FromMathlib.RingSeminorm
 
 /-!
 # The spectral norm and the norm extension theorem
@@ -23,21 +26,21 @@ As a prerequisite, we formalize the proof of [BGR, Proposition 3.1.2/1].
 
 ## Main Definitions
 
-* `spectral_value` : the spectral value of a polynomial in `R[X]`.
-* `spectral_norm` :The spectral norm `|y|_sp` is the spectral value of the minimal of `y` over `K`.
-* `spectral_alg_norm` : the spectral norm is a `K`-algebra norm on `L`.
+* `spectralValue` : the spectral value of a polynomial in `R[X]`.
+* `spectralNorm` :The spectral norm `|y|_sp` is the spectral value of the minimal of `y` over `K`.
+* `spectralAlgNorm` : the spectral norm is a `K`-algebra norm on `L`.
 
 ## Main Results
 
-* `spectral_norm_ge_norm` : if `f` is a power-multiplicative `K`-algebra norm on `L` with `f 1 ≤ 1`,
-  then `f` is bounded above by `spectral_norm K L`.
-* `spectral_norm_aut_isom` : the `K`-algebra automorphisms of `L` are isometries with respect to
+* `spectralNorm_ge_norm` : if `f` is a power-multiplicative `K`-algebra norm on `L` with `f 1 ≤ 1`,
+  then `f` is bounded above by `spectralNorm K L`.
+* `spectralNorm_aut_isom` : the `K`-algebra automorphisms of `L` are isometries with respect to
   the spectral norm.
-* `spectral_norm_max_of_fd_normal` : iff `L/K` is finite and normal, then
-  `spectral_norm K L x = supr (λ (σ : L ≃ₐ[K] L), f (σ x))`.
-* `spectral_norm_is_pow_mul` : the spectral norm is power-multiplicative.
-* `spectral_norm_is_nonarchimedean` : the spectral norm is nonarchimedean.
-* `spectral_norm_extends` : the spectral norm extends the norm on `K`.
+* `spectralNorm_max_of_fd_normal` : iff `L/K` is finite and normal, then
+  `spectralNorm K L x = supr (λ (σ : L ≃ₐ[K] L), f (σ x))`.
+* `spectralNorm_is_pow_mul` : the spectral norm is power-multiplicative.
+* `spectralNorm_is_nonarchimedean` : the spectral norm is nonarchimedean.
+* `spectralNorm_extends` : the spectral norm extends the norm on `K`.
 
 ## References
 * [S. Bosch, U. Güntzer, R. Remmert, *Non-Archimedean Analysis*][bosch-guntzer-remmert]
@@ -46,6 +49,8 @@ As a prerequisite, we formalize the proof of [BGR, Proposition 3.1.2/1].
 
 spectral, spectral norm, spectral value, seminorm, norm, nonarchimedean
 -/
+
+-- This file is PR in #23204, #23253, #23254
 
 open Polynomial Multiset
 
@@ -61,87 +66,36 @@ section AuxLemmas
 
 namespace List
 
-variable {α : Type _} [LinearOrder α]
+variable {α : Type*} [LinearOrder α]
 
-theorem max_replicate {n : ℕ} (a : α) : foldr max a (replicate n a) = a := by
-  induction' n with n hn
-  · simp only [List.replicate,  List.foldr_nil]
-  · simp only [foldr, replicate , foldr_cons, max_eq_left_iff]
-    exact le_of_eq hn
+-- Mathlib.Order.Lattice. Try Mathlib.Data.List.MinMax?
+-- Unused
+/- theorem max_replicate {n : ℕ} (a : α) : foldr max a (replicate n a) = a := by
+  induction n with
+  | zero => simp only [List.replicate,  List.foldr_nil]
+  | succ n hn =>
+    simp only [foldr, replicate , foldr_cons, max_eq_left_iff]
+    exact le_of_eq hn -/
 
-theorem le_max_of_exists_le {l : List α} {a x : α} (b : α) (hx : x ∈ l) (h : a ≤ x) :
+-- In PR #23204
+-- Mathlib.Order.MinMax. Try Mathlib.Data.List.MinMax?
+theorem le_max_of_le' {l : List α} {a x : α} (b : α) (hx : x ∈ l) (h : a ≤ x) :
     a ≤ l.foldr max b := by
-  induction' l with y l IH
-  · exact absurd hx (List.not_mem_nil _)
-  · simp only [List.foldr, List.foldr_cons]
+  induction l with
+  | nil => exact absurd hx (List.not_mem_nil _)
+  | cons y l IH =>
+    simp only [List.foldr, List.foldr_cons]
     obtain rfl | hl := mem_cons.mp hx
     · exact le_max_of_le_left h
     · exact le_max_of_le_right (IH hl)
 
 end List
 
-namespace Polynomial
-
-variable {K : Type _} [NormedField K] {L : Type _} [Field L] [Algebra K L]
-
-theorem natDegree_pos_of_monic_of_root {p : K[X]} (hp : p.Monic) {x : L} (hx : aeval x p = 0) :
-    0 < p.natDegree :=
-  natDegree_pos_of_aeval_root (ne_zero_of_ne_zero_of_monic one_ne_zero hp) hx
-    ((injective_iff_map_eq_zero (algebraMap K L)).mp (algebraMap K L).injective)
-
-theorem monic_of_prod (p : K[X]) {n : ℕ} (b : Fin n → L)
-    (hp : mapAlg K L p = finprod fun k : Fin n ↦ X - C (b k)) : p.Monic := by
-  have hprod : (finprod fun k : Fin n ↦ X - C (b k)).Monic := by
-    rw [finprod_eq_prod_of_fintype]
-    exact monic_prod_of_monic _ _ fun m _ ↦ monic_X_sub_C (b m)
-  rw [← hp, mapAlg_eq_map] at hprod
-  exact monic_of_injective (algebraMap K L).injective hprod
-
-theorem monic_of_prod' (p : K[X]) (s : Multiset L)
-    (hp : mapAlg K L p = (Multiset.map (fun a : L ↦ X - C a) s).prod) : p.Monic := by
-  have hprod : (Multiset.map (fun a : L ↦ X - C a) s).prod.Monic :=
-    monic_multiset_prod_of_monic _ _ fun m _ ↦ monic_X_sub_C m
-  rw [← hp, mapAlg_eq_map] at hprod
-  exact monic_of_injective (algebraMap K L).injective hprod
-
-theorem c_finset_add {α : Type _} (s : Finset α) {K : Type _} [Semiring K] (b : α → K) :
-    (s.sum fun x : α ↦ C (b x)) = C (s.sum b) := by
-  classical
-  refine s.induction_on ?_ ?_
-  · simp only [Finset.sum_empty, _root_.map_zero]
-  · intro a s ha hs
-    rw [Finset.sum_insert ha, Finset.sum_insert ha, hs, C_add]
-
-theorem c_finset_prod {α : Type _} (s : Finset α) {K : Type _} [CommRing K] (b : α → K) :
-    (s.prod fun x : α ↦ C (b x)) = C (s.prod b) := by
-  classical
-  refine s.induction_on ?_ ?_
-  · simp only [Finset.prod_empty, map_one]
-  · intro a s ha hs
-    rw [Finset.prod_insert ha, Finset.prod_insert ha, hs, C_mul]
-
-theorem prod_x_add_c_natDegree {L : Type _} [Field L] {n : ℕ} (b : Fin n → L) :
-    (Finset.univ.prod fun i : Fin n ↦ X - C (b i)).natDegree = n := by
-  rw [natDegree_prod _ _ fun m _ ↦ X_sub_C_ne_zero (b m)]
-  simp only [natDegree_X_sub_C, Finset.sum_const, Finset.card_fin, Algebra.id.smul_eq_mul, mul_one]
-
-theorem aeval_root (s : Multiset L) {x : L} (hx : x ∈ s) {p : K[X]}
-    (hp : mapAlg K L p = (Multiset.map (fun a : L ↦ X - C a) s).prod) : aeval x p = 0 := by
-  have : aeval x (mapAlg K L p) = aeval x p := by rw [mapAlg_eq_map, aeval_map_algebraMap]
-  rw [← this, hp, coe_aeval_eq_eval]
-  have hy : X - C x ∣ (Multiset.map (fun a : L ↦ X - C a) s).prod := by
-    apply Multiset.dvd_prod
-    simp only [Multiset.mem_map, sub_right_inj, C_inj, exists_eq_right]
-    exact hx
-  rw [eval_eq_zero_of_dvd_of_eval_eq_zero hy]
-  simp only [eval_sub, eval_X, eval_C, sub_self]
-
-end Polynomial
-
-namespace Real
-
-theorem multiset_prod_le_pow_card {K L : Type _} [SeminormedCommRing K] [Ring L] [Algebra K L]
-    {t : Multiset L} {f : AlgebraNorm K L} {y : L} (hf : ∀ x : ℝ, x ∈ Multiset.map f t → x ≤ f y) :
+-- In PR #23254
+-- [Mathlib.Data.NNReal.Basic]
+theorem multiset_prod_le_pow_card {F L : Type*} [AddCommGroup L] [FunLike F L ℝ]
+    [AddGroupSeminormClass F L ℝ] {f : F} {y : L} {t : Multiset L}
+    (hf : ∀ x : ℝ, x ∈ Multiset.map f t → x ≤ f y) :
     (Multiset.map f t).prod ≤ f y ^ card (map f t) := by
   set g : L → NNReal := fun x : L ↦ ⟨f x, apply_nonneg _ _⟩
   have hg_le : (Multiset.map g t).prod ≤ g y ^ card (map g t) := by
@@ -152,34 +106,45 @@ theorem multiset_prod_le_pow_card {K L : Type _} [SeminormedCommRing K] [Ring L]
     exact hf (x : ℝ) (mem_map.mpr ⟨a, hat, hag⟩)
   rw [← NNReal.coe_le_coe] at hg_le
   convert hg_le
-  · simp only [NNReal.coe_multiset_prod, Multiset.map_map, Function.comp_apply, NNReal.coe_mk]
-    rfl
-  · simp only [card_map]; rfl
+  · simp [NNReal.coe_multiset_prod, Multiset.map_map, Function.comp_apply, NNReal.coe_mk, g]
+  · simp [card_map, g]
 
-theorem multiset_le_prod_of_submultiplicative {α : Type _} [CommMonoid α] {f : α → ℝ}
+/--[Mathlib.Topology.Instances.Sign, Mathlib.Data.Nat.Factorization.Basic,
+Mathlib.Algebra.Star.Subalgebra, Mathlib.Algebra.BigOperators.Expect,
+Mathlib.Data.Matrix.ConjTranspose, Mathlib.Data.Nat.Choose.Sum, Mathlib.Algebra.GeomSum,
+Mathlib.Topology.EMetricSpace.Basic, Mathlib.GroupTheory.Perm.Cycle.Type,
+Mathlib.Algebra.Order.ToIntervalMod, Mathlib.Analysis.Convex.Function,
+Mathlib.Algebra.Field.Periodic, Mathlib.Algebra.CharP.Algebra,
+ Mathlib.Topology.Algebra.Group.Basic, Mathlib.RingTheory.TensorProduct.Basic,
+ Mathlib.Algebra.Field.NegOnePow, Mathlib.Data.Real.EReal] -/
+theorem map_multiset_prod_le_of_submultiplicative {α β : Type*} [CommMonoid α] [LinearOrderedCommSemiring β] {f : α → β}
     (h_nonneg : ∀ a, 0 ≤ f a) (h_one : f 1 = 1) (h_mul : ∀ a b, f (a * b) ≤ f a * f b)
     (s : Multiset α) : f s.prod ≤ (s.map f).prod := by
-  set g : α → NNReal := fun x : α ↦ ⟨f x, h_nonneg _⟩
+  set g : α → {b : β // 0 ≤ b} := fun x : α ↦ ⟨f x, h_nonneg _⟩
   have hg_le : g s.prod ≤ (s.map g).prod := by
     apply Multiset.le_prod_of_submultiplicative
-    · ext; rw [NNReal.coe_mk, NNReal.coe_one, h_one]
+    · ext
+      simp [g, Nonneg.coe_one, h_one]
     · intro a b
-      simp only [← NNReal.coe_le_coe, Subtype.coe_mk, Nonneg.mk_mul_mk]
+      rw [← Subtype.coe_le_coe, Nonneg.mk_mul_mk]
       exact h_mul _ _
-  rw [← NNReal.coe_le_coe] at hg_le
+  rw [← Subtype.coe_le_coe] at hg_le
   convert hg_le
-  simp only [NNReal.coe_multiset_prod, Multiset.map_map, Function.comp_apply, NNReal.coe_mk]
-  rfl
-
-end Real
+  apply Multiset.induction_on s (p := fun s ↦ (Multiset.map f s).prod = ↑(Multiset.map g s).prod)
+  · simp [Multiset.map_zero, prod_zero, Nonneg.coe_one, g]
+  · intro a s hs
+    simp only [map_cons, prod_cons, Nonneg.coe_mul, g, hs]
 
 namespace Multiset
 
 section Decidable
 
-variable {α : Type _} [DecidableEq α]
+variable {α : Type*} [DecidableEq α]
 
-theorem max (f : α → ℝ) {s : Multiset α} (hs : s.toFinset.Nonempty) :
+/- [Mathlib.Topology.EMetricSpace.Defs, Mathlib.Topology.Algebra.Order.LiminfLimsup,
+Mathlib.Data.NNReal.Basic, Mathlib.Data.Complex.BigOperators,
+Mathlib.Data.Complex.Module, Mathlib.Topology.Order.Real]-/
+theorem exists_max (f : α → ℝ) {s : Multiset α} (hs : s.toFinset.Nonempty) :
     ∃ y : α, y ∈ s ∧ ∀ z : α, z ∈ s → f z ≤ f y := by
   have hsf : (map f s).toFinset.Nonempty := by
     obtain ⟨x, hx⟩ := hs.exists_mem
@@ -192,109 +157,119 @@ theorem max (f : α → ℝ) {s : Multiset α} (hs : s.toFinset.Nonempty) :
   rw [hymax]
   exact Finset.le_max' _ _ (mem_toFinset.mpr (mem_map.mpr ⟨z, hz, rfl⟩))
 
+-- try import Mathlib.Data.Multiset.ZeroCons
+/- [Mathlib.Topology.EMetricSpace.Defs, Mathlib.Topology.Algebra.Order.LiminfLimsup,
+Mathlib.Data.NNReal.Basic, Mathlib.Data.Complex.BigOperators,
+Mathlib.Data.Complex.Module, Mathlib.Topology.Order.Real]-/
 theorem card_toFinset_pos {m : Multiset α} (hm : 0 < card m) : 0 < m.toFinset.card := by
   obtain ⟨x, hx⟩ := card_pos_iff_exists_mem.mp hm
   exact Finset.card_pos.mpr ⟨x, mem_toFinset.mpr hx⟩
 
 end Decidable
 
---@[to_additive existing le_sum_of_subadditive_on_pred]
-theorem le_prod_of_submultiplicative_on_pred' {α β : Type _} [CommMonoid α] [OrderedCommRing β]
-    (f : α → β) (p : α → Prop) (h_nonneg : ∀ a, 0 ≤ f a) (h_one : f 1 = 1) (hp_one : p 1)
+@[to_additive existing le_sum_of_subadditive_on_pred]
+theorem le_prod_of_submultiplicative_on_pred_of_nonneg {α β : Type*} [CommMonoid α]
+    [OrderedCommRing β] (f : α → β) (p : α → Prop) (h_nonneg : ∀ a, 0 ≤ f a) (h_one : f 1 = 1)
+    (hp_one : p 1)
     (h_mul : ∀ a b, p a → p b → f (a * b) ≤ f a * f b) (hp_mul : ∀ a b, p a → p b → p (a * b))
     (s : Multiset α) (hps : ∀ a, a ∈ s → p a) : f s.prod ≤ (s.map f).prod := by
   revert s
-  refine Multiset.induction ?_ ?_
-  · simp [le_of_eq h_one]
+  refine Multiset.induction (by simp [le_of_eq h_one]) ?_
   intro a s hs hpsa
   have hps : ∀ x, x ∈ s → p x := fun x hx ↦ hpsa x (mem_cons_of_mem hx)
   have hp_prod : p s.prod := prod_induction p s hp_mul hp_one hps
   rw [prod_cons, map_cons, prod_cons]
-  refine (h_mul a s.prod (hpsa a (mem_cons_self a s)) hp_prod).trans ?_
-  exact mul_le_mul_of_nonneg_left (hs hps) (h_nonneg _)
+  exact (h_mul a s.prod (hpsa a (mem_cons_self a s)) hp_prod).trans
+    (mul_le_mul_of_nonneg_left (hs hps) (h_nonneg _))
 
---@[to_additive existing le_sum_of_subadditive]
-theorem le_prod_of_submultiplicative' {α β : Type _} [CommMonoid α] [OrderedCommRing β] (f : α → β)
+-- Try Mathlib.Algebra.Order.BigOperators.Group.Multiset or ring version
+theorem le_prod_of_submultiplicative_of_nonneg {α β : Type*} [CommMonoid α] [OrderedCommRing β]
+    (f : α → β)
     (h_nonneg : ∀ a, 0 ≤ f a) (h_one : f 1 = 1) (h_mul : ∀ a b, f (a * b) ≤ f a * f b)
     (s : Multiset α) : f s.prod ≤ (s.map f).prod :=
-  le_prod_of_submultiplicative_on_pred' f (fun _ ↦ True) h_nonneg h_one trivial
+  le_prod_of_submultiplicative_on_pred_of_nonneg f (fun _ ↦ True) h_nonneg h_one trivial
     (fun x y _ _ ↦ h_mul x y) (by simp) s (by simp)
+
+--#find_home! le_prod_of_submultiplicative_of_nonneg
 
 end Multiset
 
 namespace Finset
 
-theorem powersetCard_nonempty' {α : Type _} {n : ℕ} {s : Finset α} (h : n ≤ card s) :
-    (Finset.powersetCard n s).Nonempty := by
-  classical
-  induction' s using Finset.induction_on with x s hx IH generalizing n
-  · rw [Finset.card_empty, le_zero_iff] at h
-    rw [h, Finset.powersetCard_zero]
-    exact Finset.singleton_nonempty _
-  · cases n
-    · simp
-    · rw [Finset.card_insert_of_not_mem hx, Nat.succ_le_succ_iff] at h
-      rw [Finset.powersetCard_succ_insert hx]
-      exact Finset.Nonempty.mono Finset.subset_union_right ((IH h).image (insert x))
-
-theorem le_prod_of_submultiplicative' {ι M N : Type _} [CommMonoid M] [OrderedCommRing N]
+-- Try Mathlib.Algebra.Order.BigOperators.Group.Finset or
+-- Mathlib.Algebra.Order.BigOperators.Ring.Finset,
+/-- [Mathlib.Algebra.BigOperators.Finprod, Mathlib.RingTheory.Coprime.Lemmas,
+ Mathlib.SetTheory.Cardinal.Basic, Mathlib.Algebra.BigOperators.WithTop,
+ Mathlib.Algebra.Order.BigOperators.Ring.Finset, Mathlib.RingTheory.Multiplicity,
+ Mathlib.RingTheory.UniqueFactorizationDomain.Basic, Mathlib.Algebra.BigOperators.Intervals,
+ Mathlib.RingTheory.Localization.Defs, Mathlib.Algebra.Star.Module, Mathlib.GroupTheory.Perm.Sign,
+  Mathlib.Topology.EMetricSpace.Basic, Mathlib.Data.Sign, Mathlib.Data.Finsupp.Order,
+  Mathlib.RingTheory.Ideal.Lattice, Mathlib.NumberTheory.Divisors]-/
+theorem le_prod_of_submultiplicative_of_nonneg {ι M N : Type*} [CommMonoid M] [OrderedCommRing N]
     (f : M → N) (h_nonneg : ∀ a, 0 ≤ f a) (h_one : f 1 = 1)
     (h_mul : ∀ x y : M, f (x * y) ≤ f x * f y) (s : Finset ι) (g : ι → M) :
-    f (s.prod fun i : ι ↦ g i) ≤ s.prod fun i : ι ↦ f (g i) := by
-  refine le_trans (Multiset.le_prod_of_submultiplicative' f h_nonneg h_one h_mul _) ?_
-  rw [Multiset.map_map]
-  rfl
+    f (s.prod fun i : ι ↦ g i) ≤ s.prod fun i : ι ↦ f (g i) :=
+  le_trans (Multiset.le_prod_of_submultiplicative_of_nonneg f h_nonneg h_one h_mul _)
+    (by simp [Multiset.map_map])
 
 end Finset
 
 section IsNonarchimedean
 
-variable {K L : Type _} [NormedCommRing K] [CommRing L] [Algebra K L]
+--variable {K L : Type*} [NormedCommRing K] [CommRing L] [Algebra K L]
 
-theorem isNonarchimedean_finset_powerset_image_add {f : AlgebraNorm K L}
-    (hf_na : IsNonarchimedean f) {n : ℕ} (b : Fin n → L) (m : ℕ) :
-    ∃ s : Finset.powersetCard (Fintype.card (Fin n) - m) (@Finset.univ (Fin n) _),
-      f ((Finset.powersetCard (Fintype.card (Fin n) - m) Finset.univ).sum fun t : Finset (Fin n) ↦
-        t.prod fun i : Fin n ↦ -b i) ≤
-        f (s.val.prod fun i : Fin n ↦ -b i) := by
-  set g := fun t : Finset (Fin n) ↦ t.prod fun i : Fin n ↦ -b i
-  obtain ⟨b, hb_in, hb⟩ :=
-    IsNonarchimedean.finset_image_add hf_na g
-      (Finset.powersetCard (Fintype.card (Fin n) - m) Finset.univ)
-  have hb_ne :
-    (Finset.powersetCard (Fintype.card (Fin n) - m) (Finset.univ : Finset (Fin n))).Nonempty := by
+-- In PR #23253
+open Finset in
+-- [Mathlib.Data.Real.IsNonarchimedean]
+theorem isNonarchimedean_finset_powerset_image_add {F K : Type*} [CommRing K] [FunLike F K ℝ]
+    [AddGroupSeminormClass F K ℝ] {f : F}
+    (hf_na : IsNonarchimedean f) {n : ℕ} (b : Fin n → K) (m : ℕ) :
+    ∃ s : powersetCard (Fintype.card (Fin n) - m) (@univ (Fin n) _),
+      f ((powersetCard (Fintype.card (Fin n) - m) univ).sum fun t : Finset (Fin n) ↦
+        t.prod fun i : Fin n ↦ -b i) ≤ f (s.val.prod fun i : Fin n ↦ -b i) := by
+  set g := fun t : Finset (Fin n) ↦ t.prod fun i : Fin n ↦ - b i
+  obtain ⟨b, hb_in, hb⟩ := IsNonarchimedean.finset_image_add hf_na g
+      (powersetCard (Fintype.card (Fin n) - m) univ)
+  have hb_ne : (powersetCard (Fintype.card (Fin n) - m) (univ : Finset (Fin n))).Nonempty := by
     rw [Fintype.card_fin]
-    have hmn : n - m ≤ (Finset.univ : Finset (Fin n)).card := by
-      rw [Finset.card_fin]
+    have hmn : n - m ≤ (univ : Finset (Fin n)).card := by
+      rw [card_fin]
       exact Nat.sub_le n m
-    exact Finset.powersetCard_nonempty' hmn
-  use⟨b, hb_in hb_ne⟩, hb
+    exact powersetCard_nonempty.mpr hmn
+  use ⟨b, hb_in hb_ne⟩, hb
 
-theorem isNonarchimedean_multiset_powerset_image_add {f : AlgebraNorm K L}
-    (hf_na : IsNonarchimedean f) (s : Multiset L) (m : ℕ) :
-    ∃ t : Multiset L, card t = card s - m ∧ (∀ x : L, x ∈ t → x ∈ s) ∧
-      f (Multiset.map Multiset.prod (powersetCard (card s - m) s)).sum ≤ f t.prod := by
-  set g := fun t : Multiset L ↦ t.prod
+-- In PR #23253
+open Multiset in
+-- [Mathlib.Data.Real.IsNonarchimedean]
+theorem isNonarchimedean_multiset_powerset_image_add {F K : Type*} [CommRing K] [FunLike F K ℝ]
+    [AddGroupSeminormClass F K ℝ] {f : F}
+    (hf_na : IsNonarchimedean f) (s : Multiset K) (m : ℕ) :
+    ∃ t : Multiset K, card t = card s - m ∧ (∀ x : K, x ∈ t → x ∈ s) ∧
+      f (map prod (powersetCard (card s - m) s)).sum ≤ f t.prod := by
+  set g := fun t : Multiset K ↦ t.prod
   obtain ⟨b, hb_in, hb_le⟩ :=
     IsNonarchimedean.multiset_image_add hf_na g (powersetCard (card s - m) s)
   have hb : b ≤ s ∧ card b = card s - m := by
-    rw [← Multiset.mem_powersetCard]
+    rw [← mem_powersetCard]
     apply hb_in
     refine card_pos.mp ?_
     rw [card_powersetCard]
     exact Nat.choose_pos ((card s).sub_le m)
-  exact ⟨b, hb.2, fun x hx ↦ Multiset.mem_of_le hb.left hx, hb_le⟩
+  exact ⟨b, hb.2, fun x hx ↦ mem_of_le hb.left hx, hb_le⟩
 
 end IsNonarchimedean
 
-namespace IntermediateField
+/- Not needed anymore
 
-variable {K L : Type _} [Field K] [Field L] [Algebra K L] (E : IntermediateField K L)
+ namespace AuxiliaryInstances
 
-attribute [local instance 1001] Algebra.id
+open IntermediateField
 
+variable {K L : Type*} [Field K] [Field L] [Algebra K L] (E : IntermediateField K L)
 
--- MI: I am not sure if this is the right thing to remove now, the file is really slow.
+--attribute [local instance 1001] Algebra.id
+
+/- -- MI: I am not sure if this is the right thing to remove now, the file is really slow.
 attribute [-instance]
   --Subalgebra.instSMulSubtypeMemSubalgebraInstMembershipInstSetLikeSubalgebra
   Subalgebra.instSMulSubtypeMem
@@ -303,136 +278,55 @@ attribute [-instance]
   IntermediateField.module'
   Subalgebra.isScalarTower_left
   Subsemiring.isScalarTower
-  Submonoid.isScalarTower
+  Submonoid.isScalarTower -/
 
 
 -- Auxiliary instances to avoid timeouts
-set_option synthInstance.maxHeartbeats 400000
-instance : Algebra E ↥(normalClosure K E (AlgebraicClosure E)) :=
-  normalClosure.algebra K (↥E) (AlgebraicClosure ↥E) -- inferInstance used to work
 
-instance :  SMul ↥E ↥(normalClosure K (↥E) (AlgebraicClosure ↥E)) :=
-  Algebra.toSMul -- inferInstance used to work
+--set_option synthInstance.maxHeartbeats 400000
+--instance : Algebra E ↥(normalClosure K E (AlgebraicClosure E)) := inferInstance
+  --normalClosure.algebra K (↥E) (AlgebraicClosure ↥E) -- inferInstance used to work
 
-instance : AddGroup ↥(normalClosure K E (AlgebraicClosure E)) :=
-  inferInstance
+--instance :  SMul ↥E ↥(normalClosure K (↥E) (AlgebraicClosure ↥E)) := inferInstance
+  --Algebra.toSMul -- inferInstance used to work
 
-set_option maxHeartbeats 300000
-instance : IsScalarTower K E (normalClosure K (↥E) (AlgebraicClosure ↥E)) := inferInstance
+--instance : AddGroup ↥(normalClosure K E (AlgebraicClosure E)) := inferInstance
 
-instance : MonoidHomClass (E →+* ↥(normalClosure K E (AlgebraicClosure E))) E
+--set_option maxHeartbeats 300000
+--instance : IsScalarTower K E (normalClosure K (↥E) (AlgebraicClosure ↥E)) := inferInstance
+
+/- instance : MonoidHomClass (E →+* ↥(normalClosure K E (AlgebraicClosure E))) E
   ↥(normalClosure K E (AlgebraicClosure E)) :=
-  inferInstance /- by exact MonoidHomClass.mk -/
+  inferInstance  -//- by exact MonoidHomClass.mk -/
 
 -- MI: timeout
-instance : AddHomClass (E →+* ↥(normalClosure K E (AlgebraicClosure E))) E
-  ↥(normalClosure K E (AlgebraicClosure E)) := AddMonoidHomClass.toAddHomClass
+/- instance : AddHomClass (E →+* ↥(normalClosure K E (AlgebraicClosure E))) E
+  ↥(normalClosure K E (AlgebraicClosure E)) := inferInstance --AddMonoidHomClass.toAddHomClass
 
 instance : MulHomClass (E →+* ↥(normalClosure K E (AlgebraicClosure E))) E
   ↥(normalClosure K E (AlgebraicClosure E)) := inferInstance
 
-instance : AddHomClass (E →+* L) E L := inferInstance
-
+instance : AddHomClass (E →+* L) E L := inferInstance -/
 
 -- End of auxiliary instances
 
-instance : Normal K (AlgebraicClosure K) :=
-  normal_iff.mpr fun x ↦
-    ⟨isAlgebraic_iff_isIntegral.mp ((AlgebraicClosure.isAlgebraic K).isAlgebraic x),
-      IsAlgClosed.splits_codomain (minpoly K x)⟩
-
-theorem AdjoinDouble.isAlgebraic {x y : L} (hx : IsAlgebraic K x) (hy : IsAlgebraic K y) :
-    Algebra.IsAlgebraic K K⟮x, y⟯ := by
-  apply IntermediateField.isAlgebraic_adjoin
-  intro z hz
-  simp only [Set.mem_insert_iff, Set.mem_singleton_iff] at hz
-  rcases hz with hz | hz
-  · rw [hz]
-    exact hx.isIntegral
-  · rw [hz]
-    exact hy.isIntegral
-
-theorem isAlgebraic [Algebra.IsAlgebraic K L] (E : IntermediateField K L) :
-    Algebra.IsAlgebraic K E := by
-  rw [Algebra.isAlgebraic_def]
-  intro y
-  let h_alg_L : Algebra.IsAlgebraic K L := inferInstance
-  obtain ⟨p, hp0, hp⟩ := h_alg_L.isAlgebraic (↑y : L)
-  rw [Subalgebra.aeval_coe, Subalgebra.coe_eq_zero] at hp
-  exact ⟨p, hp0, hp⟩
-
-theorem AdjoinSimple.alg_closure_normal {x : L} (hx : IsAlgebraic K x) :
-    Normal K (AlgebraicClosure K⟮x⟯) :=
-  have h_alg' : Algebra.IsAlgebraic K (AlgebraicClosure ↥K⟮x⟯) :=
-    sorry
-    /- @Algebra.IsAlgebraic.trans K K⟮x⟯ (AlgebraicClosure ↥K⟮x⟯) _ _ _ _ _ _ _
-     (isAlgebraic_adjoin_simple hx.isIntegral) (AlgebraicClosure.isAlgebraic K⟮x⟯) -/
-  normal_iff.mpr fun y ↦ ⟨(h_alg'.isAlgebraic _).isIntegral,
-    IsAlgClosed.splits_codomain (minpoly K y)⟩
-
-theorem AdjoinDouble.alg_closure_normal {x y : L} (hx : IsAlgebraic K x) (hy : IsAlgebraic K y) :
-    Normal K (AlgebraicClosure K⟮x, y⟯) :=
-  have h_alg' : Algebra.IsAlgebraic K (AlgebraicClosure ↥K⟮x, y⟯) :=
-   sorry/- @Algebra.IsAlgebraic.trans K K⟮x, y⟯ (AlgebraicClosure ↥K⟮x, y⟯) _ _ _ _ _ _ _
-     (AdjoinDouble.isAlgebraic hx hy) (AlgebraicClosure.isAlgebraic K⟮x, y⟯) -/
-  normal_iff.mpr fun y ↦ ⟨(h_alg'.isAlgebraic _).isIntegral,
-    IsAlgClosed.splits_codomain (minpoly K y)⟩
-
-theorem AdjoinAdjoin.finiteDimensional {x y : L} (hx : IsIntegral K x) (hy : IsIntegral K y) :
-    FiniteDimensional K K⟮x, y⟯ := by
-  haveI hx_fd : FiniteDimensional K K⟮x⟯ := adjoin.finiteDimensional hx
-  have hy' : IsIntegral K⟮x⟯ y := IsIntegral.tower_top hy
-  haveI hy_fd : FiniteDimensional K⟮x⟯ K⟮x⟯⟮y⟯ := adjoin.finiteDimensional hy'
-  rw [← adjoin_simple_adjoin_simple]
-  apply FiniteDimensional.trans K K⟮x⟯ K⟮x⟯⟮y⟯
-
-theorem mem_adjoin_adjoin_left (F : Type u_1) [Field F] {E : Type u_2} [Field E] [Algebra F E]
-    (x y : E) : x ∈ F⟮x, y⟯ := by
-  rw [← adjoin_simple_adjoin_simple, adjoin_simple_comm]
-  exact subset_adjoin F⟮y⟯ {x} (Set.mem_singleton x)
-
-theorem mem_adjoin_adjoin_right (F : Type u_1) [Field F] {E : Type u_2} [Field E] [Algebra F E]
-    (x y : E) : y ∈ F⟮x, y⟯ := by
-  rw [← adjoin_simple_adjoin_simple]
-  exact subset_adjoin F⟮x⟯ {y} (Set.mem_singleton y)
-
-/-- The first generator of an intermediate field of the form `F⟮x, y⟯`. -/
-def AdjoinAdjoin.gen1 (F : Type u_1) [Field F] {E : Type u_2} [Field E] [Algebra F E] (x y : E) :
-    F⟮x, y⟯ :=
-  ⟨x, mem_adjoin_adjoin_left F x y⟩
-
-/-- The second generator of an intermediate field of the form `F⟮x, y⟯`. -/
-def AdjoinAdjoin.gen2 (F : Type u_1) [Field F] {E : Type u_2} [Field E] [Algebra F E] (x y : E) :
-    F⟮x, y⟯ :=
-  ⟨y, mem_adjoin_adjoin_right F x y⟩
-
-@[simp]
-theorem AdjoinAdjoin.algebraMap_gen1 (F : Type u_1) [Field F] {E : Type u_2} [Field E] [Algebra F E]
-    (x y : E) : (algebraMap (↥F⟮x, y⟯) E) (IntermediateField.AdjoinAdjoin.gen1 F x y) = x :=
-  rfl
-
-@[simp]
-theorem AdjoinAdjoin.algebraMap_gen2 (F : Type u_1) [Field F] {E : Type u_2} [Field E] [Algebra F E]
-    (x y : E) : (algebraMap (↥F⟮x, y⟯) E) (IntermediateField.AdjoinAdjoin.gen2 F x y) = y :=
-  rfl
-
-end IntermediateField
+end AuxiliaryInstances -/
 
 section
 
-variable {K L : Type _} [NormedField K] [Ring L] [Algebra K L]
+variable {K L : Type*} [NormedField K] [Ring L] [Algebra K L]
 
-theorem extends_is_norm_le_one_class {f : L → ℝ} (hf_ext : FunctionExtends (norm : K → ℝ) f) :
+theorem extends_is_norm_le_one_class {f : L → ℝ} (hf_ext : ∀ (x : K), f (algebraMap K L x) = ‖x‖) :
     f 1 ≤ 1 := by rw [← (algebraMap K L).map_one, hf_ext, norm_one]
 
-theorem extends_is_norm_one_class {f : L → ℝ} (hf_ext : FunctionExtends (norm : K → ℝ) f) :
+theorem extends_is_norm_one_class {f : L → ℝ} (hf_ext : ∀ (x : K), f (algebraMap K L x) = ‖x‖) :
     f 1 = 1 := by rw [← (algebraMap K L).map_one, hf_ext, norm_one]
 
 end
 
 end AuxLemmas
 
-variable {R : Type _}
+variable {R : Type*}
 
 section spectralValue
 
@@ -456,7 +350,7 @@ theorem spectralValueTerms_of_natDegree_le (p : R[X]) {n : ℕ} (hn : p.natDegre
 def spectralValue (p : R[X]) : ℝ :=
   iSup (spectralValueTerms p)
 
-/-- The sequence `spectral_value_terms p` is bounded above. -/
+/-- The sequence `spectralValue_terms p` is bounded above. -/
 theorem spectralValueTerms_bddAbove (p : R[X]) : BddAbove (Set.range (spectralValueTerms p)) := by
   use List.foldr max 0
       (List.map (fun n ↦ ‖p.coeff n‖ ^ (1 / (p.natDegree - n : ℝ))) (List.range p.natDegree))
@@ -470,7 +364,7 @@ theorem spectralValueTerms_bddAbove (p : R[X]) : BddAbove (Set.range (spectralVa
           (List.range p.natDegree) :=  by
         simp only [List.mem_map, List.mem_range]
         exact ⟨n, hd, rfl⟩
-      exact List.le_max_of_exists_le 0 h (ge_of_eq hn)
+      exact List.le_max_of_le' 0 h (ge_of_eq hn)
     · rw [← hn]
       by_cases hd0 : p.natDegree = 0
       · rw [hd0, List.range_zero, List.map_nil, List.foldr_nil]
@@ -480,10 +374,10 @@ theorem spectralValueTerms_bddAbove (p : R[X]) : BddAbove (Set.range (spectralVa
               (List.range p.natDegree) := by
           simp only [List.mem_map, List.mem_range]
           exact ⟨0, Nat.pos_of_ne_zero hd0, by rw [Nat.cast_zero]⟩
-        refine List.le_max_of_exists_le 0 h ?_
+        refine List.le_max_of_le' 0 h ?_
         exact Real.rpow_nonneg (norm_nonneg _) _
 
-/-- The range of `spectral_value_terms p` is a finite set. -/
+/-- The range of `spectralValue_terms p` is a finite set. -/
 theorem spectralValueTerms_finite_range (p : R[X]) : (Set.range (spectralValueTerms p)).Finite :=
   haveI h_ss :
     Set.range (spectralValueTerms p) ⊆
@@ -500,7 +394,7 @@ theorem spectralValueTerms_finite_range (p : R[X]) : (Set.range (spectralValueTe
       exact Set.mem_union_right _ (Set.mem_singleton _)
   Set.Finite.subset (Set.Finite.union (Set.finite_range _) (Set.finite_singleton _)) h_ss
 
-/-- The sequence `spectral_value_terms p` is nonnegative. -/
+/-- The sequence `spectralValue_terms p` is nonnegative. -/
 theorem spectralValueTerms_nonneg (p : R[X]) (n : ℕ) : 0 ≤ spectralValueTerms p n := by
   simp only [spectralValueTerms]
   split_ifs with h
@@ -589,7 +483,7 @@ end spectralValue
 -- In this section we prove Proposition 3.1.2/1 from BGR.
 section BddBySpectralValue
 
-variable {K : Type _} [NormedField K] {L : Type _} [Field L] [Algebra K L]
+variable {K : Type*} [NormedField K] {L : Type*} [Field L] [Algebra K L]
 
 /-- Part (1): the norm of any root of p is bounded by the spectral value of p. -/
 theorem root_norm_le_spectralValue {f : AlgebraNorm K L} (hf_pm : IsPowMul f)
@@ -623,15 +517,19 @@ theorem root_norm_le_spectralValue {f : AlgebraNorm K L} (hf_pm : IsPowMul f)
         by_cases hn0 : n = 0
         · rw [hn0, pow_zero, map_smul_eq_mul, hf_pm _ (Nat.succ_le_iff.mpr h_deg), ←
             Nat.sub_zero p.natDegree, ← hn0]
-          exact mul_lt_of_lt_of_le_one_of_nonneg (hn_lt n hn) hf1 (norm_nonneg _)
+          exact (mul_le_of_le_one_right (norm_nonneg _) hf1).trans_lt (hn_lt n hn)
         · have : p.natDegree = p.natDegree - n + n := by rw [Nat.sub_add_cancel (le_of_lt hn)]
           rw [map_smul_eq_mul, hf_pm _ (Nat.succ_le_iff.mp (pos_iff_ne_zero.mpr hn0)),
             hf_pm _ (Nat.succ_le_iff.mpr h_deg), this, pow_add]
           exact
             (mul_lt_mul_right (pow_pos (lt_of_le_of_ne (apply_nonneg _ _) (Ne.symm hx0)) _)).mpr
               (hn_lt n hn)
-      obtain ⟨m, hm_in, hm⟩ :=
-        isNonarchimedean_finset_range_add_le hf_na p.natDegree fun i : ℕ ↦ p.coeff i • x ^ i
+      set g := fun i : ℕ ↦ p.coeff i • x ^ i
+      obtain ⟨m, hm_in, hm⟩ : ∃ (m : ℕ) (_ : 0 < p.natDegree → m < p.natDegree),
+          f ((Finset.range p.natDegree).sum g) ≤ f (g m) := by
+        obtain ⟨m, hm, h⟩ := IsNonarchimedean.finset_image_add hf_na g (Finset.range p.natDegree)
+        rw [Finset.nonempty_range_iff, ← zero_lt_iff, Finset.mem_range] at hm
+        exact ⟨m, hm, h⟩
       exact lt_of_le_of_lt hm (hn' m (hm_in h_deg))
     have h0 : f 0 ≠ 0 := by
       have h_eq : f 0 = f (x ^ p.natDegree) := by
@@ -646,9 +544,9 @@ open scoped Classical
 
 open Multiset
 
-/-- Part (2): if p splits into linear factors over B, then its spectral value equals the maximum
+/- Part (2): if p splits into linear factors over B, then its spectral value equals the maximum
   of the norms of its roots. -/
-theorem max_root_norm_eq_spectralValue {f : AlgebraNorm K L} (hf_pm : IsPowMul f)
+/- theorem max_root_norm_eq_spectralValue {f : AlgebraNorm K L} (hf_pm : IsPowMul f)
     (hf_na : IsNonarchimedean f) (hf1 : f 1 = 1) (p : K[X]) {n : ℕ} (hn : 0 < n) (b : Fin n → L)
     (hp : mapAlg K L p = finprod fun k : Fin n ↦ X - C (b k)) :
     iSup (f ∘ b) = spectralValue p := by
@@ -665,7 +563,7 @@ theorem max_root_norm_eq_spectralValue {f : AlgebraNorm K L} (hf_pm : IsPowMul f
       rw [mapAlg_eq_map, aeval_map_algebraMap] at hm'
       exact hm'
     rw [Function.comp_apply]
-    exact root_norm_le_spectralValue hf_pm hf_na (le_of_eq hf1) (p.monic_of_prod b hp) hm
+    exact root_norm_le_spectralValue hf_pm hf_na (le_of_eq hf1) (p.monic_of_eq_finprod b hp) hm
   · have : Nonempty (Fin n) := by
       exact Fin.pos_iff_nonempty.mp hn
     have h_supr : 0 ≤ iSup (f ∘ b) := by
@@ -718,12 +616,12 @@ theorem max_root_norm_eq_spectralValue {f : AlgebraNorm K L} (hf_pm : IsPowMul f
       simp only [Fintype.card_fin, Finset.mem_powersetCard] at hs'
       rw [hs'.right, hpn]
     rw [spectralValueTerms_of_natDegree_le _ (le_of_not_lt hm)]
-    exact h_supr
+    exact h_supr -/
 
 /-- If `f` is a nonarchimedean, power-multiplicative `K`-algebra norm on `L`, then the spectral
   value of a polynomial `p : K[X]` that decomposes into linear factos in `L` is equal to the
   maximum of the norms of the roots. -/
-theorem max_root_norm_eq_spectral_value' {f : AlgebraNorm K L} (hf_pm : IsPowMul f)
+theorem max_root_norm_eq_spectralValue' {f : AlgebraNorm K L} (hf_pm : IsPowMul f)
     (hf_na : IsNonarchimedean f) (hf1 : f 1 = 1) (p : K[X]) (s : Multiset L)
     (hp : mapAlg K L p = (Multiset.map (fun a : L ↦ X - C a) s).prod) :
     (iSup fun x : L ↦ if x ∈ s then f x else 0) = spectralValue p := by
@@ -738,7 +636,7 @@ theorem max_root_norm_eq_spectral_value' {f : AlgebraNorm K L} (hf_pm : IsPowMul
     by_cases hx : x ∈ s
     · have hx0 : aeval x p = 0 := Polynomial.aeval_root s hx hp
       rw [if_pos hx]
-      exact root_norm_le_spectralValue hf_pm hf_na (le_of_eq hf1) (p.monic_of_prod' s hp) hx0
+      exact root_norm_le_spectralValue hf_pm hf_na (le_of_eq hf1) (p.monic_of_eq_multiset_prod s hp) hx0
     · rw [if_neg hx]
       exact spectralValue_nonneg _
   · apply ciSup_le
@@ -772,24 +670,20 @@ theorem max_root_norm_eq_spectral_value' {f : AlgebraNorm K L} (hf_pm : IsPowMul
       obtain ⟨t, ht_card, hts, ht_ge⟩ := ht
       apply le_trans ht_ge
       have h_pr : f t.prod ≤ (t.map f).prod :=
-        Real.multiset_le_prod_of_submultiplicative (apply_nonneg _) hf1 (map_mul_le_mul _) _
+        map_multiset_prod_le_of_submultiplicative (apply_nonneg _) hf1 (map_mul_le_mul _) _
       apply le_trans h_pr
-      have hs_ne : s.toFinset.Nonempty := by
-        rw [← Finset.card_pos]
-        apply card_toFinset_pos
-        rw [hps]
-        exact lt_of_le_of_lt (zero_le _) hm
-      have hy : ∃ y : L, y ∈ s ∧ ∀ z : L, z ∈ s → f z ≤ f y := Multiset.max f hs_ne
+      have hs_ne : s.toFinset.Nonempty :=
+        Finset.card_pos.mp (card_toFinset_pos (hps ▸ lt_of_le_of_lt (zero_le _) hm))
+      have hy : ∃ y : L, y ∈ s ∧ ∀ z : L, z ∈ s → f z ≤ f y := Multiset.exists_max f hs_ne
       obtain ⟨y, hyx, hy_max⟩ := hy
       have : (Multiset.map f t).prod ≤ f y ^ (p.natDegree - m) := by
         have h_card : p.natDegree - m = card (t.map f) := by rw [card_map, ht_card, ← hps]
         have hx_le : ∀ x : ℝ, x ∈ Multiset.map f t → x ≤ f y := by
           intro r hr
-          obtain ⟨z, hzt, hzr⟩ := Multiset.mem_map.mp hr
-          rw [← hzr]
-          exact hy_max _ (hts _ hzt)
+          obtain ⟨_, hzt, hzr⟩ := Multiset.mem_map.mp hr
+          exact hzr ▸ hy_max _ (hts _ hzt)
         rw [h_card]
-        exact Real.multiset_prod_le_pow_card hx_le
+        exact multiset_prod_le_pow_card hx_le
       have h_bdd : BddAbove (Set.range fun x : L ↦ ite (x ∈ s) (f x) 0) := by
         use f y
         rw [mem_upperBounds]
@@ -812,7 +706,7 @@ end BddBySpectralValue
 
 section AlgEquiv
 
-variable {S A B C : Type _} [CommSemiring S] [Semiring A] [Semiring B] [Semiring C] [Algebra S A]
+variable {S A B C : Type*} [CommSemiring S] [Semiring A] [Semiring B] [Semiring C] [Algebra S A]
   [Algebra S B] [Algebra S C]
 
 /-- The algebra equivalence obtained by composing two algebra equivalences. -/
@@ -842,7 +736,7 @@ section spectralNorm
 
 open IntermediateField
 
-variable (K : Type _) [NormedField K] (L : Type _) [Field L] [Algebra K L]
+variable (K : Type*) [NormedField K] (L : Type*) [Field L] [Algebra K L]
 
 /-- The spectral norm `|y|_sp` is the spectral value of the minimal of `y` over `K`. -/
 def spectralNorm (y : L) : ℝ :=
@@ -852,7 +746,7 @@ variable {K L}
 
 /-- If `L/E/K` is a tower of fields, then the spectral norm of `x : E` equals its spectral norm
   when regarding `x` as an element of `L`. -/
-theorem spectralValue.eq_of_tower {E : Type _} [Field E] [Algebra K E] [Algebra E L]
+theorem spectralValue.eq_of_tower {E : Type*} [Field E] [Algebra K E] [Algebra E L]
     [IsScalarTower K E L] (x : E) :
     spectralNorm K E x = spectralNorm K L (algebraMap E L x) := by
   have hx :  minpoly K (algebraMap E L x) = minpoly K x :=
@@ -877,7 +771,7 @@ theorem spectralValue.eq_normal (x : E) :
 
 variable (y : L)
 
-/-- `spectral_norm K L (0 : L) = 0`. -/
+/-- `spectralNorm K L (0 : L) = 0`. -/
 theorem spectralNorm_zero : spectralNorm K L (0 : L) = 0 := by
   rw [spectralNorm, spectralValue]
   unfold spectralValueTerms
@@ -891,11 +785,11 @@ theorem spectralNorm_zero : spectralNorm K L (0 : L) = 0 := by
   · infer_instance
 
 
-/-- `spectral_norm K L y` is nonnegative. -/
+/-- `spectralNorm K L y` is nonnegative. -/
 theorem spectralNorm_nonneg (y : L) : 0 ≤ spectralNorm K L y :=
   le_ciSup_of_le (spectralValueTerms_bddAbove (minpoly K y)) 0 (spectralValueTerms_nonneg _ 0)
 
-/-- `spectral_norm K L y` is positive if `y ≠ 0`. -/
+/-- `spectralNorm K L y` is positive if `y ≠ 0`. -/
 theorem spectralNorm_zero_lt {y : L} (hy : y ≠ 0) (hy_alg : IsAlgebraic K y) :
     0 < spectralNorm K L y := by
   rw [lt_iff_le_and_ne]
@@ -910,14 +804,14 @@ theorem spectralNorm_zero_lt {y : L} (hy : y ≠ 0) (hy_alg : IsAlgebraic K y) :
       if_neg (ne_of_lt (minpoly.natDegree_pos hy_alg.isIntegral))]
   exact h0 h0'
 
-/-- If `spectral_norm K L x = 0`, then `x = 0`. -/
+/-- If `spectralNorm K L x = 0`, then `x = 0`. -/
 theorem eq_zero_of_map_spectralNorm_eq_zero {x : L} (hx : spectralNorm K L x = 0)
   (hx_alg : IsAlgebraic K x) : x = 0 := by
   by_contra h0
   exact (ne_of_gt (spectralNorm_zero_lt h0 hx_alg)) hx
 
 /-- If `f` is a power-multiplicative `K`-algebra norm on `L` with `f 1 ≤ 1`, then `f`
-  is bounded above by `spectral_norm K L`. -/
+  is bounded above by `spectralNorm K L`. -/
 theorem spectralNorm_ge_norm {f : AlgebraNorm K L} (hf_pm : IsPowMul f)
     (hf_na : IsNonarchimedean f) (hf1 : f 1 ≤ 1) {x : L} (hx_alg : IsAlgebraic K x) :
     f x ≤ spectralNorm K L x := by
@@ -935,7 +829,7 @@ section Finite
 section Normal
 
 /--
-If `L/K` is finite and normal, then `spectral_norm K L x = supr (λ (σ : L ≃ₐ[K] L), f (σ x))`. -/
+If `L/K` is finite and normal, then `spectralNorm K L x = supr (λ (σ : L ≃ₐ[K] L), f (σ x))`. -/
 theorem spectralNorm_max_of_fd_normal (h_fin : FiniteDimensional K L) (hn : Normal K L)
     {f : AlgebraNorm K L} (hf_pm : IsPowMul f) (hf_na : IsNonarchimedean f)
     (hf_ext : FunctionExtends (fun x : K ↦ ‖x‖₊) f) (x : L) :
@@ -954,7 +848,7 @@ theorem spectralNorm_max_of_fd_normal (h_fin : FiniteDimensional K L) (hn : Norm
       rw [h1, map_one]
     rw [h_lc, map_one, one_mul] at hs
     simp only [spectralNorm]
-    rw [← max_root_norm_eq_spectral_value' hf_pm hf_na (extends_is_norm_one_class hf_ext) _ _ hs]
+    rw [← max_root_norm_eq_spectralValue' hf_pm hf_na (extends_is_norm_one_class hf_ext) _ _ hs]
     apply ciSup_le
     intro y
     split_ifs with h
@@ -970,43 +864,42 @@ theorem spectralNorm_max_of_fd_normal (h_fin : FiniteDimensional K L) (hn : Norm
       --exact le_ciSup (Fintype.bddAbove_range _) σ
     · exact Real.iSup_nonneg fun σ ↦ apply_nonneg _ _
 
-/-- If `L/K` is finite and normal, then `spectral_norm K L = alg_norm_of_galois h_fin hna`. -/
-theorem spectralNorm_eq_algNormOfGalois (h_fin : FiniteDimensional K L) (hn : Normal K L)
-    (hna : IsNonarchimedean (norm : K → ℝ)) : spectralNorm K L = algNormOfGalois h_fin hna := by
+/-- If `L/K` is finite and normal, then `spectralNorm K L = alg_norm_of_galois h_fin hna`. -/
+theorem spectralNorm_eq_algNorm_of_galois (h_fin : FiniteDimensional K L) (hn : Normal K L)
+    (hna : IsNonarchimedean (norm : K → ℝ)) : spectralNorm K L = algNorm_of_galois h_fin hna := by
   ext x
-  set f := Classical.choose (finite_extension_pow_mul_seminorm h_fin hna)
+  set f := Classical.choose (exists_nonarchimedean_pow_mul_seminorm_of_finiteDimensional h_fin hna)
   have hf_pow : IsPowMul f :=
-    (Classical.choose_spec (finite_extension_pow_mul_seminorm h_fin hna)).1
+    (Classical.choose_spec (exists_nonarchimedean_pow_mul_seminorm_of_finiteDimensional h_fin hna)).1
   have hf_ext : FunctionExtends _ f :=
-    (Classical.choose_spec (finite_extension_pow_mul_seminorm h_fin hna)).2.1
+    (Classical.choose_spec (exists_nonarchimedean_pow_mul_seminorm_of_finiteDimensional h_fin hna)).2.1
   have hf_na : IsNonarchimedean f :=
-    (Classical.choose_spec (finite_extension_pow_mul_seminorm h_fin hna)).2.2
+    (Classical.choose_spec (exists_nonarchimedean_pow_mul_seminorm_of_finiteDimensional h_fin hna)).2.2
   rw [spectralNorm_max_of_fd_normal h_fin hn hf_pow hf_na hf_ext]
   rfl
 
-/-- If `L/K` is finite and normal, then `spectral_norm K L` is power-multiplicative. -/
+/-- If `L/K` is finite and normal, then `spectralNorm K L` is power-multiplicative. -/
 theorem spectralNorm_isPowMul_of_fd_normal (h_fin : FiniteDimensional K L) (hn : Normal K L)
     (hna : IsNonarchimedean (norm : K → ℝ)) : IsPowMul (spectralNorm K L) := by
-  rw [spectralNorm_eq_algNormOfGalois h_fin hn hna]
-  exact algNormOfGalois_isPowMul h_fin hna
+  rw [spectralNorm_eq_algNorm_of_galois h_fin hn hna]
+  exact isPowMul_algNorm_of_galois h_fin hna
 
 /-- The spectral norm is a `K`-algebra norm on `L` when `L/K` is finite and normal. -/
 def spectralAlgNormOfFdNormal (h_fin : FiniteDimensional K L) (hn : Normal K L)
     (hna : IsNonarchimedean (norm : K → ℝ)) : AlgebraNorm K L where
   toFun     := spectralNorm K L
-  map_zero' := by rw [spectralNorm_eq_algNormOfGalois h_fin hn hna]; exact map_zero _
-  add_le'   := by rw [spectralNorm_eq_algNormOfGalois h_fin hn hna]; exact map_add_le_add _
-  neg'      := by rw [spectralNorm_eq_algNormOfGalois h_fin hn hna]; exact map_neg_eq_map _
+  map_zero' := by rw [spectralNorm_eq_algNorm_of_galois h_fin hn hna]; exact map_zero _
+  add_le'   := by rw [spectralNorm_eq_algNorm_of_galois h_fin hn hna]; exact map_add_le_add _
+  neg'      := by rw [spectralNorm_eq_algNorm_of_galois h_fin hn hna]; exact map_neg_eq_map _
   mul_le'   :=  by
-    simp only [spectralNorm_eq_algNormOfGalois h_fin hn hna]
+    simp only [spectralNorm_eq_algNorm_of_galois h_fin hn hna]
     exact map_mul_le_mul _
   smul'     := by
-    simp only [spectralNorm_eq_algNormOfGalois h_fin hn hna]
+    simp only [spectralNorm_eq_algNorm_of_galois h_fin hn hna]
     exact AlgebraNormClass.map_smul_eq_mul _
   eq_zero_of_map_eq_zero' x := by
-    simp only [spectralNorm_eq_algNormOfGalois h_fin hn hna]
+    simp only [spectralNorm_eq_algNorm_of_galois h_fin hn hna]
     exact eq_zero_of_map_eq_zero _
-
 
 theorem spectralAlgNormOfFdNormal_def (h_fin : FiniteDimensional K L) (hn : Normal K L)
     (hna : IsNonarchimedean (norm : K → ℝ)) (x : L) :
@@ -1015,18 +908,18 @@ theorem spectralAlgNormOfFdNormal_def (h_fin : FiniteDimensional K L) (hn : Norm
 /-- The spectral norm is nonarchimedean when `L/K` is finite and normal. -/
 theorem spectralNorm_isNonarchimedean_of_fd_normal (h_fin : FiniteDimensional K L) (hn : Normal K L)
     (hna : IsNonarchimedean (norm : K → ℝ)) : IsNonarchimedean (spectralNorm K L) := by
-  rw [spectralNorm_eq_algNormOfGalois  h_fin hn hna]
-  exact algNormOfGalois_isNonarchimedean h_fin hna
+  rw [spectralNorm_eq_algNorm_of_galois  h_fin hn hna]
+  exact isNonarchimedean_algNorm_of_galois h_fin hna
 
 /-- The spectral norm extends the norm on `K` when `L/K` is finite and normal. -/
 theorem spectralNorm_extends_norm_of_fd (h_fin : FiniteDimensional K L) (hn : Normal K L)
     (hna : IsNonarchimedean (norm : K → ℝ)) :
     FunctionExtends (norm : K → ℝ) (spectralNorm K L) := by
-  rw [spectralNorm_eq_algNormOfGalois h_fin hn hna]
-  exact algNormOfGalois_extends h_fin hna
+  rw [spectralNorm_eq_algNorm_of_galois h_fin hn hna]
+  exact algNorm_of_galois_extends h_fin hna
 
 /-- If `L/K` is finite and normal, and `f` is a power-multiplicative `K`-algebra norm on `L`
-  extending the norm on `K`, then `f = spectral_norm K L`. -/
+  extending the norm on `K`, then `f = spectralNorm K L`. -/
 theorem spectralNorm_unique_of_fd_normal (h_fin : FiniteDimensional K L) (hn : Normal K L)
     {f : AlgebraNorm K L} (hf_pm : IsPowMul f) (hf_na : IsNonarchimedean f)
     (hf_ext : FunctionExtends (fun x : K ↦ ‖x‖₊) f)
@@ -1068,12 +961,12 @@ theorem spectralNorm_is_norm_one_class : spectralNorm K L 1 = 1 := by
   have h1 : (1 : L) = algebraMap K L 1 := by rw [map_one]
   rw [h1, spectralNorm_extends, norm_one]
 
-/-- `spectral_norm K L (-y) = spectral_norm K L y` . -/
+/-- `spectralNorm K L (-y) = spectralNorm K L y` . -/
 theorem spectralNorm_neg (hna : IsNonarchimedean (norm : K → ℝ)) {y : L} (hy : IsAlgebraic K y) :
     spectralNorm K L (-y) = spectralNorm K L y := by
   set E := K⟮y⟯
   haveI : Normal K (AlgebraicClosure ↥E) :=
-    IntermediateField.AdjoinSimple.alg_closure_normal hy
+    IntermediateField.AdjoinSimple.normal_algebraicClosure hy
   haveI h_fd_E : FiniteDimensional K E :=
     IntermediateField.adjoin.finiteDimensional hy.isIntegral
   --have h_alg_E : Algebra.IsAlgebraic K E := IntermediateField.isAlgebraic E
@@ -1090,7 +983,7 @@ theorem spectralNorm_smul (hna : IsNonarchimedean (norm : K → ℝ)) (k : K) {y
     (hy : IsAlgebraic K y) : spectralNorm K L (k • y) = ‖k‖₊ * spectralNorm K L y := by
   set E := K⟮y⟯
   haveI : Normal K (AlgebraicClosure ↥E) :=
-    IntermediateField.AdjoinSimple.alg_closure_normal hy
+    IntermediateField.AdjoinSimple.normal_algebraicClosure hy
   haveI h_fd_E : FiniteDimensional K E :=
     IntermediateField.adjoin.finiteDimensional hy.isIntegral
   --letI h_alg_E : Algebra.IsAlgebraic K E := IntermediateField.isAlgebraic E
@@ -1111,16 +1004,16 @@ theorem spectralNorm_mul (hna : IsNonarchimedean (norm : K → ℝ)) {x y : L} (
     spectralNorm K L (x * y) ≤ spectralNorm K L x * spectralNorm K L y := by
   set E := K⟮x, y⟯
   haveI : Normal K (AlgebraicClosure ↥E) :=
-    IntermediateField.AdjoinDouble.alg_closure_normal hx hy
+    IntermediateField.AdjoinDouble.normal_algebraicClosure hx hy
   haveI h_fd_E : FiniteDimensional K E :=
-    IntermediateField.AdjoinAdjoin.finiteDimensional hx.isIntegral hy.isIntegral
+    IntermediateField.AdjoinDouble.finiteDimensional hx.isIntegral hy.isIntegral
   --haveI h_alg_E : Algebra.IsAlgebraic K E := IntermediateField.isAlgebraic E
-  set gx := IntermediateField.AdjoinAdjoin.gen1 K x y
-  set gy := IntermediateField.AdjoinAdjoin.gen2 K x y
+  set gx := IntermediateField.AdjoinDouble.gen₁ K x y
+  set gy := IntermediateField.AdjoinDouble.gen₂ K x y
   have hxy : x * y = (algebraMap K⟮x, y⟯ L) (gx * gy) := rfl
   rw [hxy, ← spectralValue.eq_normal' (gx * gy) hxy,
-    ← spectralValue.eq_normal' gx (IntermediateField.AdjoinAdjoin.algebraMap_gen1 K x y),
-    ← spectralValue.eq_normal' gy (IntermediateField.AdjoinAdjoin.algebraMap_gen2 K x y), map_mul,
+    ← spectralValue.eq_normal' gx (IntermediateField.AdjoinDouble.algebraMap_gen₁ K x y),
+    ← spectralValue.eq_normal' gy (IntermediateField.AdjoinDouble.algebraMap_gen₂ K x y), map_mul,
     ← spectralAlgNormOfFdNormal_def (normalClosure.is_finiteDimensional K K⟮x, y⟯
       (AlgebraicClosure K⟮x, y⟯)) (normalClosure.normal K K⟮x, y⟯ _) hna]
   exact map_mul_le_mul _ _ _
@@ -1140,7 +1033,7 @@ theorem spectralNorm_isPowMul (hna : IsNonarchimedean (norm : K → ℝ)) :
   set g := IntermediateField.AdjoinSimple.gen K x with hg
   have h_map : algebraMap E L g ^ n = x ^ n := rfl
   haveI h_normal : Normal K (AlgebraicClosure ↥K⟮x⟯) :=
-    IntermediateField.AdjoinSimple.alg_closure_normal (Algebra.IsAlgebraic.isAlgebraic x)
+    IntermediateField.AdjoinSimple.normal_algebraicClosure (Algebra.IsAlgebraic.isAlgebraic x)
   rw [← spectralValue.eq_normal' _ (IntermediateField.AdjoinSimple.algebraMap_gen K x),
     ← spectralValue.eq_normal' (g ^ n) h_map, map_pow]
   --haveI h_alg := normalClosure.isAlgebraic K E
@@ -1158,18 +1051,18 @@ theorem spectralNorm_isNonarchimedean (h : IsNonarchimedean (norm : K → ℝ)) 
   intro x y
   set E := K⟮x, y⟯
   haveI : Normal K (AlgebraicClosure ↥E) :=
-    IntermediateField.AdjoinDouble.alg_closure_normal (Algebra.IsAlgebraic.isAlgebraic x)
+    IntermediateField.AdjoinDouble.normal_algebraicClosure (Algebra.IsAlgebraic.isAlgebraic x)
       (Algebra.IsAlgebraic.isAlgebraic y)
   haveI h_fd_E : FiniteDimensional K E :=
-    IntermediateField.AdjoinAdjoin.finiteDimensional (h_alg.isAlgebraic x).isIntegral
+    IntermediateField.AdjoinDouble.finiteDimensional (h_alg.isAlgebraic x).isIntegral
        (h_alg.isAlgebraic y).isIntegral
   --haveI h_alg_E : Algebra.IsAlgebraic K E := IntermediateField.isAlgebraic E
-  set gx := IntermediateField.AdjoinAdjoin.gen1 K x y
-  set gy := IntermediateField.AdjoinAdjoin.gen2 K x y
+  set gx := IntermediateField.AdjoinDouble.gen₁ K x y
+  set gy := IntermediateField.AdjoinDouble.gen₂ K x y
   have hxy : x + y = (algebraMap K⟮x, y⟯ L) (gx + gy) := rfl
   rw [hxy, ← spectralValue.eq_normal' (gx + gy) hxy,
-    ← spectralValue.eq_normal' gx (IntermediateField.AdjoinAdjoin.algebraMap_gen1 K x y),
-    ← spectralValue.eq_normal' gy (IntermediateField.AdjoinAdjoin.algebraMap_gen2 K x y),
+    ← spectralValue.eq_normal' gx (IntermediateField.AdjoinDouble.algebraMap_gen₁ K x y),
+    ← spectralValue.eq_normal' gy (IntermediateField.AdjoinDouble.algebraMap_gen₂ K x y),
     _root_.map_add]
   apply spectralNorm_isNonarchimedean_of_fd_normal _ _ h
   · exact normalClosure.is_finiteDimensional K K⟮x, y⟯ _
@@ -1203,7 +1096,7 @@ theorem spectralAlgNorm_isPowMul (hna : IsNonarchimedean (norm : K → ℝ)) :
 
 end IsAlgebraic
 
-/-- The restriction of a `K`-algebra norm on `L` to an intermediate field `K⟮x⟯`. -/
+/- /-- The restriction of a `K`-algebra norm on `L` to an intermediate field `K⟮x⟯`. -/
 def Adjoin.algebraNorm (f : AlgebraNorm K L) (x : L) : AlgebraNorm K K⟮x⟯ where
   toFun := f ∘ algebraMap (↥K⟮x⟯) L
   map_zero' := by simp only [Function.comp_apply, IntermediateField.algebraMap_apply,
@@ -1221,19 +1114,19 @@ def Adjoin.algebraNorm (f : AlgebraNorm K L) (x : L) : AlgebraNorm K K⟮x⟯ wh
   eq_zero_of_map_eq_zero' a ha := by
     simp only [Function.comp_apply, IntermediateField.algebraMap_apply, map_eq_zero_iff_eq_zero,
       ZeroMemClass.coe_eq_zero] at ha
-    exact ha
+    exact ha -/
 
 end spectralNorm
 
 section SpectralValuation
 
-variable {K : Type _} [NormedField K] [CompleteSpace K] {L : Type _} [hL : Field L] [Algebra K L]
+variable {K : Type*} [NormedField K] [CompleteSpace K] {L : Type*} [hL : Field L] [Algebra K L]
 
 -- Theorem 3.2.4/2
 section
 
 /-- The `normed_ring` stucture on a ring `A` determined by a `ring_norm`. -/
-def normToNormedRing {A : Type _} [Ring A] (f : RingNorm A) : NormedRing A where
+def normToNormedRing {A : Type*} [Ring A] (f : RingNorm A) : NormedRing A where
   norm x := f x
   dist x y := f (x - y)
   dist_self x := by simp only [sub_self, AddGroupSeminorm.toFun_eq_coe, _root_.map_zero]
@@ -1255,8 +1148,14 @@ def normToNormedRing {A : Type _} [Ring A] (f : RingNorm A) : NormedRing A where
 
 end
 
+end SpectralValuation
+
+#exit
+
+-- We are not using these
+
 /-- The `normed_field` stucture on a field `L` determined by a `mul_ring_norm`. -/
-def mulNormToNormedField (f : MulRingNorm L) : NormedField L where
+def mulNormToNormedField (f : AbsoluteValue L ℝ) : NormedField L where
   norm x := f x
   dist x y := f (x - y)
   dist_self x := by simp only [sub_self, AddGroupSeminorm.toFun_eq_coe, _root_.map_zero]
@@ -1266,9 +1165,7 @@ def mulNormToNormedField (f : MulRingNorm L) : NormedField L where
   dist_triangle x y z := by
     have hxyz : x - z = x - y + (y - z) := by ring
     simp only [AddGroupSeminorm.toFun_eq_coe, hxyz, map_add_le_add]
-  eq_of_dist_eq_zero hxy  := by
-    simp only [dist, AddGroupSeminorm.toFun_eq_coe] at hxy
-    exact eq_of_sub_eq_zero (MulRingNorm.eq_zero_of_map_eq_zero' _ _ hxy)
+  eq_of_dist_eq_zero hxy := (AbsoluteValue.map_sub_eq_zero_iff f _ _).mp hxy
   dist_eq x y := rfl
   norm_mul x y := by simp only [AddGroupSeminorm.toFun_eq_coe, MulRingSeminorm.toFun_eq_coe,
     map_mul]
@@ -1276,8 +1173,5 @@ def mulNormToNormedField (f : MulRingNorm L) : NormedField L where
     simp only [AddGroupSeminorm.toFun_eq_coe, RingSeminorm.toFun_eq_coe]
     rw [eq_comm, ENNReal.ofReal_eq_coe_nnreal]
 
-theorem mulNormToNormedField.norm (f : MulRingNorm L) :
-    (mulNormToNormedField f).norm = fun x ↦ (f x : ℝ) :=
-  rfl
-
-end SpectralValuation
+theorem mulNormToNormedField.norm (f : AbsoluteValue L ℝ) :
+    (mulNormToNormedField f).norm = fun x ↦ (f x : ℝ) := rfl
