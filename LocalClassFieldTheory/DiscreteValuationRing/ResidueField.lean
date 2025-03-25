@@ -85,7 +85,7 @@ instance : IsLocalHom (algebraMap K₀ S) := by
 -- NOTE: probably this is not needed anymore.
 theorem FiniteDimensional_residueField_of_integralClosure [Algebra.IsSeparable K L] :
     FiniteDimensional (ResidueField K₀) (ResidueField (integralClosure K₀ L)) :=
-  ResidueField.finiteDimensional_of_noetherian
+  ResidueField.finite_of_module_finite
 
 theorem finiteResidueFieldOfIntegralClosure [Algebra.IsSeparable K L]
     (hfin : Finite (ResidueField K₀)) : Finite (ResidueField S) :=

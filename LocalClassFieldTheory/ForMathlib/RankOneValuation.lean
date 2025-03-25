@@ -5,9 +5,7 @@ Authors: María Inés de Frutos-Fernández, Filippo A. E. Nuccio
 -/
 import Mathlib.Algebra.Order.Group.Int
 import Mathlib.Algebra.Order.Group.TypeTags
-import Mathlib.Analysis.Normed.Ring.Lemmas
 import Mathlib.Topology.Algebra.Valued.NormedValued
-
 
 /-!
 # Rank one valuations
@@ -35,7 +33,7 @@ Let `L` be a valued field whose valuation has rank one.
 valuation, rank_one_valuation
 -/
 
-open NNReal Valuation Valued
+open NNReal Valuation
 
 open scoped Multiplicative
 
@@ -49,20 +47,20 @@ variable {L : Type*} [Field L] [Valued L ℤₘ₀] [hv : RankOne (Valued.v (R :
 -- theorem norm_lt_one_iff_val_lt_one (x : L) : Valued.norm x < 1 ↔ Valued.v x < (1 : ℤₘ₀) := by
 --   exact toNormedField.norm_lt_one_iff
 
+-- In **#23277**
 theorem norm_pos_iff_val_pos (x : L) : 0 < Valued.norm x ↔ (0 : ℤₘ₀) < Valued.v x := by
-  have hx : Valued.norm x = hv.hom (Valued.v x) := rfl
-  rw [hx, ← coe_zero, coe_lt_coe, ← map_zero (RankOne.hom (Valued.v (R := L))),
+  erw [← coe_zero, coe_lt_coe, ← map_zero (RankOne.hom (Valued.v (R := L))),
     StrictMono.lt_iff_lt]
   exact RankOne.strictMono Valued.v
 
 end RankOneValuation
 
-namespace Valued
+-- namespace Valued
 
-variable (L : Type _) [Field L] (Γ₀ : Type*) [LinearOrderedCommGroupWithZero Γ₀]
-  [val : Valued L Γ₀] [hv : RankOne val.v]
+-- variable (L : Type _) [Field L] (Γ₀ : Type*) [LinearOrderedCommGroupWithZero Γ₀]
+--   [val : Valued L Γ₀] [hv : RankOne val.v]
 
-theorem norm_isNonarchimedean : IsNonarchimedean (norm (hv := hv)) := norm_add_le
+-- theorem norm_isNonarchimedean : IsNonarchimedean (norm (hv := hv)) := norm_add_le
 
 -- *Outdated*
 /- If `L` is a valued field with respect to a rank one valuation, `mulRingNormDef` is the
@@ -76,7 +74,7 @@ theorem norm_isNonarchimedean : IsNonarchimedean (norm (hv := hv)) := norm_add_l
 --   map_mul' x y := by simp only [norm, _root_.map_mul, Nonneg.coe_mul, NNReal.coe_mul]
 --   eq_zero_of_map_eq_zero' x := norm_eq_zero
 
-end Valued
+-- end Valued
 
 --PR'd in #13064
 -- namespace IsDedekindDomain.HeightOneSpectrum
