@@ -34,13 +34,23 @@ open DiscreteValuation Multiplicative Valuation
 
 open scoped DiscreteValuation
 
-class LocalField (K : Type*) extends Field K, UniformSpace K, IsTopologicalRing K,
+namespace LocalField
+/-These two local instances automatically update the `TopologicalDivisionRing` structure on any
+local field to a uniform group structure, making `uniformContinuous_sub` be found by class
+inference-/
+-- attribute [local instance] /- IsTopologicalAddGroup.toUniformSpace -/ uniformAddGroup_of_addCommGroup
+
+scoped instance (E : Type*) [AddGroup E] [TopologicalSpace E] [IsTopologicalAddGroup E] :
+  UniformSpace E := IsTopologicalAddGroup.toUniformSpace E
+
+scoped instance (E : Type*) [AddCommGroup E] [TopologicalSpace E] [IsTopologicalAddGroup E] :
+  UniformAddGroup E := @uniformAddGroup_of_addCommGroup E ..
+
+class _root_.LocalField (K : Type*) [Field K] extends TopologicalSpace K, TopologicalDivisionRing K,
   CompleteSpace K, LocallyCompactSpace K
 
-variable (K : Type*) /- [Field K]  -/[LocalField K]
+variable (K : Type*) [Field K] [LocalField K]
 
-example : IsTopologicalRing.to_topologicalAddGroup.toUniformSpace K =
-  IsTopologicalRing.to_topologicalAddGroup.toUniformSpace K := sorry
 
 noncomputable
 def LocalField.haarFunction : K → ℝ := fun x ↦ MeasureTheory.Measure.addModularCharacterFun x
@@ -49,15 +59,18 @@ def LocalField.haarFunction : K → ℝ := fun x ↦ MeasureTheory.Measure.addMo
 structure NonarchLocalField (K : Type*) [Field K] extends LocalField K where
   isNonarchimedean : IsNonarchimedean (LocalField.haarFunction K)
 
-#synth IsTopologicalRing K
+-- #synth IsTopologicalRing K
 
-local instance (L : Type*) /- [Field L]  -/[LocalField L] : UniformAddGroup L := by
-  exact @uniformAddGroup_of_addCommGroup L _ _ _
+-- local instance (L : Type*) /- [Field L]  -/[LocalField L] : UniformAddGroup L := by
+--   convert @uniformAddGroup_of_addCommGroup L _ _ _
+--   ext
+--   rw [uniformity_eq_comap_nhds_zero']
+
 
 #synth UniformAddGroup K
 
 def NonarchLocalField.toValued [NonarchLocalField K] : Valued K ℤₘ₀ where
-  uniformContinuous_sub :=
+  --uniformContinuous_sub := uniformContinuous_sub
   v := sorry
   is_topological_valuation := sorry
 
