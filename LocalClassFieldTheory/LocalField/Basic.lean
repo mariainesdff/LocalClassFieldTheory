@@ -31,14 +31,36 @@ open DiscreteValuation Multiplicative Valuation
 
 open scoped DiscreteValuation
 
+class LocalField (K : Type*) [Field K] extends UniformSpace K, TopologicalDivisionRing K,
+  CompleteSpace K, LocallyCompactSpace K
+
+variable (K : Type*) [Field K] [LocalField K]
+
+def LocalField.haarFunction : K → ℝ := sorry
+
+
+@[class]
+structure NonarchLocalField (K : Type*) [Field K] extends LocalField K where
+  isNonarchimedean : IsNonarchimedean (LocalField.haarFunction K)
+
+
+class ArchLocalField (K : Type*) [Field K] extends LocalField K where
+  Archimedean : ¬ IsNonarchimedean (LocalField.haarFunction K)
+
+
+
 /-- The class `local_field`, extending `valued K ℤₘ₀` by requiring that `K` is complete, that the
 valuation is discrete, and that the residue field of the unit ball is finite. -/
-class LocalField (K : Type*) [Field K] extends Valued K ℤₘ₀ where
+class ValuedLocalField (K : Type*) [Field K] extends Valued K ℤₘ₀ where
   complete : CompleteSpace K
   isDiscrete : IsDiscrete (@Valued.v K _ ℤₘ₀ _ _)
   finiteResidueField : Finite (IsLocalRing.ResidueField (@Valued.v K _ ℤₘ₀ _ _).valuationSubring)
 
-attribute [instance] LocalField.complete LocalField.isDiscrete LocalField.finiteResidueField
+/-A proof that `Nonarch →  LocCompact ↔ Complete ∧ Discrete ∧ FiniteResidueField` see
+Bourbaki, Alg Comm, VI, Chap ,§ 5, no 1, Prop 1.-/
+instance [NonarchLocalField K] : ValuedLocalField K := sorry
+
+-- attribute [instance] LocalField.complete LocalField.isDiscrete LocalField.finiteResidueField
 -- NOTE: instances added on 15/4/24
 -- instance (K : Type*) [Field K] [LocalField K] : Valuation.IsDiscrete (@Valued.v K _ ℤₘ₀ _ _) :=
 --   LocalField.isDiscrete
