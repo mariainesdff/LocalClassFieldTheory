@@ -32,8 +32,10 @@ open IntermediateField
 /-- If `L/K` is an algebraic field extension, then the normal closure of `L/K` in the algebraic
 closure of `L` is an algebraic extension of `K`. -/
 instance isAlgebraic [Algebra.IsAlgebraic K L] :
-    Algebra.IsAlgebraic K (normalClosure K L (AlgebraicClosure L)) :=
-  sorry/- @Algebra.IsAlgebraic.trans K L (normalClosure K L (AlgebraicClosure L)) _ _ _ _ _ _ _ _
+    Algebra.IsAlgebraic K (normalClosure K L (AlgebraicClosure L)) := by
+  letI foo : Algebra.IsAlgebraic L ↥(normalClosure K L (AlgebraicClosure L)) := sorry
+  apply @Algebra.IsAlgebraic.trans K L (normalClosure K L (AlgebraicClosure L))
+    /- @Algebra.IsAlgebraic.trans K L (normalClosure K L (AlgebraicClosure L)) _ _ _ _ _ _ _ _
     (Algebra.isAlgebraic_def.mpr (fun _ =>
      isAlgebraic_iff.mpr ((AlgebraicClosure.isAlgebraic L).isAlgebraic _))) -/
 
