@@ -6,6 +6,8 @@ Authors: María Inés de Frutos-Fernández, Filippo A. E. Nuccio
 import LocalClassFieldTheory.DiscreteValuationRing.ResidueField
 import LocalClassFieldTheory.EqCharacteristic.Valuation
 import LocalClassFieldTheory.MixedCharacteristic.Valuation
+-- import Mathlib.MeasureTheory.Group.Measure
+import Mathlib.MeasureTheory.Group.ModularCharacter
 
 /-!
 # Local fields
@@ -29,36 +31,55 @@ the finiteness of the ring of integers.
 
 open DiscreteValuation Multiplicative Valuation
 
+
 open scoped DiscreteValuation
 
-class LocalField (K : Type*) [Field K] extends UniformSpace K, TopologicalDivisionRing K,
+class LocalField (K : Type*) extends Field K, UniformSpace K, IsTopologicalRing K,
   CompleteSpace K, LocallyCompactSpace K
 
-variable (K : Type*) [Field K] [LocalField K]
+variable (K : Type*) /- [Field K]  -/[LocalField K]
 
-def LocalField.haarFunction : K → ℝ := sorry
+example : IsTopologicalRing.to_topologicalAddGroup.toUniformSpace K =
+  IsTopologicalRing.to_topologicalAddGroup.toUniformSpace K := sorry
 
+noncomputable
+def LocalField.haarFunction : K → ℝ := fun x ↦ MeasureTheory.Measure.addModularCharacterFun x
 
 @[class]
 structure NonarchLocalField (K : Type*) [Field K] extends LocalField K where
   isNonarchimedean : IsNonarchimedean (LocalField.haarFunction K)
 
+#synth IsTopologicalRing K
 
-class ArchLocalField (K : Type*) [Field K] extends LocalField K where
+local instance (L : Type*) /- [Field L]  -/[LocalField L] : UniformAddGroup L := by
+  exact @uniformAddGroup_of_addCommGroup L _ _ _
+
+#synth UniformAddGroup K
+
+def NonarchLocalField.toValued [NonarchLocalField K] : Valued K ℤₘ₀ where
+  uniformContinuous_sub :=
+  v := sorry
+  is_topological_valuation := sorry
+
+@[class]
+structure ArchLocalField (K : Type*) [Field K] extends LocalField K where
   Archimedean : ¬ IsNonarchimedean (LocalField.haarFunction K)
-
 
 
 /-- The class `local_field`, extending `valued K ℤₘ₀` by requiring that `K` is complete, that the
 valuation is discrete, and that the residue field of the unit ball is finite. -/
-class ValuedLocalField (K : Type*) [Field K] extends Valued K ℤₘ₀ where
+structure ValuedLocalField (K : Type*) [Field K] extends Valued K ℤₘ₀ where
   complete : CompleteSpace K
   isDiscrete : IsDiscrete (@Valued.v K _ ℤₘ₀ _ _)
   finiteResidueField : Finite (IsLocalRing.ResidueField (@Valued.v K _ ℤₘ₀ _ _).valuationSubring)
 
 /-A proof that `Nonarch →  LocCompact ↔ Complete ∧ Discrete ∧ FiniteResidueField` see
 Bourbaki, Alg Comm, VI, Chap ,§ 5, no 1, Prop 1.-/
-instance [NonarchLocalField K] : ValuedLocalField K := sorry
+def NonarchLocalField.toValuedLocalField [NonarchLocalField K] : ValuedLocalField K where
+  __ := NonarchLocalField.toValued K
+  complete := sorry
+  isDiscrete := sorry
+  finiteResidueField := sorry
 
 -- attribute [instance] LocalField.complete LocalField.isDiscrete LocalField.finiteResidueField
 -- NOTE: instances added on 15/4/24
@@ -94,10 +115,10 @@ instance foo : Valued E ℤₘ₀ where
       exact fun ⟨γ, _⟩ ↦ ⟨_, (Valued.is_topological_valuation _).mpr ⟨γ, (by rfl)⟩,
         by simpa only [Set.preimage_setOf_eq]⟩
 
-instance : LocalField E where
-  complete := sorry
-  isDiscrete := sorry
-  finiteResidueField := sorry
+-- instance : LocalField E where
+--   complete := sorry
+--   isDiscrete := sorry
+--   finiteResidueField := sorry
 
 
 
@@ -124,7 +145,7 @@ variable (K : Type _) [Field K] [EqCharLocalField p K]
 /-- An `eq_char_local_field p K` that is separable over `FpX_completion` is a local field.
   The separability assumption is required to use some result in mathlib concerning
   the finiteness of the ring of integers.-/
-noncomputable def localField [Fact (Algebra.IsSeparable (FpXCompletion p) K)] : LocalField K :=
+noncomputable def localField [Fact (Algebra.IsSeparable (FpXCompletion p) K)] : ValuedLocalField K :=
   { EqCharLocalField.WithZero.valued p K with
     complete := EqCharLocalField.completeSpace p K
     isDiscrete := valuation.IsDiscrete p K
@@ -147,8 +168,8 @@ variable (K : Type*) [Field K] [MixedCharLocalField p K]
 instance : Algebra.IsSeparable (Padic'.Q_p p) K :=
   Algebra.IsSeparable.of_integral (Padic'.Q_p p) K
 
-/-- A `mixed_char_local_field` is a local field. -/
-noncomputable def localField : LocalField K :=
+-- /-- A `mixed_char_local_field` is a local field. -/
+noncomputable def localField : ValuedLocalField K :=
   { MixedCharLocalField.WithZero.valued p K with
     complete := MixedCharLocalField.completeSpace p K
     isDiscrete := valuation.IsDiscrete p K
