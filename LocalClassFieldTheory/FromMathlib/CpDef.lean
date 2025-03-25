@@ -69,11 +69,11 @@ namespace QPAlg
 /-- `Q_p_alg p` is a normed field, where the norm is the `p`-adic norm, that is, the spectral norm
 induced by the `p`-adic norm on `ℚ_[p]`. -/
 instance normedField : NormedField (QPAlg p) :=
-  spectralNormToNormedField (K := ℚ_[p]) (L := QPAlg p) padicNormE.nonarchimedean
+  spectralNorm.normedField (K := ℚ_[p]) (L := QPAlg p) padicNormE.nonarchimedean
 
 /-- The norm on `Q_p_alg p` is nonarchimedean. -/
 theorem isNonarchimedean : IsNonarchimedean (norm : QPAlg p → ℝ) :=
-  spectralNorm_isNonarchimedean (K := ℚ_[p]) (L := QPAlg p) padicNormE.nonarchimedean
+  isNonarchimedean_spectralNorm (K := ℚ_[p]) (L := QPAlg p) padicNormE.nonarchimedean
 
 /-- The norm on `Q_p_alg p` is the spectral norm induced by the `p`-adic norm on `ℚ_[p]`. -/
 theorem norm_def (x : QPAlg p) : ‖x‖ = spectralNorm ℚ_[p] (QPAlg p) x :=

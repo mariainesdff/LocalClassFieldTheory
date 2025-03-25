@@ -51,6 +51,7 @@ import LocalClassFieldTheory.FromMathlib.RingSeminorm -- Partly in PR #15445
 --import LocalClassFieldTheory.FromMathlib.SeminormFromConst -- In PR #14361
 --import LocalClassFieldTheory.FromMathlib.SmoothingSeminorm -- In PR #15373
 import LocalClassFieldTheory.FromMathlib.SpecificLimits
+import LocalClassFieldTheory.FromMathlib.SpectralNorm --in PR #23204, #23253, #23254, #23266 and #23301
 import LocalClassFieldTheory.FromMathlib.SpectralNormUnique
 -- LocalFields folder
 import LocalClassFieldTheory.LocalField.Basic

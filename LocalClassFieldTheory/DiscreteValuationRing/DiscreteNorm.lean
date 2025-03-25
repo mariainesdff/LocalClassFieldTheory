@@ -114,7 +114,7 @@ def discreteNormExtension : @MulAlgebraNorm K (discretelySemiNormedCommRing K) L
 
 /-- The `normed_field` structure on `L` induced by `discrete_norm_extension h_alg` -/
 def discretelyNormedFieldExtension : NormedField L :=
-  @spectralNormToNormedField K (nontriviallyDiscretelyNormedField K) L _ _ _ _
+  @spectralNorm.normedField K (nontriviallyDiscretelyNormedField K) L _ _ _ _
     (norm_isNonarchimedean K)
 
 /-- The `uniform_space` structure on `L` induced by `discrete_norm_extension h_alg` -/
@@ -157,18 +157,17 @@ theorem nonneg (x : L) : 0 ≤ discreteNormExtension (K := K) (L := L) x :=
   @spectralNorm_nonneg K (discretelyNormedField K) L _ _ _
 
 theorem isNonarchimedean : IsNonarchimedean (discreteNormExtension (K := K) (L := L)) :=
-  @spectralNorm_isNonarchimedean K (discretelyNormedField K) L _ _ _ (norm_isNonarchimedean K)
+  @isNonarchimedean_spectralNorm K (discretelyNormedField K) L _ _ _ (norm_isNonarchimedean K)
 
 theorem mul (x y : L) : discreteNormExtension (K := K) (x * y) =
       discreteNormExtension (K := K) x * discreteNormExtension (K := K) y :=
-  @spectral_norm_is_mul K (nontriviallyDiscretelyNormedField K) L _ _ _ _
+  @spectralAlgNorm_mul K (nontriviallyDiscretelyNormedField K) L _ _ _ _
     (norm_isNonarchimedean K) x y
 
 theorem le_one_iff_integral_minpoly (x : L) :
     discreteNormExtension (K := K) x ≤ 1 ↔ ∀ n : ℕ, hv.v ((minpoly K x).coeff n) ≤ 1 := by
   let _ := nontriviallyDiscretelyNormedField K
-  have h : spectralMulAlgNorm (K := K) (norm_isNonarchimedean _) x = spectralNorm K L x := by
-    rfl
+  have h : spectralMulAlgNorm (K := K) (norm_isNonarchimedean _) x = spectralNorm K L x := by rfl
   rw [discreteNormExtension, h, spectralNorm,
     spectralValue_le_one_iff (minpoly.monic (Algebra.IsAlgebraic.isAlgebraic x).isIntegral)]
   simp_rw [Valued.toNormedField.norm_le_one_iff]
@@ -182,12 +181,10 @@ theorem of_integer [fr : IsFractionRing hv.v.valuationSubring.toSubring K]
   letI := nontriviallyDiscretelyNormedField K
   letI : IsIntegrallyClosed hv.v.valuationSubring := inferInstance
   have is_minpoly : minpoly K (x : L) =
-    Polynomial.map (algebraMap hv.v.valuationSubring.toSubring K)
-        (minpoly hv.v.valuationSubring.toSubring x) := by
-    rw [eq_comm]
-    exact minpoly.ofSubring hv.v.valuationSubring.toSubring x
-  rw [discreteNormExtension, ← is_minpoly]
-  rfl
+      Polynomial.map (algebraMap hv.v.valuationSubring.toSubring K)
+        (minpoly hv.v.valuationSubring.toSubring x) :=
+    (minpoly.ofSubring hv.v.valuationSubring.toSubring x).symm
+  rw [discreteNormExtension, ← is_minpoly, spectralMulAlgNorm_def, spectralNorm]
 
 theorem le_one_of_integer [fr : IsFractionRing hv.v.valuationSubring.toSubring K]
     (x : integralClosure hv.v.valuationSubring.toSubring L) :

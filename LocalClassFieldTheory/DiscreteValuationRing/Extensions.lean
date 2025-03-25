@@ -497,7 +497,7 @@ variable (K L)
 def normedField [FiniteDimensional K L] : NormedField L := by
   have h_alg := Algebra.IsAlgebraic.of_finite K L
   let _ : NontriviallyNormedField K := nontriviallyDiscretelyNormedField K
-  exact spectralNormToNormedField (norm_isNonarchimedean K)
+  exact spectralNorm.normedField (norm_isNonarchimedean K)
 
 /-- The valued field structure on `L` induced by `discrete_valuation.extendedValuation`.  -/
 
@@ -582,7 +582,7 @@ attribute [-instance ] EuclideanDomain.toCommRing
 instance (priority := 100) completeSpace [FiniteDimensional K L] :
   @CompleteSpace L (@uniformSpace _ _ _ _ _ _ _ _ (Algebra.IsAlgebraic.of_finite K L)) :=
   let _ : NontriviallyNormedField K := nontriviallyDiscretelyNormedField K
-  @spectral_norm_completeSpace K _ L _ _ (Algebra.IsAlgebraic.of_finite K L) _
+  @spectralNorm.completeSpace K _ L _ _ (Algebra.IsAlgebraic.of_finite K L) _
     (norm_isNonarchimedean K) _
 
 --porting note: the @[protected] attribute has been commented
