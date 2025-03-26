@@ -54,8 +54,9 @@ scoped instance (E : Type*) [AddCommGroup E] [TopologicalSpace E]
 
 class _root_.LocalField (K : Type*) [Field K] extends TopologicalSpace K, TopologicalDivisionRing K,
     CompleteSpace K, LocallyCompactSpace K where
-  toUniformSpace : UniformSpace K := inferInstance --:= instUniformSpace K
+  --toUniformSpace : UniformSpace K := inferInstance --:= instUniformSpace K
   toUniformAddGroup : UniformAddGroup K := inferInstance
+  toUniformSpace : UniformSpace K := inferInstance
  -- toUniformSpace_eq : toUniformSpace = instUniformSpace K
   --toUniformGroup : @UniformAddGroup K (instUniformSpace K) _
   --toUniformGroup_eq : toUniformGroup = instUniformGroup K
