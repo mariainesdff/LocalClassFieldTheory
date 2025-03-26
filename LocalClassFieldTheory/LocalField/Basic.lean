@@ -50,8 +50,9 @@ scoped instance instUniformAddGroup (E : Type*) [AddCommGroup E] [TopologicalSpa
     @UniformAddGroup E (IsTopologicalAddGroup.toUniformSpace E) _ :=
   @uniformAddGroup_of_addCommGroup E ..
 
-scoped instance instUniformSpace (E : Type*) [AddCommGroup E] [TopologicalSpace E]
-    [IsTopologicalAddGroup E] : UniformSpace E := IsTopologicalAddGroup.toUniformSpace E
+scoped instance (priority := high) instUniformSpace (E : Type*) [AddCommGroup E]
+    [TopologicalSpace E] [IsTopologicalAddGroup E] : UniformSpace E :=
+  IsTopologicalAddGroup.toUniformSpace E
 
 class _root_.LocalField (K : Type*) [Field K] extends TopologicalSpace K, TopologicalDivisionRing K,
     CompleteSpace K, LocallyCompactSpace K where
@@ -183,9 +184,43 @@ instance  : TopologicalDivisionRing E where
     --apply continuousAt_subtype_val
     sorry
 
+lemma AddSubgroup.uniformity_eq {L : Type*} [AddCommGroup L] [TopologicalSpace L]
+    [IsTopologicalAddGroup L] (E : AddSubgroup L) :
+    instUniformSpace E = instUniformSpaceSubtype := by
+  ext : 1
+  rw [uniformity_eq_comap_nhds_zero' E, uniformity_subtype, uniformity_eq_comap_nhds_zero' L,
+    Filter.comap_comap]
+  have heq : ((fun (p : L × L) ↦ p.2 - p.1) ∘ fun (q : E × E) ↦ ((q.1 : L), (q.2 :L))) =
+    fun (q : E × E) ↦ (q.2 : L) - (q.1 :L) := rfl
+  rw [heq]
+  ext s
+  simp only [Filter.mem_comap]
+  refine ⟨fun ⟨U, hU0, hU⟩ ↦ ?_, fun ⟨U, hU0, hU⟩ ↦ ?_⟩
+  · simp only [mem_nhds_iff, Set.exists_subset_image_iff, Set.mem_image,
+      ZeroMemClass.coe_eq_zero, exists_eq_right] at hU0 ⊢
+    obtain ⟨t, htU, ⟨V, hV, rfl⟩, ht0⟩ := hU0
+    refine ⟨V, ⟨V, le_refl _, hV, ht0⟩, ?_⟩
+    apply subset_trans _ hU
+    intro x hx
+    simp only [Set.mem_preimage] at hx ⊢
+    exact htU (by simp [hx])
+  · refine ⟨(Subtype.val ⁻¹' U), ?_, hU⟩
+    simp only [mem_nhds_iff] at hU0 ⊢
+    obtain ⟨t, htU, ht, ht0⟩ := hU0
+    exact ⟨Subtype.val ⁻¹' t, Set.preimage_mono htU, isOpen_induced ht, by simp [ht0]⟩
 
-structure IntermediateLocalField extends IntermediateField K L where
-  unif_eq {E} : instUniformSpaceSubtype (α := L) = instUniformSpace E
+omit [LocalField K] in
+lemma IntermediateField.uniformity_eq (E : IntermediateField K L) :
+    instUniformSpace E = instUniformSpaceSubtype := by
+  let E' : AddSubgroup L := {
+    carrier := E
+    add_mem' := IntermediateField.add_mem E
+    zero_mem' := IntermediateField.zero_mem E
+    neg_mem' := IntermediateField.neg_mem E }
+  exact AddSubgroup.uniformity_eq E'
+
+/- structure IntermediateLocalField extends IntermediateField K L where
+  unif_eq {E} : instUniformSpace E = instUniformSpaceSubtype (α := L) -/
 
 /- If we use the `complete` field instead of `toCompleteSpace`, we get the following error:
   synthesized type class instance is not definitionally equal to expression inferred by typing rules, synthesized
@@ -194,13 +229,16 @@ inferred
   instUniformSpace ↥E.
 
   We suspect that this is because of the order in which the typeclass inference
-  system is working in each case. -/
+  system is working in each case.
+
+  We fixed this by giving high priority to `instUniformSpace`.
+   -/
 instance : LocalField E where
   --  __ : UniformSpace E := instUniformSpace E
   toTopologicalDivisionRing := by exact
     instTopologicalDivisionRingSubtypeMemIntermediateField K L E
-  toCompleteSpace := sorry
-  --complete := by sorry
+  --toCompleteSpace := sorry
+  complete := by sorry
   local_compact_nhds := sorry
 
 variable (K : Type*) [Field K] [Valued K ℤₘ₀] (E : Subfield K)
