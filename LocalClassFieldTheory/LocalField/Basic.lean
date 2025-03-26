@@ -41,25 +41,30 @@ inference-/
 example {G : Type*} [AddGroup G] [u : UniformSpace G] [hG : UniformAddGroup G] :
     IsTopologicalAddGroup.toUniformSpace G = u := UniformAddGroup.toUniformSpace_eq
 
-def instUniformSpace (E : Type*) [AddGroup E] [TopologicalSpace E]
+/- def instUniformSpace (E : Type*) [AddGroup E] [TopologicalSpace E]
     [IsTopologicalAddGroup E] :
-  UniformSpace E := IsTopologicalAddGroup.toUniformSpace E
+  UniformSpace E := IsTopologicalAddGroup.toUniformSpace E -/
 
 scoped instance instUniformAddGroup (E : Type*) [AddCommGroup E] [TopologicalSpace E]
     [IsTopologicalAddGroup E] :
-  @UniformAddGroup E (instUniformSpace E) _ := @uniformAddGroup_of_addCommGroup E ..
+    @UniformAddGroup E (IsTopologicalAddGroup.toUniformSpace E) _ :=
+  @uniformAddGroup_of_addCommGroup E ..
 
-scoped instance (E : Type*) [AddCommGroup E] [TopologicalSpace E]
+scoped instance instUniformSpace (E : Type*) [AddCommGroup E] [TopologicalSpace E]
     [IsTopologicalAddGroup E] : UniformSpace E := IsTopologicalAddGroup.toUniformSpace E
 
 class _root_.LocalField (K : Type*) [Field K] extends TopologicalSpace K, TopologicalDivisionRing K,
     CompleteSpace K, LocallyCompactSpace K where
   --toUniformSpace : UniformSpace K := inferInstance --:= instUniformSpace K
-  toUniformAddGroup : UniformAddGroup K := inferInstance
-  toUniformSpace : UniformSpace K := inferInstance
+
+  --toUniformAddGroup : UniformAddGroup K := inferInstance
+  --toUniformSpace : UniformSpace K := inferInstance
  -- toUniformSpace_eq : toUniformSpace = instUniformSpace K
   --toUniformGroup : @UniformAddGroup K (instUniformSpace K) _
   --toUniformGroup_eq : toUniformGroup = instUniformGroup K
+
+example (K : Type*) [Field K] [hK : LocalField K] :
+  hK.toTopologicalSpace = (instUniformSpace K).toTopologicalSpace := rfl
 
 end AddCommGroupUniformity
 
@@ -155,9 +160,13 @@ section Subfield
 variable (K L : Type*) [Field K] [LocalField K] [Field L] [LocalField L] [Algebra K L]
   (E : IntermediateField K L)
 
-instance : UniformSpace E := inferInstance --by exact instUniformSpaceSubtype
+--instance : UniformSpace E := by exact instUniformSpaceSubtype
 
-instance : TopologicalDivisionRing E where
+--instance : TopologicalSpace E := by exact instTopologicalSpaceSubtype
+
+--inferInstance --by exact instUniformSpaceSubtype
+
+instance  : TopologicalDivisionRing E where
   continuous_add := sorry --by continuity -- slow
   continuous_mul := sorry --by continuity -- slow
   continuous_neg := (continuous_neg.comp continuous_subtype_val).subtype_mk _
@@ -174,10 +183,24 @@ instance : TopologicalDivisionRing E where
     --apply continuousAt_subtype_val
     sorry
 
+
+structure IntermediateLocalField extends IntermediateField K L where
+  unif_eq {E} : instUniformSpaceSubtype (α := L) = instUniformSpace E
+
+/- If we use the `complete` field instead of `toCompleteSpace`, we get the following error:
+  synthesized type class instance is not definitionally equal to expression inferred by typing rules, synthesized
+  instUniformSpaceSubtype
+inferred
+  instUniformSpace ↥E.
+
+  We suspect that this is because of the order in which the typeclass inference
+  system is working in each case. -/
 instance : LocalField E where
-  --__ := instUniformSpace E
-  toTopologicalDivisionRing := inferInstance
-  complete := sorry
+  --  __ : UniformSpace E := instUniformSpace E
+  toTopologicalDivisionRing := by exact
+    instTopologicalDivisionRingSubtypeMemIntermediateField K L E
+  toCompleteSpace := sorry
+  --complete := by sorry
   local_compact_nhds := sorry
 
 variable (K : Type*) [Field K] [Valued K ℤₘ₀] (E : Subfield K)
