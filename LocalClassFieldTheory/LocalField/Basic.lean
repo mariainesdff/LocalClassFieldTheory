@@ -24,8 +24,14 @@ In this file we define the `class ValuedLocalField` on a valued field `K`, requi
 local field. The separability assumption is required to use some result in mathlib concerning
 the finiteness of the ring of integers.
 * For a `MixedCharLocalField p K`, we show that `K` is a local field.
--/
 
+## ToDo:
+PR the first two scoped instances to `Mathlib.Topology.Algebra.UniformGroup.Defs` in the `CommGroup`
+section (turning it into a `namespace`), and changing the `[local instance]` to a `scoped instance`
+and upgrading the theorem `uniformGroup_of_commGroup` to a `scoped instance`; and also add the
+theorem `AddSubgroup.uniformity_eq`.
+
+-/
 open DiscreteValuation Multiplicative Valuation
 
 
@@ -38,19 +44,19 @@ namespace CommGroupUniformity
 local field to a uniform group structure, making `uniformContinuous_sub` be found by class
 inference-/
 
-example {G : Type*} [AddGroup G] [u : UniformSpace G] [hG : UniformAddGroup G] :
-    IsTopologicalAddGroup.toUniformSpace G = u := UniformAddGroup.toUniformSpace_eq
+-- example {G : Type*} [AddGroup G] [u : UniformSpace G] [hG : UniformAddGroup G] :
+--     IsTopologicalAddGroup.toUniformSpace G = u := UniformAddGroup.toUniformSpace_eq
+
+@[to_additive]
+scoped instance (priority := high) instUniformSpaceOnCommGroup (E : Type*) [Group E]
+    [TopologicalSpace E] [IsTopologicalGroup E] : UniformSpace E :=
+  IsTopologicalGroup.toUniformSpace E
 
 @[to_additive]
 scoped instance instUniformGroup (E : Type*) [CommGroup E] [TopologicalSpace E]
     [IsTopologicalGroup E] :
     @UniformGroup E (IsTopologicalGroup.toUniformSpace E) _ :=
   @uniformGroup_of_commGroup E ..
-
-@[to_additive]
-scoped instance (priority := high) instUniformSpaceOnCommGroup (E : Type*) [CommGroup E]
-    [TopologicalSpace E] [IsTopologicalGroup E] : UniformSpace E :=
-  IsTopologicalGroup.toUniformSpace E
 
 variable (G : Type*) [CommGroup G] [TopologicalSpace G] [IsTopologicalGroup G]
 
@@ -124,7 +130,7 @@ def NonarchLocalField.toValued [NonarchLocalField K] : Valued K ℤₘ₀ where
   is_topological_valuation := sorry
 
 class ArchLocalField (K : Type*) [Field K] extends LocalField K where
-  Archimedean : 1 < (LocalField.haarFunction K (2 : K))
+  Archimedean : 1 < (LocalField.haarFunction K 2)
   -- Archimedean : ¬ IsNonarchimedean (LocalField.haarFunction K)
 
 /-A proof that `Nonarch →  LocCompact ↔ Complete ∧ Discrete ∧ FiniteResidueField` see
