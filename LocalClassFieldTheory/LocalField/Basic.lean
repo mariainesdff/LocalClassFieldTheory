@@ -61,8 +61,8 @@ scoped instance instUniformGroup (E : Type*) [CommGroup E] [TopologicalSpace E]
 variable (G : Type*) [CommGroup G] [TopologicalSpace G] [IsTopologicalGroup G]
 
 /-The class `LocalField`....**Blabla** -/
-class _root_.LocalField (K : Type*) [Field K] extends TopologicalSpace K, TopologicalDivisionRing K,
-    CompleteSpace K, LocallyCompactSpace K
+class _root_.LocalField (K : Type*) [Field K] extends TopologicalSpace K,
+  TopologicalDivisionRing K, CompleteSpace K, LocallyCompactSpace K
 
 /-This shows that the topology induced from the uniformity on `K` coincides with that of `K` as
 a topological group. -/
@@ -98,8 +98,6 @@ lemma Subgroup.uniformity_eq {L : Type*} [CommGroup L] [TopologicalSpace L]
 
 end CommGroupUniformity
 
-section ValuedLocalField
-
 /-- The class `ValuedlocalField`, extending `valued K ℤₘ₀` by requiring that `K` is complete, that
 the valuation is discrete, and that the residue field of the unit ball is finite. -/
 class ValuedLocalField (K : Type*) [Field K] extends Valued K ℤₘ₀ where
@@ -107,9 +105,7 @@ class ValuedLocalField (K : Type*) [Field K] extends Valued K ℤₘ₀ where
   isDiscrete : IsDiscrete (@Valued.v K _ ℤₘ₀ _ _)
   finiteResidueField : Finite (IsLocalRing.ResidueField (@Valued.v K _ ℤₘ₀ _ _).valuationSubring)
 
-end ValuedLocalField
-
-namespace LocalField
+-- namespace LocalField
 
 open CommGroupUniformity
 
@@ -121,6 +117,9 @@ noncomputable def haarFunction [LocalField K] : K → ℝ :=
 class NonarchLocalField (K : Type*) [Field K] extends LocalField K where
   isNonarchimedean : IsNonarchimedean (haarFunction K)
 
+def IsNonarchLocalField (K : Type*) [Field K] [LocalField K] : Prop :=
+  IsNonarchimedean (haarFunction K)
+
 /- This would be needed if we define the above using `@[class] structure` instead of `class`-/
 --instance [NonarchLocalField K] : LocalField K :=  inferInstance
 
@@ -130,7 +129,11 @@ def NonarchLocalField.toValued [NonarchLocalField K] : Valued K ℤₘ₀ where
   is_topological_valuation := sorry
 
 class ArchLocalField (K : Type*) [Field K] extends LocalField K where
-  Archimedean : 1 < (LocalField.haarFunction K 2)
+  Archimedean : 1 < (haarFunction K 2)
+  -- Archimedean : ¬ IsNonarchimedean (LocalField.haarFunction K)
+
+def IsArchLocalField (K : Type*) [Field K] [LocalField K] : Prop :=
+  1 < (haarFunction K 2)
   -- Archimedean : ¬ IsNonarchimedean (LocalField.haarFunction K)
 
 /-A proof that `Nonarch →  LocCompact ↔ Complete ∧ Discrete ∧ FiniteResidueField` see
@@ -141,6 +144,9 @@ def NonarchLocalField.toValuedLocalField [NonarchLocalField K] :
   complete := inferInstance
   isDiscrete := sorry
   finiteResidueField := sorry
+
+theorem LocalField.isArch_or_isNonarch [LocalField K] :
+    IsArchLocalField K ∨ IsNonarchLocalField K := sorry
 
 section Subfield
 
@@ -153,7 +159,7 @@ variable (K L : Type*) [Field K] [LocalField K] [Field L] [LocalField L] [Algebr
 
 --inferInstance --by exact instUniformSpaceSubtype
 
-instance  : TopologicalDivisionRing E where
+instance instTopologicalDivisionRingSubtype : TopologicalDivisionRing E where
   continuous_add := sorry --by continuity -- slow
   continuous_mul := sorry --by continuity -- slow
   continuous_neg := (continuous_neg.comp continuous_subtype_val).subtype_mk _
@@ -198,7 +204,7 @@ inferred
 instance : LocalField E where
   --  __ : UniformSpace E := instUniformSpace E
   toTopologicalDivisionRing := by exact
-    instTopologicalDivisionRingSubtypeMemIntermediateField K L E
+    instTopologicalDivisionRingSubtype K L E
   --toCompleteSpace := sorry
   complete := by sorry
   local_compact_nhds := sorry
