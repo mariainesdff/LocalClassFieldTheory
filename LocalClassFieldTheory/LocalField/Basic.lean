@@ -32,7 +32,7 @@ open DiscreteValuation Multiplicative Valuation
 open scoped DiscreteValuation
 
 
-namespace AddCommGroupUniformity
+namespace CommGroupUniformity
 
 /-These two scoped instances automatically update the `TopologicalDivisionRing` structure on any
 local field to a uniform group structure, making `uniformContinuous_sub` be found by class
@@ -41,38 +41,61 @@ inference-/
 example {G : Type*} [AddGroup G] [u : UniformSpace G] [hG : UniformAddGroup G] :
     IsTopologicalAddGroup.toUniformSpace G = u := UniformAddGroup.toUniformSpace_eq
 
-/- def instUniformSpace (E : Type*) [AddGroup E] [TopologicalSpace E]
-    [IsTopologicalAddGroup E] :
-  UniformSpace E := IsTopologicalAddGroup.toUniformSpace E -/
+@[to_additive]
+scoped instance instUniformGroup (E : Type*) [CommGroup E] [TopologicalSpace E]
+    [IsTopologicalGroup E] :
+    @UniformGroup E (IsTopologicalGroup.toUniformSpace E) _ :=
+  @uniformGroup_of_commGroup E ..
 
-scoped instance instUniformAddGroup (E : Type*) [AddCommGroup E] [TopologicalSpace E]
-    [IsTopologicalAddGroup E] :
-    @UniformAddGroup E (IsTopologicalAddGroup.toUniformSpace E) _ :=
-  @uniformAddGroup_of_addCommGroup E ..
+@[to_additive]
+scoped instance (priority := high) instUniformSpaceOnCommGroup (E : Type*) [CommGroup E]
+    [TopologicalSpace E] [IsTopologicalGroup E] : UniformSpace E :=
+  IsTopologicalGroup.toUniformSpace E
 
-scoped instance (priority := high) instUniformSpace (E : Type*) [AddCommGroup E]
-    [TopologicalSpace E] [IsTopologicalAddGroup E] : UniformSpace E :=
-  IsTopologicalAddGroup.toUniformSpace E
+variable (G : Type*) [CommGroup G] [TopologicalSpace G] [IsTopologicalGroup G]
 
+/-The class `LocalField`....**Blabla** -/
 class _root_.LocalField (K : Type*) [Field K] extends TopologicalSpace K, TopologicalDivisionRing K,
-    CompleteSpace K, LocallyCompactSpace K where
-  --toUniformSpace : UniformSpace K := inferInstance --:= instUniformSpace K
+    CompleteSpace K, LocallyCompactSpace K
 
-  --toUniformAddGroup : UniformAddGroup K := inferInstance
-  --toUniformSpace : UniformSpace K := inferInstance
- -- toUniformSpace_eq : toUniformSpace = instUniformSpace K
-  --toUniformGroup : @UniformAddGroup K (instUniformSpace K) _
-  --toUniformGroup_eq : toUniformGroup = instUniformGroup K
-
+/-This shows that the topology induced from the uniformity on `K` coincides with that of `K` as
+a topological group. -/
 example (K : Type*) [Field K] [hK : LocalField K] :
-  hK.toTopologicalSpace = (instUniformSpace K).toTopologicalSpace := rfl
+  hK.toTopologicalSpace = (instUniformSpaceOnAddCommGroup K).toTopologicalSpace := rfl
 
-end AddCommGroupUniformity
+@[to_additive AddSubgroup.uniformity_eq]
+lemma Subgroup.uniformity_eq {L : Type*} [CommGroup L] [TopologicalSpace L]
+    [IsTopologicalGroup L] (E : Subgroup L) :
+    instUniformSpaceOnCommGroup E = instUniformSpaceSubtype := by
+  ext : 1
+  rw [uniformity_eq_comap_nhds_one' E, uniformity_subtype, uniformity_eq_comap_nhds_one' L,
+    Filter.comap_comap]
+  have heq : ((fun (p : L × L) ↦ p.2 / p.1) ∘ fun (q : E × E) ↦ ((q.1 : L), (q.2 :L))) =
+    fun (q : E × E) ↦ (q.2 : L) / (q.1 :L) := rfl
+  rw [heq]
+  ext s
+  simp only [Filter.mem_comap]
+  refine ⟨fun ⟨U, hU0, hU⟩ ↦ ?_, fun ⟨U, hU0, hU⟩ ↦ ?_⟩
+  · simp only [mem_nhds_iff, Set.exists_subset_image_iff, Set.mem_image,
+      ZeroMemClass.coe_eq_zero, exists_eq_right] at hU0 ⊢
+    obtain ⟨t, htU, ⟨V, hV, rfl⟩, ht0⟩ := hU0
+    refine ⟨V, ⟨V, le_refl _, hV, ht0⟩, ?_⟩
+    apply subset_trans _ hU
+    intro x hx
+    simp only [Set.mem_preimage] at hx ⊢
+    exact htU (by simp [hx])
+  · refine ⟨(Subtype.val ⁻¹' U), ?_, hU⟩
+    simp only [mem_nhds_iff] at hU0 ⊢
+    obtain ⟨t, htU, ht, ht0⟩ := hU0
+    exact ⟨Subtype.val ⁻¹' t, Set.preimage_mono htU, isOpen_induced ht, by simp [ht0]⟩
+
+
+end CommGroupUniformity
 
 section ValuedLocalField
 
-/-- The class `local_field`, extending `valued K ℤₘ₀` by requiring that `K` is complete, that the
-valuation is discrete, and that the residue field of the unit ball is finite. -/
+/-- The class `ValuedlocalField`, extending `valued K ℤₘ₀` by requiring that `K` is complete, that
+the valuation is discrete, and that the residue field of the unit ball is finite. -/
 class ValuedLocalField (K : Type*) [Field K] extends Valued K ℤₘ₀ where
   complete : CompleteSpace K
   isDiscrete : IsDiscrete (@Valued.v K _ ℤₘ₀ _ _)
@@ -82,7 +105,7 @@ end ValuedLocalField
 
 namespace LocalField
 
-open AddCommGroupUniformity
+open CommGroupUniformity
 
 variable (K : Type*) [Field K]
 
@@ -101,7 +124,8 @@ def NonarchLocalField.toValued [NonarchLocalField K] : Valued K ℤₘ₀ where
   is_topological_valuation := sorry
 
 class ArchLocalField (K : Type*) [Field K] extends LocalField K where
-  Archimedean : ¬ IsNonarchimedean (LocalField.haarFunction K)
+  Archimedean : 1 < (LocalField.haarFunction K (2 : K))
+  -- Archimedean : ¬ IsNonarchimedean (LocalField.haarFunction K)
 
 /-A proof that `Nonarch →  LocCompact ↔ Complete ∧ Discrete ∧ FiniteResidueField` see
 Bourbaki, Alg Comm, VI, Chap ,§ 5, no 1, Prop 1.-/
@@ -111,50 +135,6 @@ def NonarchLocalField.toValuedLocalField [NonarchLocalField K] :
   complete := inferInstance
   isDiscrete := sorry
   finiteResidueField := sorry
-
-namespace EqCharLocalField
-
-open FpXCompletion
-
-variable (p : outParam ℕ) [Fact (Nat.Prime p)]
-
-variable (K : Type _) [Field K] [EqCharLocalField p K]
-
-/-- An `EqCharLocalField p K` that is separable over `FpX_completion` is a local field.
-  The separability assumption is required to use some result in mathlib concerning
-  the finiteness of the ring of integers.-/
-noncomputable def localField [Fact (Algebra.IsSeparable (FpXCompletion p) K)] : ValuedLocalField K :=
-  { EqCharLocalField.WithZero.valued p K with
-    complete := EqCharLocalField.completeSpace p K
-    isDiscrete := EqCharLocalField.valuation.isDiscrete p K
-    finiteResidueField := by
-      have : Algebra.IsSeparable (FpXCompletion p) K := @Fact.out _ _
-      apply finiteResidueFieldOfUnitBall
-      apply FpXIntCompletion.residueFieldFiniteOfCompletion }
-
-end EqCharLocalField
-
-namespace MixedCharLocalField
-
-open Padic
-
-variable (p : outParam ℕ) [Fact (Nat.Prime p)]
-
-variable (K : Type*) [Field K] [MixedCharLocalField p K]
-
-instance : Algebra.IsSeparable (Padic'.Q_p p) K :=
-  Algebra.IsSeparable.of_integral (Padic'.Q_p p) K
-
--- /-- A `MixedCharLocalField` is a local field. -/
-noncomputable def localField : ValuedLocalField K :=
-  { MixedCharLocalField.WithZero.valued p K with
-    complete := MixedCharLocalField.completeSpace p K
-    isDiscrete := MixedCharLocalField.valuation.isDiscrete p K
-    finiteResidueField := by
-      apply finiteResidueFieldOfUnitBall
-      apply RingOfIntegers.residueFieldFiniteOfCompletion }
-
-end MixedCharLocalField
 
 section Subfield
 
@@ -184,34 +164,10 @@ instance  : TopologicalDivisionRing E where
     --apply continuousAt_subtype_val
     sorry
 
-lemma AddSubgroup.uniformity_eq {L : Type*} [AddCommGroup L] [TopologicalSpace L]
-    [IsTopologicalAddGroup L] (E : AddSubgroup L) :
-    instUniformSpace E = instUniformSpaceSubtype := by
-  ext : 1
-  rw [uniformity_eq_comap_nhds_zero' E, uniformity_subtype, uniformity_eq_comap_nhds_zero' L,
-    Filter.comap_comap]
-  have heq : ((fun (p : L × L) ↦ p.2 - p.1) ∘ fun (q : E × E) ↦ ((q.1 : L), (q.2 :L))) =
-    fun (q : E × E) ↦ (q.2 : L) - (q.1 :L) := rfl
-  rw [heq]
-  ext s
-  simp only [Filter.mem_comap]
-  refine ⟨fun ⟨U, hU0, hU⟩ ↦ ?_, fun ⟨U, hU0, hU⟩ ↦ ?_⟩
-  · simp only [mem_nhds_iff, Set.exists_subset_image_iff, Set.mem_image,
-      ZeroMemClass.coe_eq_zero, exists_eq_right] at hU0 ⊢
-    obtain ⟨t, htU, ⟨V, hV, rfl⟩, ht0⟩ := hU0
-    refine ⟨V, ⟨V, le_refl _, hV, ht0⟩, ?_⟩
-    apply subset_trans _ hU
-    intro x hx
-    simp only [Set.mem_preimage] at hx ⊢
-    exact htU (by simp [hx])
-  · refine ⟨(Subtype.val ⁻¹' U), ?_, hU⟩
-    simp only [mem_nhds_iff] at hU0 ⊢
-    obtain ⟨t, htU, ht, ht0⟩ := hU0
-    exact ⟨Subtype.val ⁻¹' t, Set.preimage_mono htU, isOpen_induced ht, by simp [ht0]⟩
 
 omit [LocalField K] in
 lemma IntermediateField.uniformity_eq (E : IntermediateField K L) :
-    instUniformSpace E = instUniformSpaceSubtype := by
+    instUniformSpaceOnAddCommGroup E = instUniformSpaceSubtype := by
   let E' : AddSubgroup L := {
     carrier := E
     add_mem' := IntermediateField.add_mem E
@@ -256,3 +212,48 @@ instance foo : Valued E ℤₘ₀ where
         by simpa only [Set.preimage_setOf_eq]⟩
 
 end Subfield
+
+
+namespace EqCharLocalField
+
+open FpXCompletion
+
+variable (p : outParam ℕ) [Fact (Nat.Prime p)]
+
+variable (K : Type _) [Field K] [EqCharLocalField p K]
+
+/-- An `EqCharLocalField p K` that is separable over `FpX_completion` is a local field.
+  The separability assumption is required to use some result in mathlib concerning
+  the finiteness of the ring of integers.-/
+noncomputable def localField [Fact (Algebra.IsSeparable (FpXCompletion p) K)] : ValuedLocalField K :=
+  { EqCharLocalField.WithZero.valued p K with
+    complete := EqCharLocalField.completeSpace p K
+    isDiscrete := EqCharLocalField.valuation.isDiscrete p K
+    finiteResidueField := by
+      have : Algebra.IsSeparable (FpXCompletion p) K := @Fact.out _ _
+      apply finiteResidueFieldOfUnitBall
+      apply FpXIntCompletion.residueFieldFiniteOfCompletion }
+
+end EqCharLocalField
+
+namespace MixedCharLocalField
+
+open Padic
+
+variable (p : outParam ℕ) [Fact (Nat.Prime p)]
+
+variable (K : Type*) [Field K] [MixedCharLocalField p K]
+
+instance : Algebra.IsSeparable (Padic'.Q_p p) K :=
+  Algebra.IsSeparable.of_integral (Padic'.Q_p p) K
+
+-- /-- A `MixedCharLocalField` is a local field. -/
+noncomputable def localField : ValuedLocalField K :=
+  { MixedCharLocalField.WithZero.valued p K with
+    complete := MixedCharLocalField.completeSpace p K
+    isDiscrete := MixedCharLocalField.valuation.isDiscrete p K
+    finiteResidueField := by
+      apply finiteResidueFieldOfUnitBall
+      apply RingOfIntegers.residueFieldFiniteOfCompletion }
+
+end MixedCharLocalField
