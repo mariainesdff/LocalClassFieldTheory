@@ -222,12 +222,16 @@ def unzero_range' [Nontrivial R] [IsDomain R] (h0 : ∀ {x : R}, x ≠ 0 → vR 
 
 section Nontrivial
 
-variable {R : Type*} [Ring R] (v : Valuation R ℤₘ₀)
+variable {R : Type*} [Ring R]
+variable {Γ₀ : Type*} [LinearOrderedCommGroupWithZero Γ₀] (v : Valuation R Γ₀)
 
-/-- A valuation on a field is nontrivial if there exists a unit with valuation not equal to `1`. -/
+/-- A valuation on a ring is nontrivial if there exists an element with valuation
+not equal to `0` or `1`. -/
 class Nontrivial : Prop where
   exists_val_ne_one : ∃ x : R, v x ≠ 1 ∧ v x ≠ 0
 
+/-- For fields, being nontrivial is equivalent to the existence of a unit with valuation
+not equal to `1`. -/
 lemma nontrivial_iff_exists_unit {K : Type*} [Field K] {w : Valuation K ℤₘ₀} :
     w.Nontrivial ↔ ∃ x : Kˣ, w x ≠ 1 :=
   ⟨fun ⟨x, hx1, hx0⟩ ↦ ⟨Units.mk0 x (w.ne_zero_iff.mp hx0), hx1⟩,
@@ -599,10 +603,10 @@ theorem pow_preuniformizer {r : K₀} (hr : r ≠ 0) (π : Preuniformizer v) :
     rw [Valuation.map_mul, map_zpow₀, ← hm', zpow_neg, hm', inv_mul_cancel₀ hr₀]
   set a : K₀ := ⟨π.1.1 ^ (-m) * r, by apply le_of_eq hpow⟩ with ha
   have ha₀ : (↑a : K) ≠ 0 := by
-    sorry/- simp only [zpow_neg, ne_eq, mul_eq_zero, inv_eq_zero, ZeroMemClass.coe_eq_zero, not_or]
+    simp only [zpow_neg, ne_eq, mul_eq_zero, inv_eq_zero, ZeroMemClass.coe_eq_zero, not_or, ha]
     refine ⟨?_, hr⟩
     rw [hn, zpow_natCast, pow_eq_zero_iff', not_and_or]
-    exact Or.inl (preuniformizer_ne_zero' π) -/
+    exact Or.inl (preuniformizer_ne_zero' π)
   have h_unit_a : IsUnit a :=
     Integers.isUnit_of_one (integer.integers v) (isUnit_iff_ne_zero.mpr ha₀) hpow
   use h_unit_a.unit
