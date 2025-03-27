@@ -105,11 +105,16 @@ class ValuedLocalField (K : Type*) [Field K] extends Valued K ℤₘ₀ where
   isDiscrete : IsDiscrete (@Valued.v K _ ℤₘ₀ _ _)
   finiteResidueField : Finite (IsLocalRing.ResidueField (@Valued.v K _ ℤₘ₀ _ _).valuationSubring)
 
--- namespace LocalField
+instance (K : Type*) [Field K] [ValuedLocalField K] : IsDiscrete (@Valued.v K _ ℤₘ₀ _ _) :=
+  ValuedLocalField.isDiscrete
+
+instance (K : Type*) [Field K] [ValuedLocalField K] : CompleteSpace K := ValuedLocalField.complete
 
 open CommGroupUniformity
 
 variable (K : Type*) [Field K]
+
+
 
 noncomputable def haarFunction [LocalField K] : K → ℝ :=
   fun x ↦ MeasureTheory.Measure.addModularCharacterFun x
@@ -152,6 +157,7 @@ section Subfield
 
 variable (K L : Type*) [Field K] [LocalField K] [Field L] [LocalField L] [Algebra K L]
   (E : IntermediateField K L)
+
 
 --instance : UniformSpace E := by exact instUniformSpaceSubtype
 
@@ -209,19 +215,14 @@ instance : LocalField E where
   complete := by sorry
   local_compact_nhds := sorry
 
-variable (K : Type*) [Field K] [Valued K ℤₘ₀] (E : Subfield K)
+instance : NonarchLocalField E where
+  isNonarchimedean := sorry
 
-instance foo : Valued E ℤₘ₀ where
-  __ := E.toAddSubgroup.uniformAddGroup
-  v := Valuation.comap (algebraMap E K) Valued.v
-  is_topological_valuation := by
-    refine fun S ↦ ⟨fun hS ↦ ?_, ?_⟩
-    · obtain ⟨_, hU_nhds, hU_map⟩ := (mem_nhds_induced (algebraMap E K) _ _).mp hS
-      obtain ⟨γ, hγ⟩ := (Valued.is_topological_valuation _).mp hU_nhds
-      refine ⟨γ, fun _ hx ↦ hU_map (by simp [Set.mem_preimage, hγ hx])⟩
-    · rw [mem_nhds_induced]
-      exact fun ⟨γ, _⟩ ↦ ⟨_, (Valued.is_topological_valuation _).mpr ⟨γ, (by rfl)⟩,
-        by simpa only [Set.preimage_setOf_eq]⟩
+instance : ValuedLocalField E where
+  toValued := sorry
+  complete := sorry
+  isDiscrete := sorry
+  finiteResidueField := sorry
 
 end Subfield
 
@@ -269,3 +270,36 @@ noncomputable def localField : ValuedLocalField K :=
       apply RingOfIntegers.residueFieldFiniteOfCompletion }
 
 end MixedCharLocalField
+
+-- section Metrizable
+--
+-- variable {K}
+-- variable [UniformSpace K]
+-- -- variable [TopologicalSpace K] [TopologicalDivisionRing K]
+-- variable [(uniformity K).IsCountablyGenerated] [T0Space K]
+--
+-- noncomputable
+-- def distK : K → K → ℝ := (UniformSpace.metricSpace K).dist
+--
+-- abbrev IsPowerBdd (x : K) : Prop := ∀ n : ℕ, distK x (x ^ n) ≤ 1
+--
+-- variable (K) in
+-- def PowerBddSubring (H : IsNonarchimedean (fun x ↦ distK x 0)) : ValuationSubring K where
+--   carrier := {x | IsPowerBdd x}
+--   mul_mem' := by
+--     intro a b ha hb
+--     simp at ha hb ⊢
+--     intro n
+--     replace ha := ha n
+--     replace hb := hb n
+--
+--   one_mem' := sorry
+--   add_mem' := sorry
+--   zero_mem' := sorry
+--   neg_mem' := sorry
+--   mem_or_inv_mem' := sorry
+--
+-- theorem powerBddSubring_eq_integers [hv : ValuedLocalField K] :
+--   PowerBddSubring K = hv.toValued.v.valuationSubring := sorry
+--
+-- end Metrizable
