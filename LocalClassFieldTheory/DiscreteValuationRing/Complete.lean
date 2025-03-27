@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2024 María Inés de Frutos-Fernández, Filippo A. E. Nuccio. All rights reserved.
+Copyright (c) 2025 María Inés de Frutos-Fernández, Filippo A. E. Nuccio. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: María Inés de Frutos-Fernández, Filippo A. E. Nuccio
 -/
@@ -31,7 +31,7 @@ term of the `height_one_spectrum` of `R_v`. The underlying ideal is `height_one_
 
 
 ## Main results:
-* `is_dedekind_domain.height_one_spectrum.completion.is_discrete` is the instance that the extension
+* `IsDedekindDomain.HeightOneSpectrum.Completion.isDiscrete` is the instance that the extension
 of the adic valuation to the completion is discrete (i.e. surjective onto `ℤₘ₀`). As a consequence,
 the unit ball `R_v` is a discrete valuation ring.
 * `adic_of_compl_eq_compl_of_adic` shows that the two valuations on `K_v`, namely

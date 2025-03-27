@@ -64,7 +64,7 @@ end AuxLemma
 
 namespace DiscreteValuation
 
-variable (K : Type _) [Field K] [hv : Valued K ℤₘ₀] [IsDiscrete hv.v]
+variable (K : Type _) [Field K] [hv : Valued K ℤₘ₀] [IsNontrivial hv.v]
 
 section DiscreteNorm
 
@@ -76,12 +76,12 @@ def discretelyNormedField : NormedField K := Valued.toNormedField K ℤₘ₀
 def nontriviallyDiscretelyNormedField : NontriviallyNormedField K :=
   { @Valued.toNormedField K _ ℤₘ₀ _ _ (DiscreteValuation.rankOne _) with
     non_trivial := by
-      obtain ⟨x, hx⟩ := exists_isUniformizer_of_isDiscrete hv.v
+      obtain ⟨x, hx⟩ := exists_isPreuniformizer_of_isNontrivial hv.v
       use x.1⁻¹
       erw [@norm_inv K (@NormedField.toNormedDivisionRing K (discretelyNormedField K)),
         one_lt_inv_iff₀, Valued.toNormedField.norm_lt_one_iff,
         RankOneValuation.norm_pos_iff_val_pos]
-      exact ⟨isUniformizer_val_pos hv.v hx, isUniformizer_val_lt_one hv.v hx⟩ }
+      exact ⟨isPreuniformizer_val_pos hx, isPreuniformizer_val_lt_one hx⟩ }
 
 /-- The norm on `K` induced by its discrete valuation. -/
 def hasDiscreteNorm : Norm K := by
