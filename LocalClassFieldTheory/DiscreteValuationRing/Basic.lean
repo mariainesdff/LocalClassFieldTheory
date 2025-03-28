@@ -61,26 +61,26 @@ open Multiplicative
 
 section Subgroup
 
-theorem AddSubgroup.toSubgroup_closure {A : Type} [AddGroup A] (S : Set A) :
-    AddSubgroup.toSubgroup (AddSubgroup.closure S) =
-      Subgroup.closure (Multiplicative.toAdd ⁻¹' S) :=
-  le_antisymm
-    (AddSubgroup.toSubgroup.to_galoisConnection.l_le <|
-      (AddSubgroup.closure_le _).2 <| Subgroup.subset_closure (G := Multiplicative A))
-    ((Subgroup.closure_le _).2 <| AddSubgroup.subset_closure (G := A))
-
-theorem Subgroup.toAddSubgroup_closure {G : Type} [Group G] (S : Set G) :
-    Subgroup.toAddSubgroup (Subgroup.closure S) =
-      AddSubgroup.closure (Additive.toMul ⁻¹' S) :=
-  le_antisymm
-    (Subgroup.toAddSubgroup.le_symm_apply.1 <|
-      (Subgroup.closure_le _).2 (AddSubgroup.subset_closure (G := Additive G)))
-    ((AddSubgroup.closure_le _).2 (Subgroup.subset_closure (G := G)))
-
-theorem Subgroup.toAddSubgroup_toSubgroup' {G : Type*} [Group G] (H : Subgroup G) :
-    AddSubgroup.toSubgroup' (Subgroup.toAddSubgroup H) = H := by
-  ext x
-  simp only [OrderIso.symm_apply_apply]
+-- theorem AddSubgroup.toSubgroup_closure {A : Type} [AddGroup A] (S : Set A) :
+--     AddSubgroup.toSubgroup (AddSubgroup.closure S) =
+--       Subgroup.closure (Multiplicative.toAdd ⁻¹' S) :=
+--   le_antisymm
+--     (AddSubgroup.toSubgroup.to_galoisConnection.l_le <|
+--       (AddSubgroup.closure_le _).2 <| Subgroup.subset_closure (G := Multiplicative A))
+--     ((Subgroup.closure_le _).2 <| AddSubgroup.subset_closure (G := A))
+--
+-- theorem Subgroup.toAddSubgroup_closure {G : Type} [Group G] (S : Set G) :
+--     Subgroup.toAddSubgroup (Subgroup.closure S) =
+--       AddSubgroup.closure (Additive.toMul ⁻¹' S) :=
+--   le_antisymm
+--     (Subgroup.toAddSubgroup.le_symm_apply.1 <|
+--       (Subgroup.closure_le _).2 (AddSubgroup.subset_closure (G := Additive G)))
+--     ((AddSubgroup.closure_le _).2 (Subgroup.subset_closure (G := G)))
+--
+-- theorem Subgroup.toAddSubgroup_toSubgroup' {G : Type*} [Group G] (H : Subgroup G) :
+--     AddSubgroup.toSubgroup' (Subgroup.toAddSubgroup H) = H := by
+--   ext x
+--   simp only [OrderIso.symm_apply_apply]
 
 --TODO: use this in DVR.Extensions.
 
@@ -108,7 +108,7 @@ lemma MultInt.exists_generator_le_one {H : Subgroup (Multiplicative ℤ)} (h : H
       exact absurd ha h.symm
     · use a⁻¹, Left.inv_lt_one_iff.mpr ha1
       rw [Subgroup.zpowers_inv, ha]
-
+--
 @[simp]
 lemma MultInt.zpowers_ofAdd_neg_one : Subgroup.zpowers (ofAdd (-1)) = ⊤ := by
   ext z
@@ -116,7 +116,7 @@ lemma MultInt.zpowers_ofAdd_neg_one : Subgroup.zpowers (ofAdd (-1)) = ⊤ := by
   use (- toAdd z)
   simp only [Int.reduceNeg, ofAdd_neg, zpow_neg, inv_zpow', inv_inv, ← Int.ofAdd_mul, one_mul]
   rfl
-
+--
 theorem MultInt.mem_zpowers_iff {a b : Multiplicative ℤ} :
     b ∈ Subgroup.zpowers a ↔ toAdd a ∣ toAdd b := by
   rw [Subgroup.mem_zpowers_iff, dvd_iff_exists_eq_mul_left]
@@ -125,7 +125,7 @@ theorem MultInt.mem_zpowers_iff {a b : Multiplicative ℤ} :
     rw [← smul_eq_mul, ← toAdd_zpow, hk]
   · use k
     rw [← ofAdd_toAdd b, hk, mul_comm k, Int.ofAdd_mul, ofAdd_toAdd]
-
+--
 theorem Int.eq_neg_one_of_dvd_one {a : ℤ} (H : a ≤ 0) (H' : a ∣ 1) : a = -1 := by
   rw [← Int.natAbs_dvd_natAbs, Int.natAbs_one] at H'
   have hnat := Nat.eq_one_of_dvd_one H'
@@ -133,7 +133,7 @@ theorem Int.eq_neg_one_of_dvd_one {a : ℤ} (H : a ≤ 0) (H' : a ∣ 1) : a = -
   rcases hnat with (h1 | hneg1)
   · exfalso; linarith
   · exact hneg1
-
+--
 lemma MultInt.eq_ofAdd_neg_one_of_generates_top {a : Multiplicative ℤ} (ha1 : a < 1)
     (ha : Subgroup.zpowers a = ⊤) : a = ofAdd (-1) := by
   rw [← MultInt.zpowers_ofAdd_neg_one] at ha
@@ -344,7 +344,7 @@ theorem isPreuniformizer_ne_zero {π : K} (hπ : IsPreuniformizer v π) : π ≠
   rw [h0, IsPreuniformizer, Valuation.map_zero] at hπ
   exact WithZero.zero_ne_coe hπ
 
-theorem preuniformizer_ne_zero' (π : Preuniformizer v) : π.1.1 ≠ 0 :=
+theorem preuniformizer_ne_zero (π : Preuniformizer v) : π.1.1 ≠ 0 :=
   isPreuniformizer_ne_zero π.2
 
 theorem isPreuniformizer_val_pos {π : K} (hπ : IsPreuniformizer v π) : 0 < v π := by
@@ -399,13 +399,13 @@ theorem isDiscrete_of_exists_isUniformizer {K : Type w₁} [Field K] {v : Valuat
     rw [map_zpow₀, hπ, ← coe_zpow, coe_inj, ← ofAdd_zsmul, ← zsmul_neg', neg_neg, zsmul_one,
       Int.cast_id, ofAdd_toAdd]
 
-theorem uniformizer_ne_zero {π : R} (hπ : IsUniformizer vR π) : π ≠ 0 := by
+theorem isUniformizer_ne_zero {π : R} (hπ : IsUniformizer vR π) : π ≠ 0 := by
   intro h0
   rw [h0, IsUniformizer, Valuation.map_zero] at hπ
   exact WithZero.zero_ne_coe hπ
 
-theorem uniformizer_ne_zero' (π : Uniformizer vR) : π.1.1 ≠ 0 :=
-  uniformizer_ne_zero π.2
+theorem uniformizer_ne_zero (π : Uniformizer vR) : π.1.1 ≠ 0 :=
+  isUniformizer_ne_zero π.2
 
 theorem isUniformizer_val_pos {π : R} (hπ : IsUniformizer vR π) : 0 < vR π := by
   rw [isUniformizer_iff] at hπ ; simp only [zero_lt_iff, ne_eq, hπ, coe_ne_zero, not_false_iff]
@@ -608,12 +608,12 @@ theorem pow_preuniformizer {r : K₀} (hr : r ≠ 0) (π : Preuniformizer v) :
     simp only [zpow_neg, ne_eq, mul_eq_zero, inv_eq_zero, ZeroMemClass.coe_eq_zero, not_or, ha]
     refine ⟨?_, hr⟩
     rw [hn, zpow_natCast, pow_eq_zero_iff', not_and_or]
-    exact Or.inl (preuniformizer_ne_zero' π)
+    exact Or.inl (preuniformizer_ne_zero π)
   have h_unit_a : IsUnit a :=
     Integers.isUnit_of_one (integer.integers v) (isUnit_iff_ne_zero.mpr ha₀) hpow
   use h_unit_a.unit
   rw [IsUnit.unit_spec, Subring.coe_pow, ha, ← mul_assoc, zpow_neg, hn, zpow_natCast,
-    mul_inv_cancel₀ (pow_ne_zero _ (preuniformizer_ne_zero' π)), one_mul]
+    mul_inv_cancel₀ (pow_ne_zero _ (preuniformizer_ne_zero π)), one_mul]
 
 theorem preuniformizer_is_generator (π : Preuniformizer v) :
     maximalIdeal v.valuationSubring = Ideal.span {π.1} := by
