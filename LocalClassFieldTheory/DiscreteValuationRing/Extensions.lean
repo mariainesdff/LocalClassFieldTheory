@@ -143,7 +143,7 @@ variable (K L) in
 theorem expExtensionOnUnits_ne_zero [FiniteDimensional K L] : expExtensionOnUnits K L ≠ 0 := by
   have h_alg : Algebra.IsAlgebraic K L := Algebra.IsAlgebraic.of_finite K L
   obtain ⟨x, hx⟩ := exists_isUniformizer_of_isDiscrete hv.v
-  have hx_unit : IsUnit (x : K) := isUnit_iff_ne_zero.mpr (uniformizer_ne_zero hv.v hx)
+  have hx_unit : IsUnit (x : K) := isUnit_iff_ne_zero.mpr (isUniformizer_ne_zero hx)
   rw [IsUniformizer] at hx
   set z : Lˣ := Units.map (algebraMap K L).toMonoidHom (IsUnit.unit hx_unit) with hz
   by_contra h0
@@ -217,7 +217,7 @@ theorem expExtensionOnUnits_dvd [FiniteDimensional K L] :
   set u : L := algebraMap K L (π : K) with hu_def
   have hu0 : u ≠ 0 := by
     rw [hu_def, ne_eq, _root_.map_eq_zero]
-    exact uniformizer_ne_zero hv.v hπ
+    exact isUniformizer_ne_zero hπ
   obtain ⟨n, hn⟩ := exists_mul_expExtensionOnUnits K (isUnit_iff_ne_zero.mpr hu0).choose
   have hu := (isUnit_iff_ne_zero.mpr hu0).choose_spec
   have hne_zero : ((minpoly K ((algebraMap K L) ↑π)).natDegree : ℤ) ≠ 0 := by
