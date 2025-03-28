@@ -18,7 +18,6 @@ In this file we define the `class ValuedLocalField` on a valued field `K`, requi
 ## Main Definitions
 * `ValuedLocalField` is the key definition, see above.
 
-
 ## Main Results
 * For an `EqCharLocalField p K` that is separable over `FpX_completion p` we show that `K` is a
 local field. The separability assumption is required to use some result in mathlib concerning
@@ -32,11 +31,12 @@ and upgrading the theorem `uniformGroup_of_commGroup` to a `scoped instance`; an
 theorem `AddSubgroup.uniformity_eq`.
 
 -/
+
+noncomputable section
+
 open DiscreteValuation Multiplicative Valuation
 
-
 open scoped DiscreteValuation
-
 
 namespace CommGroupUniformity
 
@@ -114,8 +114,6 @@ open CommGroupUniformity
 
 variable (K : Type*) [Field K]
 
-
-
 noncomputable def haarFunction [LocalField K] : K → ℝ :=
   fun x ↦ MeasureTheory.Measure.addModularCharacterFun x
 
@@ -155,9 +153,8 @@ theorem LocalField.isArch_or_isNonarch [LocalField K] :
 
 section Subfield
 
-variable (K L : Type*) [Field K] [LocalField K] [Field L] [LocalField L] [Algebra K L]
-  (E : IntermediateField K L)
-
+variable (K L : Type*) [Field K] [ValuedLocalField K] [Field L] [ValuedLocalField L] [Algebra K L]
+  [Algebra.IsSeparable K L] (E : IntermediateField K L)
 
 --instance : UniformSpace E := by exact instUniformSpaceSubtype
 
@@ -165,7 +162,7 @@ variable (K L : Type*) [Field K] [LocalField K] [Field L] [LocalField L] [Algebr
 
 --inferInstance --by exact instUniformSpaceSubtype
 
-instance instTopologicalDivisionRingSubtype : TopologicalDivisionRing E where
+/- instance instTopologicalDivisionRingSubtype : TopologicalDivisionRing E where
   continuous_add := sorry --by continuity -- slow
   continuous_mul := sorry --by continuity -- slow
   continuous_neg := (continuous_neg.comp continuous_subtype_val).subtype_mk _
@@ -183,7 +180,7 @@ instance instTopologicalDivisionRingSubtype : TopologicalDivisionRing E where
     sorry
 
 
-omit [LocalField K] in
+--omit [LocalField K] in
 lemma IntermediateField.uniformity_eq (E : IntermediateField K L) :
     instUniformSpaceOnAddCommGroup E = instUniformSpaceSubtype := by
   let E' : AddSubgroup L := {
@@ -191,7 +188,7 @@ lemma IntermediateField.uniformity_eq (E : IntermediateField K L) :
     add_mem' := IntermediateField.add_mem E
     zero_mem' := IntermediateField.zero_mem E
     neg_mem' := IntermediateField.neg_mem E }
-  exact AddSubgroup.uniformity_eq E'
+  exact AddSubgroup.uniformity_eq E' -/
 
 /- structure IntermediateLocalField extends IntermediateField K L where
   unif_eq {E} : instUniformSpace E = instUniformSpaceSubtype (α := L) -/
@@ -207,22 +204,40 @@ inferred
 
   We fixed this by giving high priority to `instUniformSpace`.
    -/
+
+open Valued
+
+instance : FiniteDimensional K L := sorry
+
+--instance : FiniteDimensional K E := inferInstance
+
+
+instance foo : Valued E ℤₘ₀ := by
+  apply Valued.mk (extendedValuation K E)
+
+  sorry
+
+#check Extension.uniformSpace
+
+
+instance : ValuedLocalField E := {
+  complete := by
+    convert Extension.completeSpace K E -- More diamonds, great
+
+    sorry
+  isDiscrete := Extension.isDiscrete_of_finite K E
+  finiteResidueField :=
+    finiteResidueFieldOfUnitBall K E ValuedLocalField.finiteResidueField }
+
+
 instance : LocalField E where
-  --  __ : UniformSpace E := instUniformSpace E
-  toTopologicalDivisionRing := by exact
-    instTopologicalDivisionRingSubtype K L E
-  --toCompleteSpace := sorry
-  complete := by sorry
+  toTopologicalDivisionRing := sorry
+  complete := sorry
   local_compact_nhds := sorry
 
 instance : NonarchLocalField E where
   isNonarchimedean := sorry
 
-instance : ValuedLocalField E where
-  toValued := sorry
-  complete := sorry
-  isDiscrete := sorry
-  finiteResidueField := sorry
 
 end Subfield
 

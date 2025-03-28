@@ -8,7 +8,7 @@ import LocalClassFieldTheory.DiscreteValuationRing.Extensions
 -- import LocalClassFieldTheory.DiscreteValuationRing.Ramification
 import LocalClassFieldTheory.LocalField.Basic
 import Mathlib.Order.GaloisConnection.Basic
-import Mathlib.RingTheory.Valuation.ValExtension
+import LocalClassFieldTheory.ForMathlib.IsValExtensionInstances
 
 noncomputable section
 
@@ -21,7 +21,7 @@ open Valuation
 variable (K : Type*) {L : Type*} [Field K] [Field L] [ValuedLocalField K]
 variable [Algebra K L]
 variable {Γ₀ Γ₁: outParam Type*} [LinearOrderedCommGroupWithZero Γ₁]
--- Cannot ask for `Valued L Γ₀` because this does not work if `l/K` is simply algebraic but infinite
+-- Cannot ask for `Valued L Γ₀` because this does not work if `L/K` is simply algebraic but infinite
 
 variable (vL : Valuation L Γ₁) [IsValExtension ((@Valued.v K _ ℤₘ₀ _ _)) vL]
 
@@ -36,25 +36,11 @@ local notation "L₀" => Valuation.valuationSubring vL
 
 section Algebra
 
--- Probably `ValuedLocalField K` is too much, `Valued K Γ₀` should be enough
-lemma algebraMap_mem (x : K₀) : algebraMap K L x ∈ L₀ := by
-  simp only [mem_valuationSubring_iff]
-  have h1 : vL ((algebraMap K L) 1) = 1 := by simp only [_root_.map_one]
-  rw [← h1]
-  rw [IsValExtension.val_map_le_iff (vR := vK)]
-  simp only [_root_.map_one]
-  exact x.2
-
-instance : Algebra K₀ L₀ := by
-  apply RingHom.toAlgebra
-  sorry
-
-
 structure IntegrallyClosedSubalgebra extends Subalgebra K₀ L₀ where
   is_int_closed : IsIntegrallyClosed toSubalgebra
 
-#synth Preorder (Subalgebra K₀ L₀)
-#synth CompleteLattice (IntermediateField K L)
+--#synth Preorder (Subalgebra K₀ L₀)
+--#synth CompleteLattice (IntermediateField K L)
 
 -- probably better to put a `CompleteLattice` instance as for `IntermediateField`
 instance : Preorder (IntegrallyClosedSubalgebra K vL) where
@@ -70,7 +56,7 @@ lemma IntegrallyClosed_of_IntegrallyClosedSubalgebra (A : IntegrallyClosedSubalg
 
 open IsLocalRing
 
--- Probably `ValuedLocalField K` is too much, `Valued K Γ₀` should be enough
+/- -- Probably `ValuedLocalField K` is too much, `Valued K Γ₀` should be enough
 lemma maximalIdeal_mem (x : maximalIdeal K₀) : algebraMap K₀ L₀ x.1 ∈ (maximalIdeal L₀) := by
   sorry
   -- simp only [ValuationSubring.mem_nonunits_iff_exists_mem_maximalIdeal]
@@ -78,11 +64,11 @@ lemma maximalIdeal_mem (x : maximalIdeal K₀) : algebraMap K₀ L₀ x.1 ∈ (m
   -- rw [← h1]
   -- rw [IsValExtension.val_map_le_iff (vR := vK)]
   -- simp only [_root_.map_one]
-  -- exact x.2
+  -- exact x.2 -/
 
-instance : Algebra (ResidueField K₀) (ResidueField L₀) := by
+/- instance : Algebra (ResidueField K₀) (ResidueField L₀) := by
   apply RingHom.toAlgebra
-  sorry
+  sorry -/
 
 end Algebra
 
@@ -91,11 +77,72 @@ variable [Algebra.IsSeparable K L] [Valuation.RankOne vL]
 
 def fracField : (IntegrallyClosedSubalgebra K vL) → (IntermediateField K L) := by
   intro A
+
+/-   have f : L₀ →ₐ[K₀] L := {
+    toFun := (fun (x : L₀) ↦ (x : L))
+    map_one' := sorry
+    map_mul' := sorry
+    map_zero' := sorry
+    map_add' := sorry
+    commutes' := sorry }
+
+  have := Subalgebra.map f A.1
+
+  have := (fun (x : L₀) ↦ (x : L)) '' (A.1)
+  have B : Subalgebra K L := {
+    carrier := sorry
+    mul_mem' := sorry
+    add_mem' := sorry
+    algebraMap_mem' := sorry
+  }
+  use B -/
   sorry
+
+example (E : IntermediateField K L) (S : Set E.carrier) : Set L :=  S
 
 def unitBall : (IntermediateField K L) → (IntegrallyClosedSubalgebra K vL) := by
   intro E
-  let E₀ : Subring E := Valued.v.integer
+  let E₀ : ValuationSubring E := Valued.v.valuationSubring -- TODO: this is not the right valuation,
+  -- we should instead use the restriction of `vL`.
+  have : IsValExtension (Valued.v (R := E)) vL := sorry
+ -- have : Algebra E L := inferInstance
+  let A : Subalgebra K₀ L₀ := {
+    __ := (algebraMap E₀ L₀).range
+    algebraMap_mem' := by
+      intro x
+      simp only [Subsemiring.coe_carrier_toSubmonoid, Subring.coe_toSubsemiring, RingHom.coe_range,
+        Set.mem_range, Subtype.exists]
+      use algebraMap K L x, IntermediateField.algebraMap_mem E ↑x
+      have b : (algebraMap K L) ↑x ∈ E := IntermediateField.algebraMap_mem E ↑x
+      have b_1 : ⟨(algebraMap K L) ↑x, b⟩ ∈ E₀ := by
+        rw [mem_valuationSubring_iff]
+        -- TODO: complete when the valuation on E is the correct one.
+        sorry
+      use b_1
+      ext
+      rw [coe_algebraMap_valuationSubring_eq]
+      simp only [IntermediateField.algebraMap_apply,
+        DiscreteValuation.coe_algebraMap_valuationSubring_eq] }
+  letI hE₀ : IsIntegrallyClosed E₀ := inferInstance
+  use A
+  change IsIntegrallyClosed (algebraMap E₀ L₀).range
+  simp only [IsIntegrallyClosed]
+  let _ : Algebra ↥(algebraMap ↥E₀ ↥L₀).range E₀ := sorry
+  rw [AlgEquiv.isIntegrallyClosedIn (R := (algebraMap E₀ L₀).range) (B := FractionRing E₀)
+    (A := FractionRing (algebraMap E₀ L₀).range)]
+  simp only [isIntegrallyClosedIn_iff]
+
+  sorry
+
+  /- change IsIntegrallyClosed (algebraMap E₀ L₀).range
+  simp only [IsIntegrallyClosed]
+  let _ : Algebra ↥(algebraMap ↥E₀ ↥L₀).range E₀ := sorry
+  rw [AlgEquiv.isIntegrallyClosedIn (R := (algebraMap E₀ L₀).range) (B := FractionRing E₀)
+     (A := FractionRing (algebraMap E₀ L₀).range)] -/
+
+  /-
+  refine AlgHom.isIntegrallyClosedIn (R := E₀) (A := E₀) (B := (algebraMap E₀ L₀).range)
+    ?_ ?_ ?_ -/
   sorry
 
 theorem fracField_gc : GaloisConnection (fracField K vL) (unitBall K vL) := sorry
