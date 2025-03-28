@@ -10,6 +10,7 @@ import Mathlib.RingTheory.DedekindDomain.AdicValuation
 import Mathlib.RingTheory.DiscreteValuationRing.Basic
 import Mathlib.RingTheory.PrincipalIdealDomainOfPrime
 import Mathlib.RingTheory.Valuation.Discrete.Basic
+import Mathlib.RingTheory.Valuation.Integers
 import Mathlib.RingTheory.Valuation.RankOne
 import Mathlib.GroupTheory.SpecificGroups.Cyclic
 
@@ -60,7 +61,7 @@ universe w₁ w₂
 open Multiplicative
 
 section Subgroup
-
+-- **NOT NEEDED ANYMORE**
 -- theorem AddSubgroup.toSubgroup_closure {A : Type} [AddGroup A] (S : Set A) :
 --     AddSubgroup.toSubgroup (AddSubgroup.closure S) =
 --       Subgroup.closure (Multiplicative.toAdd ⁻¹' S) :=
@@ -84,7 +85,7 @@ section Subgroup
 
 --TODO: use this in DVR.Extensions.
 
--- In PR #21361
+-- **In PR #21361**
 /- @[to_additive]
 theorem Subgroup.isCyclic_iff_exists_zpowers_eq_top {α : Type*} [Group α] (H : Subgroup α) :
     IsCyclic H ↔ ∃ g : α, Subgroup.zpowers g = H := by
@@ -96,8 +97,10 @@ theorem Subgroup.isCyclic_iff_exists_zpowers_eq_top {α : Type*} [Group α] (H :
     simp [(H.subtype).map_zpowers ⟨k, _⟩, coeSubtype, hk, Subgroup.map_eq_range_iff.mpr,
       range_subtype] -/
 
-lemma MultInt.exists_generator_le_one {H : Subgroup (Multiplicative ℤ)} (h : H ≠ ⊥) :
-    ∃ (a : Multiplicative ℤ), a < 1 ∧ Subgroup.zpowers a = H := by
+-- **TODO: Make `G` implicit**
+lemma Mul.exists_generator_lt_one (G : Type*) [LinearOrderedAddCommGroup G] [IsAddCyclic G]
+    {H : Subgroup (Multiplicative G)} (h : H ≠ ⊥) :
+    ∃ (a : Multiplicative G), a < 1 ∧ Subgroup.zpowers a = H := by
   have h_cyc := Subgroup.isCyclic H
   obtain ⟨a, ha⟩ := H.isCyclic_iff_exists_zpowers_eq_top.mp h_cyc
   by_cases ha1 : a < 1
@@ -108,31 +111,26 @@ lemma MultInt.exists_generator_le_one {H : Subgroup (Multiplicative ℤ)} (h : H
       exact absurd ha h.symm
     · use a⁻¹, Left.inv_lt_one_iff.mpr ha1
       rw [Subgroup.zpowers_inv, ha]
---
+
 @[simp]
 lemma MultInt.zpowers_ofAdd_neg_one : Subgroup.zpowers (ofAdd (-1)) = ⊤ := by
-  ext z
-  simp only [Subgroup.mem_top, iff_true]
-  use (- toAdd z)
-  simp only [Int.reduceNeg, ofAdd_neg, zpow_neg, inv_zpow', inv_inv, ← Int.ofAdd_mul, one_mul]
-  rfl
+  simp only [Int.reduceNeg, ofAdd_neg, Subgroup.zpowers_inv, Subgroup.eq_top_iff',
+    Multiplicative.forall]
+  intro z
+  use z
+  simp [Int.reduceNeg, ofAdd_neg, zpow_neg, inv_zpow', inv_inv, ← Int.ofAdd_mul, one_mul]
 --
 theorem MultInt.mem_zpowers_iff {a b : Multiplicative ℤ} :
     b ∈ Subgroup.zpowers a ↔ toAdd a ∣ toAdd b := by
   rw [Subgroup.mem_zpowers_iff, dvd_iff_exists_eq_mul_left]
-  refine ⟨fun ⟨k, hk⟩ ↦ ?_, fun ⟨k, hk⟩ ↦ ?_⟩
-  · use k
-    rw [← smul_eq_mul, ← toAdd_zpow, hk]
-  · use k
-    rw [← ofAdd_toAdd b, hk, mul_comm k, Int.ofAdd_mul, ofAdd_toAdd]
+  exact ⟨fun ⟨k, hk⟩ ↦ ⟨k, by rw [← smul_eq_mul, ← toAdd_zpow, hk]⟩,
+    fun ⟨k, hk⟩ ↦ ⟨k, by rw [← ofAdd_toAdd b, hk, mul_comm k, Int.ofAdd_mul, ofAdd_toAdd]⟩⟩
 --
-theorem Int.eq_neg_one_of_dvd_one {a : ℤ} (H : a ≤ 0) (H' : a ∣ 1) : a = -1 := by
-  rw [← Int.natAbs_dvd_natAbs, Int.natAbs_one] at H'
-  have hnat := Nat.eq_one_of_dvd_one H'
-  simp only [natAbs_eq_iff, Nat.cast_one, reduceNeg] at hnat
-  rcases hnat with (h1 | hneg1)
-  · exfalso; linarith
-  · exact hneg1
+lemma Int.eq_neg_one_of_dvd_one {a : ℤ} (H : a ≤ 0) (H' : a ∣ 1) : a = -1 := by
+  replace H' := H'.choose_spec
+  rw [Eq.comm, Int.mul_eq_one_iff_eq_one_or_neg_one] at H'
+  simp_all [show a ≠ 1 from (by linarith)]
+
 --
 lemma MultInt.eq_ofAdd_neg_one_of_generates_top {a : Multiplicative ℤ} (ha1 : a < 1)
     (ha : Subgroup.zpowers a = ⊤) : a = ofAdd (-1) := by
@@ -152,26 +150,38 @@ variable {A : Type w₁} [CommRing A]
 
 namespace Integer
 
-theorem isUnit_iff_valuation_eq_one {K : Type w₁} [Field K] {Γ₀ : Type w₂}
-    [LinearOrderedCommGroupWithZero Γ₀] {v : Valuation K Γ₀} (x : v.integer) :
-    IsUnit x ↔ v x = 1 := by
-  refine ⟨@Integers.one_of_isUnit K Γ₀ _ _ v v.integer _ _ (Valuation.integer.integers v) _,
-    fun hx ↦ ?_⟩
-  have hx0 : (x : K) ≠ 0 := by
-    by_contra h0
-    rw [h0, map_zero] at hx
-    exact zero_ne_one hx
-  have hx' : v (x : K)⁻¹ = (1 : Γ₀) := by rw [map_inv₀, inv_eq_one]; exact hx
-  rw [isUnit_iff_exists_inv]
-  use! (x : K)⁻¹, le_of_eq hx'
-  · ext; simp only [Subring.coe_mul, ne_eq, ZeroMemClass.coe_eq_zero, OneMemClass.coe_one,
-      mul_inv_cancel₀ hx0]
+-- **not needed anymore**
+-- theorem isUnit_iff_valuation_eq_one' {K : Type w₁} [Field K] {Γ₀ : Type w₂}
+--     [LinearOrderedCommGroupWithZero Γ₀] {v : Valuation K Γ₀} (x : v.integer) :
+--     IsUnit x ↔ v x = 1 := by
+--   apply Integers.isUnit_iff_valuation_eq_one
+--   exact integer.integers v
+  -- refine ⟨@Integers.one_of_isUnit K Γ₀ _ _ v v.integer _ _ (Valuation.integer.integers v) _,
+  --   fun hx ↦ ?_⟩
+  -- have hx0 : (x : K) ≠ 0 := by
+  --   by_contra h0
+  --   rw [h0, map_zero] at hx
+  --   exact zero_ne_one hx
+  -- have hx' : v (x : K)⁻¹ = (1 : Γ₀) := by rw [map_inv₀, inv_eq_one]; exact hx
+  -- rw [isUnit_iff_exists_inv]
+  -- use! (x : K)⁻¹, le_of_eq hx'
+  -- · ext; simp only [Subring.coe_mul, ne_eq, ZeroMemClass.coe_eq_zero, OneMemClass.coe_one,
+  --     mul_inv_cancel₀ hx0]
 
-theorem not_isUnit_iff_valuation_lt_one {K : Type w₁} [Field K] {Γ₀ : Type w₂}
-    [LinearOrderedCommGroupWithZero Γ₀] {v : Valuation K Γ₀} (x : v.integer) :
-    ¬IsUnit x ↔ v x < 1 := by
-  rw [← not_le, not_iff_not, isUnit_iff_valuation_eq_one, le_antisymm_iff]
-  exact and_iff_right x.2
+-- **IN PR #23408**
+-- theorem not_isUnit_iff_valuation_lt_one {K : Type*} {Γ₀ : Type*} [Field K]
+--     [LinearOrderedCommGroupWithZero Γ₀] {v : Valuation K Γ₀} (x : v.integer) :
+--     ¬IsUnit x ↔ v x < 1 := by
+--   rw [← not_le, not_iff_not, Integers.isUnit_iff_valuation_eq_one (F := K) (Γ₀ := Γ₀),
+--     le_antisymm_iff]
+--   exacts [and_iff_right x.2, integer.integers v]
+--
+-- protected theorem _root_.ValuationSubring.mem_maximalIdeal
+-- {K : Type*} {Γ₀ : Type*} [Field K]
+--     [LinearOrderedCommGroupWithZero Γ₀] {v : Valuation K Γ₀} (a : v.valuationSubring) :
+--     a ∈ IsLocalRing.maximalIdeal (v.valuationSubring) ↔ v a < 1 :=
+--   Integer.not_isUnit_iff_valuation_lt_one a
+
 
 end Integer
 
@@ -298,13 +308,13 @@ variable [IsNontrivial v]
 
 /-- An element `π : K` is a pre-uniformizer if `v π` generates `v.unzero_range` .-/
 def IsPreuniformizer (π : K) : Prop :=
-  v π = (MultInt.exists_generator_le_one v.unzero_range_ne_bot).choose
+  v π = (Mul.exists_generator_lt_one ℤ v.unzero_range_ne_bot).choose
 
 variable {v}
 
 lemma isPreuniformizer_val_lt_one {π : K} (hπ : v.IsPreuniformizer π) : v π < 1 := by
   rw [hπ, ← WithZero.coe_one, WithZero.coe_lt_coe]
-  exact (MultInt.exists_generator_le_one v.unzero_range_ne_bot).choose_spec.1
+  exact (Mul.exists_generator_lt_one ℤ v.unzero_range_ne_bot).choose_spec.1
 
 lemma isPreuniformizer_val_ne_zero {π : K} (hπ : v.IsPreuniformizer π) : v π ≠ 0 := by
   by_contra h0
@@ -312,7 +322,7 @@ lemma isPreuniformizer_val_ne_zero {π : K} (hπ : v.IsPreuniformizer π) : v π
 
 lemma isPreuniformizer_val_generates_unzero_range {π : K} (hπ : v.IsPreuniformizer π) :
     unzero_range v = Subgroup.zpowers (WithZero.unzero (v.isPreuniformizer_val_ne_zero hπ)) := by
-  convert (MultInt.exists_generator_le_one v.unzero_range_ne_bot).choose_spec.2.symm
+  convert (Mul.exists_generator_lt_one ℤ v.unzero_range_ne_bot).choose_spec.2.symm
   rw [← WithZero.coe_inj, ← hπ, WithZero.coe_unzero]
 
 variable (v)
@@ -328,7 +338,7 @@ variable {v}
 
 theorem isPreuniformizer_iff {π : K} :
     v.IsPreuniformizer π ↔
-      v π = (MultInt.exists_generator_le_one v.unzero_range_ne_bot).choose := refl _
+      v π = (Mul.exists_generator_lt_one ℤ v.unzero_range_ne_bot).choose := refl _
 
 /-- A constructor for preuniformizers.-/
 def Preuniformizer.mk' {x : K} (hx : v.IsPreuniformizer x) :
@@ -463,8 +473,8 @@ section IsNontrivial
 
 theorem exists_isPreuniformizer_of_isNontrivial [v.IsNontrivial] :
     ∃ π : K₀, IsPreuniformizer v (π : K) := by
-  set g := (MultInt.exists_generator_le_one v.unzero_range_ne_bot).choose with hg
-  obtain ⟨h1, h2⟩ := (MultInt.exists_generator_le_one v.unzero_range_ne_bot).choose_spec
+  set g := (Mul.exists_generator_lt_one ℤ v.unzero_range_ne_bot).choose with hg
+  obtain ⟨h1, h2⟩ := (Mul.exists_generator_lt_one ℤ v.unzero_range_ne_bot).choose_spec
   have hg_mem : g ∈ v.unzero_range := by rw [← h2]; exact Subgroup.mem_zpowers _
   simp only [unzero_range, Subgroup.mem_mk, Set.mem_range, unzero_apply] at hg_mem
   obtain ⟨x, hx⟩ := hg_mem
@@ -515,8 +525,8 @@ theorem IsUniformizer.isPreuniformizer {π : K} (hπ : IsUniformizer v π) :
   rw [isPreuniformizer_iff]
   rw [isUniformizer_iff] at hπ
   haveI := isDiscrete_of_exists_isUniformizer hπ
-  set g := (MultInt.exists_generator_le_one v.unzero_range_ne_bot).choose with hg
-  obtain ⟨h1, htop⟩ := (MultInt.exists_generator_le_one v.unzero_range_ne_bot).choose_spec
+  set g := (Mul.exists_generator_lt_one ℤ v.unzero_range_ne_bot).choose with hg
+  obtain ⟨h1, htop⟩ := (Mul.exists_generator_lt_one ℤ v.unzero_range_ne_bot).choose_spec
   simp only [← hg] at h1 htop ⊢
   rw [unzero_range_eq_top] at htop
   rw [hπ, WithZero.coe_inj, eq_comm]
@@ -537,8 +547,8 @@ theorem IsPreuniformizer.isUniformizer {π : K} (hπ : IsPreuniformizer v π) :
     IsUniformizer v π := by
   rw [isUniformizer_iff]
   rw [isPreuniformizer_iff] at hπ
-  set g := (MultInt.exists_generator_le_one v.unzero_range_ne_bot).choose with hg
-  obtain ⟨h1, htop⟩ := (MultInt.exists_generator_le_one v.unzero_range_ne_bot).choose_spec
+  set g := (Mul.exists_generator_lt_one ℤ v.unzero_range_ne_bot).choose with hg
+  obtain ⟨h1, htop⟩ := (Mul.exists_generator_lt_one ℤ v.unzero_range_ne_bot).choose_spec
   simp only [← hg] at h1 htop ⊢
   rw [unzero_range_eq_top] at htop
   rw [hπ, WithZero.coe_inj]
@@ -721,7 +731,7 @@ theorem isUniformizer_of_generator [IsDiscrete v] {r : K₀}
 
 theorem val_le_iff_dvd' {L : Type*} [Field L] {w : Valuation L ℤₘ₀} [IsNontrivial w]
     [IsDiscreteValuationRing w.valuationSubring] (x : w.valuationSubring) (n : ℕ) :
-    w x ≤ (MultInt.exists_generator_le_one w.unzero_range_ne_bot).choose ^ n ↔
+    w x ≤ (Mul.exists_generator_lt_one ℤ w.unzero_range_ne_bot).choose ^ n ↔
       IsLocalRing.maximalIdeal w.valuationSubring ^ n ∣ Ideal.span {x} := by
   by_cases hx : x = 0
   · rw [Ideal.span_singleton_eq_bot.mpr hx, hx, Subring.coe_zero, Valuation.map_zero]
@@ -732,7 +742,7 @@ theorem val_le_iff_dvd' {L : Type*} [Field L] {w : Valuation L ℤₘ₀} [IsNon
       apply isPreuniformizer_of_generator
       rw [hr_def, span_singleton_generator]
     have hrn : w (r ^ n) =
-        (MultInt.exists_generator_le_one w.unzero_range_ne_bot).choose ^ n := by
+        (Mul.exists_generator_lt_one ℤ w.unzero_range_ne_bot).choose ^ n := by
       rw [Valuation.map_pow, hr]
     have := @Valuation.Integers.le_iff_dvd L ℤₘ₀ _ _ w w.valuationSubring _ _
         (Valuation.integer.integers w) x (r ^ n)
@@ -748,7 +758,7 @@ theorem val_le_iff_dvd (L : Type w₁) [Field L] {w : Valuation L ℤₘ₀} [Is
     [IsDiscreteValuationRing w.valuationSubring] (x : w.valuationSubring) (n : ℕ) :
     w x ≤ ofAdd (-(n : ℤ)) ↔ IsLocalRing.maximalIdeal w.valuationSubring ^ n ∣ Ideal.span {x} := by
   convert val_le_iff_dvd' x n
-  set g := (MultInt.exists_generator_le_one w.unzero_range_ne_bot).choose with hg
+  set g := (Mul.exists_generator_lt_one ℤ w.unzero_range_ne_bot).choose with hg
   have hg1 : g = ofAdd (-1) := by
     obtain ⟨π, hπ⟩ := exists_isPreuniformizer_of_isNontrivial w
     have h1 : w π = ofAdd (-1 : ℤ) := by
