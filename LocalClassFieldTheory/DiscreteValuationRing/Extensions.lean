@@ -86,7 +86,9 @@ instance : NoZeroSMulDivisors K₀ (integralClosure K₀ L)
       rw [← _root_.map_zero (algebraMap K₀ (integralClosure K₀ L))] at hc
       exact IsFractionRing.injective K₀ K ((algebraMap K L).injective (Subtype.ext_iff.mp hc)) }
 
-variable [IsDiscrete hv.v] [CompleteSpace K]
+section IsNontrivial
+
+variable [IsNontrivial hv.v] [CompleteSpace K]
 
 theorem map_mul_aux [FiniteDimensional K L] (x y : Lˣ) :
     Valued.v ((minpoly K ((x : L) * ↑y)).coeff 0) ^
@@ -142,9 +144,9 @@ theorem expExtensionOnUnits_generates_range' [FiniteDimensional K L] :
 variable (K L) in
 theorem expExtensionOnUnits_ne_zero [FiniteDimensional K L] : expExtensionOnUnits K L ≠ 0 := by
   have h_alg : Algebra.IsAlgebraic K L := Algebra.IsAlgebraic.of_finite K L
-  obtain ⟨x, hx⟩ := exists_isUniformizer_of_isDiscrete hv.v
-  have hx_unit : IsUnit (x : K) := isUnit_iff_ne_zero.mpr (uniformizer_ne_zero hv.v hx)
-  rw [IsUniformizer] at hx
+  obtain ⟨x, hx⟩ := exists_isPreuniformizer_of_isNontrivial hv.v
+  have hx_unit : IsUnit (x : K) := isUnit_iff_ne_zero.mpr (isPreuniformizer_ne_zero hx)
+  rw [IsPreuniformizer] at hx
   set z : Lˣ := Units.map (algebraMap K L).toMonoidHom (IsUnit.unit hx_unit) with hz
   by_contra h0
   have h := expExtensionOnUnits_generates_range' (K := K) (L := L)
@@ -157,10 +159,10 @@ theorem expExtensionOnUnits_ne_zero [FiniteDimensional K L] : expExtensionOnUnit
         Valued.v (x : K) := by
       rw [RingHom.toMonoidHom_eq_coe, Units.coe_map, IsUnit.unit_spec, MonoidHom.coe_coe,
         Valuation.coeff_zero_minpoly]
-    rw [hz, powExtensionOnUnits_apply, ne_eq, ← WithZero.coe_inj, coe_unzero, hv, hx, ←
-      ofAdd_neg_nat, ← ofAdd_zero, WithZero.coe_inj, RingHom.toMonoidHom_eq_coe, Units.coe_map,
-        IsUnit.unit_spec, MonoidHom.coe_coe, Int.natCast_div, ofAdd_neg, ofAdd_zero, inv_eq_one,
-        ofAdd_eq_one, ← Int.natCast_div, Int.natCast_eq_zero, Nat.div_eq_zero_iff, not_or]
+    have : Valued.v (x : K) ^ 0 = (1 : Multiplicative ℤ) := by simp
+    rw [hz, powExtensionOnUnits_apply, ne_eq, ← WithZero.coe_inj, coe_unzero, hv, ← this, ← ne_eq,
+      (pow_right_injective₀ (isPreuniformizer_val_pos hx)
+        (ne_of_lt (isPreuniformizer_val_lt_one  hx))).ne_iff, ne_eq, Nat.div_eq_zero_iff, not_or]
     exact ⟨ne_of_gt (minpoly.natDegree_pos (h_alg.isAlgebraic _).isIntegral),
       not_lt.mpr (minpoly.natDegree_le (K := K) z.1)⟩
   exact hzne1 hz1
@@ -207,17 +209,22 @@ theorem exists_mul_expExtensionOnUnits [FiniteDimensional K L] (x : Lˣ) :
   use -n
   rw [WithZero.ofAdd_neg_one_pow_comm n, ← WithZero.coe_zpow, hn, WithZero.coe_unzero]
 
-variable (L)
+
+end IsNontrivial
+
+section IsDiscrete
+
+variable (K) (L) [IsDiscrete hv.v] [CompleteSpace K]
 
 /-- The number `expExtensionOnUnits K L` divides the degree of `L` over `K`. -/
 theorem expExtensionOnUnits_dvd [FiniteDimensional K L] :
-  expExtensionOnUnits K L ∣ finrank K L := by
+    expExtensionOnUnits K L ∣ finrank K L := by
   have h_alg := Algebra.IsAlgebraic.of_finite K L
   obtain ⟨π, hπ⟩ := exists_isUniformizer_of_isDiscrete hv.v
   set u : L := algebraMap K L (π : K) with hu_def
   have hu0 : u ≠ 0 := by
     rw [hu_def, ne_eq, _root_.map_eq_zero]
-    exact uniformizer_ne_zero hv.v hπ
+    exact isUniformizer_ne_zero hπ
   obtain ⟨n, hn⟩ := exists_mul_expExtensionOnUnits K (isUnit_iff_ne_zero.mpr hu0).choose
   have hu := (isUnit_iff_ne_zero.mpr hu0).choose_spec
   have hne_zero : ((minpoly K ((algebraMap K L) ↑π)).natDegree : ℤ) ≠ 0 := by
@@ -661,6 +668,8 @@ instance ValuationSubring.algebra : Algebra K₀ L₀ :=
     rw [← integralClosure_eq_integer]
     exact (integralClosure (↥Valued.v.valuationSubring) L).algebra
   h
+
+end IsDiscrete
 
 end Complete
 
