@@ -169,12 +169,12 @@ namespace Integer
   --     mul_inv_cancel₀ hx0]
 
 -- **IN PR #23408**
--- theorem not_isUnit_iff_valuation_lt_one {K : Type*} {Γ₀ : Type*} [Field K]
---     [LinearOrderedCommGroupWithZero Γ₀] {v : Valuation K Γ₀} (x : v.integer) :
---     ¬IsUnit x ↔ v x < 1 := by
---   rw [← not_le, not_iff_not, Integers.isUnit_iff_valuation_eq_one (F := K) (Γ₀ := Γ₀),
---     le_antisymm_iff]
---   exacts [and_iff_right x.2, integer.integers v]
+theorem not_isUnit_iff_valuation_lt_one {K : Type*} {Γ₀ : Type*} [Field K]
+    [LinearOrderedCommGroupWithZero Γ₀] {v : Valuation K Γ₀} (x : v.integer) :
+    ¬IsUnit x ↔ v x < 1 := by
+  rw [← not_le, not_iff_not, Integers.isUnit_iff_valuation_eq_one (F := K) (Γ₀ := Γ₀),
+    le_antisymm_iff]
+  exacts [and_iff_right x.2, integer.integers v]
 --
 -- protected theorem _root_.ValuationSubring.mem_maximalIdeal
 -- {K : Type*} {Γ₀ : Type*} [Field K]
@@ -572,8 +572,10 @@ variable {v} [IsNontrivial v]
 theorem isPreuniformizer_of_associated {π₁ π₂ : K₀} (h1 : IsPreuniformizer v π₁)
     (H : Associated π₁ π₂) : IsPreuniformizer v π₂ := by
   obtain ⟨u, hu⟩ := H
-  rwa [isPreuniformizer_iff, ← hu, Subring.coe_mul, Valuation.map_mul,
-    (Integer.isUnit_iff_valuation_eq_one u.1).mp u.isUnit, mul_one, ← isPreuniformizer_iff]
+  have : v (u.1 : K) = 1 :=
+    (Integers.isUnit_iff_valuation_eq_one <|integer.integers v).mp u.isUnit
+  rwa [isPreuniformizer_iff, ← hu, Subring.coe_mul, Valuation.map_mul, this, mul_one,
+    ← isPreuniformizer_iff]
 
 theorem associated_of_isPreuniformizer (π₁ π₂ : Preuniformizer v) : Associated π₁.1 π₂.1 := by
   have hval : v ((π₁.1 : K)⁻¹ * π₂.1) = 1 := by
@@ -581,8 +583,7 @@ theorem associated_of_isPreuniformizer (π₁ π₂ : Preuniformizer v) : Associ
       isPreuniformizer_iff.mp π₂.2, isUnit_iff_ne_zero, ne_eq, coe_ne_zero, not_false_eq_true,
       IsUnit.inv_mul_cancel]
   set p : v.integer := ⟨(π₁.1 : K)⁻¹ * π₂.1, (v.mem_integer_iff _).mpr (le_of_eq hval)⟩ with hp
-  use ((Integer.isUnit_iff_valuation_eq_one p).mpr hval).unit
-  simp only [IsUnit.unit_spec]
+  use ((Integers.isUnit_iff_valuation_eq_one (x := p) <| integer.integers v).mpr hval).unit
   apply_fun ((↑·) : K₀ → K) using Subtype.val_injective
   simp [hp, Subring.coe_mul, ← mul_assoc, mul_inv_cancel₀ (isPreuniformizer_ne_zero π₁.2), one_mul]
 
