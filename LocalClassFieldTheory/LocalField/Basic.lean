@@ -47,53 +47,53 @@ inference-/
 -- example {G : Type*} [AddGroup G] [u : UniformSpace G] [hG : UniformAddGroup G] :
 --     IsTopologicalAddGroup.toUniformSpace G = u := UniformAddGroup.toUniformSpace_eq
 
-@[to_additive]
-scoped instance (priority := high) instUniformSpaceOnCommGroup (E : Type*) [Group E]
-    [TopologicalSpace E] [IsTopologicalGroup E] : UniformSpace E :=
-  IsTopologicalGroup.toUniformSpace E
-
-@[to_additive]
-scoped instance instUniformGroup (E : Type*) [CommGroup E] [TopologicalSpace E]
-    [IsTopologicalGroup E] :
-    @UniformGroup E (IsTopologicalGroup.toUniformSpace E) _ :=
-  @uniformGroup_of_commGroup E ..
+-- @[to_additive]
+-- scoped instance (priority := high) instUniformSpaceOnCommGroup (E : Type*) [Group E]
+--     [TopologicalSpace E] [IsTopologicalGroup E] : UniformSpace E :=
+--   IsTopologicalGroup.toUniformSpace E
+--
+-- @[to_additive]
+-- scoped instance instUniformGroup (E : Type*) [CommGroup E] [TopologicalSpace E]
+--     [IsTopologicalGroup E] :
+--     @UniformGroup E (IsTopologicalGroup.toUniformSpace E) _ :=
+--   @uniformGroup_of_commGroup E ..
 
 variable (G : Type*) [CommGroup G] [TopologicalSpace G] [IsTopologicalGroup G]
 
 /-The class `LocalField`....**Blabla** -/
-class _root_.LocalField (K : Type*) [Field K] extends TopologicalSpace K,
+class _root_.LocalField (K : Type*) [Field K] extends UniformSpace K, UniformAddGroup K,
   TopologicalDivisionRing K, CompleteSpace K, LocallyCompactSpace K
 
 /-This shows that the topology induced from the uniformity on `K` coincides with that of `K` as
 a topological group. -/
-example (K : Type*) [Field K] [hK : LocalField K] :
-  hK.toTopologicalSpace = (instUniformSpaceOnAddCommGroup K).toTopologicalSpace := rfl
+-- example (K : Type*) [Field K] [hK : LocalField K] :
+--   hK.toTopologicalSpace = (instUniformSpaceOnAddCommGroup K).toTopologicalSpace := rfl
 
-@[to_additive AddSubgroup.uniformity_eq]
-lemma Subgroup.uniformity_eq {L : Type*} [CommGroup L] [TopologicalSpace L]
-    [IsTopologicalGroup L] (E : Subgroup L) :
-    instUniformSpaceOnCommGroup E = instUniformSpaceSubtype := by
-  ext : 1
-  rw [uniformity_eq_comap_nhds_one' E, uniformity_subtype, uniformity_eq_comap_nhds_one' L,
-    Filter.comap_comap]
-  have heq : ((fun (p : L × L) ↦ p.2 / p.1) ∘ fun (q : E × E) ↦ ((q.1 : L), (q.2 :L))) =
-    fun (q : E × E) ↦ (q.2 : L) / (q.1 :L) := rfl
-  rw [heq]
-  ext s
-  simp only [Filter.mem_comap]
-  refine ⟨fun ⟨U, hU0, hU⟩ ↦ ?_, fun ⟨U, hU0, hU⟩ ↦ ?_⟩
-  · simp only [mem_nhds_iff, Set.exists_subset_image_iff, Set.mem_image,
-      ZeroMemClass.coe_eq_zero, exists_eq_right] at hU0 ⊢
-    obtain ⟨t, htU, ⟨V, hV, rfl⟩, ht0⟩ := hU0
-    refine ⟨V, ⟨V, le_refl _, hV, ht0⟩, ?_⟩
-    apply subset_trans _ hU
-    intro x hx
-    simp only [Set.mem_preimage] at hx ⊢
-    exact htU (by simp [hx])
-  · refine ⟨(Subtype.val ⁻¹' U), ?_, hU⟩
-    simp only [mem_nhds_iff] at hU0 ⊢
-    obtain ⟨t, htU, ht, ht0⟩ := hU0
-    exact ⟨Subtype.val ⁻¹' t, Set.preimage_mono htU, isOpen_induced ht, by simp [ht0]⟩
+-- @[to_additive AddSubgroup.uniformity_eq]
+-- lemma Subgroup.uniformity_eq {L : Type*} [CommGroup L] [TopologicalSpace L]
+--     [IsTopologicalGroup L] (E : Subgroup L) :
+--     instUniformSpaceOnCommGroup E = instUniformSpaceSubtype := by
+--   ext : 1
+--   rw [uniformity_eq_comap_nhds_one' E, uniformity_subtype, uniformity_eq_comap_nhds_one' L,
+--     Filter.comap_comap]
+--   have heq : ((fun (p : L × L) ↦ p.2 / p.1) ∘ fun (q : E × E) ↦ ((q.1 : L), (q.2 :L))) =
+--     fun (q : E × E) ↦ (q.2 : L) / (q.1 :L) := rfl
+--   rw [heq]
+--   ext s
+--   simp only [Filter.mem_comap]
+--   refine ⟨fun ⟨U, hU0, hU⟩ ↦ ?_, fun ⟨U, hU0, hU⟩ ↦ ?_⟩
+--   · simp only [mem_nhds_iff, Set.exists_subset_image_iff, Set.mem_image,
+--       ZeroMemClass.coe_eq_zero, exists_eq_right] at hU0 ⊢
+--     obtain ⟨t, htU, ⟨V, hV, rfl⟩, ht0⟩ := hU0
+--     refine ⟨V, ⟨V, le_refl _, hV, ht0⟩, ?_⟩
+--     apply subset_trans _ hU
+--     intro x hx
+--     simp only [Set.mem_preimage] at hx ⊢
+--     exact htU (by simp [hx])
+--   · refine ⟨(Subtype.val ⁻¹' U), ?_, hU⟩
+--     simp only [mem_nhds_iff] at hU0 ⊢
+--     obtain ⟨t, htU, ht, ht0⟩ := hU0
+--     exact ⟨Subtype.val ⁻¹' t, Set.preimage_mono htU, isOpen_induced ht, by simp [ht0]⟩
 
 
 end CommGroupUniformity
@@ -127,7 +127,8 @@ def IsNonarchLocalField (K : Type*) [Field K] [LocalField K] : Prop :=
 --instance [NonarchLocalField K] : LocalField K :=  inferInstance
 
 def NonarchLocalField.toValued [NonarchLocalField K] : Valued K ℤₘ₀ where
-  --uniformContinuous_sub := uniformContinuous_sub
+  -- uniformContinuous_sub := by
+  --   have := @uniformContinuous_sub K _ _
   v := sorry
   is_topological_valuation := sorry
 
@@ -208,8 +209,6 @@ inferred
 open Valued
 
 instance : FiniteDimensional K L := sorry
-
---instance : FiniteDimensional K E := inferInstance
 
 
 instance foo : Valued E ℤₘ₀ := by
