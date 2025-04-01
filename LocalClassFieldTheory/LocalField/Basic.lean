@@ -8,6 +8,8 @@ import LocalClassFieldTheory.EqCharacteristic.Valuation
 import LocalClassFieldTheory.MixedCharacteristic.Valuation
 import Mathlib.MeasureTheory.Group.ModularCharacter
 
+import Mathlib.Analysis.AbsoluteValue.Equivalence
+
 /-!
 # Local fields
 In this file we define the `class ValuedLocalField` on a valued field `K`, requiring that it is
@@ -110,6 +112,11 @@ instance (K : Type*) [Field K] [ValuedLocalField K] : IsDiscrete (@Valued.v K _ 
 
 instance (K : Type*) [Field K] [ValuedLocalField K] : CompleteSpace K := ValuedLocalField.complete
 
+instance (K : Type*) [Field K] [ValuedLocalField K] :
+    Finite (IsLocalRing.ResidueField (@Valued.v K _ ℤₘ₀ _ _).valuationSubring) :=
+  ValuedLocalField.finiteResidueField
+
+
 open CommGroupUniformity
 
 variable (K : Type*) [Field K]
@@ -208,26 +215,129 @@ inferred
 
 open Valued
 
-instance : FiniteDimensional K L := sorry
+/- IMPLEMENTATION REMARK: for the time being, we are assuming the hypothesis
+`FiniteDimensional K L`. This should actually follow from the hypotheses above, but it probably
+requires to prove the classification theorem for nonarchimedean local fields, which will not be
+trivial.
 
+TODO: provide this instance.
+instance finiteDimensional : FiniteDimensional K L := by
+  sorry -/
+
+--variable [FiniteDimensional K L]
+
+lemma Valued.isOpen_iff  {R Γ₀ : Type*} [Ring R] [LinearOrderedCommGroupWithZero Γ₀]
+    [_i : Valued R Γ₀] {s : Set R} :
+    IsOpen s ↔ ∀ x ∈ s, ∃ (γ : Γ₀ˣ), {y : R | v (y - x) < ↑γ} ⊆ s := by
+  simp [isOpen_iff_mem_nhds, mem_nhds]
+
+def Valued.absoluteValue {A Γ₀ : Type*} [Field A] [LinearOrderedCommGroupWithZero Γ₀]
+    [val : Valued A Γ₀] [hv : val.v.RankOne] : AbsoluteValue A ℝ where
+  toFun    := Valued.norm
+  map_mul' := sorry
+  nonneg'  := sorry
+  eq_zero' := sorry
+  add_le'  := sorry
+
+instance {R Γ₀ : Type*} [Field R] [LinearOrderedCommGroupWithZero Γ₀] (v₁ : Valuation R Γ₀)
+    [h₁ : v₁.RankOne]  : (Valued.mk' v₁).v.RankOne := sorry
+
+/- lemma Valuation.isEquiv_iff {R Γ₀ Γ₁ : Type*} [Field R] [LinearOrderedCommGroupWithZero Γ₀]
+    [LinearOrderedCommGroupWithZero Γ₁] (v₁ : Valuation R Γ₀) (v₂ : Valuation R Γ₁)
+    [h₁ : v₁.RankOne] [h₂ : v₂.RankOne] :
+    v₁.IsEquiv v₂ ↔ AbsoluteValue.IsEquiv
+      (Valued.mk' v₁).absoluteValue (Valued.mk' v₂).absoluteValue :=  by
+  sorry -/
+
+lemma todo [h : IsValExtension (Valued.v (R := K)) (Valued.v (R := L))] {π : K}
+    (hπ : IsUniformizer (Valued.v (R := K)) π) :
+    ∃ (n : ℕ) (hn : 0 < n), v (algebraMap K L π) = ofAdd (-(n : ℤ)) := by
+  obtain ⟨ω, hω⟩ := exists_isUniformizer_of_isDiscrete (Valued.v (R := L))
+  set x : valuationSubring (Valued.v (R := L)) := by
+      use algebraMap K L π
+      rw [mem_valuationSubring_iff, IsValExtension.val_map_le_one_iff (Valued.v (R := K)), hπ]
+      norm_cast
+      --exact right_eq_inf.mp rfl -- ???
+    with hx_def -- not sure about spacing
+  have hx : x ≠ 0 := sorry
+  obtain ⟨n, u, hu⟩ := pow_uniformizer (Valued.v (R := L)) hx ⟨ω, hω⟩
+  simp only [hx_def, SubmonoidClass.coe_pow] at hu
+  have hu1 : v ((u : (Valued.v (R := L)).valuationSubring) : L) = 1 := by
+    sorry
+  have hn0 : 0 < n := sorry
+  use n, hn0
+  rw [hu, _root_.map_mul, _root_.map_pow, hω, WithZero.ofAdd_neg_nat, hu1, mul_one]
+
+
+instance [h : IsValExtension (Valued.v (R := K)) (Valued.v (R := L))] : ContinuousSMul K L := by
+  obtain ⟨π, hπ⟩ := exists_isUniformizer_of_isDiscrete (Valued.v (R := K))
+  obtain ⟨n, hn0, hn⟩ := todo K L hπ
+  refine continuousSMul_of_algebraMap K L ?_
+  rw [continuous_def]
+  intros U hU
+  simp only [isOpen_iff, Set.mem_preimage] at hU ⊢
+  intros x hx
+  obtain ⟨γ, hγ⟩ := hU (algebraMap K L x) hx
+  by_cases hγ1 : (γ : ℤₘ₀) < 1
+  · obtain ⟨z, hz⟩ : ∃ (z : Kˣ), (Valued.v (algebraMap K L (z : K))) = γ^n := by
+      have hγ0 : (γ : ℤₘ₀) ≠ 0 := sorry
+      have hunit : IsUnit ((π : K)^(- toAdd (WithZero.unzero hγ0))) := sorry
+      have hcoe : (hunit.unit : K) = (π : K)^(- toAdd (WithZero.unzero hγ0)) := rfl
+      use hunit.unit
+      rw [hcoe]
+      simp only [zpow_neg, map_inv₀, map_zpow₀, hn, ofAdd_neg, WithZero.coe_inv, inv_zpow', inv_inv]
+      rw [WithZero.ofAdd_zpow, zpow_comm, ← WithZero.ofAdd_zpow,
+        ofAdd_toAdd, WithZero.coe_unzero, zpow_natCast]
+    have hz' : {y | v (y - (algebraMap K L) x) < (Valued.v (algebraMap K L (z : K)))} ⊆ U := by
+      apply le_trans _ hγ
+      rw [hz]
+      intros y hy
+      simp only [Set.mem_setOf_eq] at hy ⊢
+      apply lt_of_lt_of_le hy
+      conv_rhs => rw [← pow_one (γ : ℤₘ₀)]
+      exact pow_le_pow_right_of_le_one' (le_of_lt hγ1) hn0
+    use (z.isUnit.map v).unit
+    intro y hy
+    simp only [IsUnit.unit_spec, Set.mem_setOf_eq, Set.mem_preimage] at hy ⊢
+    apply hz'
+    rw [Set.mem_setOf_eq, ← _root_.map_sub, IsValExtension.val_map_lt_iff (Valued.v (R := K))]
+    exact hy
+  · use 1
+    intros y hy
+    have h1 : {y | v (y - (algebraMap K L) x) < 1} ⊆ U :=
+      le_trans (fun _ hy ↦ lt_of_lt_of_le hy (not_lt.mp hγ1)) hγ
+    apply h1
+    simp only [Units.val_one, Set.mem_setOf_eq] at hy ⊢
+    rw [← _root_.map_sub, IsValExtension.val_map_lt_one_iff (Valued.v (R := K))]
+    exact hy
+
+variable [IsValExtension (Valued.v (R := K)) (Valued.v (R := L))] [FiniteDimensional K L]
 
 instance foo : Valued E ℤₘ₀ := by
   apply Valued.mk (extendedValuation K E)
-
+  intros U
   sorry
 
-#check Extension.uniformSpace
 
+/- Wrong
+
+ def Valuation.isEquiv_iff {R Γ₀ : Type*} [Ring R] [LinearOrderedCommMonoidWithZero Γ₀]
+    (v₁ : Valuation R Γ₀) (v₂ : Valuation R Γ₀) :
+    v₁.IsEquiv v₂ ↔ ∃ (γ : Γ₀ˣ), ∀ (r : R) (δ : Γ₀ˣ), v₁ r ≤ δ ↔ v₂ r ≤ δ * γ := by
+  simp only [IsEquiv]
+  refine ⟨fun h ↦ ?_, fun ⟨γ, hγ⟩ ↦ ?_⟩
+  · sorry
+  · intros r s
+    by_cases hs : s = 0
+    · sorry
+    · have hunit : IsUnit (v₁ s) := sorry
+      specialize hγ r hunit.unit
+      sorry -/
 
 instance : ValuedLocalField E := {
-  complete := by
-    convert Extension.completeSpace K E -- More diamonds, great
-
-    sorry
+  complete := FiniteDimensional.complete K E
   isDiscrete := Extension.isDiscrete_of_finite K E
-  finiteResidueField :=
-    finiteResidueFieldOfUnitBall K E ValuedLocalField.finiteResidueField }
-
+  finiteResidueField := finiteResidueFieldOfUnitBall K E ValuedLocalField.finiteResidueField }
 
 instance : LocalField E where
   toTopologicalDivisionRing := sorry

@@ -456,6 +456,7 @@ instance isDiscrete_of_finite [FiniteDimensional K L] : IsDiscrete (extendedValu
   have hπ : extendedValuation K L (π : L) = Multiplicative.ofAdd (-1 : ℤ) := hπ1
   apply isDiscrete_of_exists_isUniformizer hπ
 
+
 variable {K L}
 
 /-- The uniform space structure on `L` induced by `discrete_valuation.extendedValuation`. -/
@@ -703,4 +704,192 @@ end Algebra
 end DiscreteValuation
 
 -- TODO: try to generalize this file to `L` with `UniformSpace L` and
--- `ContinuousSMul K L`
+-- `ContinuousSMul K L`. UPDATE: attempt below, but these hypothesis are likely
+-- not enough.
+
+
+/-
+variable {K L}
+
+
+/-- The uniform space structure on `L` induced by `discrete_valuation.extendedValuation`. -/
+--porting note: the @[protected] attribute has been commented
+
+-- @[protected]
+def uniformSpace [Algebra.IsAlgebraic K L] : UniformSpace L :=
+  discretelyNormedFieldExtensionUniformSpace (K := K)
+
+
+variable (K L)
+
+
+/-- The normed field structure on `L` induced by the spectral norm.  -/
+
+--porting note: the @[protected] attribute has been commented
+-- @[protected]
+def normedField [FiniteDimensional K L] : NormedField L := by
+  have h_alg := Algebra.IsAlgebraic.of_finite K L
+  let _ : NontriviallyNormedField K := nontriviallyDiscretelyNormedField K
+  exact spectralNorm.normedField (norm_isNonarchimedean K)
+
+ example {A : Type*} [NormedField A] : UniformSpace A := by
+  exact PseudoMetricSpace.toUniformSpace
+
+/- def t2Space [UniformSpace L] [UniformAddGroup L] [ContinuousSMul K L]
+    [FiniteDimensional K L] : T2Space L := by
+  let _ : NontriviallyNormedField K := nontriviallyDiscretelyNormedField K
+  let _ : NormedField L := normedField K L
+  let t2 : TopologicalSpace L := PseudoMetricSpace.toUniformSpace.toTopologicalSpace
+  let t1 : TopologicalSpace L := UniformSpace.toTopologicalSpace
+  have h0 : @IsClosed L t2 {(0 : L)} := @isClosed_singleton L t2 _ 0
+  rw [IsTopologicalAddGroup.t2Space_iff_zero_closed]
+  convert h0 using 1
+  apply le_antisymm
+  · intros U hU
+    have hUeq : U = LinearMap.id (R := K) ⁻¹' U := sorry
+    rw [hUeq]
+    refine @Continuous.isOpen_preimage _ _ t1 t2 LinearMap.id ?_ U hU
+    apply @LinearMap.continuous_of_finiteDimensional K _ L _ _ t1 _ _ L _ _ t2 _ _
+    sorry
+  · sorry -/
+
+def completeSpace [UniformSpace L] [UniformAddGroup L] [ContinuousSMul K L]
+    [FiniteDimensional K L] [T0Space L] : CompleteSpace L := by
+  let _ : NontriviallyNormedField K := nontriviallyDiscretelyNormedField K
+  apply FiniteDimensional.complete K L
+
+theorem isComplete [UniformSpace L] [UniformAddGroup L] [ContinuousSMul K L]
+    [FiniteDimensional K L] [T0Space L] : IsComplete (Set.univ : Set L) :=
+  completeSpace_iff_isComplete_univ.mp (completeSpace K L)
+
+--example (x : L) : discreteNormExtension (K := K) x = 0 := sorry
+
+/-- The valued field structure on `L` induced by `discrete_valuation.extendedValuation`.  -/
+
+--porting note: the @[protected] attribute has been commented
+-- @[protected]
+def valued [UniformSpace L] [UniformAddGroup L] [ContinuousSMul K L] [FiniteDimensional K L] : Valued L ℤₘ₀ :=
+  letI : NormedField L := normedField K L
+  { v := extendedValuation K L
+    is_topological_valuation := fun U ↦  by
+      have hpos : 0 < (expExtensionOnUnits K L : ℝ) :=
+        Nat.cast_pos.mpr (expExtensionOnUnits_pos K L)
+      have hpos' : 0 < (finrank K L : ℝ) := Nat.cast_pos.mpr finrank_pos
+      have h_alg := Algebra.IsAlgebraic.of_finite K L
+      simp only [mem_nhds_iff]
+      refine ⟨fun ⟨t, htU, htopen, ht0⟩ ↦ ?_, fun ⟨ε, hε⟩ ↦ ?_⟩
+      · set tK := (algebraMap K L) ⁻¹' t
+        have htK_open : IsOpen tK := (continuous_algebraMap K L).isOpen_preimage t htopen
+
+        sorry
+
+
+      · have hε_pos : 0 < (WithZeroMulInt.toNNReal (base_ne_zero K hv.v) ε : ℝ) ^
+            ((expExtensionOnUnits K L : ℝ) / (finrank K L : ℝ)) := by
+          apply rpow_pos
+          rw [← _root_.map_zero (WithZeroMulInt.toNNReal (base_ne_zero K hv.v)),
+            (WithZeroMulInt.toNNReal_strictMono (one_lt_base K hv.v)).lt_iff_lt]
+          exact Units.zero_lt _
+        use {(x : L) | (discreteNormExtension (K := K) x) <
+          (WithZeroMulInt.toNNReal (base_ne_zero K hv.v) ε : ℝ) ^
+            ((expExtensionOnUnits K L : ℝ) / (finrank K L : ℝ))}
+        refine ⟨?_, ?_, ?_⟩
+        · apply le_trans _ hε
+          intro x hx
+          rw [Set.mem_setOf_eq] at hx
+          rw [Set.mem_setOf_eq, Extension.apply]
+          split_ifs with h0
+          · exact Units.zero_lt _
+          · set n := (exists_mul_expExtensionOnUnits K (isUnit_iff_ne_zero.mpr h0).unit).choose with
+              hn_def
+            set hn := (exists_mul_expExtensionOnUnits K (isUnit_iff_ne_zero.mpr h0).unit).choose_spec
+            simp only [IsUnit.unit_spec, ← hn_def] at hn
+            rw [← (WithZeroMulInt.toNNReal_strictMono (one_lt_base K hv.v)).lt_iff_lt, ←
+              rpow_lt_rpow_iff hpos, rpow_natCast, ← _root_.map_pow]
+            simp only [(isUnit_iff_ne_zero.mpr h0).choose_spec]
+            rw [hn, ← NNReal.coe_lt_coe, _root_.map_pow, NNReal.coe_pow,
+              ← pow_eq_pow_root_zero_coeff _
+                (minpoly.degree_dvd (h_alg.isAlgebraic _).isIntegral),
+              ← Real.rpow_lt_rpow_iff (pow_nonneg (DiscreteNormExtension.nonneg _) _)
+                  (coe_nonneg _) (inv_pos.mpr hpos'),
+              ← Real.rpow_natCast, ← Real.rpow_mul (DiscreteNormExtension.nonneg _),
+              mul_inv_cancel₀ (ne_of_gt hpos'), Real.rpow_one, coe_rpow,
+              ← Real.rpow_mul (coe_nonneg _)]
+            exact hx
+        · sorry
+        · simp only [Set.mem_setOf_eq, _root_.map_zero]
+          sorry
+       --
+
+
+        --use (algebraMap K L) '' {(x : K) | hv.v x < ε}
+        --use {x | (extendedValuation K L) x < ε}, hε
+        --constructor
+        --·  sorry
+
+      /- rw [Metric.mem_nhds_iff]
+      refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+      · obtain ⟨ε, hε, h⟩ := h
+        obtain ⟨δ, hδ⟩ :=
+          Real.exists_lt_of_strictMono (WithZeroMulInt.toNNReal_strictMono (one_lt_base K hv.v)) hε
+        use δ ^ (finrank K L / expExtensionOnUnits K L)
+        intro x hx
+        simp only [Set.mem_setOf_eq, Extension.apply] at hx
+        apply h
+        rw [mem_ball_zero_iff]
+        split_ifs at hx  with h0
+        · rw [h0, norm_zero]; exact hε
+        · set n := (exists_mul_expExtensionOnUnits K (isUnit_iff_ne_zero.mpr h0).unit).choose with
+            hn_def
+          set hn := (exists_mul_expExtensionOnUnits K (isUnit_iff_ne_zero.mpr h0).unit).choose_spec
+          simp only [(isUnit_iff_ne_zero.mpr h0).choose_spec] at hx
+          rw [← hn_def] at hx
+          have hx' := Real.rpow_lt_rpow (NNReal.coe_nonneg _)
+              ((WithZeroMulInt.toNNReal_strictMono (one_lt_base K hv.v)) hx) hpos
+          rw [Real.rpow_natCast, ← NNReal.coe_pow, ← _root_.map_pow, hn, _root_.map_pow,
+            NNReal.coe_pow, ← DiscreteNormExtension.pow_eq_pow_root_zero_coeff _
+              (minpoly.degree_dvd (h_alg.isAlgebraic ↑(isUnit_iff_ne_zero.mpr h0).unit).isIntegral)]
+            at hx'
+          rw [← Real.rpow_lt_rpow_iff (norm_nonneg _) (le_of_lt hε) hpos', Real.rpow_natCast]
+          apply lt_trans hx'
+          simp only [Units.val_pow_eq_pow_val, _root_.map_pow, val_eq_coe, NNReal.coe_pow,
+            Real.rpow_natCast]
+          rw [← pow_mul, Nat.div_mul_cancel (expExtensionOnUnits_dvd K L), ← Real.rpow_natCast,
+            ← Real.rpow_natCast, Real.rpow_lt_rpow_iff (NNReal.coe_nonneg _) (le_of_lt hε) hpos']
+          exact hδ
+      · obtain ⟨ε, hε⟩ := h
+        have hε_pos : 0 < (WithZeroMulInt.toNNReal (base_ne_zero K hv.v) ε : ℝ) ^
+            ((expExtensionOnUnits K L : ℝ) / (finrank K L : ℝ)) := by
+          apply rpow_pos
+          rw [← _root_.map_zero (WithZeroMulInt.toNNReal (base_ne_zero K hv.v)),
+            (WithZeroMulInt.toNNReal_strictMono (one_lt_base K hv.v)).lt_iff_lt]
+          exact Units.zero_lt _
+        use(WithZeroMulInt.toNNReal (base_ne_zero K hv.v) ε : ℝ) ^
+            ((expExtensionOnUnits K L : ℝ) / (finrank K L : ℝ)),
+          hε_pos
+        intro x hx
+        rw [mem_ball_zero_iff] at hx
+        apply hε
+        rw [Set.mem_setOf_eq, Extension.apply]
+        split_ifs with h0
+        · exact Units.zero_lt _
+        · set n := (exists_mul_expExtensionOnUnits K (isUnit_iff_ne_zero.mpr h0).unit).choose with
+            hn_def
+          set hn := (exists_mul_expExtensionOnUnits K (isUnit_iff_ne_zero.mpr h0).unit).choose_spec
+          simp only [IsUnit.unit_spec, ← hn_def] at hn
+          rw [← (WithZeroMulInt.toNNReal_strictMono (one_lt_base K hv.v)).lt_iff_lt, ←
+            rpow_lt_rpow_iff hpos, rpow_natCast, ← _root_.map_pow]
+          simp only [(isUnit_iff_ne_zero.mpr h0).choose_spec]
+          rw [hn, ← NNReal.coe_lt_coe, _root_.map_pow, NNReal.coe_pow,
+            ← pow_eq_pow_root_zero_coeff _
+              (minpoly.degree_dvd (h_alg.isAlgebraic _).isIntegral),
+            ← Real.rpow_lt_rpow_iff (pow_nonneg (DiscreteNormExtension.nonneg _) _)
+                (coe_nonneg _) (inv_pos.mpr hpos'),
+            ← Real.rpow_natCast, ← Real.rpow_mul (DiscreteNormExtension.nonneg _),
+            mul_inv_cancel₀ (ne_of_gt hpos'), Real.rpow_one, coe_rpow,
+            ← Real.rpow_mul (coe_nonneg _)]
+          exact hx -/ }
+
+
+
+ -/
