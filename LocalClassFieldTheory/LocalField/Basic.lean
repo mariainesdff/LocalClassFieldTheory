@@ -141,14 +141,14 @@ def IsNonarchLocalField (K : Type*) [Field K] [LocalField K] : Prop :=
 
 open scoped NNReal
 
-open SerreHaar Classical in
+/- open SerreHaar Classical in
 def NonarchLocalField.toValued_Gamma [NonarchLocalField K] : Valued K ℤₘ₀ where
   -- uniformContinuous_sub := by
   --   have := @uniformContinuous_sub K _ _
   v := by
-    let c : K → ℝ≥0 := fun x ↦ if hx : x = 0 then 0 else χ (R := K) (Units.mk0 x hx)
+    --let c : K → ℝ≥0 := fun x ↦ if hx : x = 0 then 0 else χ (R := K) (Units.mk0 x hx)
     sorry
-  is_topological_valuation := sorry
+  is_topological_valuation := sorry -/
 
 def NonarchLocalField.toValued [NonarchLocalField K] : Valued K ℤₘ₀ where
   v := sorry
