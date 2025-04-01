@@ -242,4 +242,6 @@ def unramifiedSubalgebra_gci : GaloisCoinsertion (unramifiedSubalgebra K E) (res
 end Henselian
 
 
+#where
+
 end NonarchLocalField
