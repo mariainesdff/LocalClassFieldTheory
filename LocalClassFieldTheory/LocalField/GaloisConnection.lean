@@ -12,6 +12,24 @@ import LocalClassFieldTheory.ForMathlib.IsValExtensionInstances
 
 import Mathlib.RingTheory.Henselian
 
+/-!
+
+In this file we set up two galois connections:
+- First, between `IntermediateField K L`, where `ValuedLocalField K` and
+  `Algebra.IsSeparable K L`, and `IntegrallyClosedSubalgebra K₀ L₀`.
+- Secondly, between  `IntegrallyClosedSubalgebra K₀ L₀` and
+  `IntermediateField (ResidueField K₀) (ResidueField L₀)`.
+  For now this assumes `FiniteDimensional K L`, but this should be removed.
+
+# TODO:
+- For the first one, we want to show that it is both a galois insertion and coinsertion.
+- For the second one, we want to show that it is always a coinsertion, and it is an
+  insertion if and only if `L₀` is unramified/étale over K₀.
+- We want to apply this to show that there is a unique unramified extension of any degree,
+  whose Galois group coincides with that of the residue fields extension.
+
+-/
+
 noncomputable section
 
 namespace NonarchLocalField
@@ -22,15 +40,13 @@ open Valuation
 
 variable (K : Type*) [Field K] [ValuedLocalField K]
 
-scoped notation "w_["K"]" => (@Valued.v K _ ℤₘ₀ _ _)
+scoped notation3 "w_["K"]" => (@Valued.v K _ ℤₘ₀ _ _)
 
 /-Re-open `Valued` if this is needed -/
 -- def normedF : NormedField L := by
 --   exact spectralNorm.normedField (Valued.isNonarchimedean_norm K ℤₘ₀)
 
-scoped notation "["K"]₀" => Valuation.valuationSubring w_[K]
-
---#check [K]₀
+scoped notation3 "["K"]₀" => Valuation.valuationSubring w_[K]
 
 section InfiniteExtension
 
@@ -47,9 +63,6 @@ section Algebra
 structure IntegrallyClosedSubalgebra extends Subalgebra [K]₀ L₀ where
   is_int_closed : IsIntegrallyClosed toSubalgebra
 
---#synth Preorder (Subalgebra [K]₀ L₀)
---#synth CompleteLattice (IntermediateField K L)
-
 -- probably better to put a `CompleteLattice` instance as for `IntermediateField`
 instance : Preorder (IntegrallyClosedSubalgebra K vL) where
   le := ( ·.1 ≤ ·.1)
@@ -62,21 +75,7 @@ instance : Preorder (IntegrallyClosedSubalgebra K vL) where
 lemma IntegrallyClosed_of_IntegrallyClosedSubalgebra (A : IntegrallyClosedSubalgebra K vL) :
   IsIntegrallyClosed A.toSubalgebra := IntegrallyClosedSubalgebra.is_int_closed ..
 
-open IsLocalRing
 
-/- -- Probably `ValuedLocalField K` is too much, `Valued K Γ₀` should be enough
-lemma maximalIdeal_mem (x : maximalIdeal [K]₀) : algebraMap [K]₀ L₀ x.1 ∈ (maximalIdeal L₀) := by
-  sorry
-  -- simp only [ValuationSubring.mem_nonunits_iff_exists_mem_maximalIdeal]
-  -- have h1 : vL ((algebraMap K L) 1) = 1 := by simp only [_root_.map_one]
-  -- rw [← h1]
-  -- rw [IsValExtension.val_map_le_iff (vR := vK)]
-  -- simp only [_root_.map_one]
-  -- exact x.2 -/
-
-/- instance : Algebra (ResidueField [K]₀) (ResidueField L₀) := by
-  apply RingHom.toAlgebra
-  sorry -/
 
 end Algebra
 
@@ -85,25 +84,6 @@ variable [Algebra.IsSeparable K L] [Valuation.RankOne vL]
 
 def fracField : (IntegrallyClosedSubalgebra K vL) → (IntermediateField K L) := by
   intro A
-
-/-   have f : L₀ →ₐ[[K]₀] L := {
-    toFun := (fun (x : L₀) ↦ (x : L))
-    map_one' := sorry
-    map_mul' := sorry
-    map_zero' := sorry
-    map_add' := sorry
-    commutes' := sorry }
-
-  have := Subalgebra.map f A.1
-
-  have := (fun (x : L₀) ↦ (x : L)) '' (A.1)
-  have B : Subalgebra K L := {
-    carrier := sorry
-    mul_mem' := sorry
-    add_mem' := sorry
-    algebraMap_mem' := sorry
-  }
-  use B -/
   sorry
 
 example (E : IntermediateField K L) (S : Set E.carrier) : Set L :=  S
@@ -140,18 +120,9 @@ def unitBall : (IntermediateField K L) → (IntegrallyClosedSubalgebra K vL) := 
   rw [AlgEquiv.isIntegrallyClosedIn (R := (algebraMap [E]₀ L₀).range) (B := FractionRing [E]₀)
     (A := FractionRing (algebraMap [E]₀ L₀).range)]
   simp only [isIntegrallyClosedIn_iff]
-
+  -- TODO: we probably want to generalized `AlgEquiv.isIntegrallyClosedIn` using
+  -- `RingEquiv.isIntegral_iff` to finish this proof.
   sorry
-
-  /- change IsIntegrallyClosed (algebraMap [E]₀ L₀).range
-  simp only [IsIntegrallyClosed]
-  let _ : Algebra ↥(algebraMap ↥[E]₀ ↥L₀).range [E]₀ := sorry
-  rw [AlgEquiv.isIntegrallyClosedIn (R := (algebraMap [E]₀ L₀).range) (B := FractionRing [E]₀)
-     (A := FractionRing (algebraMap [E]₀ L₀).range)] -/
-
-  /-
-  refine AlgHom.isIntegrallyClosedIn (R := [E]₀) (A := [E]₀) (B := (algebraMap [E]₀ L₀).range)
-    ?_ ?_ ?_ -/
   sorry
 
 theorem fracField_gc : GaloisConnection (fracField K vL) (unitBall K vL) := sorry
@@ -172,18 +143,13 @@ section Henselian
 
 variable {E : Type*} [Field E] [ValuedLocalField E] [Algebra K E] [FiniteDimensional K E]
 
---local notation "vE" => (@Valued.v E _ ℤₘ₀ _ _)
---local notation "[E]₀" => Valuation.valuationSubring vE
-
 instance henselianRing : HenselianRing [E]₀ (maximalIdeal [E]₀) := sorry
 
 variable [IsValExtension (@Valued.v K _ ℤₘ₀ _ _) (@Valued.v E _ ℤₘ₀ _ _)]
 
---instance : Algebra [K]₀ [E]₀ := inferInstance
-
 variable (k' : IntermediateField (ResidueField [K]₀) (ResidueField [E]₀))
 
-instance : Finite (ResidueField k') := sorry -- by use (ResidueField )
+instance : Finite (ResidueField k') := sorry -- by use (ResidueField [E]₀)
 
 open Polynomial
 
@@ -231,6 +197,8 @@ def resField : (IntegrallyClosedSubalgebra K w_[E]) →
 theorem unramifiedSubalgebra_gc : GaloisConnection (unramifiedSubalgebra K E) (resField K E) :=
   sorry
 
+/- TODO: this definition requires to add the hypothesis that `E₀` is unramified over `K₀`
+  (meaning étale). -/
 def unramifiedSubalgebra_gi : GaloisInsertion (unramifiedSubalgebra K E) (resField K E) := by
   apply (unramifiedSubalgebra_gc K E).toGaloisInsertion
   sorry
@@ -240,8 +208,5 @@ def unramifiedSubalgebra_gci : GaloisCoinsertion (unramifiedSubalgebra K E) (res
   sorry
 
 end Henselian
-
-
-#where
 
 end NonarchLocalField

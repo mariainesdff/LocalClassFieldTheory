@@ -122,7 +122,7 @@ lemma χ₀_mul (x y : Rˣ) : χ₀ R (x * y) =
   have mul_y_meas : Measurable (y • · : R → R) := by sorry
   let ν := addHaar (G := R)
   rw [χ₀]
-  simp
+  sorry --simp
 
   -- sorry
   -- calc
@@ -144,7 +144,7 @@ def χ : K → ℝ≥0 := fun x ↦ if hx : x = 0 then 0 else χ₀ K (Units.mk0
 
 variable [CompleteSpace K]
 
-lemma rk_one (hχ : IsNonarchimedean (χ K)) : IsCyclic (χ.map Kˣ) := sorry
+--lemma rk_one (hχ : IsNonarchimedean (χ K)) : IsCyclic (χ.map Kˣ) := sorry
 
 
 
