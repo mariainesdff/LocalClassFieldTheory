@@ -6,6 +6,7 @@ Authors: María Inés de Frutos-Fernández, Filippo A. E. Nuccio
 import LocalClassFieldTheory.DiscreteValuationRing.ResidueField
 import LocalClassFieldTheory.EqCharacteristic.Valuation
 import LocalClassFieldTheory.MixedCharacteristic.Valuation
+import LocalClassFieldTheory.ForMathlib.HaarMeasure
 import Mathlib.MeasureTheory.Group.ModularCharacter
 
 /-!
@@ -110,34 +111,43 @@ instance (K : Type*) [Field K] [ValuedLocalField K] : IsDiscrete (@Valued.v K _ 
 
 instance (K : Type*) [Field K] [ValuedLocalField K] : CompleteSpace K := ValuedLocalField.complete
 
-open CommGroupUniformity
+open CommGroupUniformity MeasureTheory.Measure
 
 variable (K : Type*) [Field K]
 
-noncomputable def haarFunction [LocalField K] : K → ℝ :=
-  fun x ↦ MeasureTheory.Measure.addModularCharacterFun x
+-- noncomputable def haarFunction [LocalField K] : K → ℝ :=
+--   fun x ↦ MeasureTheory.Measure.addModularCharacterFun x
 
 class NonarchLocalField (K : Type*) [Field K] extends LocalField K where
-  isNonarchimedean : IsNonarchimedean (haarFunction K)
+  isNonarchimedean : IsNonarchimedean (addModularCharacterFun · : K → ℝ)
 
 def IsNonarchLocalField (K : Type*) [Field K] [LocalField K] : Prop :=
-  IsNonarchimedean (haarFunction K)
+  IsNonarchimedean (addModularCharacterFun · : K → ℝ)
 
 /- This would be needed if we define the above using `@[class] structure` instead of `class`-/
 --instance [NonarchLocalField K] : LocalField K :=  inferInstance
 
-def NonarchLocalField.toValued [NonarchLocalField K] : Valued K ℤₘ₀ where
+open scoped NNReal
+
+open SerreHaar Classical in
+def NonarchLocalField.toValued_Gamma [NonarchLocalField K] : Valued K ℤₘ₀ where
   -- uniformContinuous_sub := by
   --   have := @uniformContinuous_sub K _ _
+  v := by
+    let c : K → ℝ≥0 := fun x ↦ if hx : x = 0 then 0 else χ (R := K) (Units.mk0 x hx)
+    sorry
+  is_topological_valuation := sorry
+
+def NonarchLocalField.toValued [NonarchLocalField K] : Valued K ℤₘ₀ where
   v := sorry
   is_topological_valuation := sorry
 
 class ArchLocalField (K : Type*) [Field K] extends LocalField K where
-  Archimedean : 1 < (haarFunction K 2)
+  Archimedean : 1 < (addModularCharacterFun (2 : K))
   -- Archimedean : ¬ IsNonarchimedean (LocalField.haarFunction K)
 
 def IsArchLocalField (K : Type*) [Field K] [LocalField K] : Prop :=
-  1 < (haarFunction K 2)
+  1 < (addModularCharacterFun (2 : K))
   -- Archimedean : ¬ IsNonarchimedean (LocalField.haarFunction K)
 
 /-A proof that `Nonarch →  LocCompact ↔ Complete ∧ Discrete ∧ FiniteResidueField` see

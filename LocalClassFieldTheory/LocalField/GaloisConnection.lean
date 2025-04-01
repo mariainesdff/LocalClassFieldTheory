@@ -181,4 +181,6 @@ def wittRing_gci : GaloisCoinsertion (wittRing K vL) (resField K vL) := by
   sorry
 
 
+#where
+
 end NonarchLocalField
