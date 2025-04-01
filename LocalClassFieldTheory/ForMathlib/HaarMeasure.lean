@@ -1,7 +1,5 @@
 /-
-Copyright (c) 2025 Noam Atar. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Noam Atar
+
 -/
 import Mathlib.MeasureTheory.Function.LocallyIntegrable
 import Mathlib.MeasureTheory.Group.Integral
@@ -122,7 +120,7 @@ lemma χ₀_mul (x y : Rˣ) : χ₀ R (x * y) =
   have mul_y_meas : Measurable (y • · : R → R) := by sorry
   let ν := addHaar (G := R)
   rw [χ₀]
-  simp
+  sorry
 
   -- sorry
   -- calc
@@ -144,7 +142,7 @@ def χ : K → ℝ≥0 := fun x ↦ if hx : x = 0 then 0 else χ₀ K (Units.mk0
 
 variable [CompleteSpace K]
 
-lemma rk_one (hχ : IsNonarchimedean (χ K)) : IsCyclic (χ.map Kˣ) := sorry
+-- lemma rk_one (hχ : IsNonarchimedean (χ K)) : IsCyclic (χ.map Kˣ) := sorry
 
 
 

@@ -144,6 +144,19 @@ lemma MultInt.eq_ofAdd_neg_one_of_generates_top {a : Multiplicative ℤ} (ha1 : 
 
 end Subgroup
 
+namespace WithZero
+
+class IsCyclic₀ (Γ : Type*) [GroupWithZero Γ] : Prop where
+  cyclicUnits : IsCyclic Γˣ
+
+-- to golf
+instance (G : Type*) [Group G] [IsCyclic G] : IsCyclic₀ (WithZero G) where
+  cyclicUnits := by
+    apply @isCyclic_of_injective (WithZero G)ˣ G  _ _ _ (unitsWithZeroEquiv).toMonoidHom
+    apply Equiv.injective
+
+end WithZero
+
 namespace Valuation
 
 variable {A : Type w₁} [CommRing A]
@@ -252,6 +265,7 @@ lemma isNontrivial_iff_exists_unit {K : Type*} [Field K] {w : Valuation K ℤₘ
 end IsNontrivial
 
 section Field
+variable {Γ : Type*} [LinearOrderedCommGroupWithZero Γ]
 variable {K : Type*} [Field K] (v : Valuation K ℤₘ₀)
 
 @[simps]
