@@ -13,6 +13,9 @@ import Mathlib.RingTheory.Valuation.Minpoly
 import Mathlib.RingTheory.Valuation.ValExtension
 
 /-!
+
+**TODO** : `Def` a `Valued` on `L` to interact well with the generalization from `ℤₘ₀` to `Γ` in
+DVR.Basic
 # Extensions of discrete valuations
 
 Given a field `K` which is complete with respect to a discrete valuation and a finite dimensional
