@@ -8,6 +8,8 @@ Authors: María Inés de Frutos-Fernández, Filippo A. E. Nuccio
 import Mathlib.RingTheory.Valuation.ValExtension
 import Mathlib.Topology.Algebra.Valued.ValuationTopology
 
+-- In PR #23590.
+
 section Algebra
 
 open IsLocalRing Valuation ValuationSubring
