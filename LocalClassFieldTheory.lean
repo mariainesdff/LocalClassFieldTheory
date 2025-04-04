@@ -31,6 +31,7 @@ import LocalClassFieldTheory.EqCharacteristic.Valuation
 -- import LocalClassFieldTheory.ForMathlib.DiscreteValuationRing -- In PR #20073
 -- import LocalClassFieldTheory.ForMathlib.Polynomial -- In PR #13064
 -- import LocalClassFieldTheory.ForMathlib.PowerSeries -- In PR #12160 and PR #12245
+import LocalClassFieldTheory.ForMathlib.IsValExtensionInstances -- In PR #23590
 import LocalClassFieldTheory.ForMathlib.RankOneValuation -- Final lemma in PR #13064
 import LocalClassFieldTheory.ForMathlib.WithZero -- Partly in PR #15741
 -- FromMathlib folder *complete*
