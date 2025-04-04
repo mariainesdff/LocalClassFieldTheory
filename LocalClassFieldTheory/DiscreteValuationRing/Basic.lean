@@ -98,7 +98,6 @@ theorem Subgroup.isCyclic_iff_exists_zpowers_eq_top {α : Type*} [Group α] (H :
   · apply_fun Subgroup.map H.subtype using Subgroup.map_injective <| subtype_injective H
     simp [(H.subtype).map_zpowers ⟨k, _⟩, coeSubtype, hk, Subgroup.map_eq_range_iff.mpr,
       range_subtype] -/
-
 namespace Subgroup
 
 variable {G : Type*} [LinearOrderedCommGroup G] [IsCyclic G]
@@ -195,9 +194,33 @@ instance (G : Type*) [Group G] [IsCyclic G] : IsCyclic₀ (WithZero G) where
 
 end WithZero
 
+variable {Γ : Type*} [LinearOrderedCommGroupWithZero Γ]
 namespace Valuation
 
-variable {A : Type w₁} [CommRing A]
+section Field
+
+open scoped NNReal
+
+variable (K : Type*) [Field K] (v : Valuation K Γ)
+/-- If the residue field is finite, then `valuation_base` is the cardinal of the residue field, and
+otherwise it takes the value `6` which is not a prime power.-/
+noncomputable def base : ℝ≥0 :=
+  if 1 < Nat.card (IsLocalRing.ResidueField v.valuationSubring) then
+    Nat.card (IsLocalRing.ResidueField v.valuationSubring)
+  else 6
+
+theorem one_lt_base : 1 < base K v := by
+  rw [base]
+  split_ifs with hlt
+  · rw [Nat.one_lt_cast]; exact hlt
+  · norm_num
+
+theorem base_ne_zero : base K v ≠ 0 :=
+  ne_zero_of_lt (one_lt_base K v)
+
+end Field
+
+-- variable {A : Type w₁} [CommRing A]
 
 namespace Integer
 
@@ -221,9 +244,9 @@ namespace Integer
 
 -- **IN PR #23408**
 theorem not_isUnit_iff_valuation_lt_one {K : Type*} {Γ₀ : Type*} [Field K]
-    [LinearOrderedCommGroupWithZero Γ₀] {v : Valuation K Γ₀} (x : v.integer) :
+    [LinearOrderedCommGroupWithZero Γ] {v : Valuation K Γ} (x : v.integer) :
     ¬IsUnit x ↔ v x < 1 := by
-  rw [← not_le, not_iff_not, Integers.isUnit_iff_valuation_eq_one (F := K) (Γ₀ := Γ₀),
+  rw [← not_le, not_iff_not, Integers.isUnit_iff_valuation_eq_one (F := K) (Γ₀ := Γ),
     le_antisymm_iff]
   exacts [and_iff_right x.2, integer.integers v]
 --
@@ -285,8 +308,7 @@ open Valuation Ideal Multiplicative WithZero
 
 section IsNontrivial
 
-variable {R : Type*} [Ring R]
-variable {Γ₀ : Type*} [LinearOrderedCommGroupWithZero Γ₀] (v : Valuation R Γ₀)
+variable {R : Type*} [Ring R] (v : Valuation R Γ)
 
 /-- A valuation on a ring is nontrivial if there exists an element with valuation
 not equal to `0` or `1`. -/
@@ -295,7 +317,7 @@ class IsNontrivial : Prop where
 
 /-- For fields, being nontrivial is equivalent to the existence of a unit with valuation
 not equal to `1`. -/
-lemma isNontrivial_iff_exists_unit {K : Type*} [Field K] {w : Valuation K Γ₀} :
+lemma isNontrivial_iff_exists_unit {K : Type*} [Field K] {w : Valuation K Γ} :
     w.IsNontrivial ↔ ∃ x : Kˣ, w x ≠ 1 :=
   ⟨fun ⟨x, hx1, hx0⟩ ↦ ⟨Units.mk0 x (w.ne_zero_iff.mp hx0), hx1⟩,
     fun ⟨x, hx⟩ ↦ ⟨x, hx, w.ne_zero_iff.mpr (Units.ne_zero x)⟩⟩
@@ -303,8 +325,6 @@ lemma isNontrivial_iff_exists_unit {K : Type*} [Field K] {w : Valuation K Γ₀}
 end IsNontrivial
 
 section IsDiscrete'
-
-variable {Γ : Type*} [LinearOrderedCommGroupWithZero Γ]
 
 variable {R : Type*} [Ring R]
 
@@ -467,12 +487,12 @@ lemma unzero_range_ne_bot [hv : IsNontrivial v] : Nontrivial v.unzero_range := b
   -- intro h
   -- apply hx1
   -- rw [← h]
+variable [IsNontrivial v] [IsCyclic₀ Γ]
 
 section IsNontrivial
 
 open Subgroup
-#where
-variable [IsNontrivial v] [IsCyclic₀ Γ]
+
 /-- An element `π : K` is a pre-uniformizer if `v π` generates `v.unzero_range` .-/
 def IsPreuniformizer (π : K) : Prop :=
   letI := v.unzero_range_ne_bot
@@ -514,10 +534,7 @@ structure Preuniformizer where
   val : v.integer
   valuationEqNegOne : v.IsPreuniformizer val
 
-variable {v}
-
-theorem isPreuniformizer_iff {π : K} :
-    letI := v.unzero_range_ne_bot
+theorem isPreuniformizer_iff {π : K} : letI := v.unzero_range_ne_bot
     v.IsPreuniformizer π ↔ v π = v.unzero_range.gen_lt_one := refl _
 
 /-- A constructor for preuniformizers.-/
@@ -535,7 +552,7 @@ theorem isPreuniformizer_ne_zero {π : K} (hπ : IsPreuniformizer v π) : π ≠
   exact (Units.ne_zero _).symm hπ
 
 theorem preuniformizer_ne_zero (π : Preuniformizer v) : π.1.1 ≠ 0 :=
-  isPreuniformizer_ne_zero π.2
+  isPreuniformizer_ne_zero v π.2
 
 theorem isPreuniformizer_val_pos {π : K} (hπ : IsPreuniformizer v π) : 0 < v π := by
   let _ := v.unzero_range_ne_bot
@@ -554,6 +571,9 @@ end Field
 open LinearOrderedCommGroup
 
 variable {Γ : Type*} [LinearOrderedCommGroupWithZero Γ] [Nontrivial Γˣ] [IsCyclic₀ Γ]
+
+section Ring
+
 variable {R : Type*} [Ring R] (vR : Valuation R Γ)
 
 /-- An element `π : R` is a uniformizer if `v π = Multiplicative.ofAdd (- 1 : ℤ) : ℤₘ₀`.-/
@@ -576,9 +596,6 @@ theorem isUniformizer_val_pos {π : R} (hπ : IsUniformizer vR π) : 0 < vR π :
 
 theorem isUniformizer_val_ne_zero {π : R} (hπ : IsUniformizer vR π) : vR π ≠ 0 :=
   ne_of_gt (isUniformizer_val_pos hπ)
-
-theorem isUniformizer_val_gen {π : R} (hπ : IsUniformizer vR π) :
-    Units.mk0 (vR π) (isUniformizer_val_ne_zero hπ) = gen_lt_one Γˣ := by simp [hπ]
 
 variable (vR) in
 /-- The structure `Uniformizer` bundles together the term in the ring and a proof that it is a
@@ -610,73 +627,47 @@ theorem uniformizer_val_gen (π : Uniformizer vR) :
 
 theorem isDiscrete'_of_exists_isUniformizer {K : Type*} [Field K] {v : Valuation K Γ}
     {π : K} (hπ : IsUniformizer v π) : IsDiscrete' v := by
-  rw [isDiscrete'_iff_surjective]
-  intro c
-  by_cases hc : c = 0
-  · exact ⟨0, by simp [hc]⟩
-  set u : Γˣ := Units.mk0 c hc with hu
-  rw [isUniformizer_iff] at hπ
-  -- norm_cast
-  replace hπ :  Γˣ = Subgroup.zpowers (Units.mk0 (v π) (isUniformizer_val_ne_zero hπ)) := sorry
-  -- have hu' : u ∈ ⊤ := Subgroup.mem_top u
-  -- obtain ⟨x, hx_gen, hx_lt_one, a, ha⟩ := hu
-  obtain ⟨k, hk⟩ := Subgroup.mem_zpowers_iff.mp (hπ ▸ Subgroup.mem_top u)
-  -- use a^k
-  -- rw [map_zpow₀, ha]
-  -- norm_cast
-  -- rw [hk, hu, Units.val_mk0]
-  -- apply @WithZero.cases_on (x := x)
-  -- · exact ⟨0, Valuation.map_zero v⟩
-  -- · rw [IsUniformizer] at hπ
-  --   intro m
-  --   use π ^ (-Multiplicative.toAdd m)
-  --   rw [map_zpow₀, hπ, ← coe_zpow, coe_inj, ← ofAdd_zsmul, ← zsmul_neg', neg_neg, zsmul_one,
-  --     Int.cast_id, ofAdd_toAdd]
+  apply IsDiscrete'.mk
+  use Units.mk0 (v π) (isUniformizer_val_ne_zero hπ)
+  simp [hπ, gen_lt_one_eq_of_top, Units.mk0_val]
+  refine ⟨?_, by use π⟩
+  simpa [Units.mk0_val, Subgroup.gen_lt_one_zpowers_eq_top, Subgroup.mem_top]
+    using Subgroup.gen_lt_one_lt_one ⊤
+
+end Ring
+
+section CommRing
+
+open Subgroup
+
+variable {R : Type*} [CommRing R] (vR : Valuation R Γ)
+
+theorem isUniformizer_val_lt_one {π : R} (hπ : IsUniformizer vR π) : vR π < 1 := by
+  rw [isUniformizer_iff.mp hπ]
+  norm_cast
+  apply gen_lt_one_lt_one
 
 
 theorem isUniformizer_not_isUnit {π : vR.integer} (hπ : IsUniformizer vR π) : ¬ IsUnit π := by
   intro h
-  have h1 :=
-    @Valuation.Integers.one_of_isUnit R ℤₘ₀ _ _ vR vR.integer _ _ (Valuation.integer.integers vR) π
-      h
-  erw [IsUniformizer, h1] at hπ
-  exact ne_of_gt ofAdd_neg_one_lt_one hπ
+  have h1 : vR ((algebraMap (↥vR.integer) R) π) = 1 :=
+    Valuation.Integers.one_of_isUnit (Valuation.integer.integers vR)  h
+  exact ne_of_gt (isUniformizer_val_lt_one vR hπ) h1.symm
 
-theorem isUniformizer_val_lt_one {π : R} (hπ : IsUniformizer vR π) : vR π < 1 := by
-  rw [isUniformizer_iff.mp hπ]; exact ofAdd_neg_one_lt_one
+end CommRing
 
 open scoped NNReal
 
-section Field
 
-variable (K : Type w₁) [Field K] (v : Valuation K ℤₘ₀)
-/-- If the residue field is finite, then `valuation_base` is the cardinal of the residue field, and
-otherwise it takes the value `6` which is not a prime power.-/
-noncomputable def base : ℝ≥0 :=
-  if 1 < Nat.card (IsLocalRing.ResidueField v.valuationSubring) then
-    Nat.card (IsLocalRing.ResidueField v.valuationSubring)
-  else 6
-
-theorem one_lt_base : 1 < base K v := by
-  rw [base]
-  split_ifs with hlt
-  · rw [Nat.one_lt_cast]; exact hlt
-  · norm_num
-
-theorem base_ne_zero : base K v ≠ 0 :=
-  ne_zero_of_lt (one_lt_base K v)
-
-end Field
-
-
-end Valuation
-
-namespace DiscreteValuation
+--
+-- end Field
+--
+-- namespace DiscreteValuation
 section Field
 
 open Valuation Ideal Multiplicative WithZero IsLocalRing
 
-variable {K : Type w₁} [Field K] (v : Valuation K ℤₘ₀)
+variable {K : Type w₁} [Field K] (v : Valuation K Γ)
 
 /- When the valuation is defined on a field instead that simply on a (commutative) ring, we use the
 notion of `valuation_subring` instead of the weaker one of `integer`s to access the corresponding
@@ -685,28 +676,62 @@ local notation "K₀" => v.valuationSubring
 
 section IsNontrivial
 
-theorem exists_isPreuniformizer_of_isNontrivial [v.IsNontrivial] :
-    ∃ π : K₀, IsPreuniformizer v (π : K) := by
-  set g := (Mul.exists_generator_lt_one ℤ v.unzero_range_ne_bot).choose with hg
-  obtain ⟨h1, h2⟩ := (Mul.exists_generator_lt_one ℤ v.unzero_range_ne_bot).choose_spec
-  have hg_mem : g ∈ v.unzero_range := by rw [← h2]; exact Subgroup.mem_zpowers _
-  simp only [unzero_range, Subgroup.mem_mk, Set.mem_range, unzero_apply] at hg_mem
-  obtain ⟨x, hx⟩ := hg_mem
-  have hx1 : v ↑x ≤ 1 := by
-    rw [← Valuation.coe_unzero, Valuation.unzero_apply, hx, ← WithZero.coe_one, WithZero.coe_le_coe]
-    exact le_of_lt h1
-  use ⟨x, hx1⟩
-  rw [IsPreuniformizer, ← hg, ← Valuation.coe_unzero, ← hx]; rfl
+variable [v.IsNontrivial]
+
+theorem exists_isPreuniformizer_of_isNontrivial : ∃ π : K₀, IsPreuniformizer v (π : K) := by
+  simp [isPreuniformizer_iff]
+  have : Nontrivial v.unzero_range := v.unzero_range_ne_bot
+  set g := (⊤ : Subgroup v.unzero_range).gen_lt_one with hg
+  have hg_mem : g.1 ∈ v.unzero_range := SetLike.coe_mem ..
+  obtain ⟨π, hπ⟩ := hg_mem
+  replace hπ : v (π : K) = v.unzero_range.gen_lt_one := by
+    -- rw [← Units.mk0_inj]
+    -- norm_cast
+    -- dsimp [unzero] at hπ
+    -- simp [hπ, hg]
+    sorry
+
+
+    -- norm_cast at hπ
+    -- rw [hg] at hπ
+    -- simp at hπ
+    -- simp [hπ]
+    -- simp [hπ]
+    -- simp [hg]
+  use π
+  constructor
+  · apply le_of_lt
+    exact isPreuniformizer_val_lt_one hπ
+  · rw [hπ]
+  -- set g := (Mul.exists_generator_lt_one ℤ v.unzero_range_ne_bot).choose with hg
+  -- obtain ⟨h1, h2⟩ := (Mul.exists_generator_lt_one ℤ v.unzero_range_ne_bot).choose_spec
+  -- have hg_mem : g.1 ∈ v.unzero_range := by sorry--rw [← h2]; exact Subgroup.mem_zpowers _
+  -- -- simp only [unzero_range, Subgroup.mem_mk, Set.mem_range, unzero_apply] at hg_mem
+  -- obtain ⟨π, hπ⟩ := hg_mem
+  -- have hπ1 : v π ≤ 1 := by
+  --   rw [← Valuation.coe_unzero, Valuation.unzero_apply, hπ]--, /- ← WithZero.coe_one, -/ WithZero.coe_le_coe]
+  --   apply le_of_lt
+  --   sorry
+  -- use ⟨π, hπ1⟩
+  -- simp
+  -- rw [isPreuniformizer_iff]--, ← hg, ← Valuation.coe_unzero, ← hx]; rfl
+
+
+
+  -- simp only -- remove
+  -- norm_cast
+
+  -- rw [← hg]
 
 end IsNontrivial
 
 section IsDiscrete
 
-variable [hv : IsDiscrete v]
+variable [hv : IsDiscrete' v]
 
-theorem exists_isUniformizer_of_isDiscrete : ∃ π : K₀, IsUniformizer v (π : K) := by
-  let surj_v : IsDiscrete v := by infer_instance
-  rw [isDiscrete_iff_surjective] at surj_v
+theorem exists_isUniformizer_of_isDiscrete' : ∃ π : K₀, IsUniformizer v (π : K) := by
+  let surj_v : IsDiscrete' v := by infer_instance
+  rw [isDiscrete'_iff_surjective] at surj_v
   refine
     ⟨⟨(surj_v (↑(Multiplicative.ofAdd (-1 : ℤ)) : ℤₘ₀)).choose, ?_⟩,
       (surj_v (↑(Multiplicative.ofAdd (-1 : ℤ)) : ℤₘ₀)).choose_spec⟩
@@ -1028,7 +1053,7 @@ instance dvr_of_isDiscrete [v.IsNontrivial] : IsDiscreteValuationRing K₀ where
   toIsPrincipalIdealRing := integer_isPrincipalIdealRing v
   toIsLocalRing  := inferInstance
   not_a_field' := by rw [ne_eq, ← isField_iff_maximalIdeal_eq]; exact not_isField v
-
+#where
 variable (A : Type w₁) [CommRing A] [IsDomain A] [IsDiscreteValuationRing A]
 
 open IsDedekindDomain IsDedekindDomain.HeightOneSpectrum Subring IsDiscreteValuationRing
