@@ -98,6 +98,8 @@ theorem Subgroup.isCyclic_iff_exists_zpowers_eq_top {α : Type*} [Group α] (H :
   · apply_fun Subgroup.map H.subtype using Subgroup.map_injective <| subtype_injective H
     simp [(H.subtype).map_zpowers ⟨k, _⟩, coeSubtype, hk, Subgroup.map_eq_range_iff.mpr,
       range_subtype] -/
+
+-- **from here... #1**
 namespace Subgroup
 
 variable {G : Type*} [LinearOrderedCommGroup G] [IsCyclic G]
@@ -128,9 +130,9 @@ lemma gen_lt_one_zpowers_eq_top {G : Type*} [LinearOrderedCommGroup G] [IsCyclic
     H.exists_generator_lt_one.choose_spec.2
 
 -- It is in **23589**
-instance {G : Type*} [Group G] [Nontrivial G] : Nontrivial (⊤ : Subgroup G) := by
-  rw [nontrivial_iff_ne_bot]
-  exact top_ne_bot
+-- instance {G : Type*} [Group G] [Nontrivial G] : Nontrivial (⊤ : Subgroup G) := by
+--   rw [nontrivial_iff_ne_bot]
+--   exact top_ne_bot
 
 end Subgroup
 
@@ -145,50 +147,51 @@ def gen_lt_one : G := (⊤ : Subgroup G).gen_lt_one
 lemma gen_lt_one_eq_of_top : gen_lt_one G = (⊤ : Subgroup G).gen_lt_one := rfl
 
 end LinearOrderedCommGroup
+-- **...to here #1: in PR#23725**
 
-@[simp]
-lemma MultInt.zpowers_ofAdd_neg_one : Subgroup.zpowers (ofAdd (-1)) = ⊤ := by
-  simp only [Int.reduceNeg, ofAdd_neg, Subgroup.zpowers_inv, Subgroup.eq_top_iff',
-    Multiplicative.forall]
-  intro z
-  use z
-  simp [Int.reduceNeg, ofAdd_neg, zpow_neg, inv_zpow', inv_inv, ← Int.ofAdd_mul, one_mul]
+-- **FAE** The four lemmas below seem only needed for `ℤₘ₀`.
+-- @[simp]
+-- lemma MultInt.zpowers_ofAdd_neg_one : Subgroup.zpowers (ofAdd (-1)) = ⊤ := by
+--   simp only [Int.reduceNeg, ofAdd_neg, Subgroup.zpowers_inv, Subgroup.eq_top_iff',
+--     Multiplicative.forall]
+--   intro z
+--   use z
+--   simp [Int.reduceNeg, ofAdd_neg, zpow_neg, inv_zpow', inv_inv, ← Int.ofAdd_mul, one_mul]
+-- --
+-- theorem MultInt.mem_zpowers_iff {a b : Multiplicative ℤ} :
+--     b ∈ Subgroup.zpowers a ↔ toAdd a ∣ toAdd b := by
+--   rw [Subgroup.mem_zpowers_iff, dvd_iff_exists_eq_mul_left]
+--   exact ⟨fun ⟨k, hk⟩ ↦ ⟨k, by rw [← smul_eq_mul, ← toAdd_zpow, hk]⟩,
+--     fun ⟨k, hk⟩ ↦ ⟨k, by rw [← ofAdd_toAdd b, hk, mul_comm k, Int.ofAdd_mul, ofAdd_toAdd]⟩⟩
+-- --
+-- lemma Int.eq_neg_one_of_dvd_one {a : ℤ} (H : a ≤ 0) (H' : a ∣ 1) : a = -1 := by
+--   replace H' := H'.choose_spec
+--   rw [Eq.comm, Int.mul_eq_one_iff_eq_one_or_neg_one] at H'
+--   simp_all [show a ≠ 1 from (by linarith)]
 --
-theorem MultInt.mem_zpowers_iff {a b : Multiplicative ℤ} :
-    b ∈ Subgroup.zpowers a ↔ toAdd a ∣ toAdd b := by
-  rw [Subgroup.mem_zpowers_iff, dvd_iff_exists_eq_mul_left]
-  exact ⟨fun ⟨k, hk⟩ ↦ ⟨k, by rw [← smul_eq_mul, ← toAdd_zpow, hk]⟩,
-    fun ⟨k, hk⟩ ↦ ⟨k, by rw [← ofAdd_toAdd b, hk, mul_comm k, Int.ofAdd_mul, ofAdd_toAdd]⟩⟩
---
-lemma Int.eq_neg_one_of_dvd_one {a : ℤ} (H : a ≤ 0) (H' : a ∣ 1) : a = -1 := by
-  replace H' := H'.choose_spec
-  rw [Eq.comm, Int.mul_eq_one_iff_eq_one_or_neg_one] at H'
-  simp_all [show a ≠ 1 from (by linarith)]
-
---
-lemma MultInt.eq_ofAdd_neg_one_of_generates_top {a : Multiplicative ℤ} (ha1 : a < 1)
-    (ha : Subgroup.zpowers a = ⊤) : a = ofAdd (-1) := by
-  rw [← MultInt.zpowers_ofAdd_neg_one] at ha
-  have hin : ofAdd (-1) ∈ Subgroup.zpowers a := ha ▸ Subgroup.mem_zpowers _
-  rw [MultInt.mem_zpowers_iff] at hin
-  simp only [Int.reduceNeg, ofAdd_neg, toAdd_inv, toAdd_ofAdd, IsUnit.neg_iff, isUnit_one,
-    IsUnit.dvd, dvd_neg] at hin
-  rw [← ofAdd_toAdd a, Int.eq_neg_one_of_dvd_one (le_of_lt ha1) hin]
-  rfl
+-- --
+-- lemma MultInt.eq_ofAdd_neg_one_of_generates_top {a : Multiplicative ℤ} (ha1 : a < 1)
+--     (ha : Subgroup.zpowers a = ⊤) : a = ofAdd (-1) := by
+--   rw [← MultInt.zpowers_ofAdd_neg_one] at ha
+--   have hin : ofAdd (-1) ∈ Subgroup.zpowers a := ha ▸ Subgroup.mem_zpowers _
+--   rw [MultInt.mem_zpowers_iff] at hin
+--   simp only [Int.reduceNeg, ofAdd_neg, toAdd_inv, toAdd_ofAdd, IsUnit.neg_iff, isUnit_one,
+--     IsUnit.dvd, dvd_neg] at hin
+--   rw [← ofAdd_toAdd a, Int.eq_neg_one_of_dvd_one (le_of_lt ha1) hin]
+--   rfl
 
 end Subgroup
 
 namespace WithZero
 
-class IsCyclic₀ (Γ : Type*) [GroupWithZero Γ] : Prop where
-  cyclicUnits : IsCyclic Γˣ
+-- class IsCyclic₀ (Γ : Type*) [GroupWithZero Γ] : Prop where
+--   cyclicUnits : IsCyclic Γˣ
 
-instance (Γ : Type*) [GroupWithZero Γ] [IsCyclic₀ Γ] : IsCyclic Γˣ := IsCyclic₀.cyclicUnits
+-- instance (Γ : Type*) [GroupWithZero Γ] [IsCyclic Γˣ] : IsCyclic Γˣ := IsCyclic₀.cyclicUnits
 
--- to golf
-instance (G : Type*) [Group G] [IsCyclic G] : IsCyclic₀ (WithZero G) where
-  cyclicUnits := by
-    apply @isCyclic_of_injective (WithZero G)ˣ G  _ _ _ (unitsWithZeroEquiv).toMonoidHom
+-- **Not PR'd for now: needed only for `ℤₘ₀`?**
+instance (G : Type*) [Group G] [IsCyclic G] : IsCyclic (WithZero G)ˣ := by
+    apply isCyclic_of_injective (G := (WithZero G)ˣ) (unitsWithZeroEquiv).toMonoidHom
     apply Equiv.injective
 
 
@@ -201,6 +204,7 @@ section Field
 
 open scoped NNReal
 
+-- **Not PR'd for now: needed only to connect with norms?**
 variable (K : Type*) [Field K] (v : Valuation K Γ)
 /-- If the residue field is finite, then `valuation_base` is the cardinal of the residue field, and
 otherwise it takes the value `6` which is not a prime power.-/
@@ -209,12 +213,14 @@ noncomputable def base : ℝ≥0 :=
     Nat.card (IsLocalRing.ResidueField v.valuationSubring)
   else 6
 
+-- **Not PR'd for now: needed only to connect with norms?**
 theorem one_lt_base : 1 < base K v := by
   rw [base]
   split_ifs with hlt
   · rw [Nat.one_lt_cast]; exact hlt
   · norm_num
 
+-- **Not PR'd for now: needed only to connect with norms?**
 theorem base_ne_zero : base K v ≠ 0 :=
   ne_zero_of_lt (one_lt_base K v)
 
@@ -241,10 +247,8 @@ namespace Integer
   -- use! (x : K)⁻¹, le_of_eq hx'
   -- · ext; simp only [Subring.coe_mul, ne_eq, ZeroMemClass.coe_eq_zero, OneMemClass.coe_one,
   --     mul_inv_cancel₀ hx0]
-
 -- **IN PR #23408**
-theorem not_isUnit_iff_valuation_lt_one {K : Type*} {Γ₀ : Type*} [Field K]
-    [LinearOrderedCommGroupWithZero Γ] {v : Valuation K Γ} (x : v.integer) :
+theorem not_isUnit_iff_valuation_lt_one {K : Type*} [Field K] {v : Valuation K Γ} (x : v.integer) :
     ¬IsUnit x ↔ v x < 1 := by
   rw [← not_le, not_iff_not, Integers.isUnit_iff_valuation_eq_one (F := K) (Γ₀ := Γ),
     le_antisymm_iff]
@@ -306,6 +310,7 @@ open Valuation Ideal Multiplicative WithZero
 --     simp only [unzero', _root_.map_one, unzero_coe]
 --     rfl
 
+-- **from here... #2**
 section IsNontrivial
 
 variable {R : Type*} [Ring R] (v : Valuation R Γ)
@@ -323,7 +328,7 @@ lemma isNontrivial_iff_exists_unit {K : Type*} [Field K] {w : Valuation K Γ} :
     fun ⟨x, hx⟩ ↦ ⟨x, hx, w.ne_zero_iff.mpr (Units.ne_zero x)⟩⟩
 
 end IsNontrivial
-
+-- **to here #2: in PR #23726**
 section IsDiscrete'
 
 variable {R : Type*} [Ring R]
@@ -331,14 +336,14 @@ variable {R : Type*} [Ring R]
 /-- A valuation `v` on a ring `R` is (normalized) discrete if it is `Γ`-valued, if
 `IsCyclic₀ Γ` and `ofAdd (-1 : ℤ)` belongs to the image. Note that the latter is equivalent to
   asking that `1 : ℤ` belongs to the image of the corresponding additive valuation. -/
-class IsDiscrete' [IsCyclic₀ Γ] [Nontrivial Γˣ] (v : Valuation R Γ) : Prop where
+class IsDiscrete' [IsCyclic Γˣ] [Nontrivial Γˣ] (v : Valuation R Γ) : Prop where
   exists_generator_lt_one : ∃ (γ :Γˣ), Subgroup.zpowers γ = ⊤ ∧ γ < 1 ∧ ↑γ ∈ range v
   -- glb_generator_mem : ∀ g h : Γ₀ˣ, Subgroup.zpowers g = ⊤ →
   --   Subgroup.zpowers h = ⊤ → g ≤ h → (g : Γ₀) ∈ range v
 
 variable {K : Type*} [Field K]
 
-variable [IsCyclic₀ Γ] [Nontrivial Γˣ]
+variable [IsCyclic Γˣ] [Nontrivial Γˣ]
 
 /-- A discrete valuation on a field `K` is surjective. -/
 lemma IsDiscrete'.surj (w : Valuation K Γ) [hv : IsDiscrete' w] : Surjective w := by
@@ -360,21 +365,21 @@ lemma isDiscrete'_iff_surjective (w : Valuation K Γ) :
     by simp, ?_, by apply h⟩⟩
   simpa using (⊤ : Subgroup Γˣ).gen_lt_one_lt_one
 
-lemma Int.generator_eq_one_or_neg_one {a : ℤ} (ha : AddSubgroup.zmultiples a = ⊤) :
-   a = 1 ∨ a = -1 := sorry
-
-lemma MulInt.generator_eq_one_or_neg_one {a : Multiplicative ℤ} (ha : Subgroup.zpowers a = ⊤) :
-   a = ofAdd 1 ∨ a = ofAdd (-1 : ℤ) := sorry
-
-lemma IsDiscrete'_of_neg_one_mem_range (w : Valuation R ℤₘ₀) [IsDiscrete w] : IsDiscrete' w := by
-  constructor
-  have neg_one_unit : (↑(ofAdd (-1 : ℤ)) : ℤₘ₀) ≠ 0 := by norm_cast
-  use Units.mk0 _ neg_one_unit
-  constructor
-  · sorry -- see below
-  · constructor
-    · sorry--rw [← WithZero.coe_unitsWithZeroEquiv_eq_units_val]
-    · apply IsDiscrete.one_mem_range
+-- lemma Int.generator_eq_one_or_neg_one {a : ℤ} (ha : AddSubgroup.zmultiples a = ⊤) :
+--    a = 1 ∨ a = -1 := sorry
+--
+-- lemma MulInt.generator_eq_one_or_neg_one {a : Multiplicative ℤ} (ha : Subgroup.zpowers a = ⊤) :
+--    a = ofAdd 1 ∨ a = ofAdd (-1 : ℤ) := sorry
+--
+-- lemma IsDiscrete'_of_neg_one_mem_range (w : Valuation R ℤₘ₀) [IsDiscrete w] : IsDiscrete' w := by
+--   constructor
+--   have neg_one_unit : (↑(ofAdd (-1 : ℤ)) : ℤₘ₀) ≠ 0 := by norm_cast
+--   use Units.mk0 _ neg_one_unit
+--   constructor
+--   · sorry -- see below
+--   · constructor
+--     · sorry--rw [← WithZero.coe_unitsWithZeroEquiv_eq_units_val]
+--     · apply IsDiscrete.one_mem_range
 
 
   -- intro m n hm hn hmn
@@ -432,7 +437,7 @@ lemma unzero_mem_unzero_range (x : Kˣ) : v.unzero x ∈ v.unzero_range := by
 lemma coe_unzero (x : Kˣ) : (v.unzero x  : Γ) = v x:= by
   simp
 
-variable  [IsCyclic₀ Γ] [Nontrivial Γˣ] in
+variable  [IsCyclic Γˣ] [Nontrivial Γˣ] in
 -- **TODO** Golf this
 instance [hv : IsDiscrete' v] : IsNontrivial v where
   exists_val_ne_one := by
@@ -487,7 +492,7 @@ lemma unzero_range_ne_bot [hv : IsNontrivial v] : Nontrivial v.unzero_range := b
   -- intro h
   -- apply hx1
   -- rw [← h]
-variable [IsNontrivial v] [IsCyclic₀ Γ]
+variable [IsNontrivial v] [IsCyclic Γˣ]
 
 section IsNontrivial
 
@@ -570,7 +575,7 @@ end Field
 
 open LinearOrderedCommGroup
 
-variable {Γ : Type*} [LinearOrderedCommGroupWithZero Γ] [Nontrivial Γˣ] [IsCyclic₀ Γ]
+variable {Γ : Type*} [LinearOrderedCommGroupWithZero Γ] [Nontrivial Γˣ] [IsCyclic Γˣ]
 
 section Ring
 
@@ -1053,7 +1058,7 @@ instance dvr_of_isDiscrete [v.IsNontrivial] : IsDiscreteValuationRing K₀ where
   toIsPrincipalIdealRing := integer_isPrincipalIdealRing v
   toIsLocalRing  := inferInstance
   not_a_field' := by rw [ne_eq, ← isField_iff_maximalIdeal_eq]; exact not_isField v
-#where
+
 variable (A : Type w₁) [CommRing A] [IsDomain A] [IsDiscreteValuationRing A]
 
 open IsDedekindDomain IsDedekindDomain.HeightOneSpectrum Subring IsDiscreteValuationRing
