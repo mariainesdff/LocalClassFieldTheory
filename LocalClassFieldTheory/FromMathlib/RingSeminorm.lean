@@ -5,7 +5,7 @@ Authors: María Inés de Frutos-Fernández
 -/
 import Mathlib.Analysis.Normed.Unbundled.RingSeminorm
 import Mathlib.Analysis.Seminorm
-import Mathlib.Data.Real.IsNonarchimedean
+import Mathlib.Algebra.Order.Ring.IsNonarchimedean
 
 /-!
 # Nonarchimedean ring seminorms and algebra norms

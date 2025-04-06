@@ -329,13 +329,16 @@ lemma isNontrivial_iff_exists_unit {K : Type*} [Field K] {w : Valuation K Γ} :
 
 end IsNontrivial
 -- **to here #2: in PR #23726**
-section IsDiscrete'
+
+-- **from here #3...**
+section IsDiscrete' -- (of course, this has been renamed `IsDiscrete` in the PR)
 
 variable {R : Type*} [Ring R]
-
-/-- A valuation `v` on a ring `R` is (normalized) discrete if it is `Γ`-valued, if
-`IsCyclic₀ Γ` and `ofAdd (-1 : ℤ)` belongs to the image. Note that the latter is equivalent to
-  asking that `1 : ℤ` belongs to the image of the corresponding additive valuation. -/
+#where
+/-- Given a linearly ordered commutative group with zero `Γ` such that `Γˣ` is cyclic, a valuation
+`v : R → Γ` on a ring `R` is discrete, if `gen_lt_one Γˣ` belongs to the image. When `Γ := ℤₘ₀`, the
+  latter is equivalent to asking that `ofAdd (-1 : ℤ)` belongs to the image, in turn equivalent to
+  asking that `1 : ℤ` belongs to the image of the corresponding *additive* valuation. -/
 class IsDiscrete' [IsCyclic Γˣ] [Nontrivial Γˣ] (v : Valuation R Γ) : Prop where
   exists_generator_lt_one : ∃ (γ :Γˣ), Subgroup.zpowers γ = ⊤ ∧ γ < 1 ∧ ↑γ ∈ range v
   -- glb_generator_mem : ∀ g h : Γ₀ˣ, Subgroup.zpowers g = ⊤ →
@@ -357,6 +360,7 @@ lemma IsDiscrete'.surj (w : Valuation K Γ) [hv : IsDiscrete' w] : Surjective w 
   rw [map_zpow₀, ha]
   norm_cast
   rw [hk, hu, Units.val_mk0]
+
 
 /-- A `ℤₘ₀`-valued valuation on a field `K` is discrete if and only if it is surjective. -/
 lemma isDiscrete'_iff_surjective (w : Valuation K Γ) :
@@ -401,6 +405,8 @@ lemma isDiscrete'_iff_surjective (w : Valuation K Γ) :
 
 
 end IsDiscrete'
+-- **to here #3: in PR #**
+
 section Field
 variable {Γ : Type*} [LinearOrderedCommGroupWithZero Γ]
 variable {K : Type*} [Field K] (v : Valuation K Γ)
@@ -729,6 +735,8 @@ theorem exists_isPreuniformizer_of_isNontrivial : ∃ π : K₀, IsPreuniformize
   -- rw [← hg]
 
 end IsNontrivial
+
+#exit
 
 section IsDiscrete
 

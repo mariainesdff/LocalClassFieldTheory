@@ -51,7 +51,6 @@ def RingNorm.to_normedRing {A : Type*} [Ring A] (f : RingNorm A) : NormedRing A 
   dist x y := f (x - y)
   dist_self x := by simp only [sub_self, AddGroupSeminorm.toFun_eq_coe, _root_.map_zero]
   dist_comm x y := by
-    simp only [dist, AddGroupSeminorm.toFun_eq_coe]
     rw [← neg_sub x y, map_neg_eq_map]
   dist_triangle x y z := by
     have hxyz : x - z = x - y + (y - z) := by abel
@@ -63,7 +62,6 @@ def RingNorm.to_normedRing {A : Type*} [Ring A] (f : RingNorm A) : NormedRing A 
     simp only [AddGroupSeminorm.toFun_eq_coe, RingSeminorm.toFun_eq_coe]
     rw [eq_comm, ENNReal.ofReal_eq_coe_nnreal]
   eq_of_dist_eq_zero hxy := by
-    simp only [dist, AddGroupSeminorm.toFun_eq_coe] at hxy
     exact eq_of_sub_eq_zero (RingNorm.eq_zero_of_map_eq_zero' _ _ hxy)
 
 end Prelim
@@ -209,7 +207,6 @@ def algNormFromConst (hna : IsNonarchimedean (norm : K → ℝ))
       have h : spectralNorm K L (algebraMap K L k) =
         seminormFromConst' h1 hx' (isPowMul_spectralNorm hna) (algebraMap K L k) := by
           rw [seminormFromConst_apply_of_isMul h1 hx' _ h_mul]; rfl
-      simp only [RingSeminorm.toFun_eq_coe, seminormFromConstRingNormOfField_def]
       rw [← @spectralNorm_extends K _ L _ _ k, Algebra.smul_def, h]
       exact seminormFromConst_isMul_of_isMul _ _ _ h_mul _ }
 
@@ -253,10 +250,8 @@ def normedField [CompleteSpace K] (h : IsNonarchimedean (norm : K → ℝ)) : No
     dist := fun x y : L => (spectralNorm K L (x - y) : ℝ)
     dist_self := fun x => by simp [sub_self, spectralNorm_zero]
     dist_comm := fun x y => by
-      simp only [dist]
       rw [← neg_sub, spectralNorm_neg h (Algebra.IsAlgebraic.isAlgebraic _)]
     dist_triangle := fun x y z => by
-      simp only [dist_eq_norm]
       exact sub_add_sub_cancel x y z ▸ (isNonarchimedean_spectralNorm h).add_le spectralNorm_nonneg
     eq_of_dist_eq_zero := fun hxy => by
       simp only [← spectralMulAlgNorm_def h] at hxy

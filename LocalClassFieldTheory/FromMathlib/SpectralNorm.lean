@@ -75,15 +75,15 @@ variable {α : Type*} [LinearOrder α]
 
 -- In PR #23204
 -- Mathlib.Order.MinMax. Try Mathlib.Data.List.MinMax?
-theorem le_max_of_le' {l : List α} {a x : α} (b : α) (hx : x ∈ l) (h : a ≤ x) :
-    a ≤ l.foldr max b := by
-  induction l with
-  | nil => exact absurd hx (List.not_mem_nil _)
-  | cons y l IH =>
-    simp only [List.foldr, List.foldr_cons]
-    obtain rfl | hl := mem_cons.mp hx
-    · exact le_max_of_le_left h
-    · exact le_max_of_le_right (IH hl)
+-- theorem le_max_of_le' {l : List α} {a x : α} (b : α) (hx : x ∈ l) (h : a ≤ x) :
+--     a ≤ l.foldr max b := by
+--   induction l with
+--   | nil => exact absurd hx (List.not_mem_nil _)
+--   | cons y l IH =>
+--     simp only [List.foldr, List.foldr_cons]
+--     obtain rfl | hl := mem_cons.mp hx
+--     · exact le_max_of_le_left h
+--     · exact le_max_of_le_right (IH hl)
 
 end List
 
