@@ -101,9 +101,10 @@ a topological group. -/
 
 end CommGroupUniformity
 
+-- **from here #1...**
 /-- The class `ValuedlocalField`, extending `valued K ℤₘ₀` by requiring that `K` is complete, that
 the valuation is discrete, and that the residue field of the unit ball is finite. -/
-class ValuedLocalField (K : Type*) [Field K] extends Valued K ℤₘ₀ where
+class NALocalField (K : Type*) [Field K] extends Valued K ℤₘ₀ where
   complete : CompleteSpace K
   isDiscrete : IsDiscrete (@Valued.v K _ ℤₘ₀ _ _)
   finiteResidueField : Finite (IsLocalRing.ResidueField (@Valued.v K _ ℤₘ₀ _ _).valuationSubring)
@@ -121,7 +122,7 @@ instance (K : Type*) [Field K] [ValuedLocalField K] :
 instance (K : Type*) [Field K] [ValuedLocalField K] :
     Finite (IsLocalRing.ResidueField (@Valued.v K _ ℤₘ₀ _ _).valuationSubring) :=
   ValuedLocalField.finiteResidueField
-
+-- **...to here #1: in PR 23730**
 
 open CommGroupUniformity MeasureTheory.Measure
 
