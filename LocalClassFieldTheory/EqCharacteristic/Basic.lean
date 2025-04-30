@@ -9,6 +9,7 @@ import Mathlib.Algebra.CharP.Subring
 import Mathlib.FieldTheory.Finite.GaloisField
 import Mathlib.RingTheory.LaurentSeries
 import Mathlib.RingTheory.Valuation.AlgebraInstances
+import Mathlib.Topology.Algebra.Valued.NormedValued
 
 
 /-!
@@ -41,7 +42,7 @@ noncomputable section
 
 open scoped DiscreteValuation
 
-open Polynomial Multiplicative IsDedekindDomain IsDedekindDomain.HeightOneSpectrum RankOneValuation
+open Polynomial Multiplicative IsDedekindDomain IsDedekindDomain.HeightOneSpectrum --RankOneValuation
   Valuation ValuationSubring
 
 variable (p : ℕ) [Fact (Nat.Prime p)]
@@ -177,8 +178,7 @@ namespace FpXIntCompletion
 
 variable {p}
 
-instance : IsDiscreteValuationRing (FpXIntCompletion p) :=
-  DiscreteValuation.dvr_of_isDiscrete _
+instance : IsDiscreteValuationRing (FpXIntCompletion p) := Valuation.dvr_of_isDiscrete _
 
 instance : Algebra (FpXIntCompletion p) (FpXCompletion p) :=
   (by infer_instance :
@@ -227,11 +227,11 @@ theorem norm_X : ‖X p‖ = 1 / (p : ℝ) := by
     erw [Valued.extension_extends]
     rfl
   have hX : ‖X p‖ = RankOne.hom _ (Valued.v (X p)) := rfl
-  rw [hX, hv, DiscreteValuation.rankOne_hom_def]
+  sorry/- rw [hX, hv, DiscreteValuation.rankOne_hom_def]
   simp only [Int.reduceNeg, ofAdd_neg, WithZero.coe_inv, map_inv₀, NNReal.coe_inv, one_div, inv_inj]
   simp only [WithZeroMulInt.toNNReal, MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk,
     WithZero.coe_ne_zero, ↓reduceDIte, WithZero.unzero_coe, toAdd_ofAdd, zpow_one]
-  rw [valuation_base_eq_char, NNReal.coe_natCast]
+  rw [valuation_base_eq_char, NNReal.coe_natCast] -/
 
 variable {p}
 
@@ -487,7 +487,7 @@ def ringOfIntegersEquiv (p : ℕ) [Fact (Nat.Prime p)] :
 
 theorem open_unit_ball_def :
     IsLocalRing.maximalIdeal (FpXIntCompletion p) = Ideal.span {FpXIntCompletion.X p} := by
-  apply DiscreteValuation.isUniformizer_is_generator; exact valuation_X
+  apply Valuation.isUniformizer_is_generator; sorry --exact valuation_X
 
 end FpXCompletion
 

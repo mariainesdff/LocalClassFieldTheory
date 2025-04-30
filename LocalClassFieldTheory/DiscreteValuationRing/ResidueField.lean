@@ -59,7 +59,7 @@ universe u w
 
 namespace DiscreteValuation
 
-variable (K : Type*) [Field K] [hv : Valued K ℤₘ₀] [IsDiscrete hv.v] [CompleteSpace K]
+variable (K : Type*) [Field K] [hv : Valued K ℤₘ₀] [IsDiscrete' hv.v] [CompleteSpace K]
 variable (L : Type*) [Field L] [Algebra K L] [FiniteDimensional K L]
 
 local notation3 "K₀" => hv.v.valuationSubring

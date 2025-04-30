@@ -15,7 +15,7 @@ import Mathlib.RingTheory.Henselian
 /-!
 
 In this file we set up two galois connections:
-- First, between `IntermediateField K L`, where `ValuedLocalField K` and
+- First, between `IntermediateField K L`, where `NALocalField K` and
   `Algebra.IsSeparable K L`, and `IntegrallyClosedSubalgebra K₀ L₀`.
 - Secondly, between  `IntegrallyClosedSubalgebra K₀ L₀` and
   `IntermediateField (ResidueField K₀) (ResidueField L₀)`.
@@ -38,7 +38,7 @@ open scoped Multiplicative NNReal /- Valued -/
 
 open Valuation
 
-variable (K : Type*) [Field K] [ValuedLocalField K]
+variable (K : Type*) [Field K] [NALocalField K]
 
 scoped notation3 "w_["K"]" => (@Valued.v K _ ℤₘ₀ _ _)
 
@@ -67,10 +67,7 @@ structure IntegrallyClosedSubalgebra extends Subalgebra [K]₀ L₀ where
 instance : Preorder (IntegrallyClosedSubalgebra K vL) where
   le := ( ·.1 ≤ ·.1)
   le_refl := by simp
-  le_trans := by
-    intro A B C hAB hAC
-    simp only at hAB hAC ⊢
-    exact hAB.trans hAC
+  le_trans A B C hAB hAC := hAB.trans hAC
 
 lemma IntegrallyClosed_of_IntegrallyClosedSubalgebra (A : IntegrallyClosedSubalgebra K vL) :
   IsIntegrallyClosed A.toSubalgebra := IntegrallyClosedSubalgebra.is_int_closed ..
@@ -141,7 +138,7 @@ open IsLocalRing
 
 section Henselian
 
-variable {E : Type*} [Field E] [ValuedLocalField E] [Algebra K E] [FiniteDimensional K E]
+variable {E : Type*} [Field E] [NALocalField E] [Algebra K E] [FiniteDimensional K E]
 
 instance henselianRing : HenselianRing [E]₀ (maximalIdeal [E]₀) := sorry
 

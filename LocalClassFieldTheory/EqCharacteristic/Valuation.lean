@@ -60,7 +60,7 @@ instance (priority := 100) completeSpace : CompleteSpace K :=
   Extension.completeSpace (FpXCompletion p) K
 
 /-- The canonical valuation in an equal characteristic local field is discrete. -/
-instance valuation.isDiscrete : Valuation.IsDiscrete (EqCharLocalField.WithZero.valued p K).v :=
+instance valuation.isDiscrete : Valuation.IsDiscrete' (EqCharLocalField.WithZero.valued p K).v :=
   Extension.isDiscrete_of_finite (FpXCompletion p) K
 
 /-- The ring of integers of an equal characteristic local field is a discrete valuation ring. -/

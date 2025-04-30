@@ -24,7 +24,7 @@ open scoped Multiplicative
 
 namespace DiscreteValuation.Extension
 
-variable {K : Type _} [Field K] [hv : Valued K ℤₘ₀] [IsDiscrete hv.v] [CompleteSpace K]
+variable {K : Type _} [Field K] [hv : Valued K ℤₘ₀] [IsDiscrete' hv.v] [CompleteSpace K]
 
 theorem trivial_powExtensionOnUnits_eq_valuation (x : Kˣ) :
     powExtensionOnUnits K K x = unzero (Valuation.ne_zero_of_unit hv.v x) := by
@@ -43,7 +43,7 @@ theorem trivial_expExtensionOnUnits_eq_one : expExtensionOnUnits K K = 1 := by
     apply Subgroup.map_top_of_surjective
     intro z
     have hz : ∃ u : Kˣ, Valued.v (u : K) = (z : ℤₘ₀) := by
-      have hd : IsDiscrete hv.v := inferInstance
+      have hd : IsDiscrete' hv.v := inferInstance
       obtain ⟨k, hk⟩ := hd.surj _ z
       have hk0 : k ≠ 0 := by rw [ne_eq, ← Valuation.zero_iff hv.v, hk]; exact coe_ne_zero
       exact ⟨IsUnit.unit (isUnit_iff_ne_zero.mpr hk0), hk⟩

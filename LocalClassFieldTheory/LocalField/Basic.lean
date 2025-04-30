@@ -13,13 +13,13 @@ import Mathlib.Analysis.AbsoluteValue.Equivalence
 
 /-!
 # Local fields
-In this file we define the `class ValuedLocalField` on a valued field `K`, requiring that it is
+In this file we define the `class NALocalField` on a valued field `K`, requiring that it is
 * complete (with respect to the uniform structure induced by the valuation)
 * that its valuation is discrete
 * that the residue field of its unit ball is finite
 
 ## Main Definitions
-* `ValuedLocalField` is the key definition, see above.
+* `NALocalField` is the key definition, see above.
 
 ## Main Results
 * For an `EqCharLocalField p K` that is separable over `FpX_completion p` we show that `K` is a
@@ -64,8 +64,8 @@ inference-/
 variable (G : Type*) [CommGroup G] [TopologicalSpace G] [IsTopologicalGroup G]
 
 /-The class `LocalField`....**Blabla** -/
-class _root_.LocalField (K : Type*) [Field K] extends UniformSpace K, UniformAddGroup K,
-  TopologicalDivisionRing K, CompleteSpace K, LocallyCompactSpace K
+class _root_.LocalField (K : Type*) [Field K] extends UniformSpace K, IsUniformAddGroup K,
+  IsTopologicalDivisionRing K, CompleteSpace K, LocallyCompactSpace K
 
 /-This shows that the topology induced from the uniformity on `K` coincides with that of `K` as
 a topological group. -/
@@ -102,26 +102,26 @@ a topological group. -/
 end CommGroupUniformity
 
 -- **from here #1...**
-/-- The class `ValuedlocalField`, extending `valued K ℤₘ₀` by requiring that `K` is complete, that
+/-- The class `NALocalField`, extending `valued K ℤₘ₀` by requiring that `K` is complete, that
 the valuation is discrete, and that the residue field of the unit ball is finite. -/
 class NALocalField (K : Type*) [Field K] extends Valued K ℤₘ₀ where
   complete : CompleteSpace K
-  isDiscrete : IsDiscrete (@Valued.v K _ ℤₘ₀ _ _)
+  isDiscrete : IsDiscrete' (@Valued.v K _ ℤₘ₀ _ _)
   finiteResidueField : Finite (IsLocalRing.ResidueField (@Valued.v K _ ℤₘ₀ _ _).valuationSubring)
 
-instance (K : Type*) [Field K] [ValuedLocalField K] : IsDiscrete (@Valued.v K _ ℤₘ₀ _ _) :=
-  ValuedLocalField.isDiscrete
+instance (K : Type*) [Field K] [NALocalField K] : IsDiscrete' (@Valued.v K _ ℤₘ₀ _ _) :=
+  NALocalField.isDiscrete
 
-instance (K : Type*) [Field K] [ValuedLocalField K] : CompleteSpace K := ValuedLocalField.complete
+instance (K : Type*) [Field K] [NALocalField K] : CompleteSpace K := NALocalField.complete
 
-instance (K : Type*) [Field K] [ValuedLocalField K] :
+instance (K : Type*) [Field K] [NALocalField K] :
     Finite (IsLocalRing.ResidueField (@Valued.v K _ ℤₘ₀ _ _).valuationSubring) :=
-  ValuedLocalField.finiteResidueField
+  NALocalField.finiteResidueField
 
 
-instance (K : Type*) [Field K] [ValuedLocalField K] :
+instance (K : Type*) [Field K] [NALocalField K] :
     Finite (IsLocalRing.ResidueField (@Valued.v K _ ℤₘ₀ _ _).valuationSubring) :=
-  ValuedLocalField.finiteResidueField
+  NALocalField.finiteResidueField
 -- **...to here #1: in PR 23730**
 
 open CommGroupUniformity MeasureTheory.Measure
@@ -165,8 +165,8 @@ def IsArchLocalField (K : Type*) [Field K] [LocalField K] : Prop :=
 
 /-A proof that `Nonarch →  LocCompact ↔ Complete ∧ Discrete ∧ FiniteResidueField` see
 Bourbaki, Alg Comm, VI, Chap ,§ 5, no 1, Prop 1.-/
-def NonarchLocalField.toValuedLocalField [NonarchLocalField K] :
-    ValuedLocalField K where
+def NonarchLocalField.toNALocalField [NonarchLocalField K] :
+    NALocalField K where
   __ := NonarchLocalField.toValued K
   complete := inferInstance
   isDiscrete := sorry
@@ -177,7 +177,7 @@ theorem LocalField.isArch_or_isNonarch [LocalField K] :
 
 section Subfield
 
-variable (K L : Type*) [Field K] [ValuedLocalField K] [Field L] [ValuedLocalField L] [Algebra K L]
+variable (K L : Type*) [Field K] [NALocalField K] [Field L] [NALocalField L] [Algebra K L]
   [Algebra.IsSeparable K L] (E : IntermediateField K L)
 
 --instance : UniformSpace E := by exact instUniformSpaceSubtype
@@ -268,11 +268,12 @@ instance {R Γ₀ : Type*} [Field R] [LinearOrderedCommGroupWithZero Γ₀] (v�
 lemma todo [h : IsValExtension (Valued.v (R := K)) (Valued.v (R := L))] {π : K}
     (hπ : IsUniformizer (Valued.v (R := K)) π) :
     ∃ (n : ℕ) (hn : 0 < n), v (algebraMap K L π) = ofAdd (-(n : ℤ)) := by
-  obtain ⟨ω, hω⟩ := exists_isUniformizer_of_isDiscrete (Valued.v (R := L))
+  obtain ⟨ω, hω⟩ := exists_isUniformizer_of_isDiscrete' (Valued.v (R := L))
   set x : valuationSubring (Valued.v (R := L)) := by
       use algebraMap K L π
       rw [mem_valuationSubring_iff, IsValExtension.val_map_le_one_iff (Valued.v (R := K)), hπ]
       norm_cast
+      sorry
       --exact right_eq_inf.mp rfl -- ???
     with hx_def -- not sure about spacing
   have hx : x ≠ 0 := sorry
@@ -283,10 +284,10 @@ lemma todo [h : IsValExtension (Valued.v (R := K)) (Valued.v (R := L))] {π : K}
   have hn0 : 0 < n := sorry
   use n, hn0
   rw [hu, _root_.map_mul, _root_.map_pow, hω, WithZero.ofAdd_neg_nat, hu1, mul_one]
-
+  sorry
 
 instance [h : IsValExtension (Valued.v (R := K)) (Valued.v (R := L))] : ContinuousSMul K L := by
-  obtain ⟨π, hπ⟩ := exists_isUniformizer_of_isDiscrete (Valued.v (R := K))
+  obtain ⟨π, hπ⟩ := exists_isUniformizer_of_isDiscrete' (Valued.v (R := K))
   obtain ⟨n, hn0, hn⟩ := todo K L hπ
   refine continuousSMul_of_algebraMap K L ?_
   rw [continuous_def]
@@ -350,13 +351,13 @@ instance foo : Valued E ℤₘ₀ := by
       specialize hγ r hunit.unit
       sorry -/
 
-instance : ValuedLocalField E := {
+instance : NALocalField E := {
   complete := FiniteDimensional.complete K E
   isDiscrete := Extension.isDiscrete_of_finite K E
-  finiteResidueField := finiteResidueFieldOfUnitBall K E ValuedLocalField.finiteResidueField }
+  finiteResidueField := finiteResidueFieldOfUnitBall K E NALocalField.finiteResidueField }
 
 instance : LocalField E where
-  toTopologicalDivisionRing := sorry
+  toIsTopologicalDivisionRing := sorry
   complete := sorry
   local_compact_nhds := sorry
 
@@ -378,7 +379,7 @@ variable (K : Type _) [Field K] [EqCharLocalField p K]
 /-- An `EqCharLocalField p K` that is separable over `FpX_completion` is a local field.
   The separability assumption is required to use some result in mathlib concerning
   the finiteness of the ring of integers.-/
-noncomputable def localField [Fact (Algebra.IsSeparable (FpXCompletion p) K)] : ValuedLocalField K :=
+noncomputable def localField [Fact (Algebra.IsSeparable (FpXCompletion p) K)] : NALocalField K :=
   { EqCharLocalField.WithZero.valued p K with
     complete := EqCharLocalField.completeSpace p K
     isDiscrete := EqCharLocalField.valuation.isDiscrete p K
@@ -401,7 +402,7 @@ instance : Algebra.IsSeparable (Padic'.Q_p p) K :=
   Algebra.IsSeparable.of_integral (Padic'.Q_p p) K
 
 -- /-- A `MixedCharLocalField` is a local field. -/
-noncomputable def localField : ValuedLocalField K :=
+noncomputable def localField : NALocalField K :=
   { MixedCharLocalField.WithZero.valued p K with
     complete := MixedCharLocalField.completeSpace p K
     isDiscrete := MixedCharLocalField.valuation.isDiscrete p K
@@ -439,7 +440,7 @@ end MixedCharLocalField
 --   neg_mem' := sorry
 --   mem_or_inv_mem' := sorry
 --
--- theorem powerBddSubring_eq_integers [hv : ValuedLocalField K] :
+-- theorem powerBddSubring_eq_integers [hv : NALocalField K] :
 --   PowerBddSubring K = hv.toValued.v.valuationSubring := sorry
 --
 -- end Metrizable

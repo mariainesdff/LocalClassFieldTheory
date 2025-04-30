@@ -8,6 +8,7 @@ import LocalClassFieldTheory.DiscreteValuationRing.Complete
 -- import LocalClassFieldTheory.FromMathlib.SpecificLimits In PR #11008
 import Mathlib.NumberTheory.Padics.RingHoms
 import Mathlib.RingTheory.DiscreteValuationRing.TFAE
+import Mathlib.Topology.Algebra.Valued.NormedValued
 
 /-!
 
@@ -96,7 +97,7 @@ def padicValued : Valued ℚ ℤₘ₀ := (pHeightOneIdeal p).adicValued
 def Q_p : Type _ :=
   adicCompletion ℚ (pHeightOneIdeal p)
 
-instance : IsDiscrete (@Valued.v (Q_p p) _ ℤₘ₀ _ _) :=
+instance : IsDiscrete' (@Valued.v (Q_p p) _ ℤₘ₀ _ _) :=
   Completion.isDiscrete _ _ _
 
 instance : NormedField (Q_p p) := Valued.toNormedField (Q_p p) ℤₘ₀
@@ -363,12 +364,12 @@ instance : CharZero (Z_p p) where cast_injective m n h := by
 def Padic'Int.heightOneIdeal : HeightOneSpectrum (Z_p p) where
   asIdeal := IsLocalRing.maximalIdeal (Z_p p)
   isPrime := Ideal.IsMaximal.isPrime (IsLocalRing.maximalIdeal.isMaximal _)
-  ne_bot := by simpa [ne_eq, ← IsLocalRing.isField_iff_maximalIdeal_eq] using
-    DiscreteValuation.not_isField _
+  ne_bot := sorry/- by simpa [ne_eq, ← IsLocalRing.isField_iff_maximalIdeal_eq] using
+    DiscreteValuation.not_isField _ -/
 
 theorem Padic'Int.heightOneIdeal_is_principal :
     (Padic'Int.heightOneIdeal p).asIdeal = Ideal.span {(p : Z_p p)} :=
-  DiscreteValuation.isUniformizer_is_generator _ (Padic'.valuation_p p)
+  sorry --Valuation.isUniformizer_is_generator _ (Padic'.valuation_p p)
 
 -- instance : Valued (Q_p p) ℤₘ₀ := HeightOneSpectrum.valuedAdicCompletion ℚ (pHeightOneIdeal p)
 
@@ -417,13 +418,13 @@ theorem PadicInt.nonunit_mem_iff_top_nilpotent (x : ℚ_[p]) :
   rw [tendsto_zero_iff_norm_tendsto_zero, Filter.tendsto_congr aux]
   refine ⟨fun H ↦ ?_, fun H ↦ ?_⟩
   · obtain ⟨h1, h2⟩ := ValuationSubring.mem_nonunits_iff_exists_mem_maximalIdeal.mp H
-    exact _root_.tendsto_pow_atTop_nhds_zero_of_lt_one (norm_nonneg _)
-      (PadicInt.mem_nonunits.mp <| (IsLocalRing.mem_maximalIdeal _).mp h2)
+    sorry/- exact _root_.tendsto_pow_atTop_nhds_zero_of_lt_one (norm_nonneg _)
+      (PadicInt.mem_nonunits.mp <| (IsLocalRing.mem_maximalIdeal _).mp h2) -/
   · have : ‖x‖ < 1 := by
       suffices (⟨‖x‖, norm_nonneg _⟩ : ℝ≥0) < 1 by
         rwa [← NNReal.coe_lt_coe, NNReal.coe_one] at this
-      apply NNReal.lt_one_of_tendsto_pow_0
-      rwa [← NNReal.tendsto_coe, NNReal.coe_zero]
+      sorry/- apply NNReal.lt_one_of_tendsto_pow_0
+      rwa [← NNReal.tendsto_coe, NNReal.coe_zero] -/
     apply ValuationSubring.mem_nonunits_iff_exists_mem_maximalIdeal.mpr
     exact
       ⟨(PadicInt.mem_subring_iff p).mpr (le_of_lt this),
@@ -435,9 +436,9 @@ theorem mem_unit_ball_of_tendsto_zero {x : Q_p p} (H : Tendsto (fun n : ℕ ↦ 
   have : ‖x‖ < 1 := by
     suffices (⟨‖x‖, norm_nonneg _⟩ : ℝ≥0) < 1 by
       rwa [← NNReal.coe_lt_coe, NNReal.coe_one] at this
-    apply NNReal.lt_one_of_tendsto_pow_0
+    sorry/- apply NNReal.lt_one_of_tendsto_pow_0
     rw [← NNReal.tendsto_coe, NNReal.coe_zero]
-    exact H
+    exact H -/
   replace this : Valued.v x < (1 : ℤₘ₀) := by
     apply (Valued.toNormedField.norm_lt_one_iff).mp this
   obtain ⟨y, hy₁, hy₂⟩ := exists_mem_lt_one_of_lt_one p this
@@ -471,8 +472,8 @@ theorem UnitBall.nonunit_mem_iff_top_nilpotent (x : Q_p p) :
       ValuationSubring.algebraMap_apply, x_mem, forall_true_left] at this
     replace this : Valued.v x < (1 : ℤₘ₀) := by
       apply (Completion.adic_of_compl_eq_compl_of_adic ℤ (Int.pHeightOneIdeal p) ℚ x).symm ▸ this
-    exact tendsto_pow_atTop_nhds_zero_of_lt_one (norm_nonneg _)
-      ((Valued.toNormedField.norm_lt_one_iff).mpr this)
+    sorry/- exact tendsto_pow_atTop_nhds_zero_of_lt_one (norm_nonneg _)
+      ((Valued.toNormedField.norm_lt_one_iff).mpr this) -/
   · exact mem_unit_ball_of_tendsto_zero p H
 
 theorem mem_nonunits_iff (x : Q_p p) :

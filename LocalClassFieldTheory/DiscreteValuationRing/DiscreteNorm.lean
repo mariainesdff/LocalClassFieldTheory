@@ -7,6 +7,7 @@ import LocalClassFieldTheory.DiscreteValuationRing.Basic
 --import LocalClassFieldTheory.ForMathlib.RankOneValuation
 import LocalClassFieldTheory.SpectralNorm
 import Mathlib.FieldTheory.Minpoly.IsIntegrallyClosed
+import Mathlib.Topology.Algebra.Valued.NormedValued
 
 /-!
 # Extensions of discrete norms
@@ -39,10 +40,10 @@ In the meantime, we create definitions for all of the needed structures on `K` (
 
 noncomputable section
 
-open DiscreteValuation Multiplicative FiniteDimensional Module minpoly Polynomial Valuation
+open Multiplicative FiniteDimensional Module minpoly Polynomial Valuation
   WithZero NNReal
 
-open scoped DiscreteValuation NNReal
+open scoped NNReal
 
 section AuxLemma
 
@@ -78,10 +79,11 @@ def nontriviallyDiscretelyNormedField : NontriviallyNormedField K :=
     non_trivial := by
       obtain ⟨x, hx⟩ := exists_isPreuniformizer_of_isNontrivial hv.v
       use x.1⁻¹
-      erw [@norm_inv K (@NormedField.toNormedDivisionRing K (discretelyNormedField K)),
+      sorry
+      /- erw [@norm_inv K (@NormedField.toNormedDivisionRing K (discretelyNormedField K)),
         one_lt_inv_iff₀, Valued.toNormedField.norm_lt_one_iff,
         RankOneValuation.norm_pos_iff_val_pos]
-      exact ⟨isPreuniformizer_val_pos hx, isPreuniformizer_val_lt_one hx⟩ }
+      exact ⟨isPreuniformizer_val_pos hx, isPreuniformizer_val_lt_one hx⟩  -/}
 
 /-- The norm on `K` induced by its discrete valuation. -/
 def hasDiscreteNorm : Norm K := by
@@ -134,8 +136,8 @@ theorem zero : discreteNormExtension (K := K) (L := L) 0 = 0 :=
 theorem eq_root_zero_coeff (x : L) : discreteNormExtension (K := K) (L := L) x =
       WithZeroMulInt.toNNReal (base_ne_zero K hv.v) (Valued.v ((minpoly K x).coeff 0)) ^
         (1 / (minpoly K x).natDegree : ℝ) :=
-  @spectralNorm_eq_root_zero_coeff K (nontriviallyDiscretelyNormedField K) _ L _ _ _
-    (norm_isNonarchimedean K) x
+  sorry/- @spectralNorm_eq_root_zero_coeff K (nontriviallyDiscretelyNormedField K) _ L _ _ _
+    (norm_isNonarchimedean K) x -/
 
 theorem pow_eq_pow_root_zero_coeff' (x : L) (n : ℕ) :
     discreteNormExtension (K := K) (L := L) x ^ n =

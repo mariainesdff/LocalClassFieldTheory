@@ -25,11 +25,11 @@ open scoped Multiplicative
 variable (R : Type*) [CommRing R] [IsDedekindDomain R] (K : Type*) [Field K]
   [Algebra R K] [IsFractionRing R K] (v : HeightOneSpectrum R)
 
-theorem adicValuedIsDiscrete : IsDiscrete (@adicValued R _ _ K _ _ _ v).v := by
+theorem adicValuedIsDiscrete : IsDiscrete' (@adicValued R _ _ K _ _ _ v).v := by
   obtain ⟨π, hπ⟩ := valuation_exists_uniformizer K v
-  apply isDiscrete_of_exists_isUniformizer (π := π)
-  rw [isUniformizer_iff, ← hπ]
-  rfl
+  apply isDiscrete'_of_exists_isUniformizer (π := π)
+  sorry --rw [isUniformizer_iff, ← hπ]
+  --rfl
 
 local notation "R_v" => IsDedekindDomain.HeightOneSpectrum.adicCompletionIntegers K v
 
@@ -51,12 +51,12 @@ theorem valuation_completion_integers_exists_uniformizer :
   exact le_of_lt WithZero.ofAdd_neg_one_lt_one
 
 /-- The valuation on the `v`-adic completion `K_v` of `K` is discrete. -/
-instance isDiscrete : IsDiscrete (@Valued.v K_v _ ℤₘ₀ _ _) :=
-  isDiscrete_of_exists_isUniformizer
-    (valuation_completion_integers_exists_uniformizer R K v).choose_spec
+instance isDiscrete : IsDiscrete' (@Valued.v K_v _ ℤₘ₀ _ _) :=
+  sorry /- isDiscrete'_of_exists_isUniformizer
+    (valuation_completion_integers_exists_uniformizer R K v).choose_spec -/
 
 /-- The unit ball `R_v` of `K_v` is a discrete valuation ring. -/
 instance discreteValuationRing : IsDiscreteValuationRing R_v :=
-  DiscreteValuation.dvr_of_isDiscrete (Valued.v  (R := K_v))
+  sorry --DiscreteValuation.dvr_of_isDiscrete (Valued.v  (R := K_v))
 
 end IsDedekindDomain.HeightOneSpectrum

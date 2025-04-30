@@ -205,13 +205,13 @@ end IsNontrivial
 
 section IsDiscrete
 
-variable (K) (L) [IsDiscrete hv.v] [CompleteSpace K]
+variable (K) (L) [IsDiscrete' hv.v] [CompleteSpace K]
 
 /-- The number `expExtensionOnUnits K L` divides the degree of `L` over `K`. -/
 theorem expExtensionOnUnits_dvd [FiniteDimensional K L] :
     expExtensionOnUnits K L ∣ finrank K L := by
   have h_alg := Algebra.IsAlgebraic.of_finite K L
-  obtain ⟨π, hπ⟩ := exists_isUniformizer_of_isDiscrete hv.v
+  obtain ⟨π, hπ⟩ := exists_isUniformizer_of_isDiscrete' hv.v
   set u : L := algebraMap K L (π : K) with hu_def
   have hu0 : u ≠ 0 := by
     rw [hu_def, ne_eq, _root_.map_eq_zero]
@@ -223,7 +223,7 @@ theorem expExtensionOnUnits_dvd [FiniteDimensional K L] :
     exact minpoly.natDegree_pos (h_alg.isAlgebraic _).isIntegral
   have h_dvd : ((minpoly K ((algebraMap K L) ↑π)).natDegree : ℤ) ∣ finrank K L :=
     Int.natCast_dvd.mpr (minpoly.degree_dvd (h_alg.isAlgebraic _).isIntegral)
-  rw [hu, hu_def, Valuation.coeff_zero_minpoly, isUniformizer_iff.mp hπ, ← WithZero.coe_pow,
+  sorry/- rw [hu, hu_def, Valuation.coeff_zero_minpoly, isUniformizer_iff.mp hπ, ← WithZero.coe_pow,
     ← WithZero.coe_zpow, ← WithZero.coe_pow, WithZero.coe_inj, ← zpow_natCast, ← zpow_mul,
     ← zpow_natCast, ofAdd_pow_comm, ofAdd_pow_comm (-1)] at hn
   simp only [zpow_neg, zpow_one, inv_inj] at hn
@@ -235,7 +235,7 @@ theorem expExtensionOnUnits_dvd [FiniteDimensional K L] :
   rw [Int.natCast_div, eq_comm, Int.ediv_eq_iff_eq_mul_right hne_zero h_dvd] at hn
   use(minpoly K ((algebraMap K L) ↑π)).natDegree * n.toNat
   rw [mul_comm, ← @Nat.cast_inj ℤ _, hn, Nat.cast_mul, Nat.cast_mul, Int.toNat_of_nonneg hn0,
-    mul_assoc]
+    mul_assoc] -/
 
 variable {L}
 
@@ -284,10 +284,13 @@ theorem extensionDef_mul [FiniteDimensional K L] (x y : L) :
       · exact zero_le'
       · exact zero_le'
 
+-- [CommGroup α] [LinearOrder α] [IsOrderedMonoid α]
 -- TODO: I suspect this will not pass through the Mathlib linters because of missing ·
 theorem extensionDef_add [FiniteDimensional K L] (x y : L) :
     extensionDef K (x + y) ≤ max (extensionDef K x) (extensionDef K y) := by
-  let _ : LinearOrderedCommGroup (Multiplicative ℤ) := linearOrderedCommGroup
+  let _ : LinearOrder (Multiplicative ℤ) := linearOrder
+  let _ : CommGroup (Multiplicative ℤ) := commGroup
+  let _ : IsOrderedMonoid (Multiplicative ℤ) := isOrderedMonoid
   have h_alg : Algebra.IsAlgebraic K L := Algebra.IsAlgebraic.of_finite K L
   by_cases hx : x = 0
   · have hxy : x + y = y := by rw [hx, zero_add]
@@ -318,7 +321,8 @@ theorem extensionDef_add [FiniteDimensional K L] (x y : L) :
            WithZero.coe_zpow]
         simp_all only [(isUnit_iff_ne_zero.mpr hx).choose_spec, (isUnit_iff_ne_zero.mpr hy).choose_spec,
           (isUnit_iff_ne_zero.mpr hxy).choose_spec]
-        rw [(exists_mul_expExtensionOnUnits K (isUnit_iff_ne_zero.mpr hxy).unit).choose_spec,
+        sorry
+        /- rw [(exists_mul_expExtensionOnUnits K (isUnit_iff_ne_zero.mpr hxy).unit).choose_spec,
           WithZero.coe_pow, WithZero.coe_zpow,
           (exists_mul_expExtensionOnUnits K (isUnit_iff_ne_zero.mpr hx).unit).choose_spec,
           ← zpow_le_zpow_iff_left hd, zpow_natCast, zpow_natCast]
@@ -345,7 +349,7 @@ theorem extensionDef_add [FiniteDimensional K L] (x y : L) :
         repeat' exact minpoly.degree_dvd (h_alg.isAlgebraic _).isIntegral
         repeat'
           rw [Nat.cast_ne_zero]
-          exact ne_of_gt (minpoly.natDegree_pos (h_alg.isAlgebraic _).isIntegral)
+          exact ne_of_gt (minpoly.natDegree_pos (h_alg.isAlgebraic _).isIntegral) -/
 
 variable (K L)
 
@@ -439,7 +443,7 @@ theorem exists_generating_Unit [FiniteDimensional K L] :
   rw [_root_.map_inv, hx, ofAdd_neg]
 
 /-- The extended valuation on `L` is discrete. -/
-instance isDiscrete_of_finite [FiniteDimensional K L] : IsDiscrete (extendedValuation K L) := by
+instance isDiscrete_of_finite [FiniteDimensional K L] : IsDiscrete' (extendedValuation K L) := by
   set x := (exists_generating_Unit K L).choose
   have hx := (exists_generating_Unit K L).choose_spec
   rw [← WithZero.coe_inj] at hx
@@ -457,7 +461,7 @@ instance isDiscrete_of_finite [FiniteDimensional K L] : IsDiscrete (extendedValu
     ⟨(exists_generating_Unit K L).choose, by
       rw [mem_valuationSubring_iff, hπ1]; exact le_of_lt WithZero.ofAdd_neg_one_lt_one⟩
   have hπ : extendedValuation K L (π : L) = Multiplicative.ofAdd (-1 : ℤ) := hπ1
-  apply isDiscrete_of_exists_isUniformizer hπ
+  sorry --apply isDiscrete'_of_exists_isUniformizer hπ
 
 
 variable {K L}
@@ -617,7 +621,7 @@ namespace integralClosure
 instance discreteValuationRing_of_finite_extension [FiniteDimensional K L] :
     IsDiscreteValuationRing (integralClosure hv.v.valuationSubring L) := by
   letI hw : Valued L ℤₘ₀ := Valued.mk' (extendedValuation K L)
-  letI hw_disc : IsDiscrete hw.v := Extension.isDiscrete_of_finite K L
+  letI hw_disc : IsDiscrete' hw.v := Extension.isDiscrete_of_finite K L
   let e : (extendedValuation K L).valuationSubring ≃+* integralClosure hv.v.valuationSubring L :=
     RingEquiv.subringCongr (integralClosure_eq_integer K L).symm
   exact IsDiscreteValuationRing.RingEquivClass.isDiscreteValuationRing e
@@ -687,9 +691,10 @@ instance instAlgebra_valuationSubring : Algebra K₀ L₀ :=
 lemma coe_algebraMap_valuationSubring_eq (x : K₀) :
   (algebraMap K₀ L₀ x : L) = algebraMap K L (x : K) := rfl
 
+-- Isn't this in Mathlib now?
 protected theorem _root_.ValuationSubring.mem_maximalIdeal {a : L₀}  :
     a ∈ maximalIdeal L₀ ↔ vL a < 1 :=
-  Integer.not_isUnit_iff_valuation_lt_one a
+  sorry --Integer.not_isUnit_iff_valuation_lt_one a
 
 lemma maximalIdeal_mem_iff {x : K₀} :
     x ∈ maximalIdeal K₀ ↔ algebraMap K₀ L₀ x ∈ (maximalIdeal L₀) := by

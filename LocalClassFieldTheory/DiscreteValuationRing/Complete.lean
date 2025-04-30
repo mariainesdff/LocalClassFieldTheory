@@ -63,17 +63,19 @@ local notation "R_v" => adicCompletionIntegers K v
 
 local notation "K_v" => adicCompletion K v
 
-instance isDiscrete : IsDiscrete (@Valued.v K_v _ ℤₘ₀ _ _) := by
+instance isDiscrete : IsDiscrete' (@Valued.v K_v _ ℤₘ₀ _ _) := by
+  have : (LinearOrderedCommGroup.gen_lt_one ℤₘ₀ˣ : ℤₘ₀) = ofAdd (-1 : ℤ) := by
+    sorry /- **TODO** remove once this is a general lemma. -/
   obtain ⟨π, hπ⟩ := valuation_exists_uniformizer K v
-  apply isDiscrete_of_exists_isUniformizer (π := (↑π : K_v))
-  rw [isUniformizer_iff, ← hπ]
+  apply isDiscrete'_of_exists_isUniformizer (π := (↑π : K_v))
+  rw [isUniformizer_iff, this, ← hπ]
   apply Valued.extension_extends
 
 /-- The maximal ideal of `R_v`, that is a discrete valuation ring. -/
 def maxIdealOfCompletionDef : Ideal R_v :=
   IsLocalRing.maximalIdeal R_v
 
-instance : IsDiscreteValuationRing R_v := DiscreteValuation.dvr_of_isDiscrete _
+instance : IsDiscreteValuationRing R_v := Valuation.dvr_of_isDiscrete _
 
 
 theorem IsDedekindDomain.HeightOneSpectrum.valuation_completion_integers_exists_uniformizer :
@@ -151,7 +153,7 @@ theorem int_adic_of_compl_eq_int_compl_of_adic (a : R_v) :
         use n
         rw [← hα, WithZero.coe_inj, ← ofAdd_toAdd α, hn]
       rw [ValuationSubring.algebraMap_apply, hn, intValuation_le_pow_iff_dvd]
-      apply (DiscreteValuation.val_le_iff_dvd K_v _ n).mp (le_of_eq hn)
+      apply (Valuation.val_le_iff_dvd K_v _ n).mp (le_of_eq hn)
     · obtain ⟨m, hm⟩ : ∃ m : ℕ, v_adic_of_compl a = ofAdd (-m : ℤ) := by
         replace ha : v_adic_of_compl a ≠ 0 := by
           rwa [Valuation.ne_zero_iff, ne_eq, Subring.coe_eq_zero_iff]
@@ -167,7 +169,7 @@ theorem int_adic_of_compl_eq_int_compl_of_adic (a : R_v) :
         rw [hm]
         replace hm := le_of_eq hm
         rw [intValuation_le_pow_iff_dvd] at hm
-        rw [ValuationSubring.algebraMap_apply, DiscreteValuation.val_le_iff_dvd]
+        rw [ValuationSubring.algebraMap_apply, Valuation.val_le_iff_dvd]
         apply hm
 
 theorem adic_of_compl_eq_compl_of_adic (x : K_v) : v_adic_of_compl x = v_compl_of_adic x := by
