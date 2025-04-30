@@ -32,14 +32,14 @@ import LocalClassFieldTheory.EqCharacteristic.Valuation
 -- import LocalClassFieldTheory.ForMathlib.Polynomial -- In PR #13064
 -- import LocalClassFieldTheory.ForMathlib.PowerSeries -- In PR #12160 and PR #12245
 import LocalClassFieldTheory.ForMathlib.IsValExtensionInstances -- In PR #23590
-import LocalClassFieldTheory.ForMathlib.RankOneValuation -- Final lemma in PR #13064
+--import LocalClassFieldTheory.ForMathlib.RankOneValuation -- In PR #13064 and 23277
 import LocalClassFieldTheory.ForMathlib.WithZero -- Partly in PR #15741
 -- FromMathlib folder *complete*
 import LocalClassFieldTheory.FromMathlib.AlgNormOfGalois -- In PR #23178 and PR #23184
 import LocalClassFieldTheory.FromMathlib.CpDef
 -- import LocalClassFieldTheory.FromMathlib.Filter -- In PR #12430
 import LocalClassFieldTheory.FromMathlib.IntermediateField -- In PR #23251
-import LocalClassFieldTheory.FromMathlib.Limsup -- Mostly in PR #18172
+--import LocalClassFieldTheory.FromMathlib.Limsup -- Mostly in PR #18172
 --import LocalClassFieldTheory.FromMathlib.Minpoly -- In PR #12450
 import LocalClassFieldTheory.FromMathlib.NormalClosure
 --import LocalClassFieldTheory.FromMathlib.NormedSpace -- -- In PR #22081

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: María Inés de Frutos-Fernández, Filippo A. E. Nuccio
 -/
 import LocalClassFieldTheory.DiscreteValuationRing.Complete
-import LocalClassFieldTheory.ForMathlib.RankOneValuation
+--import LocalClassFieldTheory.ForMathlib.RankOneValuation
 import Mathlib.Algebra.CharP.Subring
 import Mathlib.FieldTheory.Finite.GaloisField
 import Mathlib.RingTheory.LaurentSeries

@@ -34,6 +34,14 @@ section spectralValue
 
 variable {S : Type*} [NormedDivisionRing S]
 
+/- NOTE TO FILIPPO: This was in #23178 but did not make it to the final version, which ended up
+being only about pow lemmas. I think we should PR it again, but in the meantime I am adding it
+here to fix the following proof. -/
+theorem lt_ciSup_of_lt {α : Type*} {ι : Sort*} [ConditionallyCompleteLattice α]
+   {f : ι → α} (H : BddAbove (Set.range f)) (i : ι) {a : α} (h : a < f i) :
+    a < iSup f :=
+  lt_of_lt_of_le h (le_ciSup H i)
+
 -- [LocalClassFieldTheory.FromMathlib.SpectralNorm] (corresponding Mathlib file)
 /-- The spectral value of a monic polynomial `P` is less than or equal to one if and only
   if all of its coefficients have norm less than or equal to 1. -/

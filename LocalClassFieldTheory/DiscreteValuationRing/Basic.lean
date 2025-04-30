@@ -102,7 +102,7 @@ theorem Subgroup.isCyclic_iff_exists_zpowers_eq_top {α : Type*} [Group α] (H :
 -- **from here... #1**
 namespace Subgroup
 
-variable {G : Type*} [LinearOrderedCommGroup G] [IsCyclic G]
+variable {G : Type*} [CommGroup G] [LinearOrder G] [IsOrderedMonoid G] [IsCyclic G]
 variable (H : Subgroup G) [Nontrivial H]
 
 lemma exists_generator_lt_one : ∃ (a : G), a < 1 ∧ Subgroup.zpowers a = H := by
@@ -120,14 +120,13 @@ lemma exists_generator_lt_one : ∃ (a : G), a < 1 ∧ Subgroup.zpowers a = H :=
 protected noncomputable
 def gen_lt_one : G := H.exists_generator_lt_one.choose
 
-lemma gen_lt_one_lt_one {G : Type*} [LinearOrderedCommGroup G] [IsCyclic G]
-      (H : Subgroup G) [Nontrivial H] : H.gen_lt_one < 1 :=
+lemma gen_lt_one_lt_one (H : Subgroup G) [Nontrivial H] : H.gen_lt_one < 1 :=
     H.exists_generator_lt_one.choose_spec.1
 
 @[simp]
-lemma gen_lt_one_zpowers_eq_top {G : Type*} [LinearOrderedCommGroup G] [IsCyclic G]
-      (H : Subgroup G) [Nontrivial H]  : Subgroup.zpowers H.gen_lt_one = H :=
-    H.exists_generator_lt_one.choose_spec.2
+lemma gen_lt_one_zpowers_eq_top (H : Subgroup G) [Nontrivial H] :
+    Subgroup.zpowers H.gen_lt_one = H :=
+  H.exists_generator_lt_one.choose_spec.2
 
 -- It is in **23589**
 -- instance {G : Type*} [Group G] [Nontrivial G] : Nontrivial (⊤ : Subgroup G) := by
@@ -138,7 +137,7 @@ end Subgroup
 
 namespace LinearOrderedCommGroup
 
-variable (G : Type*) [LinearOrderedCommGroup G] [IsCyclic G] [Nontrivial G]
+variable (G : Type*) [CommGroup G] [LinearOrder G] [IsOrderedMonoid G] [IsCyclic G] [Nontrivial G]
 
 noncomputable
 def gen_lt_one : G := (⊤ : Subgroup G).gen_lt_one
@@ -247,12 +246,12 @@ namespace Integer
   -- use! (x : K)⁻¹, le_of_eq hx'
   -- · ext; simp only [Subring.coe_mul, ne_eq, ZeroMemClass.coe_eq_zero, OneMemClass.coe_one,
   --     mul_inv_cancel₀ hx0]
--- **IN PR #23408**
+/- -- **IN PR #23408**
 theorem not_isUnit_iff_valuation_lt_one {K : Type*} [Field K] {v : Valuation K Γ} (x : v.integer) :
     ¬IsUnit x ↔ v x < 1 := by
   rw [← not_le, not_iff_not, Integers.isUnit_iff_valuation_eq_one (F := K) (Γ₀ := Γ),
     le_antisymm_iff]
-  exacts [and_iff_right x.2, integer.integers v]
+  exacts [and_iff_right x.2, integer.integers v] -/
 --
 -- protected theorem _root_.ValuationSubring.mem_maximalIdeal
 -- {K : Type*} {Γ₀ : Type*} [Field K]
@@ -310,7 +309,7 @@ open Valuation Ideal Multiplicative WithZero
 --     simp only [unzero', _root_.map_one, unzero_coe]
 --     rfl
 
--- **from here... #2**
+/- -- **from here... #2**
 section IsNontrivial
 
 variable {R : Type*} [Ring R] (v : Valuation R Γ)
@@ -328,13 +327,13 @@ lemma isNontrivial_iff_exists_unit {K : Type*} [Field K] {w : Valuation K Γ} :
     fun ⟨x, hx⟩ ↦ ⟨x, hx, w.ne_zero_iff.mpr (Units.ne_zero x)⟩⟩
 
 end IsNontrivial
--- **to here #2: in PR #23726**
+-- **to here #2: in PR #23726** -/
 
 -- **from here #3...**
 section IsDiscrete' -- (of course, this has been renamed `IsDiscrete` in the PR)
 
 variable {R : Type*} [Ring R]
-#where
+
 /-- Given a linearly ordered commutative group with zero `Γ` such that `Γˣ` is cyclic, a valuation
 `v : R → Γ` on a ring `R` is discrete, if `gen_lt_one Γˣ` belongs to the image. When `Γ := ℤₘ₀`, the
   latter is equivalent to asking that `ofAdd (-1 : ℤ)` belongs to the image, in turn equivalent to
@@ -444,43 +443,11 @@ lemma coe_unzero (x : Kˣ) : (v.unzero x  : Γ) = v x:= by
   simp
 
 variable  [IsCyclic Γˣ] [Nontrivial Γˣ] in
--- **TODO** Golf this
+
 instance [hv : IsDiscrete' v] : IsNontrivial v where
-  exists_val_ne_one := by
+  exists_val_nontrivial := by
     obtain ⟨γ, hγ, hγ_le, x, hx_v⟩ := hv
-    use x
-    rw [hx_v]
-    constructor
-    · apply ne_of_lt
-      norm_cast
-    · exact Units.ne_zero γ
-
-    -- exact ⟨x, hx ▸ Ne.symm (ne_of_beq_false rfl), hx ▸ coe_ne_zero⟩
-
-
-
-    -- obtain ⟨γ, hγ⟩ := (isCyclic_iff_exists_zpowers_eq_top (α := Γˣ)).mp (inferInstance)
-    -- have hγ' : Subgroup.zpowers γ⁻¹ = ⊤ := by rwa [Subgroup.zpowers_inv]
-    -- by_cases γ_le : γ ≤ γ⁻¹
-    -- · obtain ⟨x, hx⟩ := hv.glb_generator_mem γ γ⁻¹ hγ hγ' γ_le
-    --   use x
-    --   constructor
-    --   · intro h
-    --     rw [h, Eq.comm, Units.val_eq_one] at hx
-    --     rw [hx] at hγ
-    --     simp [Subgroup.zpowers_one_eq_bot, bot_ne_top] at hγ
-    --   · rw [hx]
-    --     exact Units.ne_zero γ
-    -- · replace γ_le := le_of_lt <| not_le.mp γ_le
-    --   obtain ⟨x, hx⟩ := hv.glb_generator_mem γ⁻¹ γ hγ' hγ γ_le
-    --   use x
-    --   constructor
-    --   · intro h
-    --     rw [h, Eq.comm, Units.val_eq_one] at hx
-    --     rw [hx] at hγ'
-    --     simp [Subgroup.zpowers_one_eq_bot, bot_ne_top] at hγ'
-    --   · rw [hx]
-    --     exact Units.ne_zero γ⁻¹
+    exact ⟨x, hx_v ▸ ⟨Units.ne_zero γ, ne_of_lt (by norm_cast)⟩⟩
 
 -- **Change** the name and `na_bot ↔ nontrivial`
 lemma unzero_range_ne_bot [hv : IsNontrivial v] : Nontrivial v.unzero_range := by

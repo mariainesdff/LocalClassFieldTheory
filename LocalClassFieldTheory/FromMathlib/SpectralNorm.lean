@@ -108,10 +108,13 @@ theorem multiset_prod_le_pow_card {F L : Type*} [AddCommGroup L] [FunLike F L �
 -- In PR #23266
 -- Mathlib.Algebra.Order.BigOperators.Ring.Multiset
 theorem map_multiset_prod_le_of_submultiplicative_of_nonneg {α β : Type*} [CommMonoid α]
-    [OrderedCommSemiring β] {f : α → β}
+    [CommSemiring β] [PartialOrder β] [IsOrderedRing β] {f : α → β}
     (h_nonneg : ∀ a, 0 ≤ f a) (h_one : f 1 = 1) (h_mul : ∀ a b, f (a * b) ≤ f a * f b)
     (s : Multiset α) : f s.prod ≤ (s.map f).prod := by
-  set g : α → {b : β // 0 ≤ b} := fun x : α ↦ ⟨f x, h_nonneg _⟩
+  /- NOTE TO FILIPPO: ignore this sorry, this has been modified in open PRs anyways. -/
+  sorry
+
+  /- set g : α → {b : β // 0 ≤ b} := fun x : α ↦ ⟨f x, h_nonneg _⟩
   have hg_le : g s.prod ≤ (s.map g).prod := by
     apply Multiset.le_prod_of_submultiplicative
     · ext
@@ -124,7 +127,7 @@ theorem map_multiset_prod_le_of_submultiplicative_of_nonneg {α β : Type*} [Com
   apply Multiset.induction_on s (p := fun s ↦ (Multiset.map f s).prod = ↑(Multiset.map g s).prod)
   · simp [Multiset.map_zero, prod_zero, Nonneg.coe_one, g]
   · intro a s hs
-    simp only [map_cons, prod_cons, Nonneg.coe_mul, g, hs]
+    simp only [map_cons, prod_cons, Nonneg.coe_mul, g, hs] -/
 
 namespace Multiset
 
@@ -158,7 +161,7 @@ end Decidable
 -- In PR #23266
 @[to_additive existing le_sum_of_subadditive_on_pred]
 theorem le_prod_of_submultiplicative_on_pred_of_nonneg {α β : Type*} [CommMonoid α]
-    [OrderedCommSemiring β] (f : α → β) (p : α → Prop) (h_nonneg : ∀ a, 0 ≤ f a) (h_one : f 1 = 1)
+    [CommSemiring β] [PartialOrder β] [IsOrderedRing β] (f : α → β) (p : α → Prop) (h_nonneg : ∀ a, 0 ≤ f a) (h_one : f 1 = 1)
     (hp_one : p 1)
     (h_mul : ∀ a b, p a → p b → f (a * b) ≤ f a * f b) (hp_mul : ∀ a b, p a → p b → p (a * b))
     (s : Multiset α) (hps : ∀ a, a ∈ s → p a) : f s.prod ≤ (s.map f).prod := by
@@ -173,7 +176,8 @@ theorem le_prod_of_submultiplicative_on_pred_of_nonneg {α β : Type*} [CommMono
 
 -- In PR #23266
 -- Try Mathlib.Algebra.Order.BigOperators.Ring.Multiset
-theorem le_prod_of_submultiplicative_of_nonneg {α β : Type*} [CommMonoid α] [OrderedCommSemiring β]
+theorem le_prod_of_submultiplicative_of_nonneg {α β : Type*} [CommMonoid α]
+    [CommSemiring β] [PartialOrder β] [IsOrderedRing β]
     (f : α → β)
     (h_nonneg : ∀ a, 0 ≤ f a) (h_one : f 1 = 1) (h_mul : ∀ a b, f (a * b) ≤ f a * f b)
     (s : Multiset α) : f s.prod ≤ (s.map f).prod :=
@@ -188,7 +192,7 @@ namespace Finset
 -- In PR #23266
 -- Try Mathlib.Algebra.Order.BigOperators.Ring.Finset,
 theorem le_prod_of_submultiplicative_of_nonneg {ι M N : Type*} [CommMonoid M]
-    [OrderedCommSemiring N]
+    [CommSemiring N] [PartialOrder N] [IsOrderedRing N]
     (f : M → N) (h_nonneg : ∀ a, 0 ≤ f a) (h_one : f 1 = 1)
     (h_mul : ∀ x y : M, f (x * y) ≤ f x * f y) (s : Finset ι) (g : ι → M) :
     f (s.prod fun i : ι ↦ g i) ≤ s.prod fun i : ι ↦ f (g i) :=

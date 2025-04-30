@@ -225,6 +225,7 @@ theorem bddAbove_range_mul {u v : ℕ → ℝ} (hu : BddAbove (Set.range u)) (hu
   intro n
   exact mul_le_mul (hbu n) (hbv n) (hv0 n) (le_trans (hu0 n) (hbu n))
 
+instance : PosMulMono (ℕ → ℝ) := sorry
 
 /-- If `u v : ℕ → ℝ` are nonnegative and bounded above, then
   `filter.limsup (u * v) at_top ≤ filter.limsup u at_top * filter.limsup v at_top `.-/

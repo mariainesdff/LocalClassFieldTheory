@@ -49,7 +49,7 @@ noncomputable section
 /-! ## supr
 In this section we prove some lemmas about `supr`, most of them for real-valued functions. -/
 
-
+/-
 section iSup
 
 -- In PR #23178
@@ -127,6 +127,7 @@ theorem NNReal.iSup_pow {ι : Type*} [Nonempty ι] [Fintype ι] (f : ι → ℝ�
   induction n with
   | zero => simp only [pow_zero, ciSup_const]
   | succ n hn =>
+    have huniv : ∀ (g : ι → ℝ≥0), ⨆ i ∈ Finset.univ, g i  = ⨆ i, g i := by simp
     rw [pow_succ, hn]
     apply le_antisymm
     · apply NNReal.iSup_mul_iSup_le
@@ -137,7 +138,7 @@ theorem NNReal.iSup_pow {ι : Type*} [Nonempty ι] [Fintype ι] (f : ι → ℝ�
       · have h : f i ^ n * f j ≤ f i ^n.succ := mul_le_mul' (le_refl _) (le_of_not_lt hij)
         exact le_trans h <| le_ciSup_of_le (Set.finite_range _).bddAbove i <| le_refl _
     · have : Nonempty (Finset.univ : Finset ι) := Finset.nonempty_coe_sort.mpr Finset.univ_nonempty
-      rw [← Finset.ciSup_univ, ← Finset.sup_eq_ciSup, ← Finset.ciSup_univ, ← Finset.sup_eq_ciSup,
+      rw [← huniv, ← Finset.sup_eq_ciSup, ← Finset.ciSup_univ, ← Finset.sup_eq_ciSup,
         ← Finset.ciSup_univ, ← Finset.sup_eq_ciSup]
       simp only [pow_succ]
       exact Finset.sup_mul_le_mul_sup_of_nonneg (fun _ _ ↦ zero_le _) (fun _ _ ↦ zero_le _)
@@ -183,7 +184,7 @@ theorem Real.iSup_pow {ι : Type*} [Nonempty ι] [Finite ι] {f : ι → ℝ} (h
           mul_le_mul_of_nonneg_left (le_of_not_lt hij) (pow_nonneg (hf _) _)
         exact le_trans hi (le_ciSup_of_le (Set.finite_range _).bddAbove i (le_refl _))
 
-end iSup
+end iSup -/
 
 -- The rest of the file is in PR #23184
 
@@ -252,9 +253,9 @@ def algNorm_of_galois (hna : IsNonarchimedean (norm : K → ℝ)) : AlgebraNorm 
       (le_ciSup_of_le (Set.finite_range _).bddAbove σ (apply_nonneg _ _)))
   eq_zero_of_map_eq_zero' x := by
     contrapose!
-    exact fun hx ↦ ne_of_gt (lt_ciSup_of_lt
-      (Set.range fun σ : L ≃ₐ[K] L ↦ algNorm_of_auto h_fin hna σ x).toFinite.bddAbove
-      AlgEquiv.refl (map_pos_of_ne_zero _ hx))
+    exact fun hx ↦ ne_of_gt (lt_of_lt_of_le (map_pos_of_ne_zero _ hx)
+      (le_ciSup (Set.range fun σ : L ≃ₐ[K] L ↦ algNorm_of_auto h_fin hna σ x).toFinite.bddAbove
+        AlgEquiv.refl))
   smul' r x := by
     simp only [AlgebraNormClass.map_smul_eq_mul, NormedRing.toRingNorm_apply,
       Real.mul_iSup_of_nonneg (norm_nonneg _)]

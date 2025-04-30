@@ -134,7 +134,7 @@ lemma χ₀_mul (x y : Rˣ) : χ₀ R (x * y) =
     -- _ = haarScalarFactor (map (· * (g * h)) ν) ν := by simp only [map_map mul_h_meas mul_g_meas,
     --   comp_mul_right, ← haarScalarFactor_eq_mul]
 
-variable (K : Type*) [Field K] [UniformSpace K] [UniformAddGroup K] [TopologicalDivisionRing K]
+variable (K : Type*) [Field K] [UniformSpace K] [IsUniformAddGroup K] [IsTopologicalDivisionRing K]
   [LocallyCompactSpace K]
 
 

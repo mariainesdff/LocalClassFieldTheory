@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: María Inés de Frutos-Fernández, Filippo A. E. Nuccio
 -/
 import LocalClassFieldTheory.DiscreteValuationRing.Basic
-import LocalClassFieldTheory.ForMathlib.RankOneValuation
+--import LocalClassFieldTheory.ForMathlib.RankOneValuation
 import LocalClassFieldTheory.SpectralNorm
 import Mathlib.FieldTheory.Minpoly.IsIntegrallyClosed
 

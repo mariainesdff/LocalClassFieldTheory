@@ -5,7 +5,8 @@ Authors: María Inés de Frutos-Fernández, Filippo A. E. Nuccio
 -/
 import Mathlib.Algebra.Equiv.TransferInstance
 import Mathlib.Algebra.Group.Int.TypeTags
-import Mathlib.Algebra.Order.Group.TypeTags
+import Mathlib.Algebra.Order.Group.Defs
+import Mathlib.Algebra.Order.Monoid.TypeTags
 import Mathlib.Data.NNReal.Defs
 
 /-!
@@ -115,9 +116,10 @@ theorem one_lt_div' {α : Type*} [LinearOrderedCommGroupWithZero α] (a : α) {b
     1 < a / b ↔ b < a := by
   rw [← mul_lt_mul_right₀ (zero_lt_iff.mpr hb), one_mul, div_eq_mul_inv, inv_mul_cancel_right₀ hb]
 
+variable {α : Type*} [CommGroup α] [LinearOrder α] [IsOrderedMonoid α]
 
 -- **In PR #23177**
-theorem strictMonoOn_zpow {α : Type*} [LinearOrderedCommGroup α] {n : ℤ} (hn : 0 < n) :
+theorem strictMonoOn_zpow {n : ℤ} (hn : 0 < n) :
     StrictMonoOn (fun x : (WithZero α) ↦ x ^ n) (Set.Ioi 0) :=
   fun a ha b _ hab ↦ by
     have ha0 : a ≠ 0 := ne_of_gt ha
@@ -130,7 +132,7 @@ theorem strictMonoOn_zpow {α : Type*} [LinearOrderedCommGroup α] {n : ℤ} (hn
 
 
 -- **In PR #23177**
-theorem zpow_left_injOn {α : Type*} [LinearOrderedCommGroup α] {n : ℤ} (hn : n ≠ 0) :
+theorem zpow_left_injOn {n : ℤ} (hn : n ≠ 0) :
     Set.InjOn (fun x : (WithZero α) ↦ x ^ n) (Set.Ioi 0) := by
   rcases hn.symm.lt_or_lt with h | h
   · exact (strictMonoOn_zpow h).injOn
@@ -138,7 +140,7 @@ theorem zpow_left_injOn {α : Type*} [LinearOrderedCommGroup α] {n : ℤ} (hn :
     simp only [zpow_neg, zpow_neg, hab]
 
 -- **In PR #23177**
-theorem zpow_left_inj {α : Type*} [LinearOrderedCommGroup α] {n : ℤ} {a b : WithZero α}
+theorem zpow_left_inj {n : ℤ} {a b : WithZero α}
     (ha : a ≠ 0) (hb : b ≠ 0) (hn : n ≠ 0) : a ^ n = b ^ n ↔ a = b :=
   Set.InjOn.eq_iff (zpow_left_injOn hn) (Set.mem_Ioi.mpr (zero_lt_iff.mpr ha))
     (Set.mem_Ioi.mpr (zero_lt_iff.mpr hb))
