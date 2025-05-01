@@ -25,10 +25,8 @@ valuations and on `Valued` structures on the field of fractions of a DVR, as wel
 structure on the unit ball of a `Valued` field whose valuation is discrete.
 
 ## Main Definitions
-* `IsDiscrete`: We define a valuation to be discrete if it is ℤₘ₀-valued and
-  `Multiplicative.ofAdd (- 1 : ℤ)` belongs to the image.
-* `IsUniformizer`: Given a ℤₘ₀-valued valuation `v` on a ring `R`, an element `π : R` is a
-  uniformizer if `v π = multiplicative.of_add (- 1 : ℤ) : ℤₘ₀`.
+* `IsUniformizer`: Given a `Γ`-valued valuation `v` on a ring `R`, an element `π : R` is a
+  uniformizer if `v π` is a generator of `Γ` that is `<1`.
 * `Uniformizer`: A strucure bundling an element of a ring and a proof that it is a uniformizer.
 * `base`: Given a valued field `K`, if the residue field of its unit ball (that is a local field)
   is finite, then `valuation_base` is the cardinal of the residue field, and otherwise it takes the
