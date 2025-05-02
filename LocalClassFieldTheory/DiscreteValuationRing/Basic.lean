@@ -10,7 +10,7 @@ import Mathlib.Data.Int.WithZero
 import Mathlib.RingTheory.DedekindDomain.AdicValuation
 import Mathlib.RingTheory.DiscreteValuationRing.Basic
 import Mathlib.RingTheory.PrincipalIdealDomainOfPrime
-import Mathlib.RingTheory.Valuation.Discrete.Basic
+-- import Mathlib.RingTheory.Valuation.Discrete.Basic -- importing `Yakov` that imports `FromMathlib.DiscreteBasic` instead
 import Mathlib.RingTheory.Valuation.Integers
 import Mathlib.RingTheory.Valuation.RankOne
 import Mathlib.GroupTheory.SpecificGroups.Cyclic

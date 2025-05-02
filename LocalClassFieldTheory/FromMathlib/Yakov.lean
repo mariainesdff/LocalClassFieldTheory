@@ -1,8 +1,9 @@
+import LocalClassFieldTheory.FromMathlib.DiscreteBasic
 import Mathlib.GroupTheory.ArchimedeanDensely
 import Mathlib.Algebra.Order.Group.Cyclic
 import Mathlib.Algebra.Order.Group.Units
 import Mathlib.RingTheory.Valuation.Basic
-import Mathlib.RingTheory.Valuation.Discrete.Basic
+-- import Mathlib.RingTheory.Valuation.Discrete.Basic
 
 namespace Valuation
 
