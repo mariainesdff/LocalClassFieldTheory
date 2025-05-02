@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: María Inés de Frutos-Fernández, Filippo A. E. Nuccio
 -/
 import LocalClassFieldTheory.ForMathlib.WithZero
+import LocalClassFieldTheory.FromMathlib.Yakov
 import Mathlib.Analysis.Normed.Field.Lemmas
 import Mathlib.Data.Int.WithZero
 import Mathlib.RingTheory.DedekindDomain.AdicValuation
@@ -405,7 +406,7 @@ end IsNontrivial
 -- **to here #3: in PR #23726**
 
 section Field
-variable {Γ : Type*} [LinearOrderedCommGroupWithZero Γ]
+
 variable {K : Type*} [Field K] (v : Valuation K Γ)
 
 
@@ -458,7 +459,7 @@ variable [IsNontrivial v] [IsCyclic Γˣ]
 
 section IsNontrivial
 
-open Valuation Subgroup LinearOrderedCommGroup
+open Valuation LinearOrderedCommGroup
 
 /-- An element `π : K` is a pre-uniformizer if `v π` generates `v.unitsMapRange` .-/
 def IsPreuniformizer (π : K) : Prop :=
@@ -475,13 +476,15 @@ lemma isPreuniformizer_val_lt_one {π : K} (hπ : v.IsPreuniformizer π) : v π 
   let _ := v.unitsMapRange_ne_bot
   hπ ▸ v.unitsMapRange.genLTOne_lt_one
 
+
 lemma isPreuniformizer_val_ne_zero {π : K} (hπ : v.IsPreuniformizer π) : v π ≠ 0 := by
   by_contra h0
   simp [IsPreuniformizer, h0, zero_ne_coe] at hπ
   exact (Units.ne_zero _).symm hπ
 
+
 lemma isPreuniformizer_val_generates_unitsMapRange {π : K} (hπ : v.IsPreuniformizer π) :
-    unitsMapRange v = zpowers (Units.mk0 (v π) (v.isPreuniformizer_val_ne_zero hπ)) := by
+    unitsMapRange v = Subgroup.zpowers (Units.mk0 (v π) (v.isPreuniformizer_val_ne_zero hπ)) := by
   let _ := v.unitsMapRange_ne_bot
   rw [← v.unitsMapRange.genLTOne_zpowers_eq_top]
   congr
@@ -623,12 +626,6 @@ theorem isUniformizer_not_isUnit {π : vR.integer} (hπ : IsUniformizer vR π) :
 end CommRing
 
 open scoped NNReal
-
-
---
--- end Field
---
--- namespace DiscreteValuation
 section Field
 
 open Valuation Ideal Multiplicative WithZero IsLocalRing
