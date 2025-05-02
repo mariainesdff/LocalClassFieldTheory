@@ -482,9 +482,10 @@ lemma isPreuniformizer_val_ne_zero {π : K} (hπ : v.IsPreuniformizer π) : v π
   simp [IsPreuniformizer, h0, zero_ne_coe] at hπ
   exact (Units.ne_zero _).symm hπ
 
+open Subgroup
 
 lemma isPreuniformizer_val_generates_unitsMapRange {π : K} (hπ : v.IsPreuniformizer π) :
-    unitsMapRange v = Subgroup.zpowers (Units.mk0 (v π) (v.isPreuniformizer_val_ne_zero hπ)) := by
+    unitsMapRange v = /- Subgroup. -/zpowers (Units.mk0 (v π) (v.isPreuniformizer_val_ne_zero hπ)) := by
   let _ := v.unitsMapRange_ne_bot
   rw [← v.unitsMapRange.genLTOne_zpowers_eq_top]
   congr
@@ -631,7 +632,7 @@ section Field
 open Valuation Ideal Multiplicative WithZero IsLocalRing
 
 variable {K : Type w₁} [Field K] (v : Valuation K Γ)
-variable  [Nontrivial Γˣ] [IsCyclic Γˣ]
+variable [IsCyclic Γˣ]
 
 /- When the valuation is defined over a field instead that simply on a (commutative) ring, we use
 the notion of `valuation_subring` instead of the weaker one of `integer`s to access the
@@ -649,8 +650,52 @@ namespace Subgroup
 
 variable (H : Subgroup G) [Nontrivial H]
 
-lemma genLTOne_val_eq_genLTOne : H.genLTOne = ((⊤ : Subgroup H).genLTOne) := by
-  sorry
+
+lemma genLTOne_val_eq_genLTOne : ((⊤ : Subgroup H).genLTOne) = H.genLTOne := by
+  set γ := H.genLTOne with hγ
+  set η := ((⊤ : Subgroup H).genLTOne) with hη
+  have h1 (x : H) : ∃ k : ℤ, η ^ k = x := by
+    have uno := Subgroup.genLTOne_zpowers_eq_top (G := H) (H := ⊤)
+    have tre : IsCyclic H := by
+      apply isCyclic_iff_exists_zpowers_eq_top (α := H)|>.mpr
+      use η
+    rw [← Subgroup.mem_zpowers_iff (G := H) (h := x) (g := η)]
+    rw [uno]
+    trivial
+  replace h1 (x : G) : x ∈ H → ∃ k : ℤ, η ^ k = x := by
+    intro hx
+    obtain ⟨k, hk⟩ := h1 ⟨x, hx⟩
+    use k
+    norm_cast
+    rw [hk]
+  have h2 := Subgroup.genLTOne_zpowers_eq_top (G := G) (H := H)
+  replace h2 (x : G) : x ∈ H → ∃ k : ℤ, γ ^ k = x := by
+    rw [← Subgroup.mem_zpowers_iff (g := γ) (h := x)]
+    intro h_mem
+    rwa [h2]
+  have main : Subgroup.zpowers ↑η = Subgroup.zpowers γ := by
+    ext y
+    refine ⟨fun hy ↦ ?_, fun hy ↦ ?_⟩
+    · rw [Subgroup.mem_zpowers_iff]
+      apply h2
+      obtain ⟨k, hk⟩ := Subgroup.mem_zpowers_iff.mp hy
+      rw [← hk]
+      apply Subgroup.zpow_mem
+      simp only [SetLike.coe_mem]
+    · rw [H.genLTOne_zpowers_eq_top] at hy
+      obtain ⟨k, hk⟩ := h1 y hy
+      rw [Subgroup.mem_zpowers_iff]
+      use k
+  rw [zpowers_eq_zpowers_iff] at main
+  rcases main with _ | h
+  · assumption
+  have hγ_lt := H.genLTOne_lt_one
+  have hη_lt := (⊤ : Subgroup H).genLTOne_lt_one
+  rw [← hη] at hη_lt
+  rw [← hγ, ← h] at hγ_lt
+  rw [inv_lt_one'] at hγ_lt
+  exact (not_lt_of_lt hγ_lt hη_lt).elim
+
 
 end Subgroup
 end LinearOrderedCommGroup
@@ -667,81 +712,36 @@ theorem exists_isPreuniformizer_of_isNontrivial [v.IsNontrivial] :
   have moveup : v.unitsMap π = v π.1 := by -- *MOVE ME UP!*
     simp only [unitsMap_apply, Units.val_mk0]
   constructor
-  -- ·
-  -- replace hπ : v (π : K) = v.unitsMapRange.genLTOne := by
-  --   convert hπ
-  --   rw [hg]
-    -- have also : (⊤ : Subgroup v.unitsMapRange) = v.unitsMapRange := sorry
-    -- rw [also]
-
-    -- dsimp [unitsMap] at hπ
-    -- rw [← Units.mk0_inj]
-    -- norm_cast
-    -- dsimp [unitsMap] at hπ
-    -- simp [hπ, hg]
-    -- sorry
-
-
-    -- norm_cast at hπ
-    -- rw [hg] at hπ
-    -- simp at hπ
-    -- simp [hπ]
-    -- simp [hπ]
-    -- simp [hg]
-  -- use π
-  -- constructor
   · apply le_of_lt
-    -- apply isPreuniformizer_val_lt_one
     rw [← moveup]
     rw [hπ]
-    -- simp
     have := Subgroup.genLTOne_lt_one (H := v.unitsMapRange)
     rw [hg]
     rw [← Units.val_one]
     rw [Units.val_lt_val]
-    rw [← LinearOrderedCommGroup.Subgroup.genLTOne_val_eq_genLTOne]
+    rw [LinearOrderedCommGroup.Subgroup.genLTOne_val_eq_genLTOne]
     exact this
-
-
   · rw [← moveup, hπ, hg]
-    rw [← LinearOrderedCommGroup.Subgroup.genLTOne_val_eq_genLTOne]
+    rw [LinearOrderedCommGroup.Subgroup.genLTOne_val_eq_genLTOne]
     -- **FAE : The above `splitting` should not be performed**
 
-  -- set g := (Mul.exists_generator_lt_one ℤ v.unitsMapRange_ne_bot).choose with hg
-  -- obtain ⟨h1, h2⟩ := (Mul.exists_generator_lt_one ℤ v.unitsMapRange_ne_bot).choose_spec
-  -- have hg_mem : g.1 ∈ v.unitsMapRange := by sorry--rw [← h2]; exact Subgroup.mem_zpowers _
-  -- -- simp only [unitsMapRange, Subgroup.mem_mk, Set.mem_range, unitsMap_apply] at hg_mem
-  -- obtain ⟨π, hπ⟩ := hg_mem
-  -- have hπ1 : v π ≤ 1 := by
-  --   rw [← Valuation.coe_unitsMap, Valuation.unitsMap_apply, hπ]--, /- ← WithZero.coe_one, -/ WithZero.coe_le_coe]
-  --   apply le_of_lt
-  --   sorry
-  -- use ⟨π, hπ1⟩
-  -- simp
-  -- rw [isPreuniformizer_iff]--, ← hg, ← Valuation.coe_unitsMap, ← hx]; rfl
-
-
-
-  -- simp only -- remove
-  -- norm_cast
-
-  -- rw [← hg]
 
 end IsNontrivial
 
 section IsDiscrete
 
-variable [hv : IsDiscrete v]
+variable [IsDiscrete v]
 
-theorem exists_isUniformizer_of_isDiscrete' : ∃ π : K₀, IsUniformizer v (π : K) := by
+theorem exists_isUniformizer_of_isDiscrete' : haveI := IsDiscrete.nontrivial_value_group v
+    ∃ π : K₀, IsUniformizer v (π : K) := by
   let surj_v : IsDiscrete v := by infer_instance
+  have := IsDiscrete.nontrivial_value_group v
   rw [isDiscrete_iff_surjective] at surj_v
-  sorry
-  /- refine
-    ⟨⟨(surj_v (↑(Multiplicative.ofAdd (-1 : ℤ)) : ℤₘ₀)).choose, ?_⟩,
-      (surj_v (↑(Multiplicative.ofAdd (-1 : ℤ)) : ℤₘ₀)).choose_spec⟩
-  rw [mem_valuationSubring_iff, (surj_v (↑(Multiplicative.ofAdd (-1 : ℤ)) : ℤₘ₀)).choose_spec]
-  exact le_of_lt ofAdd_neg_one_lt_one -/
+  obtain ⟨a, ha⟩ := surj_v (genLTOne Γˣ)
+  refine ⟨⟨a, ?_⟩, ha⟩
+  rw [mem_valuationSubring_iff, ha]
+  norm_cast
+  exact le_of_lt <| Subgroup.genLTOne_lt_one ..
 
 lemma unitsMapRange_eq_top : v.unitsMapRange = ⊤ := by
   sorry/- obtain ⟨x, hx⟩ := hv
