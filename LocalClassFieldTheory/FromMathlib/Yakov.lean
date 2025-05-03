@@ -22,7 +22,7 @@ lemma IsDiscrete.mulArchimedean [IsDiscrete v] : MulArchimedean Γ := by
   obtain ⟨k, rfl⟩ : ∃ k : ℤ, g⁻¹ ^ k = x := by
     lift x to Γˣ using isUnit_iff_ne_zero.mpr (zero_lt_one.trans hx).ne'
     norm_cast
-    simp only [← /- Subgroup. -/mem_zpowers_iff, /- Subgroup. -/zpowers_inv, hgen, /- Subgroup. -/mem_top]
+    simp only [← mem_zpowers_iff, zpowers_inv, hgen, mem_top]
   have hk : 0 < k := by
     simp only [Units.val_inv_eq_inv_val, ← inv_zpow', zpow_neg] at hx
     rwa [one_lt_zpow_iff_right₀] at hx
@@ -31,7 +31,7 @@ lemma IsDiscrete.mulArchimedean [IsDiscrete v] : MulArchimedean Γ := by
   obtain ⟨l, rfl⟩ : ∃ l : ℤ, g⁻¹ ^ l = y := by
     lift y to Γˣ using isUnit_iff_ne_zero.mpr (zero_lt_one.trans hy).ne'
     norm_cast
-    simp only [← /- Subgroup. -/mem_zpowers_iff, /- Subgroup. -/zpowers_inv, hgen, /- Subgroup. -/mem_top]
+    simp only [← mem_zpowers_iff, zpowers_inv, hgen, mem_top]
   have hl : 0 < l := by
     simp only [Units.val_inv_eq_inv_val, ← inv_zpow', zpow_neg] at hy
     rwa [one_lt_zpow_iff_right₀] at hy
@@ -80,20 +80,23 @@ lemma IsDiscrete.infinite_value_group [IsDiscrete v] : Infinite Γˣ := by
   rw [e'.toEquiv.infinite_iff]
   infer_instance
 
+end Valuation
+
+namespace Subgroup
 -- TODO: move elsewhere
 @[to_additive]
-lemma /- Subgroup. -/zpowers_eq_zpowers_iff {G : Type*} [CommGroup G] [LinearOrder G] [IsOrderedMonoid G]
-    {x y : G} : /- Subgroup. -/zpowers x = /- Subgroup. -/zpowers y ↔ x = y ∨ x⁻¹ = y := by
+lemma zpowers_eq_zpowers_iff {G : Type*} [CommGroup G] [LinearOrder G] [IsOrderedMonoid G]
+    {x y : G} : zpowers x = zpowers y ↔ x = y ∨ x⁻¹ = y := by
   rw [iff_comm]
   constructor
   · rintro (rfl|rfl) <;>
     · simp
   intro h
-  have hx : x ∈ /- Subgroup. -/zpowers y := by
+  have hx : x ∈ zpowers y := by
     simp [← h]
-  have hy : y ∈ /- Subgroup. -/zpowers x := by
+  have hy : y ∈ zpowers x := by
     simp [h]
-  rw [/- Subgroup. -/mem_zpowers_iff] at hx hy
+  rw [mem_zpowers_iff] at hx hy
   obtain ⟨k, rfl⟩ := hy
   obtain ⟨l, hl⟩ := hx
   wlog hx1 : 1 < x
@@ -108,9 +111,15 @@ lemma /- Subgroup. -/zpowers_eq_zpowers_iff {G : Type*} [CommGroup G] [LinearOrd
   refine hl.imp ?_ ?_ <;>
   simp +contextual
 
-end Valuation
--- open Subgroup
-namespace Subgroup
+open LinearOrderedCommGroup in
+lemma genLTOne_unique {G : Type*} [CommGroup G] [LinearOrder G] [IsOrderedMonoid G]
+    [IsCyclic G] [Nontrivial G] (g : G) : g < 1 ∧ Subgroup.zpowers g = ⊤ → g = genLTOne G := by
+  rintro ⟨hg_lt, hg_top⟩
+  rw [← (⊤ : Subgroup G).genLTOne_zpowers_eq_top] at hg_top
+  rcases zpowers_eq_zpowers_iff.mp hg_top with _ | h
+  · assumption
+  rw [← one_lt_inv', h] at hg_lt
+  exact (not_lt_of_lt hg_lt <| Subgroup.genLTOne_lt_one _).elim
 
 variable {G : Type*} [CommGroup G] [LinearOrder G] [IsOrderedMonoid G] [IsCyclic G]
 
@@ -166,4 +175,27 @@ lemma genLTOne_val_eq_genLTOne : ((⊤ : Subgroup H).genLTOne) = H.genLTOne := b
 
 end Subgroup
 
--- end Valuation
+namespace Multiplicative
+
+open Subgroup
+
+instance : IsCyclic ℤₘ₀ˣ :=
+  isCyclic_of_surjective WithZero.unitsWithZeroEquiv.symm (MulEquiv.surjective _)
+
+instance : Nontrivial ℤₘ₀ˣ :=
+  Function.Surjective.nontrivial (f := WithZero.unitsWithZeroEquiv) (MulEquiv.surjective _)
+
+lemma top_eq_zpowers_neg_one :
+    zpowers (ofAdd (-1 : ℤ)) = (⊤ : Subgroup (Multiplicative ℤ)) := by
+  rw [← coe_eq_univ, ← ofAdd_image_zmultiples_eq_zpowers_ofAdd]
+  simp
+
+open LinearOrderedCommGroup WithZero in
+lemma genLTOne_eq_neg_one : unitsWithZeroEquiv.symm (ofAdd (-1 : ℤ)) = (genLTOne (ℤₘ₀ˣ)) :=  by
+  let e := (unitsWithZeroEquiv (α := Multiplicative ℤ)).symm
+  refine genLTOne_unique (e (ofAdd (-1 : ℤ))) ⟨?_, ?_⟩
+  · simpa only [Int.reduceNeg, ofAdd_neg, map_inv, Left.inv_lt_one_iff] using
+      compareOfLessAndEq_eq_lt.mp rfl
+  rw [← map_top_of_surjective e.toMonoidHom (MulEquiv.surjective _), ← top_eq_zpowers_neg_one,
+    MonoidHom.map_zpowers]
+  rfl

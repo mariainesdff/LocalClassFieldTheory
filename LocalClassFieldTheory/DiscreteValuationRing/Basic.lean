@@ -1048,10 +1048,10 @@ noncomputable instance instAdicValued : Valued (FractionRing A) ℤₘ₀ :=
 
 instance : IsDiscrete (instAdicValued A).v := by
   apply isDiscrete_of_exists_isUniformizer
-  -- sorry
-  -- sorry
-  isDiscrete_of_exists_isUniformizer
-    (valuation_exists_uniformizer (FractionRing A) (maximalIdeal A)).choose_spec
+    (π := valuation_exists_uniformizer (FractionRing A) (maximalIdeal A)|>.choose)
+  convert valuation_exists_uniformizer (FractionRing A) (maximalIdeal A)|>.choose_spec
+  rw [← genLTOne_eq_of_top, ← Multiplicative.genLTOne_eq_neg_one]
+  norm_cast
 
 theorem exists_of_le_one {x : FractionRing A} (H : Valued.v x ≤ (1 : ℤₘ₀)) :
     ∃ a : A, algebraMap A (FractionRing A) a = x := by
