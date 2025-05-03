@@ -417,10 +417,12 @@ noncomputable def unitsMap : Kˣ →* Γˣ where
   map_one' := by simp
   map_mul' := fun x y ↦ by simp
 
-@[simp]
+@[simp, norm_cast]
 lemma unitsMap_apply (x : Kˣ) : v.unitsMap x = v x.1 := by
   simp only [unitsMap, Units.val_mk0, MonoidHom.coe_mk, OneHom.coe_mk, Units.val_mk0]
 
+@[simp, norm_cast]
+lemma unitsMap_of_ne_zero {x : K} (hx : x ≠ 0) : v.unitsMap (Units.mk0 x hx) = v x := rfl
 
 /-- The range of `Valuation.unitsMap` as a subgroup of the target. -/
 def unitsMapRange : Subgroup Γˣ where
@@ -611,15 +613,12 @@ end Ring
 
 section CommRing
 
-open Subgroup
-
 variable {R : Type*} [CommRing R] (vR : Valuation R Γ)
 variable  [Nontrivial Γˣ] [IsCyclic Γˣ]
-
 theorem isUniformizer_val_lt_one {π : R} (hπ : IsUniformizer vR π) : vR π < 1 := by
   rw [isUniformizer_iff.mp hπ]
   norm_cast
-  apply genLTOne_lt_one
+  apply Subgroup.genLTOne_lt_one
 
 theorem isUniformizer_not_isUnit {π : vR.integer} (hπ : IsUniformizer vR π) : ¬ IsUnit π := by
   intro h
@@ -644,66 +643,6 @@ local notation "K₀" => v.valuationSubring
 
 section IsNontrivial
 
-namespace LinearOrderedCommGroup
-
-open LinearOrderedCommGroup
-
-variable {G : Type*} [CommGroup G] [LinearOrder G] [IsOrderedMonoid G] [IsCyclic G]
-namespace Subgroup
-
-variable (H : Subgroup G) [Nontrivial H]
-
--- Move together results in `Yakov.lean` (probably inside `Valuation.Discrete.Basic` or
--- `Order.Group.Cyclic`
-lemma genLTOne_val_eq_genLTOne : ((⊤ : Subgroup H).genLTOne) = H.genLTOne := by
-  set γ := H.genLTOne with hγ
-  set η := ((⊤ : Subgroup H).genLTOne) with hη
-  have h1 (x : H) : ∃ k : ℤ, η ^ k = x := by
-    have uno := Subgroup.genLTOne_zpowers_eq_top (G := H) (H := ⊤)
-    have tre : IsCyclic H := by
-      apply isCyclic_iff_exists_zpowers_eq_top (α := H)|>.mpr
-      use η
-    rw [← Subgroup.mem_zpowers_iff (G := H) (h := x) (g := η)]
-    rw [uno]
-    trivial
-  replace h1 (x : G) : x ∈ H → ∃ k : ℤ, η ^ k = x := by
-    intro hx
-    obtain ⟨k, hk⟩ := h1 ⟨x, hx⟩
-    use k
-    norm_cast
-    rw [hk]
-  have h2 := Subgroup.genLTOne_zpowers_eq_top (G := G) (H := H)
-  replace h2 (x : G) : x ∈ H → ∃ k : ℤ, γ ^ k = x := by
-    rw [← Subgroup.mem_zpowers_iff (g := γ) (h := x)]
-    intro h_mem
-    rwa [h2]
-  have main : Subgroup.zpowers ↑η = Subgroup.zpowers γ := by
-    ext y
-    refine ⟨fun hy ↦ ?_, fun hy ↦ ?_⟩
-    · rw [Subgroup.mem_zpowers_iff]
-      apply h2
-      obtain ⟨k, hk⟩ := Subgroup.mem_zpowers_iff.mp hy
-      rw [← hk]
-      apply Subgroup.zpow_mem
-      simp only [SetLike.coe_mem]
-    · rw [H.genLTOne_zpowers_eq_top] at hy
-      obtain ⟨k, hk⟩ := h1 y hy
-      rw [Subgroup.mem_zpowers_iff]
-      use k
-  rw [zpowers_eq_zpowers_iff] at main
-  rcases main with _ | h
-  · assumption
-  have hγ_lt := H.genLTOne_lt_one
-  have hη_lt := (⊤ : Subgroup H).genLTOne_lt_one
-  rw [← hη] at hη_lt
-  rw [← hγ, ← h] at hγ_lt
-  rw [inv_lt_one'] at hγ_lt
-  exact (not_lt_of_lt hγ_lt hη_lt).elim
-
-
-end Subgroup
-end LinearOrderedCommGroup
-
 
 theorem exists_isPreuniformizer_of_isNontrivial [v.IsNontrivial] :
     ∃ π : K₀, IsPreuniformizer v (π : K) := by
@@ -720,7 +659,7 @@ theorem exists_isPreuniformizer_of_isNontrivial [v.IsNontrivial] :
     rw [hg]
     rw [← Units.val_one]
     rw [Units.val_lt_val]
-    rw [LinearOrderedCommGroup.Subgroup.genLTOne_val_eq_genLTOne]
+    rw [Valuation.Subgroup.genLTOne_val_eq_genLTOne]
     exact this
   · rw [← unitsMap_apply, hπ, hg]
     rw [LinearOrderedCommGroup.Subgroup.genLTOne_val_eq_genLTOne]
@@ -733,7 +672,7 @@ section IsDiscrete
 
 variable [IsDiscrete v]
 
-theorem exists_isUniformizer_of_isDiscrete' : haveI := IsDiscrete.nontrivial_value_group v
+theorem exists_isUniformizer_of_isDiscrete : haveI := IsDiscrete.nontrivial_value_group v
     ∃ π : K₀, IsUniformizer v (π : K) := by
   let surj_v : IsDiscrete v := by infer_instance
   have := IsDiscrete.nontrivial_value_group v
@@ -744,20 +683,32 @@ theorem exists_isUniformizer_of_isDiscrete' : haveI := IsDiscrete.nontrivial_val
   norm_cast
   exact le_of_lt <| Subgroup.genLTOne_lt_one ..
 
+
 lemma unitsMapRange_eq_top : v.unitsMapRange = ⊤ := by
-  sorry/- obtain ⟨x, hx⟩ := hv
-  rw [v.unitsMapRange.eq_top_iff']
-  intro n
-  have hx0 : x ≠ 0 := by rw [← v.ne_zero_iff, hx]; exact coe_ne_zero
-  have hn : n = v.unitsMap ((Units.mk0 x hx0)^(- n.toAdd)) := by
-    have h : v.unitsMap (Units.mk0 x hx0) = ofAdd (-1) := by
-      rw [← WithZero.coe_inj, ← hx, v.unitsMap_apply, WithZero.coe_unitsMap]
-      rfl
-    rw [map_zpow, h]
-    simp only [Int.reduceNeg, ofAdd_neg, zpow_neg, inv_zpow', inv_inv]
-    rw [← Int.ofAdd_mul, one_mul, ofAdd_toAdd]
-  rw [hn]
-  exact v.unitsMap_mem_unitsMapRange ((Units.mk0 x hx0)^(-n.toAdd)) -/
+  ext x
+  refine ⟨fun h ↦ by trivial, fun h ↦ ?_⟩
+  obtain ⟨a, ha⟩ := IsDiscrete.surj v x.1
+  have ha₀ : a ≠ 0 := by
+    intro h_abs
+    rw [h_abs, map_zero] at ha
+    exact Units.ne_zero x ha.symm
+  use Units.mk0 a ha₀
+  rw [← unitsMap_of_ne_zero v ha₀] at ha
+  assumption_mod_cast
+  -- norm_cast at ha
+  -- obtain ⟨x, hx⟩ := hv
+  -- rw [v.unitsMapRange.eq_top_iff']
+  -- intro n
+  -- have hx0 : x ≠ 0 := by rw [← v.ne_zero_iff, hx]; exact coe_ne_zero
+  -- have hn : n = v.unitsMap ((Units.mk0 x hx0)^(- n.toAdd)) := byh
+  --   have h : v.unitsMap (Units.mk0 x hx0) = ofAdd (-1) := by
+  --     rw [← WithZero.coe_inj, ← hx, v.unitsMap_apply, WithZero.coe_unitsMap]
+  --     rfl
+  --   rw [map_zpow, h]
+  --   simp only [Int.reduceNeg, ofAdd_neg, zpow_neg, inv_zpow', inv_inv]
+  --   rw [← Int.ofAdd_mul, one_mul, ofAdd_toAdd]
+  -- rw [hn]
+  -- exact v.unitsMap_mem_unitsMapRange ((Units.mk0 x hx0)^(-n.toAdd))
 
 end IsDiscrete
 
@@ -959,8 +910,8 @@ theorem pow_uniformizer_is_pow_generator (π : Uniformizer v) (n : ℕ) :
   exact pow_preuniformizer_is_pow_generator (Uniformizer.to_preuniformizer π) n
 
 instance [IsDiscrete v] : Nonempty (Uniformizer v) :=
-  ⟨⟨(exists_isUniformizer_of_isDiscrete' v).choose,
-    (exists_isUniformizer_of_isDiscrete' v).choose_spec⟩⟩
+  ⟨⟨(exists_isUniformizer_of_isDiscrete v).choose,
+    (exists_isUniformizer_of_isDiscrete v).choose_spec⟩⟩
 
 theorem not_isField [IsNontrivial v] : ¬ IsField K₀ := by
   obtain ⟨π, hπ⟩ := exists_isPreuniformizer_of_isNontrivial v
@@ -1098,7 +1049,7 @@ instance : IsDiscrete v:= by
   apply isDiscrete_of_exists_isUniformizer
   sorry
   sorry
-  /- isDiscrete'_of_exists_isUniformizer
+  /- isDiscrete_of_exists_isUniformizer
     (valuation_exists_uniformizer (FractionRing A) (maximalIdeal A)).choose_spec -/
 
 theorem exists_of_le_one {x : FractionRing A} (H : Valued.v x ≤ (1 : ℤₘ₀)) :
@@ -1194,7 +1145,7 @@ def IsUniformizer := Valuation.IsUniformizer hv.v
 def Uniformizer := Valuation.Uniformizer hv.v
 
 instance [hv : Valued K ℤₘ₀] [IsDiscrete hv.v] : Nonempty (Uniformizer K) :=
-  sorry/- ⟨⟨(exists_isUniformizer_of_isDiscrete' hv.v).choose,
+  sorry/- ⟨⟨(exists_isUniformizer_of_isDiscrete hv.v).choose,
     (exists_isUniformizer_of_isDiscrete hv.v).choose_spec⟩⟩ -/
 
 end DiscretelyValued
