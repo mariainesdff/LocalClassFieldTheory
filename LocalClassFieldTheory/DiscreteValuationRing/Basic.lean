@@ -441,8 +441,6 @@ def unitsMapRange : Subgroup Γˣ where
 lemma unitsMap_mem_unitsMapRange (x : Kˣ) : v.unitsMap x ∈ v.unitsMapRange := by
   simp [unitsMapRange, Subgroup.mem_mk, mem_range, exists_apply_eq_apply]
 
-lemma coe_unitsMap (x : Kˣ) : (v.unitsMap x  : Γ) = v x := by simp
-
 -- The instance below is in **PR #23727**
 -- instance [hv : IsDiscrete v] : IsNontrivial v where
 --   exists_val_nontrivial := by
@@ -614,7 +612,8 @@ end Ring
 section CommRing
 
 variable {R : Type*} [CommRing R] (vR : Valuation R Γ)
-variable  [Nontrivial Γˣ] [IsCyclic Γˣ]
+variable [Nontrivial Γˣ] [IsCyclic Γˣ]
+
 theorem isUniformizer_val_lt_one {π : R} (hπ : IsUniformizer vR π) : vR π < 1 := by
   rw [isUniformizer_iff.mp hπ]
   norm_cast
@@ -634,7 +633,6 @@ section Field
 open Valuation Ideal Multiplicative WithZero IsLocalRing
 
 variable {K : Type w₁} [Field K] (v : Valuation K Γ)
-variable [IsCyclic Γˣ]
 
 /- When the valuation is defined over a field instead that simply on a (commutative) ring, we use
 the notion of `valuation_subring` instead of the weaker one of `integer`s to access the
@@ -644,7 +642,7 @@ local notation "K₀" => v.valuationSubring
 section IsNontrivial
 
 
-theorem exists_isPreuniformizer_of_isNontrivial [v.IsNontrivial] :
+theorem exists_isPreuniformizer_of_isNontrivial [v.IsNontrivial] [IsCyclic Γˣ] :
     ∃ π : K₀, IsPreuniformizer v (π : K) := by
   simp only [isPreuniformizer_iff, Subtype.exists, mem_valuationSubring_iff, exists_prop]
   have : Nontrivial v.unitsMapRange := unitsMapRange_ne_bot v
@@ -659,10 +657,10 @@ theorem exists_isPreuniformizer_of_isNontrivial [v.IsNontrivial] :
     rw [hg]
     rw [← Units.val_one]
     rw [Units.val_lt_val]
-    rw [Valuation.Subgroup.genLTOne_val_eq_genLTOne]
+    rw [Subgroup.genLTOne_val_eq_genLTOne]
     exact this
   · rw [← unitsMap_apply, hπ, hg]
-    rw [LinearOrderedCommGroup.Subgroup.genLTOne_val_eq_genLTOne]
+    rw [Subgroup.genLTOne_val_eq_genLTOne]
     -- **FAE : The above `splitting` should not be performed**
 
 
@@ -672,17 +670,19 @@ section IsDiscrete
 
 variable [IsDiscrete v]
 
-theorem exists_isUniformizer_of_isDiscrete : haveI := IsDiscrete.nontrivial_value_group v
+theorem exists_isUniformizer_of_isDiscrete :
+    haveI := IsDiscrete.nontrivial_value_group v
+    haveI := IsDiscrete.cyclic_value_group v
     ∃ π : K₀, IsUniformizer v (π : K) := by
   let surj_v : IsDiscrete v := by infer_instance
   have := IsDiscrete.nontrivial_value_group v
+  have := IsDiscrete.cyclic_value_group v
   rw [isDiscrete_iff_surjective] at surj_v
   obtain ⟨a, ha⟩ := surj_v (genLTOne Γˣ)
   refine ⟨⟨a, ?_⟩, ha⟩
   rw [mem_valuationSubring_iff, ha]
   norm_cast
   exact le_of_lt <| Subgroup.genLTOne_lt_one ..
-
 
 lemma unitsMapRange_eq_top : v.unitsMapRange = ⊤ := by
   ext x
@@ -695,39 +695,19 @@ lemma unitsMapRange_eq_top : v.unitsMapRange = ⊤ := by
   use Units.mk0 a ha₀
   rw [← unitsMap_of_ne_zero v ha₀] at ha
   assumption_mod_cast
-  -- norm_cast at ha
-  -- obtain ⟨x, hx⟩ := hv
-  -- rw [v.unitsMapRange.eq_top_iff']
-  -- intro n
-  -- have hx0 : x ≠ 0 := by rw [← v.ne_zero_iff, hx]; exact coe_ne_zero
-  -- have hn : n = v.unitsMap ((Units.mk0 x hx0)^(- n.toAdd)) := byh
-  --   have h : v.unitsMap (Units.mk0 x hx0) = ofAdd (-1) := by
-  --     rw [← WithZero.coe_inj, ← hx, v.unitsMap_apply, WithZero.coe_unitsMap]
-  --     rfl
-  --   rw [map_zpow, h]
-  --   simp only [Int.reduceNeg, ofAdd_neg, zpow_neg, inv_zpow', inv_inv]
-  --   rw [← Int.ofAdd_mul, one_mul, ofAdd_toAdd]
-  -- rw [hn]
-  -- exact v.unitsMap_mem_unitsMapRange ((Units.mk0 x hx0)^(-n.toAdd))
 
 end IsDiscrete
 
 section IsNontrivial
 
-variable {v} [IsNontrivial v] [Nontrivial Γˣ]
+variable {v} [IsNontrivial v] [Nontrivial Γˣ] [IsCyclic Γˣ]
 
 theorem IsUniformizer.isPreuniformizer {π : K} (hπ : IsUniformizer v π) :
     IsPreuniformizer v π := by
-  rw [isPreuniformizer_iff]
-  rw [isUniformizer_iff] at hπ
   have := isDiscrete_of_exists_isUniformizer hπ
-  sorry
-  /- set g := (Mul.exists_generator_lt_one ℤ v.unitsMapRange_ne_bot).choose with hg
-  obtain ⟨h1, htop⟩ := (Mul.exists_generator_lt_one ℤ v.unitsMapRange_ne_bot).choose_spec
-  simp only [← hg] at h1 htop ⊢
-  rw [unitsMapRange_eq_top] at htop
-  rw [hπ, WithZero.coe_inj, eq_comm]
-  exact MultInt.eq_ofAdd_neg_one_of_generates_top h1 htop -/
+  rw [isPreuniformizer_iff, isUniformizer_iff.mp hπ, genLTOne_eq_of_top]
+  congr
+  exact (unitsMapRange_eq_top v).symm
 
 /-- A constructor for preuniformizers. -/
 def Uniformizer.to_preuniformizer (π : Uniformizer v) : Preuniformizer v where
@@ -738,33 +718,38 @@ end IsNontrivial
 
 section IsDiscrete
 
-variable {v} [hv : IsDiscrete v]
+variable {v} [IsDiscrete v]
+--**FAE**: In the following, shuold we assume `[Nontrivial Γˣ] [IsCyclic Γˣ]` instead of `IsDiscrete`?
 
-theorem IsPreuniformizer.isUniformizer {π : K} (hπ : IsPreuniformizer v π) :
-    haveI := IsDiscrete.nontrivial_value_group v
-    IsUniformizer v π := by
+/- In the following theorem, we don't single out the assumption `IsPreuniformizer v π` to be able to
+add the two `haveI` assumptions. -/
+theorem IsPreuniformizer.isUniformizer {π : K} :
+      haveI := IsDiscrete.nontrivial_value_group v
+      haveI := IsDiscrete.cyclic_value_group v
+    IsPreuniformizer v π → IsUniformizer v π := by
+  intro hπ
   have := IsDiscrete.nontrivial_value_group v
-  rw [isUniformizer_iff]
-  rw [isPreuniformizer_iff] at hπ
-  sorry
-  /- set g := (Mul.exists_generator_lt_one ℤ v.unitsMapRange_ne_bot).choose with hg
-  obtain ⟨h1, htop⟩ := (Mul.exists_generator_lt_one ℤ v.unitsMapRange_ne_bot).choose_spec
-  simp only [← hg] at h1 htop ⊢
-  rw [unitsMapRange_eq_top] at htop
-  rw [hπ, WithZero.coe_inj]
-  exact MultInt.eq_ofAdd_neg_one_of_generates_top h1 htop -/
+  have := IsDiscrete.cyclic_value_group v
+  rw [isUniformizer_iff, isPreuniformizer_iff.mp hπ, genLTOne_eq_of_top]
+  congr
+  exact unitsMapRange_eq_top v
 
 theorem isUniformizer_iff_isPreuniformizer {π : K} :
-    haveI := IsDiscrete.nontrivial_value_group v
+      haveI := IsDiscrete.nontrivial_value_group v
+      haveI := IsDiscrete.cyclic_value_group v
     IsUniformizer v π ↔ IsPreuniformizer v π :=
+  have := IsDiscrete.cyclic_value_group v
   have := IsDiscrete.nontrivial_value_group v
   ⟨fun hπ ↦ IsUniformizer.isPreuniformizer hπ, fun hπ ↦ IsPreuniformizer.isUniformizer hπ⟩
 
 /-- A constructor for uniformizers. -/
-def Preuniformizer.to_uniformizer (π : Preuniformizer v) :
-    haveI := IsDiscrete.nontrivial_value_group v
-    Uniformizer v := by
+def Preuniformizer.to_uniformizer :
+      haveI := IsDiscrete.nontrivial_value_group v
+      haveI := IsDiscrete.cyclic_value_group v
+    Preuniformizer v → Uniformizer v := by
+  intro π
   have := IsDiscrete.nontrivial_value_group v
+  have := IsDiscrete.cyclic_value_group v
   apply Uniformizer.mk
   exact IsPreuniformizer.isUniformizer π.2
 
@@ -772,7 +757,7 @@ end IsDiscrete
 
 section PreUniformizer
 
-variable {v} [IsNontrivial v]
+variable {v} [IsNontrivial v] [IsCyclic Γˣ]
 
 theorem isPreuniformizer_of_associated {π₁ π₂ : K₀} (h1 : IsPreuniformizer v π₁)
     (H : Associated π₁ π₂) : IsPreuniformizer v π₂ := by
@@ -784,25 +769,25 @@ theorem isPreuniformizer_of_associated {π₁ π₂ : K₀} (h1 : IsPreuniformiz
 
 theorem associated_of_isPreuniformizer (π₁ π₂ : Preuniformizer v) : Associated π₁.1 π₂.1 := by
   have hval : v ((π₁.1 : K)⁻¹ * π₂.1) = 1 := by
-    sorry/- simp only [Valuation.map_mul, map_inv₀, isPreuniformizer_iff.mp π₁.2,
-      isPreuniformizer_iff.mp π₂.2, isUnit_iff_ne_zero, ne_eq, coe_ne_zero, not_false_eq_true,
-      IsUnit.inv_mul_cancel] -/
+    simp [isPreuniformizer_iff.mp π₁.2, isPreuniformizer_iff.mp π₂.2]
   set p : v.integer := ⟨(π₁.1 : K)⁻¹ * π₂.1, (v.mem_integer_iff _).mpr (le_of_eq hval)⟩ with hp
   use ((Integers.isUnit_iff_valuation_eq_one (x := p) <| integer.integers v).mpr hval).unit
   apply_fun ((↑·) : K₀ → K) using Subtype.val_injective
-  sorry --simp [hp, Subring.coe_mul, ← mul_assoc, mul_inv_cancel₀ (isPreuniformizer_ne_zero π₁.2), one_mul]
+  simp [hp, ← mul_assoc, mul_inv_cancel₀ (isPreuniformizer_ne_zero π₁.2)]
+
+
 
 -- Available in current mathlib
-@[simp] lemma zpow_le_one_iff_right_of_lt_one₀  {G₀ : Type*} [GroupWithZero G₀] [PartialOrder G₀]
-    [ZeroLEOneClass G₀] [PosMulReflectLT G₀] {a : G₀} [PosMulStrictMono G₀] {n : ℤ} (ha₀ : 0 < a)
-    (ha₁ : a < 1) : a ^ n ≤ 1 ↔ 0 ≤ n := by
-  simp [← zpow_le_zpow_iff_right_of_lt_one₀ ha₀ ha₁]
+-- @[simp] lemma zpow_le_one_iff_right_of_lt_one₀  {G₀ : Type*} [GroupWithZero G₀] [PartialOrder G₀]
+--     [ZeroLEOneClass G₀] [PosMulReflectLT G₀] {a : G₀} [PosMulStrictMono G₀] {n : ℤ} (ha₀ : 0 < a)
+--     (ha₁ : a < 1) : a ^ n ≤ 1 ↔ 0 ≤ n := by
+--   simp [← zpow_le_zpow_iff_right_of_lt_one₀ ha₀ ha₁]
 
 theorem pow_preuniformizer {r : K₀} (hr : r ≠ 0) (π : Preuniformizer v) :
     ∃ n : ℕ, ∃ u : K₀ˣ, r = (π.1 ^ n).1 * u.1 := by
   have hπ := isPreuniformizer_val_generates_unitsMapRange π.2
   have hr₀ : v r ≠ 0 := by rw [ne_eq, zero_iff, Subring.coe_eq_zero_iff]; exact hr
-  sorry/- set vr := unitsMap hr₀ with hvr_def
+  set vr := unitsMap v (Units.mk0 r.1 (by norm_cast)) with hvr_def
   have hvr : vr ∈ v.unitsMapRange := by
     simp only [unitsMapRange, Subgroup.mem_mk, Set.mem_range, unitsMap_apply]
     have hr' : (r : K) ≠ 0 := by simpa [ne_eq, ZeroMemClass.coe_eq_zero] using hr
@@ -810,7 +795,8 @@ theorem pow_preuniformizer {r : K₀} (hr : r ≠ 0) (π : Preuniformizer v) :
   rw [isPreuniformizer_val_generates_unitsMapRange π.2, Subgroup.mem_zpowers_iff] at hvr
   obtain ⟨m, hm⟩ := hvr
   have hm' : v π.val ^ m = v r := by
-    rw [← coe_unitsMap hr₀, ← coe_unitsMap (isPreuniformizer_val_ne_zero π.2), ← hvr_def, ← hm]; rfl
+    rw [hvr_def] at hm
+    simp [← v.unitsMap_of_ne_zero (x := r.1) (by norm_cast), ← hm]
   have hm₀ : 0 ≤ m := by
     rw [← zpow_le_one_iff_right_of_lt_one₀ (isPreuniformizer_val_pos π.2)
       (isPreuniformizer_val_lt_one π.2), hm']
@@ -829,14 +815,14 @@ theorem pow_preuniformizer {r : K₀} (hr : r ≠ 0) (π : Preuniformizer v) :
     Integers.isUnit_of_one (integer.integers v) (isUnit_iff_ne_zero.mpr ha₀) hpow
   use h_unit_a.unit
   rw [IsUnit.unit_spec, Subring.coe_pow, ha, ← mul_assoc, zpow_neg, hn, zpow_natCast,
-    mul_inv_cancel₀ (pow_ne_zero _ (preuniformizer_ne_zero π)), one_mul] -/
+    mul_inv_cancel₀ (pow_ne_zero _ (preuniformizer_ne_zero π)), one_mul]
 
 theorem preuniformizer_is_generator (π : Preuniformizer v) :
     maximalIdeal v.valuationSubring = Ideal.span {π.1} := by
   apply (maximalIdeal.isMaximal _).eq_of_le
   · intro h
     rw [Ideal.span_singleton_eq_top] at h
-    sorry --apply isPreuniformizer_not_isUnit π.2 h
+    apply isPreuniformizer_not_isUnit π.2 h
   · intro x hx
     by_cases hx₀ : x = 0
     · simp only [hx₀, Ideal.zero_mem]
@@ -865,7 +851,7 @@ end PreUniformizer
 
 section IsUniformizer
 
-variable [Nontrivial Γˣ]
+variable [Nontrivial Γˣ] [IsCyclic Γˣ]
 
 theorem isUniformizer_of_associated {π₁ π₂ : K₀} (h1 : IsUniformizer v π₁) (H : Associated π₁ π₂) :
     IsUniformizer v π₂ :=
@@ -875,9 +861,9 @@ theorem isUniformizer_of_associated {π₁ π₂ : K₀} (h1 : IsUniformizer v �
 
 end IsUniformizer
 
-variable [Nontrivial Γˣ]
-
 section Uniformizer
+
+variable [Nontrivial Γˣ] [IsCyclic Γˣ]
 
 theorem associated_of_uniformizer (π₁ π₂ : Uniformizer v) : Associated π₁.1 π₂.1 :=
   have : IsDiscrete v := isDiscrete_of_exists_isUniformizer π₁.2
@@ -899,21 +885,26 @@ theorem uniformizer_is_generator (π : Uniformizer v) :
 end Uniformizer
 
 
-theorem isUniformizer_is_generator {π : v.valuationSubring} (hπ : IsUniformizer v π) :
-    maximalIdeal v.valuationSubring = Ideal.span {π} :=
+theorem isUniformizer_is_generator [Nontrivial Γˣ] [IsCyclic Γˣ] {π : v.valuationSubring}
+    (hπ : IsUniformizer v π) : maximalIdeal v.valuationSubring = Ideal.span {π} :=
   have : IsDiscrete v := isDiscrete_of_exists_isUniformizer hπ
   isPreuniformizer_is_generator (IsUniformizer.isPreuniformizer hπ)
 
-theorem pow_uniformizer_is_pow_generator (π : Uniformizer v) (n : ℕ) :
-    maximalIdeal v.valuationSubring ^ n = Ideal.span {π.1 ^ n} := by
+theorem pow_uniformizer_is_pow_generator [Nontrivial Γˣ] [IsCyclic Γˣ] (π : Uniformizer v)
+    (n : ℕ) : maximalIdeal v.valuationSubring ^ n = Ideal.span {π.1 ^ n} := by
   have : IsDiscrete v := isDiscrete_of_exists_isUniformizer π.2
   exact pow_preuniformizer_is_pow_generator (Uniformizer.to_preuniformizer π) n
 
-instance [IsDiscrete v] : Nonempty (Uniformizer v) :=
+instance [IsDiscrete v] :
+      haveI := IsDiscrete.cyclic_value_group v
+      haveI := IsDiscrete.nontrivial_value_group v
+    Nonempty (Uniformizer v) :=
+  have := IsDiscrete.cyclic_value_group v
+  have := IsDiscrete.nontrivial_value_group v
   ⟨⟨(exists_isUniformizer_of_isDiscrete v).choose,
     (exists_isUniformizer_of_isDiscrete v).choose_spec⟩⟩
 
-theorem not_isField [IsNontrivial v] : ¬ IsField K₀ := by
+theorem not_isField [IsNontrivial v] [Nontrivial Γˣ] [IsCyclic Γˣ] : ¬ IsField K₀ := by
   obtain ⟨π, hπ⟩ := exists_isPreuniformizer_of_isNontrivial v
   rintro ⟨-, -, h⟩
   have := isPreuniformizer_ne_zero hπ
@@ -922,8 +913,8 @@ theorem not_isField [IsNontrivial v] : ¬ IsField K₀ := by
   rw [← isUnit_iff_exists_inv] at h
   exact isPreuniformizer_not_isUnit hπ h
 
-theorem _root_.Valuation.isPreuniformizer_of_generator [IsNontrivial v] {r : K₀}
-    (hr : maximalIdeal v.valuationSubring = Ideal.span {r}) :
+theorem _root_.Valuation.isPreuniformizer_of_generator [IsNontrivial v] [Nontrivial Γˣ] [IsCyclic Γˣ]
+    {r : K₀} (hr : maximalIdeal v.valuationSubring = Ideal.span {r}) :
     IsPreuniformizer v r := by
   have hr₀ : r ≠ 0 := by
     intro h
@@ -936,8 +927,13 @@ theorem _root_.Valuation.isPreuniformizer_of_generator [IsNontrivial v] {r : K�
   exact isPreuniformizer_of_associated hπ hr
 
 theorem isUniformizer_of_generator [IsDiscrete v] {r : K₀}
-    (hr : maximalIdeal v.valuationSubring = Ideal.span {r}) : IsUniformizer v r := by
+    (hr : maximalIdeal v.valuationSubring = Ideal.span {r}) :
+      haveI := IsDiscrete.cyclic_value_group v
+      haveI := IsDiscrete.nontrivial_value_group v
+    IsUniformizer v r := by
   rw [isUniformizer_iff_isPreuniformizer]
+  have := IsDiscrete.cyclic_value_group v
+  have := IsDiscrete.nontrivial_value_group v
   exact isPreuniformizer_of_generator v hr
 
 /- **TODO** : reinstate if needed -/
@@ -966,20 +962,20 @@ theorem isUniformizer_of_generator [IsDiscrete v] {r : K₀}
       Ideal.mem_span_singleton', dvd_iff_exists_eq_mul_left]
     tauto -/
 
-omit [Nontrivial Γˣ] in
-theorem val_le_iff_dvd (L : Type w₁) [Field L] {w : Valuation L ℤₘ₀} [IsDiscrete w]
-    [IsDiscreteValuationRing w.valuationSubring] (x : w.valuationSubring) (n : ℕ) :
-    w x ≤ ofAdd (-(n : ℤ)) ↔ IsLocalRing.maximalIdeal w.valuationSubring ^ n ∣ Ideal.span {x} := by
-  sorry
-  /- convert val_le_iff_dvd' x n
-  set g := (Mul.exists_generator_lt_one ℤ w.unitsMapRange_ne_bot).choose with hg
-  have hg1 : g = ofAdd (-1) := by
-    obtain ⟨π, hπ⟩ := exists_isPreuniformizer_of_isNontrivial w
-    have h1 : w π = ofAdd (-1 : ℤ) := by
-      rwa [← isUniformizer_iff, isUniformizer_iff_isPreuniformizer]
-    rwa [isPreuniformizer_iff, h1, eq_comm, ← hg, WithZero.coe_inj] at hπ
-  rw [hg1, ofAdd_zpow]
-  simp [zpow_neg, zpow_natCast, Int.reduceNeg, ofAdd_neg, coe_inv, inv_pow] -/
+-- **FAE** : Needed?
+-- theorem val_le_iff_dvd (L : Type w₁) [Field L] {w : Valuation L ℤₘ₀} [IsDiscrete w]
+--     [IsDiscreteValuationRing w.valuationSubring] (x : w.valuationSubring) (n : ℕ) :
+--     w x ≤ ofAdd (-(n : ℤ)) ↔ IsLocalRing.maximalIdeal w.valuationSubring ^ n ∣ Ideal.span {x} := by
+--   -- sorry
+--   convert val_le_iff_dvd' x n
+--   set g := (Mul.exists_generator_lt_one ℤ w.unitsMapRange_ne_bot).choose with hg
+--   have hg1 : g = ofAdd (-1) := by
+--     obtain ⟨π, hπ⟩ := exists_isPreuniformizer_of_isNontrivial w
+--     have h1 : w π = ofAdd (-1 : ℤ) := by
+--       rwa [← isUniformizer_iff, isUniformizer_iff_isPreuniformizer]
+--     rwa [isPreuniformizer_iff, h1, eq_comm, ← hg, WithZero.coe_inj] at hπ
+--   rw [hg1, ofAdd_zpow]
+--   simp [zpow_neg, zpow_natCast, Int.reduceNeg, ofAdd_neg, coe_inv, inv_pow]
 
 section RankOne
 
@@ -988,19 +984,20 @@ open Valuation
 variable [v.IsNontrivial]
 
 noncomputable instance _root_.DiscreteValuation.rankOne : RankOne v where
-  hom := sorry --WithZeroMulInt.toNNReal (base_ne_zero K v)
+  hom := sorry--WithZeroMulInt.toNNReal (base_ne_zero K v)
   strictMono' := sorry --WithZeroMulInt.toNNReal_strictMono (one_lt_base K v)
   nontrivial' := by
-    obtain ⟨π, hπ⟩ := exists_isPreuniformizer_of_isNontrivial v
-    exact
-      ⟨π, ne_of_gt (isPreuniformizer_val_pos hπ), ne_of_lt (isPreuniformizer_val_lt_one hπ)⟩
+    sorry
+    -- obtain ⟨π, hπ⟩ := exists_isPreuniformizer_of_isNontrivial v
+    -- exact
+    --   ⟨π, ne_of_gt (isPreuniformizer_val_pos hπ), ne_of_lt (isPreuniformizer_val_lt_one hπ)⟩
 
 /- **TODO** : reinstate after fixing the above instance (with updated RHS). -/
 --theorem rankOne_hom_def : RankOne.hom v = WithZeroMulInt.toNNReal (base_ne_zero K v) := rfl
 
 end RankOne
 
-theorem ideal_isPrincipal [v.IsNontrivial] (I : Ideal K₀) : I.IsPrincipal := by
+theorem ideal_isPrincipal [v.IsNontrivial] [IsCyclic Γˣ] (I : Ideal K₀) : I.IsPrincipal := by
   suffices ∀ P : Ideal K₀, P.IsPrime → Submodule.IsPrincipal P by
     exact (IsPrincipalIdealRing.of_prime this).principal I
   intro P hP
@@ -1020,18 +1017,22 @@ theorem ideal_isPrincipal [v.IsNontrivial] (I : Ideal K₀) : I.IsPrincipal := b
       rw [← Ideal.IsMaximal.eq_of_le (IsLocalRing.maximalIdeal.isMaximal K₀) hP.ne_top hx_mem]
       exact ⟨π.1, preuniformizer_is_generator π⟩
 
-theorem integer_isPrincipalIdealRing [v.IsNontrivial] : IsPrincipalIdealRing K₀ :=
+theorem integer_isPrincipalIdealRing [v.IsNontrivial] [IsCyclic Γˣ] : IsPrincipalIdealRing K₀ :=
   ⟨fun I ↦ ideal_isPrincipal v I⟩
 
 /-- This is Chapter I, Section 1, Proposition 1 in Serre's Local Fields -/
-instance dvr_of_isDiscrete [v.IsNontrivial] : IsDiscreteValuationRing K₀ where
+instance dvr_of_isDiscrete [v.IsNontrivial] [IsCyclic Γˣ] [Nontrivial Γˣ]:
+    IsDiscreteValuationRing K₀ where
   toIsPrincipalIdealRing := integer_isPrincipalIdealRing v
   toIsLocalRing  := inferInstance
   not_a_field' := by rw [ne_eq, ← isField_iff_maximalIdeal_eq]; exact not_isField v
 
-variable (A : Type w₁) [CommRing A] [IsDomain A] [IsDiscreteValuationRing A]
+end Field
+
+variable (A : Type*) [CommRing A] [IsDomain A] [IsDiscreteValuationRing A]
 
 open IsDedekindDomain IsDedekindDomain.HeightOneSpectrum Subring IsDiscreteValuationRing
+open Ideal IsLocalRing
 
 /-- The maximal ideal of a DVR-/
 def _root_.IsDiscreteValuationRing.maximalIdeal : HeightOneSpectrum A where
@@ -1040,17 +1041,17 @@ def _root_.IsDiscreteValuationRing.maximalIdeal : HeightOneSpectrum A where
   ne_bot := by
     simpa [ne_eq, ← isField_iff_maximalIdeal_eq] using IsDiscreteValuationRing.not_isField A
 
-variable {A}
+-- variable {A}
 
-noncomputable instance : Valued (FractionRing A) ℤₘ₀ :=
+noncomputable instance instAdicValued : Valued (FractionRing A) ℤₘ₀ :=
   (IsDiscreteValuationRing.maximalIdeal A).adicValued
 
-instance : IsDiscrete v:= by
+instance : IsDiscrete (instAdicValued A).v := by
   apply isDiscrete_of_exists_isUniformizer
-  sorry
-  sorry
-  /- isDiscrete_of_exists_isUniformizer
-    (valuation_exists_uniformizer (FractionRing A) (maximalIdeal A)).choose_spec -/
+  -- sorry
+  -- sorry
+  isDiscrete_of_exists_isUniformizer
+    (valuation_exists_uniformizer (FractionRing A) (maximalIdeal A)).choose_spec
 
 theorem exists_of_le_one {x : FractionRing A} (H : Valued.v x ≤ (1 : ℤₘ₀)) :
     ∃ a : A, algebraMap A (FractionRing A) a = x := by

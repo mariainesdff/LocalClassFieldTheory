@@ -108,7 +108,7 @@ lemma /- Subgroup. -/zpowers_eq_zpowers_iff {G : Type*} [CommGroup G] [LinearOrd
   refine hl.imp ?_ ?_ <;>
   simp +contextual
 
--- end Valuation
+end Valuation
 -- open Subgroup
 namespace Subgroup
 
@@ -164,6 +164,6 @@ lemma genLTOne_val_eq_genLTOne : ((⊤ : Subgroup H).genLTOne) = H.genLTOne := b
   rw [inv_lt_one'] at hγ_lt
   exact (not_lt_of_lt hγ_lt hη_lt).elim
 
--- end Subgroup
+end Subgroup
 
 -- end Valuation
