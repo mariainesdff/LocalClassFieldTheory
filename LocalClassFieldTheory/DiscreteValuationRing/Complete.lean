@@ -51,7 +51,7 @@ the second that has an adic valuation attached to it.
 
 noncomputable section
 
-open IsDedekindDomain IsDedekindDomain.HeightOneSpectrum Valuation
+open IsDedekindDomain IsDedekindDomain.HeightOneSpectrum Valuation LinearOrderedCommGroup
 
 namespace IsDedekindDomain.HeightOneSpectrum.Completion
 
@@ -63,11 +63,11 @@ local notation "R_v" => adicCompletionIntegers K v
 
 local notation "K_v" => adicCompletion K v
 
-instance isDiscrete : IsDiscrete' (@Valued.v K_v _ ℤₘ₀ _ _) := by
-  have : (LinearOrderedCommGroup.gen_lt_one ℤₘ₀ˣ : ℤₘ₀) = ofAdd (-1 : ℤ) := by
+instance isDiscrete : IsDiscrete (@Valued.v K_v _ ℤₘ₀ _ _) := by
+  have : (genLTOne ℤₘ₀ˣ : ℤₘ₀) = ofAdd (-1 : ℤ) := by
     sorry /- **TODO** remove once this is a general lemma. -/
   obtain ⟨π, hπ⟩ := valuation_exists_uniformizer K v
-  apply isDiscrete'_of_exists_isUniformizer (π := (↑π : K_v))
+  apply isDiscrete_of_exists_isUniformizer (π := (↑π : K_v))
   rw [isUniformizer_iff, this, ← hπ]
   apply Valued.extension_extends
 
