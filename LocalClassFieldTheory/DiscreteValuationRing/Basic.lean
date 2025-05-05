@@ -489,7 +489,7 @@ lemma isPreuniformizer_val_ne_zero {π : K} (hπ : v.IsPreuniformizer π) : v π
 open Subgroup
 
 lemma isPreuniformizer_val_generates_unitsMapRange {π : K} (hπ : v.IsPreuniformizer π) :
-    unitsMapRange v = /- Subgroup. -/zpowers (Units.mk0 (v π) (v.isPreuniformizer_val_ne_zero hπ)) := by
+    unitsMapRange v = zpowers (Units.mk0 (v π) (v.isPreuniformizer_val_ne_zero hπ)) := by
   let _ := v.unitsMapRange_ne_bot
   rw [← v.unitsMapRange.genLTOne_zpowers_eq_top]
   congr
@@ -936,23 +936,30 @@ theorem isUniformizer_of_generator [IsDiscrete v] {r : K₀}
   have := IsDiscrete.cyclic_value_group v
   exact isPreuniformizer_of_generator v hr
 
+
 /- **TODO** : reinstate if needed -/
-/- theorem val_le_iff_dvd' {L : Type*} [Field L] {w : Valuation L ℤₘ₀} [IsNontrivial w]
-    [IsDiscreteValuationRing w.valuationSubring] (x : w.valuationSubring) (n : ℕ) :
-    w x ≤ (Mul.exists_generator_lt_one ℤ w.unitsMapRange_ne_bot).choose ^ n ↔
+theorem val_le_iff_dvd {L : Type*} [Field L] {w : Valuation L Γ} [IsNontrivial w]
+    [IsDiscrete w] [IsDiscreteValuationRing w.valuationSubring] (x : w.valuationSubring) (n : ℕ) :
+    haveI := IsDiscrete.cyclic_value_group w
+    haveI := IsDiscrete.nontrivial_value_group w
+    w x ≤ (genLTOne Γˣ) ^ n ↔
       IsLocalRing.maximalIdeal w.valuationSubring ^ n ∣ Ideal.span {x} := by
+  haveI := IsDiscrete.cyclic_value_group w
+  haveI := IsDiscrete.nontrivial_value_group w
   by_cases hx : x = 0
   · rw [Ideal.span_singleton_eq_bot.mpr hx, hx, Subring.coe_zero, Valuation.map_zero]
-    simp only [WithZero.zero_le, true_iff, ← Ideal.zero_eq_bot, dvd_zero]
+    simp only [WithZero.zero_le, true_iff, ← Ideal.zero_eq_bot, dvd_zero, zero_le']
   · set r := Submodule.IsPrincipal.generator (IsLocalRing.maximalIdeal w.valuationSubring)
       with hr_def
     have hr : IsPreuniformizer w r := by
       apply isPreuniformizer_of_generator
       rw [hr_def, span_singleton_generator]
     have hrn : w (r ^ n) =
-        (Mul.exists_generator_lt_one ℤ w.unitsMapRange_ne_bot).choose ^ n := by
+        (genLTOne Γˣ) ^ n := by
       rw [Valuation.map_pow, hr]
-    have := @Valuation.Integers.le_iff_dvd L ℤₘ₀ _ _ w w.valuationSubring _ _
+      congr
+      exact unitsMapRange_eq_top w
+    have := @Valuation.Integers.le_iff_dvd L Γ _ _ w w.valuationSubring _ _
         (Valuation.integer.integers w) x (r ^ n)
     erw [← hrn, this]
     have DD : IsDedekindDomain w.valuationSubring := by
@@ -960,22 +967,17 @@ theorem isUniformizer_of_generator [IsDiscrete v] {r : K₀}
     rw [← Ideal.span_singleton_generator (IsLocalRing.maximalIdeal w.valuationSubring), ← hr_def,
       Ideal.span_singleton_pow, Ideal.dvd_iff_le, Ideal.span_singleton_le_iff_mem,
       Ideal.mem_span_singleton', dvd_iff_exists_eq_mul_left]
-    tauto -/
+    tauto
 
--- **FAE** : Needed?
--- theorem val_le_iff_dvd (L : Type w₁) [Field L] {w : Valuation L ℤₘ₀} [IsDiscrete w]
+-- **FAE** The lemma below is now an `exact` away from the previous one...
+-- theorem val_le_iff_dvd (L : Type w₁) [Field L] {w : Valuation L Γ} [IsDiscrete w]
 --     [IsDiscreteValuationRing w.valuationSubring] (x : w.valuationSubring) (n : ℕ) :
---     w x ≤ ofAdd (-(n : ℤ)) ↔ IsLocalRing.maximalIdeal w.valuationSubring ^ n ∣ Ideal.span {x} := by
---   -- sorry
---   convert val_le_iff_dvd' x n
---   set g := (Mul.exists_generator_lt_one ℤ w.unitsMapRange_ne_bot).choose with hg
---   have hg1 : g = ofAdd (-1) := by
---     obtain ⟨π, hπ⟩ := exists_isPreuniformizer_of_isNontrivial w
---     have h1 : w π = ofAdd (-1 : ℤ) := by
---       rwa [← isUniformizer_iff, isUniformizer_iff_isPreuniformizer]
---     rwa [isPreuniformizer_iff, h1, eq_comm, ← hg, WithZero.coe_inj] at hπ
---   rw [hg1, ofAdd_zpow]
---   simp [zpow_neg, zpow_natCast, Int.reduceNeg, ofAdd_neg, coe_inv, inv_pow]
+--       haveI := IsDiscrete.cyclic_value_group w
+--       haveI := IsDiscrete.nontrivial_value_group w
+--     w x ≤ (genLTOne Γˣ) ^ n ↔ IsLocalRing.maximalIdeal w.valuationSubring ^ n ∣ Ideal.span {x} := by
+--   haveI := IsDiscrete.cyclic_value_group w
+--   haveI := IsDiscrete.nontrivial_value_group w
+--   exact val_le_iff_dvd' x n
 
 section RankOne
 
