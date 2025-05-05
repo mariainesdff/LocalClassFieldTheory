@@ -12,8 +12,9 @@ variable {A : Type*} [Ring A] (v : Valuation A Γ)
 
 open Subgroup
 
+-- **in #24435 by Me+Yakov**
 lemma IsDiscrete.mulArchimedean [IsDiscrete v] : MulArchimedean Γ := by
-  constructor
+  apply MulArchimedean.mk
   intro x y hy
   obtain ⟨g, hgen, hg_lt_one, -, ha⟩ := v.exists_generator_lt_one
   rcases le_or_lt x 1 with hx|hx
@@ -46,6 +47,7 @@ lemma IsDiscrete.mulArchimedean [IsDiscrete v] : MulArchimedean Γ := by
   refine pow_right_monotone ?_ hn
   simp [hg_lt_one.le]
 
+-- **in #24435 by Me+Yakov**
 lemma IsDiscrete.not_denselyOrdered [IsDiscrete v] : ¬ DenselyOrdered Γ := by
   have := nontrivial_value_group v
   have H := cyclic_value_group v
@@ -53,6 +55,7 @@ lemma IsDiscrete.not_denselyOrdered [IsDiscrete v] : ¬ DenselyOrdered Γ := by
   rw [← denselyOrdered_units_iff] at H
   exact not_isCyclic_of_denselyOrdered _
 
+-- **in #24435 by Me+Yakov**
 open Multiplicative in
 lemma IsDiscrete.nonempty_mulOrderIso_multiplicative_int [IsDiscrete v] :
     Nonempty (Γ ≃*o ℤₘ₀) := by
@@ -61,6 +64,7 @@ lemma IsDiscrete.nonempty_mulOrderIso_multiplicative_int [IsDiscrete v] :
   rw [LinearOrderedCommGroupWithZero.discrete_iff_not_denselyOrdered]
   exact not_denselyOrdered v
 
+-- **USED in #24435 ???**
 -- -- TODO: move elsewhere
 -- instance {X : Type*} [Preorder X] [Nonempty X] [NoMaxOrder X] : NoMaxOrder (WithZero X) := by
 --   constructor
@@ -73,17 +77,18 @@ lemma IsDiscrete.nonempty_mulOrderIso_multiplicative_int [IsDiscrete v] :
 --     refine ⟨b, ?_⟩
 --     simp [hb]
 
-open Multiplicative in
-lemma IsDiscrete.infinite_value_group [IsDiscrete v] : Infinite Γˣ := by
-  obtain ⟨e⟩ := nonempty_mulOrderIso_multiplicative_int v
-  let e' : Γˣ ≃* Multiplicative ℤ := MulEquiv.unzero (WithZero.withZeroUnitsEquiv.trans e)
-  rw [e'.toEquiv.infinite_iff]
-  infer_instance
+-- **USED in #24435 ???**
+-- open Multiplicative in
+-- lemma IsDiscrete.infinite_value_group [IsDiscrete v] : Infinite Γˣ := by
+--   obtain ⟨e⟩ := nonempty_mulOrderIso_multiplicative_int v
+--   let e' : Γˣ ≃* Multiplicative ℤ := MulEquiv.unzero (WithZero.withZeroUnitsEquiv.trans e)
+--   rw [e'.toEquiv.infinite_iff]
+--   infer_instance
 
 end Valuation
 
 namespace Subgroup
--- TODO: move elsewhere
+-- In **PR 2450 by Yakov P.**
 @[to_additive]
 lemma zpowers_eq_zpowers_iff {G : Type*} [CommGroup G] [LinearOrder G] [IsOrderedMonoid G]
     {x y : G} : zpowers x = zpowers y ↔ x = y ∨ x⁻¹ = y := by
