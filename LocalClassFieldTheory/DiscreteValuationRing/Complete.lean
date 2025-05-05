@@ -153,7 +153,11 @@ theorem int_adic_of_compl_eq_int_compl_of_adic (a : R_v) :
         use n
         rw [← hα, WithZero.coe_inj, ← ofAdd_toAdd α, hn]
       rw [ValuationSubring.algebraMap_apply, hn, intValuation_le_pow_iff_dvd]
-      apply (Valuation.val_le_iff_dvd K_v _ n).mp (le_of_eq hn)
+      apply (Valuation.val_le_iff_dvd _ n).mp
+      rw [hn, ← genLTOne_eq_neg_one]
+      apply le_of_eq
+      congr
+      simp [← ofAdd_nsmul]
     · obtain ⟨m, hm⟩ : ∃ m : ℕ, v_adic_of_compl a = ofAdd (-m : ℤ) := by
         replace ha : v_adic_of_compl a ≠ 0 := by
           rwa [Valuation.ne_zero_iff, ne_eq, Subring.coe_eq_zero_iff]
@@ -168,9 +172,17 @@ theorem int_adic_of_compl_eq_int_compl_of_adic (a : R_v) :
       · erw [valuation_of_algebraMap, intValuation_apply] at hm
         rw [hm]
         replace hm := le_of_eq hm
-        rw [intValuation_le_pow_iff_dvd] at hm
-        rw [ValuationSubring.algebraMap_apply, Valuation.val_le_iff_dvd]
-        apply hm
+        erw [intValuation_le_pow_iff_dvd, ← Valuation.val_le_iff_dvd a m] at hm
+        rw [ValuationSubring.algebraMap_apply]
+        apply le_trans hm (le_of_eq _)
+        rw [← genLTOne_eq_neg_one]
+        simp
+        sorry
+
+
+        -- rw [← genLTOne_eq_neg_one]
+        -- have := Valuation.val_le_iff_dvd a m
+        -- apply hm
 
 theorem adic_of_compl_eq_compl_of_adic (x : K_v) : v_adic_of_compl x = v_compl_of_adic x := by
   obtain ⟨a, b, H⟩ := IsLocalization.mk'_surjective (nonZeroDivisors R_v) x
