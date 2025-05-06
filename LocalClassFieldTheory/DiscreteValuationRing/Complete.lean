@@ -173,16 +173,9 @@ theorem int_adic_of_compl_eq_int_compl_of_adic (a : R_v) :
         rw [hm]
         replace hm := le_of_eq hm
         erw [intValuation_le_pow_iff_dvd, ← Valuation.val_le_iff_dvd a m] at hm
-        rw [ValuationSubring.algebraMap_apply]
         apply le_trans hm (le_of_eq _)
-        rw [← genLTOne_eq_neg_one]
-        simp
-        sorry
-
-
-        -- rw [← genLTOne_eq_neg_one]
-        -- have := Valuation.val_le_iff_dvd a m
-        -- apply hm
+        rw [← genLTOne_eq_neg_one, neg_eq_neg_one_mul (m : ℤ), mul_comm]
+        norm_cast
 
 theorem adic_of_compl_eq_compl_of_adic (x : K_v) : v_adic_of_compl x = v_compl_of_adic x := by
   obtain ⟨a, b, H⟩ := IsLocalization.mk'_surjective (nonZeroDivisors R_v) x
