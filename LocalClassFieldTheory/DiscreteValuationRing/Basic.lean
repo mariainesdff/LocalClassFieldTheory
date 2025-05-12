@@ -554,6 +554,10 @@ variable [Nontrivial Γˣ] [IsCyclic Γˣ]
 abbrev IsUniformizer (π : R) : Prop :=
   vR π = (⊤ : Subgroup Γˣ).genLTOne
 
+/-- An element `π : R` is a uniformizer if `v π` generates the range of v and is `< 1`. -/
+abbrev IsUniformizer' [Nontrivial (thegrp vR)ˣ] [IsCyclic (thegrp vr)ˣ] (π : R) : Prop :=
+  vR π = (⊤ : Subgroup ((thegrp vr)ˣ)).genLTOne
+
 variable {vR}
 
 theorem isUniformizer_iff {π : R} : IsUniformizer vR π ↔ vR π = genLTOne Γˣ := refl _

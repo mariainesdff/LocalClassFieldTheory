@@ -116,6 +116,7 @@ lemma zpowers_eq_zpowers_iff {G : Type*} [CommGroup G] [LinearOrder G] [IsOrdere
   refine hl.imp ?_ ?_ <;>
   simp +contextual
 
+-- **in #24435 by Me+Yakov**
 open LinearOrderedCommGroup in
 lemma genLTOne_unique {G : Type*} [CommGroup G] [LinearOrder G] [IsOrderedMonoid G]
     [IsCyclic G] [Nontrivial G] (g : G) : g < 1 ∧ Subgroup.zpowers g = ⊤ → g = genLTOne G := by
@@ -132,7 +133,7 @@ variable (H : Subgroup G) [Nontrivial H]
 
 open LinearOrderedCommGroup Valuation
 
--- Move to `Order.Cyclic`???
+-- **in #24435 by Me+Yakov**
 lemma genLTOne_val_eq_genLTOne : ((⊤ : Subgroup H).genLTOne) = H.genLTOne := by
   set γ := H.genLTOne with hγ
   set η := ((⊤ : Subgroup H).genLTOne) with hη
@@ -182,19 +183,24 @@ end Subgroup
 
 namespace Multiplicative
 
-open Subgroup
 
+-- **in #24435 by Me+Yakov**
 instance : IsCyclic ℤₘ₀ˣ :=
   isCyclic_of_surjective WithZero.unitsWithZeroEquiv.symm (MulEquiv.surjective _)
 
+-- **in #24435 by Me+Yakov**
 instance : Nontrivial ℤₘ₀ˣ :=
   Function.Surjective.nontrivial (f := WithZero.unitsWithZeroEquiv) (MulEquiv.surjective _)
 
+open Subgroup
+
+-- **in #24435 by Me+Yakov**
 lemma top_eq_zpowers_neg_one :
     zpowers (ofAdd (-1 : ℤ)) = (⊤ : Subgroup (Multiplicative ℤ)) := by
   rw [← coe_eq_univ, ← ofAdd_image_zmultiples_eq_zpowers_ofAdd]
   simp
 
+-- **in #24435 by Me+Yakov**
 open LinearOrderedCommGroup WithZero in
 lemma genLTOne_eq_neg_one : unitsWithZeroEquiv.symm (ofAdd (-1 : ℤ)) = (genLTOne (ℤₘ₀ˣ)) :=  by
   let e := (unitsWithZeroEquiv (α := Multiplicative ℤ)).symm

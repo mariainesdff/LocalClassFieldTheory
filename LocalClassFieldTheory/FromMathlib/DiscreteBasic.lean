@@ -58,10 +58,21 @@ lemma generator_lt_one [IsDiscrete v] : (generator v) < 1 :=
 lemma generator_mem_range [IsDiscrete v] : ↑(generator v) ∈ range v :=
   v.exists_generator_lt_one.choose_spec.2.2
 
-lemma IsDiscrete.cyclic_value_group [IsDiscrete v] : IsCyclic Γˣ := by
+variable {G :Type*} [LinearOrderedCommGroupWithZero G]
+
+def thegrp (w : Valuation A G) : Type _ := G
+
+variable (w : Valuation A G)
+
+instance : LinearOrderedCommGroupWithZero (thegrp w) :=
+  inferInstanceAs (LinearOrderedCommGroupWithZero G)
+
+theorem IsDiscrete.cyclic_value_group [IsDiscrete v] : IsCyclic Γˣ := by
   rw [isCyclic_iff_exists_zpowers_eq_top]
   exact ⟨_, generator_zpowers_eq_top v⟩
 
+instance (G : Type*) [LinearOrderedCommGroupWithZero G]
+  (w : Valuation A G) [IsDiscrete w] : IsCyclic (thegrp w ) ˣ := IsDiscrete.cyclic_value_group w
 
 lemma IsDiscrete.nontrivial_value_group [IsDiscrete v] : Nontrivial Γˣ :=
   ⟨1, generator v, ne_of_gt <| generator_lt_one v⟩
