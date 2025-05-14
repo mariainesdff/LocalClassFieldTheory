@@ -157,7 +157,7 @@ theorem card_toFinset_pos {m : Multiset α} (hm : 0 < card m) : 0 < m.toFinset.c
   exact Finset.card_pos.mpr ⟨x, mem_toFinset.mpr hx⟩ -/
 
 end Decidable
-
+/-
 -- In PR #23266
 @[to_additive existing le_sum_of_subadditive_on_pred]
 theorem le_prod_of_submultiplicative_on_pred_of_nonneg {α β : Type*} [CommMonoid α]
@@ -182,11 +182,11 @@ theorem le_prod_of_submultiplicative_of_nonneg {α β : Type*} [CommMonoid α]
     (h_nonneg : ∀ a, 0 ≤ f a) (h_one : f 1 = 1) (h_mul : ∀ a b, f (a * b) ≤ f a * f b)
     (s : Multiset α) : f s.prod ≤ (s.map f).prod :=
   le_prod_of_submultiplicative_on_pred_of_nonneg f (fun _ ↦ True) h_nonneg h_one trivial
-    (fun x y _ _ ↦ h_mul x y) (by simp) s (by simp)
+    (fun x y _ _ ↦ h_mul x y) (by simp) s (by simp) -/
 
 
 end Multiset
-
+/-
 namespace Finset
 
 -- In PR #23266
@@ -199,7 +199,7 @@ theorem le_prod_of_submultiplicative_of_nonneg {ι M N : Type*} [CommMonoid M]
   le_trans (Multiset.le_prod_of_submultiplicative_of_nonneg f h_nonneg h_one h_mul _)
     (by simp [Multiset.map_map])
 
-end Finset
+end Finset -/
 
 section IsNonarchimedean
 
