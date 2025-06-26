@@ -122,7 +122,7 @@ instance (K : Type*) [Field K] [NALocalField K] :
 instance (K : Type*) [Field K] [NALocalField K] :
     Finite (IsLocalRing.ResidueField (@Valued.v K _ ℤₘ₀ _ _).valuationSubring) :=
   NALocalField.finiteResidueField
--- **...to here #1: in PR 23730**
+-- **...to here #1: in PR 26449**
 
 open CommGroupUniformity MeasureTheory.Measure
 
