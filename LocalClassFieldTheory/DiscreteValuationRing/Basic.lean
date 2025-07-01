@@ -214,43 +214,21 @@ end IsRankOneDiscrete
 
 section IsNontrivial
 
-open MonoidHomWithZero
+open LinearOrderedCommGroup MonoidHomWithZero
 
 section Ring
 
 variable {K : Type*} [Ring K] (v : Valuation K Γ) [IsCyclic (valueGroup v)]
   [Nontrivial (valueGroup v)]
 
--- **TODO**: wait for Nontrivial (valueMonoid v) and restate.
-instance IsRankOneDiscrete.mk' /- {π : K}
-    (hπ : v π = (LinearOrderedCommGroup.genLTOne (valueGroup v)).1) -/ :
-    IsRankOneDiscrete v := by
-  /- have hπ0 : v π ≠ 0 := sorry
-  have h1 : ((1 : (valueGroup v)) : Γˣ) = 1 := rfl
-  apply IsRankOneDiscrete.mk
-  use Units.mk0 (v π) hπ0
-  constructor
-  · --rw [← LinearOrderedCommGroup.Subgroup.genLTOne_zpowers_eq_top (H := valueGroup v)]
-    sorry
-  · simp only [hπ, LinearOrderedCommGroup.genLTOne_eq_of_top, Units.mk0_val, ← h1]
-    exact Subtype.coe_lt_coe.mpr (LinearOrderedCommGroup.Subgroup.genLTOne_lt_one ⊤) -/
-  sorry
+instance IsRankOneDiscrete.mk' : IsRankOneDiscrete v :=
+  ⟨(valueGroup v).genLTOne,
+    ⟨(valueGroup v).genLTOne_zpowers_eq_top, (valueGroup v).genLTOne_lt_one⟩⟩
 
-    /- apply IsRankOneDiscrete.mk
-  use Units.mk0 (v π) (IsUniformizer_val_ne_zero hπ)
-  constructor
-  · sorry
-  · sorry -/
-  /- simp [hπ, genLTOne_eq_of_top, Units.mk0_val]
-  refine ⟨?_, by use π⟩
-  simpa [Units.mk0_val, Subgroup.genLTOne_zpowers_eq_top, Subgroup.mem_top]
-    using Subgroup.genLTOne_lt_one ⊤ -/
 
 end Ring
 
 section Field
-
-open LinearOrderedCommGroup
 
 variable {K : Type*} [Field K] (v : Valuation K Γ) [IsCyclic (valueGroup v)]
   [Nontrivial (valueGroup v)]
@@ -456,7 +434,8 @@ noncomputable instance _root_.DiscreteValuation.rankOne : RankOne v where
 
 end RankOne -/
 
-theorem ideal_isPrincipal /- [v.IsNontrivial] [IsCyclic Γˣ] -/ (I : Ideal K₀) : I.IsPrincipal := by
+theorem ideal_isPrincipal [IsCyclic (valueGroup v)] [Nontrivial (valueGroup v)] (I : Ideal K₀) :
+    I.IsPrincipal := by
   suffices ∀ P : Ideal K₀, P.IsPrime → Submodule.IsPrincipal P by
     exact (IsPrincipalIdealRing.of_prime this).principal I
   intro P hP
@@ -476,11 +455,11 @@ theorem ideal_isPrincipal /- [v.IsNontrivial] [IsCyclic Γˣ] -/ (I : Ideal K₀
       rw [← Ideal.IsMaximal.eq_of_le (IsLocalRing.maximalIdeal.isMaximal K₀) hP.ne_top hx_mem]
       exact ⟨π.1, Uniformizer_is_generator π⟩
 
-theorem integer_isPrincipalIdealRing /- [v.IsNontrivial] [IsCyclic Γˣ] -/ : IsPrincipalIdealRing K₀ :=
-  ⟨fun I ↦ ideal_isPrincipal v I⟩
+theorem integer_isPrincipalIdealRing [IsCyclic (valueGroup v)] [Nontrivial (valueGroup v)] :
+    IsPrincipalIdealRing K₀ := ⟨fun I ↦ ideal_isPrincipal v I⟩
 
 /-- This is Chapter I, Section 1, Proposition 1 in Serre's Local Fields -/
-instance dvr_of_isDiscrete /- [v.IsNontrivial] [IsCyclic Γˣ]  -/:
+instance dvr_of_isDiscrete [IsCyclic (valueGroup v)] [Nontrivial (valueGroup v)]:
     IsDiscreteValuationRing K₀ where
   toIsPrincipalIdealRing := integer_isPrincipalIdealRing v
   toIsLocalRing  := inferInstance
@@ -500,19 +479,26 @@ def _root_.IsDiscreteValuationRing.maximalIdeal : HeightOneSpectrum A where
   ne_bot := by
     simpa [ne_eq, ← isField_iff_maximalIdeal_eq] using IsDiscreteValuationRing.not_isField A
 
--- variable {A}
-
 noncomputable instance instAdicValued : Valued (FractionRing A) ℤₘ₀ :=
   (IsDiscreteValuationRing.maximalIdeal A).adicValued
 
 instance :
     IsRankOneDiscrete ((IsDiscreteValuationRing.maximalIdeal A).valuation (FractionRing A)) := by
+  have : Nontrivial ↥(MonoidHomWithZero.valueGroup
+      (valuation (FractionRing A) (IsDiscreteValuationRing.maximalIdeal A))) := by
+    let v := (IsDiscreteValuationRing.maximalIdeal A).valuation (FractionRing A)
+    set π := valuation_exists_uniformizer (FractionRing A) (maximalIdeal A)|>.choose with hπ_def
+    have hπ : v π = ↑(ofAdd (-1 : ℤ)) :=
+      valuation_exists_uniformizer (FractionRing A) (maximalIdeal A)|>.choose_spec
+    rw [Subgroup.nontrivial_iff_exists_ne_one]
+    use Units.mk0 (v π) (by simp [hπ])
+    constructor
+    · apply MonoidHomWithZero.mem_valueGroup
+      simp only [Units.val_mk0, mem_range]
+      use π
+    · simp only [hπ]
+      exact not_eq_of_beq_eq_false rfl
   apply IsRankOneDiscrete.mk'
-  /- apply isDiscrete_of_exists_isUniformizer
-    (π := valuation_exists_uniformizer (FractionRing A) (maximalIdeal A)|>.choose)
-  convert valuation_exists_uniformizer (FractionRing A) (maximalIdeal A)|>.choose_spec
-  rw [← genLTOne_eq_of_top, ← Multiplicative.genLTOne_eq_neg_one]
-  norm_cast -/
 
 theorem exists_of_le_one {x : FractionRing A} (H : Valued.v x ≤ (1 : ℤₘ₀)) :
     ∃ a : A, algebraMap A (FractionRing A) a = x := by
