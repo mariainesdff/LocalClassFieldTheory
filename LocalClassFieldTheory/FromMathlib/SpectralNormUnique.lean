@@ -49,18 +49,15 @@ section Prelim
 def RingNorm.to_normedRing {A : Type*} [Ring A] (f : RingNorm A) : NormedRing A where
   norm x := f x
   dist x y := f (x - y)
-  dist_self x := by simp only [sub_self, _root_.map_zero]
+  dist_self x := by simp [sub_self, _root_.map_zero]
   dist_comm x y := by
     rw [← neg_sub x y, map_neg_eq_map]
   dist_triangle x y z := by
     have hxyz : x - z = x - y + (y - z) := by abel
     simp only [hxyz, map_add_le_add]
   dist_eq x y := rfl
-  norm_mul_le x y := by
-    simp only [map_mul_le_mul]
-  edist_dist x y := by
-    simp only
-    rw [eq_comm, ENNReal.ofReal_eq_coe_nnreal]
+  norm_mul_le x y := by simp [map_mul_le_mul]
+  edist_dist x y := by rw [eq_comm, ENNReal.ofReal_eq_coe_nnreal]
   eq_of_dist_eq_zero hxy := by
     exact eq_of_sub_eq_zero (RingNorm.eq_zero_of_map_eq_zero' _ _ hxy)
 
@@ -101,8 +98,7 @@ theorem spectralNorm_unique [CompleteSpace K] {f : AlgebraNorm K L} (hf_pm : IsP
       add_le' := fun a b => by
         simp only [← spectralAlgNorm_def]
         exact map_add_le_add _ _ _
-      neg' := fun a => by
-        simp only [map_neg, NegMemClass.coe_neg, ← spectralAlgNorm_def, map_neg_eq_map]
+      neg' := fun a => by simp [map_neg, NegMemClass.coe_neg, ← spectralAlgNorm_def, map_neg_eq_map]
       mul_le' := fun a b => by
         simp only [← spectralAlgNorm_def]
         exact map_mul_le_mul _ _ _
@@ -111,37 +107,32 @@ theorem spectralNorm_unique [CompleteSpace K] {f : AlgebraNorm K L} (hf_pm : IsP
           map_eq_zero_iff_eq_zero, ZeroMemClass.coe_eq_zero] using ha }
   letI n1 : NormedRing E := RingNorm.toNormedRing hs_norm
   letI N1 : NormedSpace K E :=
-    { one_smul := fun e => by simp only [one_smul]
-      mul_smul  := fun k1 k2 e => by simp only [mul_smul]
-      smul_zero := fun e => by simp only [smul_eq_zero, or_true]
-      smul_add  := fun k e_1 e_2 => by simp only [smul_add]
-      add_smul  := fun k_1 k_2 e => by simp only [add_smul]
-      zero_smul := fun e => by simp only [id_eq, zero_smul]
+    { one_smul := fun e => by simp [one_smul]
+      mul_smul  := fun k1 k2 e => by simp [mul_smul]
+      smul_zero := fun e => by simp
+      smul_add  := fun k e_1 e_2 => by simp [smul_add]
+      add_smul  := fun k_1 k_2 e => by simp [add_smul]
+      zero_smul := fun e => by simp [zero_smul]
       norm_smul_le := fun k y => by
         change (spectralAlgNorm K L (id2 (k • y) : L) : ℝ) ≤
           ‖k‖ * spectralAlgNorm K L (id2 y : L)
-        simp only [id_eq, eq_mpr_eq_cast, cast_eq, map_smul, LinearMap.coe_mk]
-        rw [IntermediateField.coe_smul, map_smul_eq_mul] }
+        rw [map_smul, IntermediateField.coe_smul, map_smul_eq_mul] }
   set hf_norm : RingNorm K⟮x⟯ :=
     { toFun := fun y => f ((algebraMap K⟮x⟯ L) y)
       map_zero' := map_zero _
       add_le' := fun a b => map_add_le_add _ _ _
-      neg' := fun y => by
-        simp [(algebraMap K⟮x⟯ L).map_neg y, map_neg_eq_map (f := f) ((algebraMap K⟮x⟯ L) y)]
+      neg' := fun y => by simp [(algebraMap K⟮x⟯ L).map_neg y]
       mul_le' := fun a b => map_mul_le_mul _ _ _
       eq_zero_of_map_eq_zero' := fun a ha => by
         simpa [map_eq_zero_iff_eq_zero, map_eq_zero] using ha }
   letI n2 : NormedRing K⟮x⟯ := RingNorm.toNormedRing hf_norm
   letI N2 : NormedSpace K K⟮x⟯ :=
-    { one_smul := fun e => by simp only [one_smul]
-      mul_smul  := fun k1 k2 e => by
-        simp only [id_eq, eq_mpr_eq_cast, cast_eq, mul_smul]
-      smul_zero := fun e => by simp only [id_eq, smul_eq_zero, or_true]
-      smul_add  := fun k e_1 e_2 => by
-        simp only [id_eq, eq_mpr_eq_cast, cast_eq, LinearMap.coe_mk, smul_add]
-      add_smul  := fun k_1 k_2 e => by
-        simp only [id_eq, eq_mpr_eq_cast, cast_eq, LinearMap.coe_mk, add_smul]
-      zero_smul := fun e => by simp only [id_eq, zero_smul]
+    { one_smul := fun e => by simp [one_smul]
+      mul_smul  := fun k1 k2 e => by simp [mul_smul]
+      smul_zero := fun e => by simp
+      smul_add  := fun k e_1 e_2 => by simp [smul_add]
+      add_smul  := fun k_1 k_2 e => by simp [add_smul]
+      zero_smul := fun e => by simp [zero_smul]
       norm_smul_le := fun k y => by
         change (f ((algebraMap K⟮x⟯ L) (k • y)) : ℝ) ≤ ‖k‖ * f (algebraMap K⟮x⟯ L y)
         have : (algebraMap (↥K⟮x⟯) L) (k • y) = k • algebraMap (↥K⟮x⟯) L y := by
@@ -175,7 +166,7 @@ theorem spectralNorm_unique_field_norm_ext [CompleteSpace K]
         rw [← hf_ext k]
         rfl
       mul_le' := fun x y => by
-        simp [AddGroupSeminorm.toFun_eq_coe, MulRingSeminorm.toFun_eq_coe, map_mul_le_mul] }
+        simp [AddGroupSeminorm.toFun_eq_coe, MulRingSeminorm.toFun_eq_coe] }
   have hg_pow : IsPowMul g := MulRingNorm.isPowMul _
   have hgx : f x = g x := rfl
   rw [hgx, spectralNorm_unique hg_pow, spectralAlgNorm_def]
@@ -209,14 +200,14 @@ theorem algNormFromConst_def (h1 : (spectralAlgNorm K L).toRingSeminorm 1 ≤ 1)
 theorem spectralAlgNorm_mul [CompleteSpace K] (x y : L) :
     spectralAlgNorm K L (x * y) = spectralAlgNorm K L x * spectralAlgNorm K L y := by
   by_cases hx : x = 0
-  · simp only [hx, zero_mul, map_zero]
+  · simp [hx, zero_mul, map_zero]
   · have hx' : spectralAlgNorm K L x ≠ 0 :=
       ne_of_gt (spectralNorm_zero_lt hx (Algebra.IsAlgebraic.isAlgebraic x))
     have hf1 : (spectralAlgNorm K L) 1 ≤ 1 := le_of_eq spectralAlgNorm_one
     set f : AlgebraNorm K L := algNormFromConst hf1 hx with hf
     have hf_pow : IsPowMul f := seminormFromConst_isPowMul hf1 hx' isPowMul_spectralNorm
     rw [← spectralNorm_unique hf_pow, hf]
-    simp only [algNormFromConst_def]
+    simp [algNormFromConst_def]
     exact seminormFromConst_const_mul hf1 hx' isPowMul_spectralNorm _
 
 variable (K L) in
@@ -248,9 +239,7 @@ def normedField [CompleteSpace K] : NormedField L :=
       exact (map_eq_zero_iff_eq_zero (spectralMulAlgNorm K L)).mp hxy
     dist_eq := fun x y => by rfl
     norm_mul := fun x y => by simp [← spectralMulAlgNorm_def, map_mul]
-    edist_dist := fun x y => by
-      simp only [AddGroupSeminorm.toFun_eq_coe, RingSeminorm.toFun_eq_coe]
-      rw [ENNReal.ofReal_eq_coe_nnreal] }
+    edist_dist := fun x y => by rw [ENNReal.ofReal_eq_coe_nnreal] }
 
 /-- `L` with the spectral norm is a `normed_add_comm_group`. -/
 def normedAddCommGroup [CompleteSpace K] : NormedAddCommGroup L := by
